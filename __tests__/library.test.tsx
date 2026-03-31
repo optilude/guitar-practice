@@ -26,36 +26,26 @@ const mockCategories = [
 ]
 
 describe("LibraryPage", () => {
-  beforeEach(() => vi.clearAllMocks())
-
-  it("renders each category name", async () => {
+  beforeEach(async () => {
+    vi.clearAllMocks()
     vi.mocked(db.category.findMany).mockResolvedValue(mockCategories as any)
-
     const jsx = await LibraryPage()
     render(jsx)
+  })
 
+  it("renders each category name", () => {
     expect(screen.getByText("Fretboard Knowledge")).toBeInTheDocument()
     expect(screen.getByText("Music Theory")).toBeInTheDocument()
     expect(screen.getByText("Technique")).toBeInTheDocument()
   })
 
-  it("renders topic counts for each category", async () => {
-    vi.mocked(db.category.findMany).mockResolvedValue(mockCategories as any)
-
-    const jsx = await LibraryPage()
-    render(jsx)
-
+  it("renders topic counts for each category", () => {
     expect(screen.getByText("18 links")).toBeInTheDocument()
     expect(screen.getByText("12 links")).toBeInTheDocument()
     expect(screen.getByText("24 links")).toBeInTheDocument()
   })
 
-  it("renders each category as a link to its detail page", async () => {
-    vi.mocked(db.category.findMany).mockResolvedValue(mockCategories as any)
-
-    const jsx = await LibraryPage()
-    render(jsx)
-
+  it("renders each category as a link to its detail page", () => {
     expect(screen.getByRole("link", { name: /Fretboard Knowledge/ })).toHaveAttribute(
       "href",
       "/library/fretboard-knowledge"
