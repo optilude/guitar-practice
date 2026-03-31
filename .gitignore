@@ -45,3 +45,5 @@ next-env.d.ts
 .env.production
 .env.*.local
 .superpowers/
+
+/lib/generated/prisma
