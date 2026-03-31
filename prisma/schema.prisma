@@ -15,3 +15,30 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
+
+model Source {
+  id      String  @id @default(cuid())
+  name    String  @unique
+  baseUrl String
+  topics  Topic[]
+}
+
+model Category {
+  id     String  @id @default(cuid())
+  slug   String  @unique
+  name   String
+  order  Int     @unique
+  topics Topic[]
+}
+
+model Topic {
+  id         String   @id @default(cuid())
+  title      String
+  url        String   @unique
+  slug       String
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String
+  source     Source   @relation(fields: [sourceId], references: [id])
+  sourceId   String
+  createdAt  DateTime @default(now())
+}
