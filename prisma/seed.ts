@@ -23,46 +23,49 @@ async function main() {
   const adapter = new PrismaPg(pool)
   const prisma = new PrismaClient({ adapter })
 
+  // Sitemap downloaded from https://hubguitar.com/sitemap.xml — re-download to refresh content
   const xml = readFileSync(join(__dirname, "../tmp/hubguitar-sitemap.xml"), "utf8")
   const urls = [...xml.matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1])
 
-  await prisma.$transaction(async (tx) => {
-    const source = await tx.source.upsert({
-      where: { name: "HubGuitar" },
-      create: { name: "HubGuitar", baseUrl: "https://hubguitar.com" },
-      update: {},
-    })
-
-    const categoryMap = new Map<string, string>()
-    for (const cat of CATEGORIES) {
-      const record = await tx.category.upsert({
-        where: { slug: cat.slug },
-        create: cat,
-        update: { name: cat.name, order: cat.order },
-      })
-      categoryMap.set(cat.slug, record.id)
-    }
-
+  try {
     let count = 0
-    for (const url of urls) {
-      const catSlug = urlToCategory(url)
-      if (!catSlug) continue
-      const categoryId = categoryMap.get(catSlug)!
-      const slug = new URL(url).pathname.split("/").filter(Boolean)[1]
-      const title = slugToTitle(slug)
-      await tx.topic.upsert({
-        where: { url },
-        create: { title, url, slug, categoryId, sourceId: source.id },
-        update: { title },
+    await prisma.$transaction(async (tx) => {
+      const source = await tx.source.upsert({
+        where: { name: "HubGuitar" },
+        create: { name: "HubGuitar", baseUrl: "https://hubguitar.com" },
+        update: {},
       })
-      count++
-    }
 
+      const categoryMap = new Map<string, string>()
+      for (const cat of CATEGORIES) {
+        const record = await tx.category.upsert({
+          where: { slug: cat.slug },
+          create: cat,
+          update: { name: cat.name, order: cat.order },
+        })
+        categoryMap.set(cat.slug, record.id)
+      }
+
+      for (const url of urls) {
+        const catSlug = urlToCategory(url)
+        if (!catSlug) continue
+        const categoryId = categoryMap.get(catSlug)
+        if (!categoryId) throw new Error(`No category ID found for slug "${catSlug}" — check CATEGORIES array matches CATEGORY_MAP`)
+        const slug = new URL(url).pathname.split("/").filter(Boolean)[1]
+        const title = slugToTitle(slug)
+        await tx.topic.upsert({
+          where: { url },
+          create: { title, url, slug, categoryId, sourceId: source.id },
+          update: { title },
+        })
+        count++
+      }
+    })
     console.log(`Seeded ${count} topics across ${CATEGORIES.length} categories`)
-  })
-
-  await prisma.$disconnect()
-  await pool.end()
+  } finally {
+    await prisma.$disconnect()
+    await pool.end()
+  }
 }
 
 main().catch((e) => {
