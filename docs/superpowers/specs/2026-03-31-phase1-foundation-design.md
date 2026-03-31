@@ -23,7 +23,7 @@ A PWA (Progressive Web App) for organising and tracking guitar practice routines
 | Database | PostgreSQL | Homebrew locally; containerised in production |
 | Auth | Auth.js v5 (NextAuth) | Credentials provider (email + password) |
 | Theming | next-themes | System dark/light preference, no flash |
-| PWA | @ducanh2912/next-pwa | Manifest + service worker (maintained Next.js 15 fork) |
+| PWA | Native (Next.js 15) | `app/manifest.ts` for web manifest — no library needed |
 | Package manager | pnpm | Faster installs, good monorepo support if needed later |
 
 ---
@@ -44,6 +44,7 @@ A PWA (Progressive Web App) for organising and tracking guitar practice routines
   /api
     /auth/[...nextauth]/route.ts  — Auth.js handler
   layout.tsx                 — Root layout: ThemeProvider, fonts
+  manifest.ts                — PWA web app manifest (native Next.js 15)
   globals.css                — Tailwind base + CSS variables for theme
 
 /components
@@ -62,14 +63,13 @@ A PWA (Progressive Web App) for organising and tracking guitar practice routines
   /migrations/               — Migration history
 
 /public
-  manifest.json              — PWA manifest
   /icons/                    — App icons (192px, 512px, maskable)
 
 middleware.ts                — Route protection (redirect unauthenticated users)
 .env.example                 — All required env vars documented
 docker-compose.yml           — app + postgres containers
 Dockerfile
-next.config.ts               — PWA config, output: 'standalone', image domains
+next.config.ts               — output: 'standalone', image domains
 tailwind.config.ts           — Amber colour tokens, dark mode class strategy
 ```
 
@@ -120,7 +120,9 @@ The app uses a warm amber accent on neutral dark/light bases. All tokens are def
 
 ## Navigation
 
-### Desktop (≥768px)
+### Desktop (≥768px — includes all iPads in portrait and landscape)
+
+The 768px breakpoint is chosen deliberately so that iPads receive the desktop nav in all orientations. iPad models range from 768px (9.7" portrait) to 1366px (12.9" Pro landscape), all above the threshold.
 
 Horizontal top nav bar, full width, sticky:
 
@@ -210,10 +212,12 @@ The home screen is built to its final layout in Phase 1, but populated with plac
 
 ## PWA Configuration
 
-- `manifest.json`: name "Guitar Practice", short name "Practice", `display: standalone`, `theme_color: #d97706`, `background_color: #0c0c0c`
-- Icons: 192×192 and 512×512 (maskable variant for Android home screen)
-- Service worker (via `@ducanh2912/next-pwa`): caches the app shell for offline loading; API routes and data are not cached (online-only for now)
-- Users can "Add to Home Screen" on iOS Safari and Android Chrome for a near-native experience
+Next.js 15 supports a native `app/manifest.ts` route that generates the web app manifest at build time — no third-party library needed.
+
+- `app/manifest.ts`: exports a `MetadataRoute.Manifest` object with name "Guitar Practice", short name "Practice", `display: "standalone"`, `theme_color: "#d97706"`, `background_color: "#0c0c0c"`
+- Icons: 192×192 and 512×512 placed in `/public/icons/`; a maskable variant for Android home screen
+- **No service worker in Phase 1.** The app is online-only (all data requires a server), so offline caching adds no value yet. The manifest alone is sufficient for "Add to Home Screen" prompts on iOS Safari and Android Chrome.
+- Service worker caching can be added in a later phase using Workbox directly if offline support becomes a requirement.
 
 ---
 
@@ -312,4 +316,4 @@ Phase 1 is complete when:
 5. Dark and light mode follow system preference with no flash, and can be toggled manually
 6. Home, Goals, Library, and History pages exist with correct layout and empty-state placeholders
 7. `docker compose up` starts the app and database and the app is reachable at port 3000
-8. PWA manifest passes Chrome DevTools "Installable" check
+8. PWA manifest is served at `/manifest.webmanifest` and the app passes Chrome DevTools "Installable" check (manifest present + served over HTTPS or localhost)
