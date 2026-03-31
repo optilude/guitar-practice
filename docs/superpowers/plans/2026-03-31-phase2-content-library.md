@@ -237,7 +237,7 @@ export function slugToTitle(slug: string): string {
 pnpm test:run __tests__/seed.test.ts
 ```
 
-Expected: All 14 tests PASS.
+Expected: All 17 tests PASS.
 
 - [ ] **Step 5: Commit**
 
