@@ -22,10 +22,6 @@ describe("urlToCategory", () => {
     expect(urlToCategory("https://hubguitar.com/improvisation/blues-scale")).toBe("improvisation")
   })
 
-  it("maps /ear-training/ prefix to ear-training", () => {
-    expect(urlToCategory("https://hubguitar.com/ear-training/interval-recognition")).toBe("ear-training")
-  })
-
   it("maps /sight-reading/ prefix to sight-reading", () => {
     expect(urlToCategory("https://hubguitar.com/sight-reading/treble-clef-basics")).toBe("sight-reading")
   })

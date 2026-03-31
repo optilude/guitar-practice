@@ -1,8 +1,9 @@
-// Maps HubGuitar URL path prefixes to our app's 7 category slugs.
+// Maps HubGuitar URL path prefixes to our app's 6 category slugs.
 // Deliberate consolidations:
 //   - /rhythm/ → technique  (rhythm is a sub-domain of technique, not a separate category)
 //   - /pick/ and /fingerstyle/ → songs  (these are song-focused playlists, not technique topics)
 //   - /songs/ → songs  (direct match)
+// Excluded: /ear-training/ (no HubGuitar content in this category)
 // Prefixes not listed here (e.g. /boston/, /articles/) return null and are skipped during seeding.
 const CATEGORY_MAP: Record<string, string> = {
   technique: "technique",
@@ -10,7 +11,6 @@ const CATEGORY_MAP: Record<string, string> = {
   fretboard: "fretboard-knowledge",
   "music-theory": "music-theory",
   improvisation: "improvisation",
-  "ear-training": "ear-training",
   "sight-reading": "sight-reading",
   pick: "songs",
   fingerstyle: "songs",

@@ -22,7 +22,7 @@ export default async function LibraryPage() {
           >
             <p className="text-sm font-medium text-foreground">{cat.name}</p>
             <p className="text-xs text-muted-foreground mt-1">
-              {cat._count.topics} links
+              {cat._count.topics} topics
             </p>
           </Link>
         ))}

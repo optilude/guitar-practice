@@ -44,9 +44,9 @@ describe("LibraryPage", () => {
 
   it("renders topic counts for each category", async () => {
     render(await LibraryPage())
-    expect(screen.getByText("18 links")).toBeInTheDocument()
-    expect(screen.getByText("12 links")).toBeInTheDocument()
-    expect(screen.getByText("24 links")).toBeInTheDocument()
+    expect(screen.getByText("18 topics")).toBeInTheDocument()
+    expect(screen.getByText("12 topics")).toBeInTheDocument()
+    expect(screen.getByText("24 topics")).toBeInTheDocument()
   })
 
   it("renders each category as a link to its detail page", async () => {
@@ -69,6 +69,7 @@ const mockCategory = {
       title: "Alternate Picking Basics",
       url: "https://hubguitar.com/technique/alternate-picking",
       slug: "alternate-picking",
+      order: 1,
       categoryId: "1",
       sourceId: "s1",
       createdAt: new Date(),
@@ -78,6 +79,7 @@ const mockCategory = {
       title: "Economy Picking Guide",
       url: "https://hubguitar.com/technique/economy-picking",
       slug: "economy-picking",
+      order: 2,
       categoryId: "1",
       sourceId: "s1",
       createdAt: new Date(),

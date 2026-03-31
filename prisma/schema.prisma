@@ -36,6 +36,7 @@ model Topic {
   title      String
   url        String   @unique
   slug       String
+  order      Int      @default(0)
   category   Category @relation(fields: [categoryId], references: [id])
   categoryId String
   source     Source   @relation(fields: [sourceId], references: [id])

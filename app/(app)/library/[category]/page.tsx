@@ -11,7 +11,7 @@ export default async function CategoryPage({
 
   const data = await db.category.findUnique({
     where: { slug: category },
-    include: { topics: { orderBy: { title: "asc" } } },
+    include: { topics: { orderBy: { order: "asc" } } },
   })
 
   if (!data) return notFound()
