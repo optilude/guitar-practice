@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { notFound } from "next/navigation"
 import { db } from "@/lib/db"
 
@@ -17,9 +18,12 @@ export default async function CategoryPage({
 
   return (
     <div className="pt-6">
-      <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
-        Library
-      </p>
+      <Link
+        href="/library"
+        className="inline-flex items-center gap-1 text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors mb-1"
+      >
+        ← Library
+      </Link>
       <h1 className="text-2xl font-semibold text-foreground mb-6">{data.name}</h1>
       <ul className="space-y-1">
         {data.topics.map((topic) => (

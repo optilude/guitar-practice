@@ -18,7 +18,7 @@ export default async function LibraryPage() {
           <Link
             key={cat.id}
             href={`/library/${cat.slug}`}
-            className="block rounded-lg border border-border p-4 hover:border-foreground transition-colors"
+            className="block rounded-lg border border-border bg-card p-4 shadow-sm hover:shadow-md hover:border-foreground transition-all"
           >
             <p className="text-sm font-medium text-foreground">{cat.name}</p>
             <p className="text-xs text-muted-foreground mt-1">
