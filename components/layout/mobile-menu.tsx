@@ -31,13 +31,11 @@ export function MobileMenu({ items }: MobileMenuProps) {
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <button
-          className="text-muted-foreground hover:text-foreground transition-colors"
-          aria-label="Open menu"
-        >
-          <Menu size={20} />
-        </button>
+      <SheetTrigger
+        className="text-muted-foreground hover:text-foreground transition-colors"
+        aria-label="Open menu"
+      >
+        <Menu size={20} />
       </SheetTrigger>
       <SheetContent side="left" className="w-60 bg-background border-border">
         <div className="mt-8 flex flex-col gap-1">
