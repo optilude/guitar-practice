@@ -21,7 +21,7 @@ Files created in this plan, grouped by task:
 - `vitest.config.ts`, `vitest.setup.ts`
 
 **Design system (Task 3)**
-- `tailwind.config.ts`, `app/globals.css`
+- `app/globals.css` (modified — Tailwind v4 CSS variables, no tailwind.config.ts)
 
 **Database (Task 4)**
 - `prisma/schema.prisma`, `lib/db.ts`
@@ -319,124 +319,131 @@ git commit -m "chore: add Vitest test infrastructure"
 ## Task 3: Design System
 
 **Files:**
-- Modify: `tailwind.config.ts`, `app/globals.css`
+- Modify: `app/globals.css`
 
-The design system uses CSS custom properties for all theme tokens. Tailwind consumes them via `hsl(var(--token))` references. shadcn/ui follows this same convention so its components automatically pick up our tokens.
+**Important — Tailwind v4 is installed (not v3).** There is no `tailwind.config.ts` in Tailwind v4 — theme tokens are configured via CSS. The project uses `@import "shadcn/tailwind.css"` and an `@theme inline` block that maps CSS custom properties (e.g. `var(--accent)`) to Tailwind colour utilities. Dark/light values are defined in `:root` and `.dark` blocks. To apply our warm-amber design system, we replace the colour values in those blocks.
 
-- [ ] **Step 1: Replace tailwind.config.ts**
+**No `tailwind.config.ts` is needed or created.** `tailwindcss-animate` is already installed as `tw-animate-css` (imported in globals.css).
 
-```typescript
-import type { Config } from "tailwindcss"
+Current `app/globals.css` structure (do NOT change the imports or `@theme inline` block — only replace `:root` and `.dark` colour variables):
 
-const config: Config = {
-  darkMode: "class",
-  content: [
-    "./app/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-  ],
-  theme: {
-    extend: {
-      colors: {
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-      },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-      },
-    },
-  },
-  plugins: [require("tailwindcss-animate")],
+```
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  ... (many mappings — leave untouched)
 }
 
-export default config
+:root { ... shadcn defaults ... }   ← REPLACE these colour values
+.dark  { ... shadcn defaults ... }  ← REPLACE these colour values
+
+@layer base { ... }                 ← leave untouched
 ```
 
-- [ ] **Step 2: Install tailwindcss-animate (shadcn/ui uses it)**
+- [ ] **Step 1: Update `:root` colour variables in app/globals.css**
 
-```bash
-pnpm add -D tailwindcss-animate
-```
+Replace the `:root` block's colour properties with warm-amber light mode values. Keep `--radius`, `--sidebar-*`, `--chart-*` variables unchanged.
 
-- [ ] **Step 3: Replace app/globals.css**
+The `:root` block in `app/globals.css` currently starts with `--background: oklch(1 0 0);`. Replace from `--background` through `--sidebar-ring` (all colour vars) with:
 
 ```css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@layer base {
-  :root {
-    /* Light mode — warm off-white base, amber-700 accent */
-    --background: 40 33% 97%;        /* #faf8f4 */
-    --foreground: 0 0% 10%;          /* #1a1a1a */
-    --card: 0 0% 100%;               /* #ffffff */
-    --card-foreground: 0 0% 10%;
-    --muted: 35 20% 92%;
-    --muted-foreground: 0 0% 73%;    /* #bbb */
-    --border: 35 25% 88%;            /* #ede8df */
-    --input: 35 25% 88%;
-    --ring: 32 95% 44%;
-    --accent: 32 95% 44%;            /* #b45309 amber-700 */
-    --accent-foreground: 0 0% 100%;
-    --radius: 0.375rem;
-  }
-
-  .dark {
-    /* Dark mode — near-black base, amber-600 accent */
-    --background: 0 0% 7%;           /* #0c0c0c */
-    --foreground: 0 0% 90%;          /* #e5e5e5 */
-    --card: 0 0% 7%;
-    --card-foreground: 0 0% 90%;
-    --muted: 0 0% 10%;
-    --muted-foreground: 0 0% 33%;    /* #555 */
-    --border: 0 0% 11%;              /* #1c1c1c */
-    --input: 0 0% 11%;
-    --ring: 38 92% 50%;
-    --accent: 38 92% 50%;            /* #d97706 amber-600 */
-    --accent-foreground: 0 0% 7%;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+:root {
+  /* Light mode — warm off-white base, amber-700 accent */
+  --background: oklch(0.983 0.005 79);        /* #faf8f4 */
+  --foreground: oklch(0.131 0 0);             /* #1a1a1a */
+  --card: oklch(1 0 0);                       /* #ffffff */
+  --card-foreground: oklch(0.131 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.131 0 0);
+  --primary: oklch(0.577 0.150 55);           /* amber-700, same as accent */
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.96 0.005 79);
+  --secondary-foreground: oklch(0.131 0 0);
+  --muted: oklch(0.96 0.005 79);
+  --muted-foreground: oklch(0.764 0 0);       /* #bbb */
+  --accent: oklch(0.577 0.150 55);            /* #b45309 amber-700 */
+  --accent-foreground: oklch(1 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.934 0.009 79);            /* #ede8df */
+  --input: oklch(0.934 0.009 79);
+  --ring: oklch(0.577 0.150 55);
+  --chart-1: oklch(0.577 0.150 55);
+  --chart-2: oklch(0.688 0.165 57);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.375rem;
+  --sidebar: oklch(0.96 0.005 79);
+  --sidebar-foreground: oklch(0.131 0 0);
+  --sidebar-primary: oklch(0.577 0.150 55);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.96 0.005 79);
+  --sidebar-accent-foreground: oklch(0.131 0 0);
+  --sidebar-border: oklch(0.934 0.009 79);
+  --sidebar-ring: oklch(0.577 0.150 55);
 }
 ```
 
-- [ ] **Step 4: Verify Tailwind builds**
+- [ ] **Step 2: Update `.dark` colour variables in app/globals.css**
 
-```bash
-pnpm build 2>&1 | tail -5
+Replace the `.dark` block with warm-amber dark mode values:
+
+```css
+.dark {
+  /* Dark mode — near-black base, amber-600 accent */
+  --background: oklch(0.075 0 0);             /* #0c0c0c */
+  --foreground: oklch(0.918 0 0);             /* #e5e5e5 */
+  --card: oklch(0.098 0 0);                   /* #111 */
+  --card-foreground: oklch(0.918 0 0);
+  --popover: oklch(0.098 0 0);
+  --popover-foreground: oklch(0.918 0 0);
+  --primary: oklch(0.688 0.165 57);           /* amber-600, same as accent */
+  --primary-foreground: oklch(0.075 0 0);
+  --secondary: oklch(0.145 0 0);
+  --secondary-foreground: oklch(0.918 0 0);
+  --muted: oklch(0.098 0 0);
+  --muted-foreground: oklch(0.391 0 0);       /* #555 */
+  --accent: oklch(0.688 0.165 57);            /* #d97706 amber-600 */
+  --accent-foreground: oklch(0.075 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(0.145 0 0);                 /* #1c1c1c */
+  --input: oklch(0.145 0 0);
+  --ring: oklch(0.688 0.165 57);
+  --chart-1: oklch(0.688 0.165 57);
+  --chart-2: oklch(0.577 0.150 55);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.098 0 0);
+  --sidebar-foreground: oklch(0.918 0 0);
+  --sidebar-primary: oklch(0.688 0.165 57);
+  --sidebar-primary-foreground: oklch(0.075 0 0);
+  --sidebar-accent: oklch(0.145 0 0);
+  --sidebar-accent-foreground: oklch(0.918 0 0);
+  --sidebar-border: oklch(0.145 0 0);
+  --sidebar-ring: oklch(0.688 0.165 57);
+}
 ```
 
-Expected: build succeeds (will fail on missing pages — that's fine at this stage; just ensure no Tailwind config errors).
-
-- [ ] **Step 5: Commit**
+- [ ] **Step 3: Verify the build succeeds**
 
 ```bash
-git add -A
-git commit -m "feat: add amber design system tokens to Tailwind and globals.css"
+pnpm build 2>&1 | tail -10
+```
+
+Expected: build succeeds. It may report errors about missing page files — that is expected at this stage. There must be no Tailwind CSS parsing errors.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add app/globals.css
+git commit -m "feat: apply warm-amber design tokens to globals.css (Tailwind v4 CSS variables)"
 ```
 
 ---
