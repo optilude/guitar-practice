@@ -36,7 +36,7 @@ export default function LoginPage() {
       <div className="space-y-1.5">
         <label
           htmlFor="email"
-          className="block text-[10px] uppercase tracking-widest text-muted-foreground"
+          className="block text-xs uppercase tracking-widest text-muted-foreground"
         >
           Email
         </label>
@@ -53,7 +53,7 @@ export default function LoginPage() {
       <div className="space-y-1.5">
         <label
           htmlFor="password"
-          className="block text-[10px] uppercase tracking-widest text-muted-foreground"
+          className="block text-xs uppercase tracking-widest text-muted-foreground"
         >
           Password
         </label>
@@ -79,7 +79,7 @@ export default function LoginPage() {
         {pending ? "Signing in…" : "Sign in"}
       </button>
 
-      <p className="text-center text-[11px] text-muted-foreground">
+      <p className="text-center text-xs text-muted-foreground">
         No account?{" "}
         <Link
           href="/register"

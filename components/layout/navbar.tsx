@@ -33,7 +33,7 @@ export function Navbar() {
         </div>
 
         {/* App name */}
-        <span className="text-[12px] font-medium text-foreground/85 md:mr-3">
+        <span className="text-sm font-medium text-foreground/85 md:mr-3">
           Guitar Practice
         </span>
 
@@ -44,7 +44,7 @@ export function Navbar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "text-[11px] transition-colors pb-px",
+                "text-[13px] transition-colors pb-px",
                 pathname === item.href
                   ? "text-accent border-b-[1.5px] border-accent"
                   : "text-muted-foreground hover:text-foreground"
@@ -62,7 +62,7 @@ export function Navbar() {
           {/* Desktop: sign out link (hidden on mobile — accessible via drawer) */}
           <button
             onClick={handleSignOut}
-            className="hidden md:block text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+            className="hidden md:block text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
             Sign out
           </button>
@@ -70,7 +70,7 @@ export function Navbar() {
           {/* Start Practice CTA */}
           <Link
             href="/"
-            className="bg-accent text-accent-foreground text-[10px] font-semibold px-3 py-[5px] rounded-md hover:opacity-90 transition-opacity whitespace-nowrap"
+            className="bg-accent text-accent-foreground text-xs font-semibold px-3 py-1.5 rounded-md hover:opacity-90 transition-opacity whitespace-nowrap"
           >
             <span className="hidden md:inline">Start Practice</span>
             <span className="md:hidden">▶</span>

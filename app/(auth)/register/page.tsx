@@ -52,7 +52,7 @@ export default function RegisterPage() {
       <div className="space-y-1.5">
         <label
           htmlFor="name"
-          className="block text-[10px] uppercase tracking-widest text-muted-foreground"
+          className="block text-xs uppercase tracking-widest text-muted-foreground"
         >
           Name
         </label>
@@ -69,7 +69,7 @@ export default function RegisterPage() {
       <div className="space-y-1.5">
         <label
           htmlFor="email"
-          className="block text-[10px] uppercase tracking-widest text-muted-foreground"
+          className="block text-xs uppercase tracking-widest text-muted-foreground"
         >
           Email
         </label>
@@ -86,7 +86,7 @@ export default function RegisterPage() {
       <div className="space-y-1.5">
         <label
           htmlFor="password"
-          className="block text-[10px] uppercase tracking-widest text-muted-foreground"
+          className="block text-xs uppercase tracking-widest text-muted-foreground"
         >
           Password
         </label>
@@ -104,7 +104,7 @@ export default function RegisterPage() {
       <div className="space-y-1.5">
         <label
           htmlFor="confirmPassword"
-          className="block text-[10px] uppercase tracking-widest text-muted-foreground"
+          className="block text-xs uppercase tracking-widest text-muted-foreground"
         >
           Confirm Password
         </label>
@@ -130,7 +130,7 @@ export default function RegisterPage() {
         {pending ? "Creating account…" : "Create account"}
       </button>
 
-      <p className="text-center text-[11px] text-muted-foreground">
+      <p className="text-center text-xs text-muted-foreground">
         Already have an account?{" "}
         <Link
           href="/login"

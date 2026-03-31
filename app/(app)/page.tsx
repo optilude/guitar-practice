@@ -13,7 +13,7 @@ export default function HomePage() {
       {/* Header row: greeting + placeholder streak area */}
       <div className="flex justify-between items-baseline mb-8">
         <div>
-          <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
+          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
             {greeting()}
           </p>
           <h1 className="text-xl font-normal text-foreground">Get started</h1>
@@ -27,7 +27,7 @@ export default function HomePage() {
 
       {/* Goal section */}
       <div className="mb-1">
-        <p className="text-[9px] uppercase tracking-[0.1em] text-muted-foreground mb-2">
+        <p className="text-xs uppercase tracking-[0.1em] text-muted-foreground mb-2">
           Goal
         </p>
         <p className="text-sm text-muted-foreground">
