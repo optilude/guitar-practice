@@ -13,7 +13,7 @@ export default async function CategoryPage({
     include: { topics: { orderBy: { title: "asc" } } },
   })
 
-  if (!data) notFound()
+  if (!data) return notFound()
 
   return (
     <div className="pt-6">
