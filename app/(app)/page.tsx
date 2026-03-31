@@ -16,7 +16,7 @@ export default function HomePage() {
           <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
             {greeting()}
           </p>
-          <h1 className="text-xl font-normal text-foreground">Get started</h1>
+          <h1 className="text-2xl font-semibold text-foreground">Get started</h1>
         </div>
         {/* Streak display — wired up in Phase 5 */}
         <div className="text-right opacity-0 select-none" aria-hidden>
@@ -30,7 +30,7 @@ export default function HomePage() {
         <p className="text-xs uppercase tracking-[0.1em] text-muted-foreground mb-2">
           Goal
         </p>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-base text-muted-foreground">
           <Link
             href="/goals"
             className="text-foreground underline underline-offset-2 decoration-border hover:decoration-foreground transition-colors"

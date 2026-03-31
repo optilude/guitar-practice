@@ -49,6 +49,9 @@
 }
 
 :root {
+  /* System sans-serif stack — must be defined or font-sans utility falls back to browser default (serif) */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
   /* Light mode — warm off-white base, amber-700 accent */
   --background: oklch(0.983 0.005 79);        /* #faf8f4 */
   --foreground: oklch(0.131 0 0);             /* #1a1a1a */
@@ -125,6 +128,10 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-size: 1rem;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   html {
     @apply font-sans;
