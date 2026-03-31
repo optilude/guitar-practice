@@ -1,5 +1,6 @@
 import { readFileSync } from "fs"
-import { join } from "path"
+import { fileURLToPath } from "url"
+import { join, dirname } from "path"
 import { PrismaClient } from "@/lib/generated/prisma/client"
 import { PrismaPg } from "@prisma/adapter-pg"
 import pg from "pg"
@@ -24,7 +25,10 @@ async function main() {
   const prisma = new PrismaClient({ adapter })
 
   // Sitemap downloaded from https://hubguitar.com/sitemap.xml — re-download to refresh content
-  const xml = readFileSync(join(__dirname, "../tmp/hubguitar-sitemap.xml"), "utf8")
+  const xml = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), "../tmp/hubguitar-sitemap.xml"),
+    "utf8"
+  )
   const urls = [...xml.matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1])
 
   try {
