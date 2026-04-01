@@ -1,5 +1,6 @@
 import { Note } from "tonal"
 import type { GuitarScale } from "@/lib/theory/types"
+import { getScale } from "@/lib/theory"
 import { INTERVAL_DEGREE_COLORS } from "@/lib/rendering/tab"
 import SCALE_PATTERNS from "@/lib/theory/data/scale-patterns"
 
@@ -75,7 +76,7 @@ export function getArpeggioBoxSystems(chordType: string): BoxSystem[] {
 // Full fretboard position computation
 // ---------------------------------------------------------------------------
 export function getAllFretboardPositions(
-  tonic: string,
+  _tonic: string,
   scaleNotes: string[],
   scaleIntervals: string[]
 ): FretboardDot[] {
@@ -106,7 +107,7 @@ export function getAllFretboardPositions(
 // 3NPS position computation — stubs filled in Task 3
 // ---------------------------------------------------------------------------
 export function build3NPSPositions(
-  tonic: string,
+  _tonic: string,
   scaleNotes: string[],
   _scaleIntervals: string[]
 ): Set<string>[] {
@@ -227,8 +228,17 @@ export function renderFretboard(
   } else {
     // For CAGED/3NPS, use boxScaleType if provided (e.g., parent scale for arpeggio)
     const lookupScaleType = boxScaleType ?? scale.type
+    // 3NPS requires 7-note scale data. When showing an arpeggio box,
+    // resolve the parent scale's notes so build3NPSPositions gets a full scale.
+    let boxNotes = scale.notes
+    let boxIntervals = scale.intervals
+    if (boxSystem === "3nps" && boxScaleType) {
+      const parentScale = getScale(scale.tonic, boxScaleType)
+      boxNotes = parentScale.notes
+      boxIntervals = parentScale.intervals
+    }
     inBoxSet = getBoxMembershipSet(
-      scale.tonic, lookupScaleType, boxSystem, boxIndex, scale.notes, scale.intervals
+      scale.tonic, lookupScaleType, boxSystem, boxIndex, boxNotes, boxIntervals
     )
   }
 
