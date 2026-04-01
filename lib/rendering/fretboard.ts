@@ -1,6 +1,5 @@
 import { Note } from "tonal"
 import type { GuitarScale } from "@/lib/theory/types"
-import { getScale } from "@/lib/theory"
 import { INTERVAL_DEGREE_COLORS } from "@/lib/rendering/tab"
 import SCALE_PATTERNS from "@/lib/theory/data/scale-patterns"
 
@@ -49,6 +48,23 @@ const PENTATONIC_TYPE_MAP: Record<string, string> = {
   "Pentatonic Major": "major pentatonic",
   "Blues":            "minor pentatonic",
 }
+
+// Scale type names recognised by Fretboard.js's FretboardSystem (CAGED + TNPS)
+const FB_TYPE_MAP: Record<string, string> = {
+  Major:                 "major",
+  Dorian:                "dorian",
+  Phrygian:              "phrygian",
+  Lydian:                "lydian",
+  Mixolydian:            "mixolydian",
+  Aeolian:               "aeolian",
+  Locrian:               "locrian",
+  "Harmonic Minor":      "harmonic minor",
+  "Melodic Minor":       "melodic minor",
+  Altered:               "altered",
+}
+
+// CAGED shape labels in Fretboard.js's CAGED_ORDER ('GEDCA')
+export const CAGED_BOX_LABELS = ["G", "E", "D", "C", "A"] as const
 
 export const CHORD_TYPE_TO_SCALE: Record<string, string> = {
   // Major family
@@ -225,25 +241,32 @@ export function renderFretboard(
     // Arpeggios only: use the pre-computed position windows from GuitarScale.positions
     const windowPos = scale.positions[boxIndex]?.positions ?? []
     inBoxSet = new Set(windowPos.map(p => `${p.string}:${p.fret}`))
-  } else if (boxSystem === "caged") {
-    // Use the same algorithmic position windows as the tab view (SCALE_PATTERNS
-    // shapes have incorrect fretOffsets and are not reliable for box membership).
-    // For arpeggios, resolve the parent scale so its position windows are used.
-    const sourceScale = boxScaleType ? getScale(scale.tonic, boxScaleType) : scale
-    const boxPositions = sourceScale.positions[boxIndex]?.positions ?? []
-    inBoxSet = new Set(boxPositions.map(p => `${p.string}:${p.fret}`))
-  } else {
-    // 3NPS / pentatonic
-    const lookupScaleType = boxScaleType ?? scale.type
-    let boxNotes = scale.notes
-    let boxIntervals = scale.intervals
-    if (boxSystem === "3nps" && boxScaleType) {
-      const parentScale = getScale(scale.tonic, boxScaleType)
-      boxNotes = parentScale.notes
-      boxIntervals = parentScale.intervals
+  } else if (boxSystem === "caged" || boxSystem === "3nps") {
+    // Use Fretboard.js's built-in CAGED and TNPS systems — well-tested and correct
+    // across all keys. For arpeggios, the parent scale type drives box positions.
+    const scaleTypeForBox = boxScaleType ?? scale.type
+    const fbType = FB_TYPE_MAP[scaleTypeForBox]
+    if (fbType) {
+      try {
+        const system = new FretboardSystem()
+        const fbSystem = boxSystem === "caged" ? Systems.CAGED : Systems.TNPS
+        const fbBox   = boxSystem === "caged" ? CAGED_BOX_LABELS[boxIndex] : boxIndex + 1
+        const dots = system.getScale({
+          type: fbType,
+          root: scale.tonic,
+          box: { box: fbBox, system: fbSystem },
+        }) as Array<{ string: number; fret: number; inBox: boolean }>
+        inBoxSet = new Set(dots.filter(d => d.inBox).map(d => `${d.string}:${d.fret}`))
+      } catch {
+        inBoxSet = new Set()
+      }
+    } else {
+      inBoxSet = new Set()
     }
+  } else {
+    // pentatonic — uses FretboardSystem via getBoxMembershipSet
     inBoxSet = getBoxMembershipSet(
-      scale.tonic, lookupScaleType, boxSystem, boxIndex, boxNotes, boxIntervals
+      scale.tonic, scale.type, boxSystem, boxIndex, scale.notes, scale.intervals
     )
   }
 

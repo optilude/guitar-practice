@@ -4,7 +4,7 @@ import { useState, useMemo } from "react"
 import { getScale, listScaleTypes } from "@/lib/theory"
 import { TabViewer } from "./tab-viewer"
 import { FretboardViewer } from "./fretboard-viewer"
-import { getScaleBoxSystems } from "@/lib/rendering/fretboard"
+import { getScaleBoxSystems, CAGED_BOX_LABELS } from "@/lib/rendering/fretboard"
 import type { BoxSystem } from "@/lib/rendering/fretboard"
 import { cn } from "@/lib/utils"
 
@@ -46,11 +46,11 @@ export function ScalePanel({ tonic }: ScalePanelProps) {
   const availableBoxSystems = useMemo(() => getScaleBoxSystems(scaleType), [scaleType])
 
   const boxCount = useMemo(() => {
-    if (boxSystem === "caged")      return scale.positions.length
+    if (boxSystem === "caged")      return CAGED_BOX_LABELS.length  // always 5
     if (boxSystem === "3nps")       return 7
     if (boxSystem === "pentatonic") return 5
     return 0
-  }, [boxSystem, scale.positions.length])
+  }, [boxSystem])
 
   const safeBoxIndex    = boxIndex < boxCount ? boxIndex : 0
   const positionCount   = scale.positions.length
@@ -180,7 +180,7 @@ export function ScalePanel({ tonic }: ScalePanelProps) {
                 {Array.from({ length: boxCount }, (_, i) => (
                   <option key={i} value={i}>
                     {boxSystem === "caged"
-                      ? (scale.positions[i]?.label ?? `Position ${i + 1}`)
+                      ? `${CAGED_BOX_LABELS[i]} shape`
                       : `Position ${i + 1}`}
                   </option>
                 ))}
