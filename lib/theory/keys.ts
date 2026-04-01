@@ -20,7 +20,7 @@ const CIRCLE: CircleEntry[] = [
 ]
 
 export function getCircleOfFifths(): CircleEntry[] {
-  return CIRCLE
+  return [...CIRCLE]
 }
 
 export function stepCircle(tonic: string, steps: number): string {
@@ -135,21 +135,28 @@ function buildModalDiatonicChords(tonic: string, mode: string): DiatonicChord[] 
 // ---------------------------------------------------------------------------
 // Relative key helper
 // ---------------------------------------------------------------------------
+const MODE_SEMITONES_FROM_ROOT: Record<string, number> = {
+  dorian: 2, phrygian: 4, lydian: 5, mixolydian: 7, locrian: 11,
+}
+
 function relativeKey(tonic: string, mode: string): { tonic: string; mode: string } {
   if (mode === "major" || mode === "ionian") {
-    // relative minor = 9 semitones up (or 3 down)
-    const relChroma = (Note.chroma(tonic)! + 9) % 12
-    const entry = CIRCLE.find((e) => Note.chroma(e.tonic) === relChroma)
-    return { tonic: entry?.tonic ?? tonic, mode: "minor" }
+    const entry = CIRCLE.find((e) => Note.chroma(e.tonic) === Note.chroma(tonic))
+    return { tonic: entry?.relativeMinor ?? tonic, mode: "minor" }
   }
   if (mode === "minor" || mode === "aeolian") {
     const relChroma = (Note.chroma(tonic)! + 3) % 12
     const entry = CIRCLE.find((e) => Note.chroma(e.tonic) === relChroma)
     return { tonic: entry?.tonic ?? tonic, mode: "major" }
   }
-  // For other modes, return the parent major
-  const scale = Scale.get(`${tonic} ${mode}`)
-  return { tonic: scale.tonic ?? tonic, mode: "major" }
+  // Modal keys: find parent major by subtracting mode offset
+  const semitones = MODE_SEMITONES_FROM_ROOT[mode]
+  if (semitones !== undefined) {
+    const parentChroma = (Note.chroma(tonic)! - semitones + 12) % 12
+    const entry = CIRCLE.find((e) => Note.chroma(e.tonic) === parentChroma)
+    return { tonic: entry?.tonic ?? tonic, mode: "major" }
+  }
+  return { tonic, mode: "major" }
 }
 
 // ---------------------------------------------------------------------------
@@ -160,7 +167,7 @@ export function getKey(tonic: string, mode: string): Key {
 
   if (normalMode === "major" || normalMode === "ionian") {
     const k = TonalKey.majorKey(tonic)
-    const chords = buildMajorDiatonicChords(k.chords, MAJOR_ROMANS)
+    const chords = buildMajorDiatonicChords([...k.chords], MAJOR_ROMANS)
     return {
       tonic,
       mode: "major",
@@ -173,7 +180,7 @@ export function getKey(tonic: string, mode: string): Key {
 
   if (normalMode === "minor" || normalMode === "aeolian") {
     const k = TonalKey.minorKey(tonic)
-    const chords = buildMajorDiatonicChords(k.natural.chords, MINOR_ROMANS)
+    const chords = buildMajorDiatonicChords([...k.natural.chords], MINOR_ROMANS)
     return {
       tonic,
       mode: "minor",
