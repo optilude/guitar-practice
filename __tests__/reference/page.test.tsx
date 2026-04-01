@@ -53,6 +53,13 @@ vi.mock("@/lib/theory", () => ({
     intervals: ["1P", "3M", "5P", "7M"],
     positions: [{ label: "Position 1", positions: [{ string: 6, fret: 8, interval: "R" }] }],
   }),
+  getChordAsScale: (_tonic: string, _type: string) => ({
+    tonic: "C",
+    type: "maj",
+    notes: ["C", "E", "G"],
+    intervals: ["1P", "3M", "5P"],
+    positions: [{ label: "Position 1", positions: [{ string: 6, fret: 8, interval: "R" }] }],
+  }),
 }))
 
 import ReferencePage from "@/app/(app)/reference/page"

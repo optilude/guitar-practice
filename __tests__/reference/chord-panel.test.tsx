@@ -41,6 +41,13 @@ vi.mock("@/lib/theory", () => ({
     { frets: [-1, 2, 1, 3, -1, -1], fingers: [0, 0, 0, 0, 0, 0], baseFret: 2, barres: [], capo: false, label: "5th string root" },
     { frets: [-1, -1, 2, 1, 4, -1], fingers: [0, 0, 0, 0, 0, 0], baseFret: 9, barres: [], capo: false, label: "4th string root" },
   ],
+  getChordAsScale: (_tonic: string, _type: string) => ({
+    tonic: "C",
+    type: "maj",
+    notes: ["C", "E", "G"],
+    intervals: ["1P", "3M", "5P"],
+    positions: [{ label: "Position 1", positions: [{ string: 6, fret: 8, interval: "R" }] }],
+  }),
 }))
 
 import { ChordPanel } from "@/app/(app)/reference/_components/chord-panel"
@@ -115,5 +122,18 @@ describe("ChordPanel", () => {
     expect(screen.getByText("6th string root")).toBeDefined()
     expect(screen.getByText("5th string root")).toBeDefined()
     expect(screen.getByText("4th string root")).toBeDefined()
+  })
+
+  it("renders a fretboard container in default state", () => {
+    render(<ChordPanel tonic="C" />)
+    // The FretboardViewer renders a div with min-h-[200px] class
+    const fretboardEl = document.querySelector(".min-h-\\[200px\\]")
+    expect(fretboardEl).not.toBeNull()
+  })
+
+  it("renders the show-intervals checkbox", () => {
+    render(<ChordPanel tonic="C" />)
+    const checkbox = screen.getByRole("checkbox", { name: /show intervals/i })
+    expect(checkbox).toBeDefined()
   })
 })

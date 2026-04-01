@@ -4,8 +4,16 @@ import { useState, useMemo } from "react"
 import {
   getChord, listChordDbSuffixes, getChordPositions,
   SHELL_CHORD_TYPES, getShellChordPositions,
+  getChordAsScale,
 } from "@/lib/theory"
 import Chord from "@tombatossals/react-chords/lib/Chord"
+import { FretboardViewer } from "./fretboard-viewer"
+import {
+  getArpeggioBoxSystems,
+  CHORD_TYPE_TO_SCALE,
+  CAGED_BOX_LABELS,
+} from "@/lib/rendering/fretboard"
+import type { BoxSystem } from "@/lib/rendering/fretboard"
 
 const GUITAR_INSTRUMENT = {
   strings: 6,
@@ -45,6 +53,14 @@ const SHELL_FORMULA: Record<string, string> = {
   "dim7/m6 shell": "1 – b3 – 6",
 }
 
+const BOX_SYSTEM_LABELS: Record<BoxSystem, string> = {
+  none:       "All notes",
+  caged:      "CAGED",
+  "3nps":     "3NPS",
+  pentatonic: "Pentatonic boxes",
+  windows:    "Position windows",
+}
+
 interface ChordPanelProps {
   tonic: string
 }
@@ -60,6 +76,26 @@ export function ChordPanel({ tonic }: ChordPanelProps) {
     [dbSuffixes],
   )
   const [chordType, setChordType] = useState(COMMON_TYPES[0])
+  const [labelMode, setLabelMode] = useState<"note" | "interval">("interval")
+  const [boxSystem, setBoxSystem] = useState<BoxSystem>("none")
+  const [boxIndex, setBoxIndex]   = useState(0)
+
+  const chordScale = useMemo(
+    () => getChordAsScale(tonic, chordType),
+    [tonic, chordType]
+  )
+  const availableBoxSystems = useMemo(
+    () => getArpeggioBoxSystems(chordScale.type),
+    [chordScale.type]
+  )
+  const parentScaleType = CHORD_TYPE_TO_SCALE[chordScale.type]
+  const boxCount = useMemo(() => {
+    if (boxSystem === "caged")   return CAGED_BOX_LABELS.length  // 5
+    if (boxSystem === "3nps")    return 7
+    if (boxSystem === "windows") return chordScale.positions.length
+    return 0
+  }, [boxSystem, chordScale.positions.length])
+  const safeBoxIndex = boxIndex < boxCount ? boxIndex : 0
 
   const isShell = (SHELL_CHORD_TYPES as readonly string[]).includes(chordType)
 
@@ -83,7 +119,14 @@ export function ChordPanel({ tonic }: ChordPanelProps) {
         <select
           id="chord-type-select"
           value={chordType}
-          onChange={(e) => setChordType(e.target.value)}
+          onChange={(e) => {
+            const newType = e.target.value
+            setChordType(newType)
+            setBoxIndex(0)
+            const newScale = getChordAsScale(tonic, newType)
+            const newSystems = getArpeggioBoxSystems(newScale.type)
+            if (!newSystems.includes(boxSystem)) setBoxSystem("none")
+          }}
           className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
         >
           <optgroup label="Common">
@@ -118,6 +161,73 @@ export function ChordPanel({ tonic }: ChordPanelProps) {
           </p>
         </div>
       )}
+
+      {/* Label mode + box system controls */}
+      <div className="flex flex-wrap gap-4 items-end">
+        <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={labelMode === "interval"}
+            onChange={(e) => setLabelMode(e.target.checked ? "interval" : "note")}
+            className="accent-accent"
+          />
+          Show intervals
+        </label>
+
+        {availableBoxSystems.length > 1 && (
+          <div className="flex flex-wrap gap-3 items-end">
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-muted-foreground" htmlFor="chord-box-system-select">
+                Highlight
+              </label>
+              <select
+                id="chord-box-system-select"
+                value={boxSystem}
+                onChange={(e) => {
+                  setBoxSystem(e.target.value as BoxSystem)
+                  setBoxIndex(0)
+                }}
+                className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
+              >
+                {availableBoxSystems.map((s) => (
+                  <option key={s} value={s}>{BOX_SYSTEM_LABELS[s]}</option>
+                ))}
+              </select>
+            </div>
+
+            {boxSystem !== "none" && boxCount > 0 && (
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-muted-foreground" htmlFor="chord-box-index-select">
+                  Box
+                </label>
+                <select
+                  id="chord-box-index-select"
+                  value={safeBoxIndex}
+                  onChange={(e) => setBoxIndex(Number(e.target.value))}
+                  className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
+                >
+                  {Array.from({ length: boxCount }, (_, i) => (
+                    <option key={i} value={i}>
+                      {boxSystem === "caged"
+                        ? `${CAGED_BOX_LABELS[i]} shape`
+                        : `Position ${i + 1}`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Fretboard */}
+      <FretboardViewer
+        scale={chordScale}
+        boxSystem={boxSystem}
+        boxIndex={safeBoxIndex}
+        labelMode={labelMode}
+        boxScaleType={parentScaleType}
+      />
 
       {positions.length === 0 ? (
         <p className="text-xs text-muted-foreground">No voicings available for this chord type.</p>
