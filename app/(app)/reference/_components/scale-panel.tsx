@@ -4,6 +4,9 @@ import { useState, useMemo } from "react"
 import { getScale, listScaleTypes } from "@/lib/theory"
 import { TabViewer } from "./tab-viewer"
 import { FretboardViewer } from "./fretboard-viewer"
+import { getScaleBoxSystems } from "@/lib/rendering/fretboard"
+import type { BoxSystem } from "@/lib/rendering/fretboard"
+import SCALE_PATTERNS from "@/lib/theory/data/scale-patterns"
 import { cn } from "@/lib/utils"
 
 const TONAL_TO_DEGREE: Record<string, string> = {
@@ -17,6 +20,14 @@ const TONAL_TO_DEGREE: Record<string, string> = {
 }
 const tonalToDegree = (interval: string) => TONAL_TO_DEGREE[interval] ?? interval
 
+const BOX_SYSTEM_LABELS: Record<BoxSystem, string> = {
+  none:       "All notes",
+  caged:      "CAGED",
+  "3nps":     "3NPS",
+  pentatonic: "Pentatonic boxes",
+  windows:    "Position windows",
+}
+
 interface ScalePanelProps {
   tonic: string
 }
@@ -24,44 +35,57 @@ interface ScalePanelProps {
 export function ScalePanel({ tonic }: ScalePanelProps) {
   const scaleTypes = useMemo(() => listScaleTypes(), [])
   const [scaleType, setScaleType] = useState(scaleTypes[0] ?? "Major")
-  const [positionIndex, setPositionIndex] = useState(0)
-  const [viewMode, setViewMode] = useState<"tab" | "fretboard">("tab")
+  const [viewMode, setViewMode]   = useState<"tab" | "fretboard">("tab")
   const [labelMode, setLabelMode] = useState<"note" | "interval">("interval")
+  const [boxSystem, setBoxSystem] = useState<BoxSystem>("none")
+  const [boxIndex, setBoxIndex]   = useState(0)
+  // Tab view position selector (unchanged from original)
+  const [positionIndex, setPositionIndex] = useState(0)
 
-  const scale = useMemo(
-    () => getScale(tonic, scaleType),
-    [tonic, scaleType]
-  )
+  const scale = useMemo(() => getScale(tonic, scaleType), [tonic, scaleType])
 
-  const positionCount = scale.positions.length
-  const positionOptions = Array.from({ length: positionCount }, (_, i) => i)
+  const availableBoxSystems = useMemo(() => getScaleBoxSystems(scaleType), [scaleType])
 
-  // Reset position when scale changes and current index is out of range
+  const boxCount = useMemo(() => {
+    if (boxSystem === "caged")      return SCALE_PATTERNS[scaleType]?.length ?? 0
+    if (boxSystem === "3nps")       return 7
+    if (boxSystem === "pentatonic") return 5
+    return 0
+  }, [boxSystem, scaleType])
+
+  const safeBoxIndex    = boxIndex < boxCount ? boxIndex : 0
+  const positionCount   = scale.positions.length
   const safePositionIndex = positionIndex < positionCount ? positionIndex : 0
 
   return (
     <div className="space-y-4">
-      {/* Selectors row */}
-      <div className="flex flex-wrap gap-3 items-center">
-        <div className="flex flex-col gap-1">
-          <label className="text-xs text-muted-foreground" htmlFor="scale-type-select">
-            Scale type
-          </label>
-          <select
-            id="scale-type-select"
-            value={scaleType}
-            onChange={(e) => {
-              setScaleType(e.target.value)
-              setPositionIndex(0)
-            }}
-            className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
-          >
-            {scaleTypes.map((t) => (
-              <option key={t} value={t}>{t}</option>
-            ))}
-          </select>
-        </div>
+      {/* Scale type selector */}
+      <div className="flex flex-col gap-1">
+        <label className="text-xs text-muted-foreground" htmlFor="scale-type-select">
+          Scale type
+        </label>
+        <select
+          id="scale-type-select"
+          value={scaleType}
+          onChange={(e) => {
+            const newType = e.target.value
+            setScaleType(newType)
+            setPositionIndex(0)
+            setBoxIndex(0)
+            // Reset box system if no longer available
+            const newSystems = getScaleBoxSystems(newType)
+            if (!newSystems.includes(boxSystem)) setBoxSystem("none")
+          }}
+          className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
+        >
+          {scaleTypes.map((t) => (
+            <option key={t} value={t}>{t}</option>
+          ))}
+        </select>
+      </div>
 
+      {/* Tab position selector — shown only in tab view */}
+      {viewMode === "tab" && (
         <div className="flex flex-col gap-1">
           <label className="text-xs text-muted-foreground" htmlFor="scale-position-select">
             Position
@@ -72,14 +96,14 @@ export function ScalePanel({ tonic }: ScalePanelProps) {
             onChange={(e) => setPositionIndex(Number(e.target.value))}
             className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
           >
-            {positionOptions.map((i) => (
+            {Array.from({ length: positionCount }, (_, i) => (
               <option key={i} value={i}>
                 {scale.positions[i]?.label ?? `Position ${i + 1}`}
               </option>
             ))}
           </select>
         </div>
-      </div>
+      )}
 
       {/* View mode toggle + label mode */}
       <div className="flex items-center gap-4">
@@ -121,18 +145,65 @@ export function ScalePanel({ tonic }: ScalePanelProps) {
         )}
       </div>
 
+      {/* Fretboard box controls — shown only in fretboard view */}
+      {viewMode === "fretboard" && availableBoxSystems.length > 1 && (
+        <div className="flex flex-wrap gap-3 items-end">
+          <div className="flex flex-col gap-1">
+            <label className="text-xs text-muted-foreground" htmlFor="box-system-select">
+              Highlight
+            </label>
+            <select
+              id="box-system-select"
+              value={boxSystem}
+              onChange={(e) => {
+                setBoxSystem(e.target.value as BoxSystem)
+                setBoxIndex(0)
+              }}
+              className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
+            >
+              {availableBoxSystems.map((s) => (
+                <option key={s} value={s}>{BOX_SYSTEM_LABELS[s]}</option>
+              ))}
+            </select>
+          </div>
+
+          {boxSystem !== "none" && boxCount > 0 && (
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-muted-foreground" htmlFor="box-index-select">
+                Box
+              </label>
+              <select
+                id="box-index-select"
+                value={safeBoxIndex}
+                onChange={(e) => setBoxIndex(Number(e.target.value))}
+                className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
+              >
+                {Array.from({ length: boxCount }, (_, i) => (
+                  <option key={i} value={i}>
+                    {boxSystem === "caged"
+                      ? (SCALE_PATTERNS[scaleType]?.[i]?.label ?? `Position ${i + 1}`)
+                      : `Position ${i + 1}`}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Viewer */}
       {viewMode === "tab" ? (
         <TabViewer scale={scale} positionIndex={safePositionIndex} />
       ) : (
         <FretboardViewer
           scale={scale}
-          positionIndex={safePositionIndex}
+          boxSystem={boxSystem}
+          boxIndex={safeBoxIndex}
           labelMode={labelMode}
         />
       )}
 
-      {/* Notes + formula display */}
+      {/* Notes + formula */}
       <div className="text-xs text-muted-foreground space-y-0.5">
         <p>Notes: {scale.notes.join(" – ")}</p>
         <p>Formula: {scale.intervals.map(tonalToDegree).join(" – ")}</p>
