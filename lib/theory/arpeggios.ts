@@ -5,11 +5,11 @@ import type { GuitarScale, ScalePosition, FretPosition } from "@/lib/theory/type
 const OPEN_CHROMA = [4, 9, 2, 7, 11, 4]
 
 const POSITION_WINDOWS = [
-  { label: "Position 1", start: -1, end: 3 },
-  { label: "Position 2", start: 2,  end: 6 },
-  { label: "Position 3", start: 4,  end: 8 },
-  { label: "Position 4", start: 7,  end: 11 },
-  { label: "Position 5", start: 9,  end: 13 },
+  { label: "Position 1 (E shape)", start: -1, end: 3 },
+  { label: "Position 2 (D shape)", start: 2,  end: 6 },
+  { label: "Position 3 (C shape)", start: 4,  end: 8 },
+  { label: "Position 4 (A shape)", start: 7,  end: 11 },
+  { label: "Position 5 (G shape)", start: 9,  end: 13 },
 ]
 
 const INTERVAL_LABEL: Record<string, string> = {

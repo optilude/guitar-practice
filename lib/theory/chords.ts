@@ -9,9 +9,18 @@ const db = guitarDb as any
 // Chord type list — sourced from TonalJS chord types supported by chords-db
 // ---------------------------------------------------------------------------
 const CHORD_TYPES = [
-  "maj7", "maj", "m7", "m", "7", "m7b5", "dim7", "dim",
-  "aug", "sus2", "sus4", "9", "maj9", "m9", "6", "m6",
-  "add9", "madd9", "7sus4",
+  // Major
+  "maj", "6", "maj7", "maj9", "add9",
+  // Minor
+  "m", "m6", "m7", "m9", "madd9",
+  // Dominant
+  "7", "9", "11", "13",
+  // Diminished
+  "dim", "dim7", "m7b5",
+  // Augmented
+  "aug",
+  // Sus
+  "sus2", "sus4", "7sus4",
 ]
 
 export function listChordTypes(): string[] {
