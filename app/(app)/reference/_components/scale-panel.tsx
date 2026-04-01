@@ -136,18 +136,6 @@ export function ScalePanel({ tonic }: ScalePanelProps) {
         </div>
       )}
 
-      {/* Viewer */}
-      {viewMode === "tab" ? (
-        <TabViewer scale={scale} positionIndex={safePositionIndex} />
-      ) : (
-        <FretboardViewer
-          scale={scale}
-          boxSystem={boxSystem}
-          boxIndex={safeBoxIndex}
-          labelMode={labelMode}
-        />
-      )}
-
       {/* Fretboard controls — shown only in fretboard view */}
       {viewMode === "fretboard" && (
         <div className="flex items-end justify-between gap-4">
@@ -208,6 +196,18 @@ export function ScalePanel({ tonic }: ScalePanelProps) {
             Show intervals
           </label>
         </div>
+      )}
+
+      {/* Viewer */}
+      {viewMode === "tab" ? (
+        <TabViewer scale={scale} positionIndex={safePositionIndex} />
+      ) : (
+        <FretboardViewer
+          scale={scale}
+          boxSystem={boxSystem}
+          boxIndex={safeBoxIndex}
+          labelMode={labelMode}
+        />
       )}
     </div>
   )

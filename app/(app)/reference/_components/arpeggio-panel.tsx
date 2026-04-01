@@ -155,19 +155,6 @@ export function ArpeggioPanel({ tonic }: ArpeggioPanelProps) {
         </div>
       )}
 
-      {/* Viewer */}
-      {viewMode === "tab" ? (
-        <TabViewer scale={arpeggio} positionIndex={safePositionIndex} />
-      ) : (
-        <FretboardViewer
-          scale={arpeggio}
-          boxSystem={boxSystem}
-          boxIndex={safeBoxIndex}
-          labelMode={labelMode}
-          boxScaleType={parentScaleType}
-        />
-      )}
-
       {/* Fretboard controls — shown only in fretboard view */}
       {viewMode === "fretboard" && (
         <div className="flex items-end justify-between gap-4">
@@ -228,6 +215,19 @@ export function ArpeggioPanel({ tonic }: ArpeggioPanelProps) {
             Show intervals
           </label>
         </div>
+      )}
+
+      {/* Viewer */}
+      {viewMode === "tab" ? (
+        <TabViewer scale={arpeggio} positionIndex={safePositionIndex} />
+      ) : (
+        <FretboardViewer
+          scale={arpeggio}
+          boxSystem={boxSystem}
+          boxIndex={safeBoxIndex}
+          labelMode={labelMode}
+          boxScaleType={parentScaleType}
+        />
       )}
     </div>
   )

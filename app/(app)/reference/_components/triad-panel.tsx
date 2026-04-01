@@ -158,14 +158,6 @@ export function TriadPanel({ tonic }: TriadPanelProps) {
         <p>Formula: {TRIAD_FORMULA[triadType]}</p>
       </div>
 
-      {/* Fretboard */}
-      <FretboardViewer
-        scale={triadScale}
-        boxSystem="none"
-        boxIndex={0}
-        labelMode={labelMode}
-      />
-
       {/* Label mode toggle */}
       <div className="flex justify-end">
         <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none">
@@ -178,6 +170,14 @@ export function TriadPanel({ tonic }: TriadPanelProps) {
           Show intervals
         </label>
       </div>
+
+      {/* Fretboard */}
+      <FretboardViewer
+        scale={triadScale}
+        boxSystem="none"
+        boxIndex={0}
+        labelMode={labelMode}
+      />
 
       {/* Voicings grouped by string set */}
       {grouped.length === 0 ? (

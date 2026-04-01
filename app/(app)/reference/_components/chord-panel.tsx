@@ -163,15 +163,6 @@ export function ChordPanel({ tonic }: ChordPanelProps) {
         </div>
       )}
 
-      {/* Fretboard */}
-      <FretboardViewer
-        scale={chordScale}
-        boxSystem={boxSystem}
-        boxIndex={safeBoxIndex}
-        labelMode={labelMode}
-        boxScaleType={parentScaleType}
-      />
-
       {/* Fretboard controls */}
       <div className="flex items-end justify-between gap-4">
         <div className="flex flex-wrap gap-3 items-end">
@@ -231,6 +222,15 @@ export function ChordPanel({ tonic }: ChordPanelProps) {
           Show intervals
         </label>
       </div>
+
+      {/* Fretboard */}
+      <FretboardViewer
+        scale={chordScale}
+        boxSystem={boxSystem}
+        boxIndex={safeBoxIndex}
+        labelMode={labelMode}
+        boxScaleType={parentScaleType}
+      />
 
       {positions.length === 0 ? (
         <p className="text-xs text-muted-foreground">No voicings available for this chord type.</p>
