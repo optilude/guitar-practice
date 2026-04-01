@@ -81,10 +81,24 @@ function mapVoicing(pos: any): ChordVoicing {
 
   const barres: number[] = pos.barres ?? []
   if (barres.length > 0) {
-    voicing.barre = {
-      fret: barres[0] + baseFret - 1,
-      fromString: 6,
-      toString: 1,
+    const barreRawFret = barres[0]
+    // Find which array indices have this barre fret (not muted, not open)
+    const participatingIndices = (pos.frets as number[])
+      .map((f: number, i: number) => ({ f, i }))
+      .filter(({ f }) => f === barreRawFret)
+      .map(({ i }) => i)
+
+    if (participatingIndices.length > 0) {
+      const minIdx = Math.min(...participatingIndices)
+      const maxIdx = Math.max(...participatingIndices)
+      // String number = 6 - arrayIndex (frets[0]=low E=string 6, frets[5]=high e=string 1)
+      // fromString = smallest string number (highest pitch = highest array index)
+      // toString  = largest string number (lowest pitch  = lowest array index)
+      voicing.barre = {
+        fret: barreRawFret + baseFret - 1,
+        fromString: 6 - maxIdx,
+        toString: 6 - minIdx,
+      }
     }
     voicing.label = "Barre"
   } else if (baseFret === 1) {
@@ -134,6 +148,14 @@ export function getChord(tonic: string, type: string): GuitarChord {
   }
 }
 
+/**
+ * Generates a drop-2 or drop-3 voicing by lowering the target voice by one octave
+ * (subtracting 12 from its fret value on the same string).
+ *
+ * Note: This can produce negative fret values for low-fret voicings. Consumers should
+ * treat negative frets as "this drop voicing is not physically playable in this key" and
+ * filter them out or display them as unavailable.
+ */
 export function generateDropVoicing(voicing: ChordVoicing, drop: 2 | 3): ChordVoicing {
   const frets = [...voicing.frets]
 
@@ -155,6 +177,7 @@ export function generateDropVoicing(voicing: ChordVoicing, drop: 2 | 3): ChordVo
     ...voicing,
     frets: newFrets,
     fingers: voicing.fingers,
+    barre: undefined, // drop operation invalidates barre layout
     label: `Drop ${drop}`,
   }
 }

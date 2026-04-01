@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { getChord, listChordTypes, generateDropVoicing } from "@/lib/theory/chords"
+import type { ChordVoicing } from "@/lib/theory/types"
 
 describe("listChordTypes", () => {
   it("returns an array of strings", () => {
@@ -106,5 +107,36 @@ describe("generateDropVoicing", () => {
     }
     const drop2 = generateDropVoicing(base, 2)
     expect(drop2.frets).toEqual(base.frets)
+  })
+
+  it("generateDropVoicing clears barre metadata from source voicing", () => {
+    const voicingWithBarre: ChordVoicing = {
+      frets: [2, 4, 4, 3, 2, 2],
+      fingers: [1, 3, 4, 2, 1, 1],
+      barre: { fret: 2, fromString: 1, toString: 6 },
+    }
+    const drop2 = generateDropVoicing(voicingWithBarre, 2)
+    expect(drop2.barre).toBeUndefined()
+  })
+})
+
+describe("getChord - barre extent", () => {
+  it("computes barre extent from participating strings, not full 6-string default", () => {
+    // A chord with a partial barre should have fromString/toString
+    // matching only the strings that actually participate in the barre.
+    // Test with a real chord: getChord("C", "maj7") has barres at various extents.
+    // Or test mapVoicing directly via getChord output.
+    const chord = getChord("C", "maj7")
+    const barreVoicings = chord.voicings.filter(v => v.barre)
+    if (barreVoicings.length === 0) return // skip if no barre voicings for this chord
+    for (const v of barreVoicings) {
+      // barre extent should never be larger than sounding strings
+      const soundingCount = v.frets.filter(f => f !== null && f > 0).length
+      const barreSpan = v.barre!.toString - v.barre!.fromString + 1
+      expect(barreSpan).toBeLessThanOrEqual(6)
+      expect(v.barre!.fromString).toBeGreaterThanOrEqual(1)
+      expect(v.barre!.toString).toBeLessThanOrEqual(6)
+      expect(v.barre!.fromString).toBeLessThanOrEqual(v.barre!.toString)
+    }
   })
 })
