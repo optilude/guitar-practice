@@ -82,11 +82,13 @@ describe("renderTab", () => {
 
   it("does not throw when positionIndex is out of range", () => {
     expect(() => renderTab(container, SCALE, 99)).not.toThrow()
+    expect(mockFormatAndDraw).not.toHaveBeenCalled()
   })
 
   it("does not throw for an empty positions array", () => {
     const emptyScale: GuitarScale = { ...SCALE, positions: [] }
     expect(() => renderTab(container, emptyScale, 0)).not.toThrow()
+    expect(mockFormatAndDraw).not.toHaveBeenCalled()
   })
 
   it("calls FormatAndDraw with notes sorted low-string-first", () => {

@@ -27,15 +27,16 @@ export function renderTab(
 ): void {
   containerEl.innerHTML = ""
 
+  // Guard: early exit for empty/invalid positions
+  const scalePosition = scale.positions[positionIndex]
+  if (!scalePosition || scalePosition.positions.length === 0) return
+
   const renderer = new Renderer(containerEl, Renderer.Backends.SVG)
   renderer.resize(520, 130)
   const context = renderer.getContext()
 
   const stave = new TabStave(10, 10, 490)
   stave.addClef("tab").setContext(context).draw()
-
-  const scalePosition = scale.positions[positionIndex]
-  if (!scalePosition || scalePosition.positions.length === 0) return
 
   // Sort ascending: low strings (6) first, then by fret
   const sorted = [...scalePosition.positions].sort(
