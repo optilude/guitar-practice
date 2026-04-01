@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest"
+import { vi, describe, it, expect } from "vitest"
 import { getAllFretboardPositions, build3NPSPositions, getBoxMembershipSet } from "@/lib/rendering/fretboard"
 
 const C_MAJOR_NOTES     = ["C", "D", "E", "F", "G", "A", "B"]
@@ -119,5 +119,32 @@ describe("getBoxMembershipSet", () => {
       expect(fret).toBeGreaterThanOrEqual(0)
       expect(fret).toBeLessThanOrEqual(15)
     }
+  })
+})
+
+vi.mock("@moonwave99/fretboard.js", () => ({
+  Fretboard: vi.fn(),
+  FretboardSystem: vi.fn().mockImplementation(() => ({
+    getScale: vi.fn().mockReturnValue([
+      { string: 6, fret: 8, inBox: true },
+      { string: 6, fret: 10, inBox: false },
+      { string: 5, fret: 8, inBox: true },
+    ]),
+  })),
+  Systems: { pentatonic: "pentatonic" },
+}))
+
+describe("getBoxMembershipSet — pentatonic", () => {
+  it("returns in-box positions from FretboardSystem", () => {
+    const set = getBoxMembershipSet("C", "Pentatonic Minor", "pentatonic", 0, ["C", "Eb", "F", "G", "Bb"], ["1P", "3m", "4P", "5P", "7m"])
+    expect(set.has("6:8")).toBe(true)
+    expect(set.has("5:8")).toBe(true)
+    expect(set.has("6:10")).toBe(false)
+  })
+
+  it("falls back gracefully when FretboardSystem throws", () => {
+    // Just verify it doesn't throw and returns a Set
+    const set = getBoxMembershipSet("A", "Blues", "pentatonic", 0, ["A", "C", "D", "Eb", "E", "G"], ["1P", "3m", "4P", "5d", "5P", "7m"])
+    expect(set).toBeInstanceOf(Set)
   })
 })

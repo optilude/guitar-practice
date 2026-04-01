@@ -175,7 +175,25 @@ export function getBoxMembershipSet(
     return positions[boxIndex] ?? new Set()
   }
 
-  // "pentatonic" handled in Task 5
+  if (boxSystem === "pentatonic") {
+    const fbType = PENTATONIC_TYPE_MAP[scaleType]
+    if (!fbType) {
+      // No Fretboard.js mapping → fall back to CAGED from SCALE_PATTERNS
+      return getBoxMembershipSet(tonic, scaleType, "caged", boxIndex, scaleNotes, scaleIntervals)
+    }
+    try {
+      const system = new FretboardSystem()
+      const dots = system.getScale({
+        type: fbType,
+        root: tonic,
+        box: { box: boxIndex + 1, system: Systems.pentatonic },
+      }) as Array<{ string: number; fret: number; inBox: boolean }>
+      return new Set(dots.filter(d => d.inBox).map(d => `${d.string}:${d.fret}`))
+    } catch {
+      return getBoxMembershipSet(tonic, scaleType, "caged", boxIndex, scaleNotes, scaleIntervals)
+    }
+  }
+
   return new Set()
 }
 
