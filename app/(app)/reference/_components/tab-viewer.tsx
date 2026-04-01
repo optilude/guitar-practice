@@ -35,7 +35,7 @@ export function TabViewer({ scale, positionIndex }: TabViewerProps) {
     <div className="rounded border border-border bg-card p-2">
       <div
         ref={containerRef}
-        className="w-full overflow-x-auto min-h-[220px]"
+        className="w-full overflow-x-auto"
       />
       <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 px-1">
         {COLOR_KEY.map(({ label, color }) => (
