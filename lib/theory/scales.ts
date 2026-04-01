@@ -1,11 +1,23 @@
 import { Scale, Note } from "tonal"
-import SCALE_PATTERNS from "@/lib/theory/data/scale-patterns"
 import type { GuitarScale, ScalePosition, FretPosition } from "@/lib/theory/types"
 
 // ---------------------------------------------------------------------------
 // Open-string chroma values: index 0 = string 6 (low E), 5 = string 1 (high e)
 // ---------------------------------------------------------------------------
 const OPEN_CHROMA = [4, 9, 2, 7, 11, 4] // low E, A, D, G, B, high e
+
+// ---------------------------------------------------------------------------
+// Position windows: fret offsets relative to rootFret on string 6 (low E).
+// Each window scans all 6 strings for scale notes in that fret range.
+// This generates positions algorithmically — no hardcoded per-note shapes.
+// ---------------------------------------------------------------------------
+const POSITION_WINDOWS = [
+  { label: "Position 1", start: -1, end: 3 },
+  { label: "Position 2", start: 2,  end: 6 },
+  { label: "Position 3", start: 4,  end: 8 },
+  { label: "Position 4", start: 7,  end: 11 },
+  { label: "Position 5", start: 9,  end: 13 },
+]
 
 // ---------------------------------------------------------------------------
 // Interval display labels (TonalJS interval → guitar interval name)
@@ -33,30 +45,6 @@ function rootFretOnLowE(tonic: string): number {
   return ((chroma - OPEN_CHROMA[0] + 12) % 12)
 }
 
-// ---------------------------------------------------------------------------
-// Map TonalJS scale type name → our pattern key
-// ---------------------------------------------------------------------------
-const TONAL_TO_PATTERN: Record<string, string> = {
-  major:                   "Major",
-  ionian:                  "Major",
-  dorian:                  "Dorian",
-  phrygian:                "Phrygian",
-  lydian:                  "Lydian",
-  mixolydian:              "Mixolydian",
-  aeolian:                 "Aeolian",
-  minor:                   "Aeolian",
-  locrian:                 "Locrian",
-  "harmonic minor":        "Harmonic Minor",
-  "melodic minor":         "Melodic Minor",
-  altered:                 "Altered",
-  "major pentatonic":      "Pentatonic Major",
-  "minor pentatonic":      "Pentatonic Minor",
-  blues:                   "Blues",
-  "whole tone":            "Whole Tone",
-  "diminished whole half": "Diminished Whole-Half",
-  "diminished half whole": "Diminished Half-Whole",
-}
-
 // Our display type → TonalJS scale name (for Scale.get())
 const PATTERN_TO_TONAL: Record<string, string> = {
   Major:                   "major",
@@ -78,45 +66,39 @@ const PATTERN_TO_TONAL: Record<string, string> = {
 }
 
 // ---------------------------------------------------------------------------
-// Build fretboard positions from a pattern shape
-// IMPORTANT: Only include fret positions where the note is in the scale.
-// Non-scale notes (due to imperfect pattern data) are skipped.
+// Algorithmically build fretboard positions using fret windows.
+// For each position window, scan every string for scale notes in that range.
 // ---------------------------------------------------------------------------
 function buildPositions(
-  patternKey: string,
   rootFret: number,
   scaleNotes: string[],
   scaleIntervals: string[]
 ): ScalePosition[] {
-  const patterns = SCALE_PATTERNS[patternKey]
-  if (!patterns) return []
-
-  return patterns.map((patternPos) => {
+  return POSITION_WINDOWS.map(({ label, start, end }) => {
+    const minFret = Math.max(0, rootFret + start)
+    const maxFret = rootFret + end
     const fretPositions: FretPosition[] = []
 
-    for (const [guitarString, fretOffset] of patternPos.shape) {
-      const absoluteFret = rootFret + fretOffset
+    for (let guitarString = 6; guitarString >= 1; guitarString--) {
       const stringIndex = 6 - guitarString // 0=str6, 5=str1
-      const openC = OPEN_CHROMA[stringIndex]
-      const noteChroma = (openC + absoluteFret + 1200) % 12 // +1200 keeps result positive when absoluteFret is negative
+      const openChroma = OPEN_CHROMA[stringIndex]
 
-      // Only include notes that are actually in the scale
-      const noteIndex = scaleNotes.findIndex(
-        (n) => Note.chroma(n) === noteChroma
-      )
-      if (noteIndex === -1) continue  // Skip non-scale notes
-
-      fretPositions.push({
-        string: guitarString,
-        fret: absoluteFret,
-        interval: intervalLabel(scaleIntervals[noteIndex]),
-      })
+      for (let fret = minFret; fret <= maxFret; fret++) {
+        const noteChroma = (openChroma + fret) % 12
+        const noteIndex = scaleNotes.findIndex(
+          (n) => Note.chroma(n) === noteChroma
+        )
+        if (noteIndex !== -1) {
+          fretPositions.push({
+            string: guitarString,
+            fret,
+            interval: intervalLabel(scaleIntervals[noteIndex]),
+          })
+        }
+      }
     }
 
-    return {
-      label: patternPos.label,
-      positions: fretPositions,
-    }
+    return { label, positions: fretPositions }
   }).filter((pos) => pos.positions.length > 0)
 }
 
@@ -124,7 +106,7 @@ function buildPositions(
 // Public API
 // ---------------------------------------------------------------------------
 export function listScaleTypes(): string[] {
-  return Object.keys(SCALE_PATTERNS)
+  return Object.keys(PATTERN_TO_TONAL)
 }
 
 export function getScale(
@@ -140,13 +122,8 @@ export function getScale(
   const notes     = scale.notes.length > 0 ? scale.notes : [tonic]
   const intervals = scale.intervals.length > 0 ? scale.intervals : ["1P"]
 
-  // Find pattern key (try display type first, then normalize)
-  const patternKey =
-    SCALE_PATTERNS[type] ? type :
-    TONAL_TO_PATTERN[tonalName] ?? type
-
   const rootFret = rootFretOnLowE(tonic)
-  let positions = buildPositions(patternKey, rootFret, notes, intervals)
+  let positions = buildPositions(rootFret, notes, intervals)
 
   if (positionIndex !== undefined) {
     const clamped = Math.max(0, Math.min(positionIndex, positions.length - 1))

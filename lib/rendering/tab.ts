@@ -42,13 +42,24 @@ export function renderTab(
     (a, b) => b.string - a.string || a.fret - b.fret
   )
 
-  const notes = sorted.map(
-    (p) =>
-      new TabNote({
-        positions: [{ str: p.string, fret: String(p.fret) }],
-        duration: "q",
-      })
-  )
+  // Resolve the accent CSS variable at render time so root notes match the theme.
+  const accentColor =
+    typeof document !== "undefined"
+      ? getComputedStyle(document.documentElement)
+          .getPropertyValue("--accent")
+          .trim() || "#b45309"
+      : "#b45309"
+
+  const notes = sorted.map((p) => {
+    const note = new TabNote({
+      positions: [{ str: p.string, fret: String(p.fret) }],
+      duration: "q",
+    })
+    if (p.interval === "R") {
+      note.setStyle({ fillStyle: accentColor, strokeStyle: accentColor })
+    }
+    return note
+  })
 
   Formatter.FormatAndDraw(context, stave, notes)
 

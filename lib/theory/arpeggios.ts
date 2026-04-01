@@ -1,9 +1,16 @@
 import { Chord, Note } from "tonal"
-import SCALE_PATTERNS from "@/lib/theory/data/scale-patterns"
 import type { GuitarScale, ScalePosition, FretPosition } from "@/lib/theory/types"
 
 // Open-string chroma (index 0 = string 6 low E, 5 = string 1 high e)
 const OPEN_CHROMA = [4, 9, 2, 7, 11, 4]
+
+const POSITION_WINDOWS = [
+  { label: "Position 1", start: -1, end: 3 },
+  { label: "Position 2", start: 2,  end: 6 },
+  { label: "Position 3", start: 4,  end: 8 },
+  { label: "Position 4", start: 7,  end: 11 },
+  { label: "Position 5", start: 9,  end: 13 },
+]
 
 const INTERVAL_LABEL: Record<string, string> = {
   "1P": "R",
@@ -26,7 +33,7 @@ function rootFretOnLowE(tonic: string): number {
 }
 
 // ---------------------------------------------------------------------------
-// Build arpeggio positions by filtering Major scale positions to chord tones
+// Build arpeggio positions algorithmically using fret windows
 // ---------------------------------------------------------------------------
 function buildArpeggioPositions(
   tonic: string,
@@ -35,36 +42,32 @@ function buildArpeggioPositions(
   positionIndex?: number
 ): ScalePosition[] {
   const rootFret = rootFretOnLowE(tonic)
-  const patterns = SCALE_PATTERNS["Major"]
-  if (!patterns) return []
 
-  // Build all positions first, then filter to chord tones
-  const allPositions = patterns.map((patternPos) => {
+  const allPositions = POSITION_WINDOWS.map(({ label, start, end }) => {
+    const minFret = Math.max(0, rootFret + start)
+    const maxFret = rootFret + end
     const fretPositions: FretPosition[] = []
 
-    for (const [guitarString, fretOffset] of patternPos.shape) {
-      const absoluteFret = rootFret + fretOffset
+    for (let guitarString = 6; guitarString >= 1; guitarString--) {
       const stringIndex = 6 - guitarString
-      const openC = OPEN_CHROMA[stringIndex]
-      const noteChroma = (openC + absoluteFret + 1200) % 12 // +1200 keeps result positive when absoluteFret is negative
+      const openChroma = OPEN_CHROMA[stringIndex]
 
-      // Only include if this fret is a chord tone
-      const noteIndex = chordNotes.findIndex(
-        (n) => Note.chroma(n) === noteChroma
-      )
-      if (noteIndex === -1) continue
-
-      fretPositions.push({
-        string: guitarString,
-        fret: absoluteFret,
-        interval: intervalLabel(chordIntervals[noteIndex]),
-      })
+      for (let fret = minFret; fret <= maxFret; fret++) {
+        const noteChroma = (openChroma + fret) % 12
+        const noteIndex = chordNotes.findIndex(
+          (n) => Note.chroma(n) === noteChroma
+        )
+        if (noteIndex !== -1) {
+          fretPositions.push({
+            string: guitarString,
+            fret,
+            interval: intervalLabel(chordIntervals[noteIndex]),
+          })
+        }
+      }
     }
 
-    return {
-      label: patternPos.label,
-      positions: fretPositions,
-    }
+    return { label, positions: fretPositions }
   }).filter((p) => p.positions.length > 0)
 
   // Clamp positionIndex against the filtered positions list (same pattern as scales.ts)
