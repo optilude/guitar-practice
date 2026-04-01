@@ -8,6 +8,18 @@ const MAJOR_KEYS = ["C", "G", "D", "A", "E", "B", "F#", "Db", "Ab", "Eb", "Bb", 
 // Relative minors for each major key (same order)
 const RELATIVE_MINORS = ["Am", "Em", "Bm", "F#m", "C#m", "G#m", "D#m", "Bbm", "Fm", "Cm", "Gm", "Dm"]
 
+// Diatonic chord offset → Roman numeral (relative to any tonic on the circle)
+// The 7 diatonic keys of a major scale occupy offsets 0,1,2,3,4,5 (clockwise) and 11 (counter-clockwise)
+const DIATONIC_ROMAN: Record<number, string> = {
+  0: "I",
+  1: "V",
+  2: "ii",
+  3: "vi",
+  4: "iii",
+  5: "vii°",
+  11: "IV",
+}
+
 // Accidentals for each key, in circle-of-fifths order
 const KEY_ACCIDENTALS: string[][] = [
   [],                                       // C
@@ -62,6 +74,7 @@ export function CircleOfFifths({ selectedKey, onKeySelect }: CircleOfFifthsProps
   }
 
   const sliceAngle = 360 / 12
+  const selectedIdx = MAJOR_KEYS.indexOf(selectedKey)
 
   return (
     <div className="flex justify-center">
@@ -115,6 +128,26 @@ export function CircleOfFifths({ selectedKey, onKeySelect }: CircleOfFifthsProps
               >
                 {key}
               </text>
+
+              {/* Diatonic Roman numeral — inside the outer ring, below the key name */}
+              {(() => {
+                const offset = (i - selectedIdx + 12) % 12
+                const roman = DIATONIC_ROMAN[offset]
+                if (!roman) return null
+                const romanPos = polarToCartesian(midAngle, labelOuterR - 17)
+                return (
+                  <text
+                    x={romanPos.x}
+                    y={romanPos.y}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fontSize={9}
+                    className={isSelected ? "fill-accent-foreground" : "fill-foreground"}
+                  >
+                    {roman}
+                  </text>
+                )
+              })()}
 
               {/* Accidentals outside the outer ring — radius adjusted per angle so
                   the inner text edge stays a consistent ~8px from the ring. */}
