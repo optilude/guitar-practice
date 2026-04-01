@@ -52,6 +52,11 @@ Session logs, streaks, and per-topic completion status (linked to Phase 2 librar
 
 # Known issues
 
+Scales:
+
+* Fretboard viewer is too small
+* Need to find a way to test that they are in fact being rendered correctly
+
 Chords:
 
 * There are reported issues with some of the chord voicings. We might need a better source library and/or renderer than chords-db/react-chord.
@@ -65,13 +70,9 @@ Chords:
 
 # Prompts
 
-## Chromatic scale
+## Chord fretboard viewer
 
-Add the chromanic scale to the scale viewer. The purpose of this, in particular, is to be able to show the intervals for every note on the fretboard relative to a key, as well as showing all the note names.
-
-## Arpeggio viewer
-
-I'd like the chord selector for the arpeggio viewer to be the same as for the chord viewer. If it's impractical to include all chord types, I'm ok to limit them, but they should be in the same groupings and order.
+I'd like to create a fretboard view of chords and separately a fretboard view of triads. The starting point would be the same visualisation as scales and arpeggios. All chord tones (with either note name or intervals) on the fretboard should then be shown on a single fretboard diagram.
 
 ## Start phase 4
 

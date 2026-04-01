@@ -23,6 +23,13 @@ const TONAL_TO_DEGREE: Record<string, string> = {
 }
 const tonalToDegree = (interval: string) => TONAL_TO_DEGREE[interval] ?? interval
 
+// Tonal.js equivalents of the chord panel's COMMON_TYPES, in the same order
+const ARPEGGIO_COMMON_TYPES = ["maj", "maj7", "m", "m7", "7", "9", "dim", "dim7", "m7b5"]
+
+// Display labels to align with chord panel naming
+const CHORD_TYPE_DISPLAY: Record<string, string> = { maj: "major", m: "minor" }
+const displayLabel = (t: string) => CHORD_TYPE_DISPLAY[t] ?? t
+
 const BOX_SYSTEM_LABELS: Record<BoxSystem, string> = {
   none:       "All notes",
   caged:      "CAGED",
@@ -36,7 +43,9 @@ interface ArpeggioPanelProps {
 }
 
 export function ArpeggioPanel({ tonic }: ArpeggioPanelProps) {
-  const chordTypes = useMemo(() => listChordTypes(), [])
+  const chordTypes   = useMemo(() => listChordTypes(), [])
+  const commonTypes  = useMemo(() => ARPEGGIO_COMMON_TYPES.filter(t => chordTypes.includes(t)), [chordTypes])
+  const otherTypes   = useMemo(() => chordTypes.filter(t => !ARPEGGIO_COMMON_TYPES.includes(t)), [chordTypes])
   const [chordType, setChordType] = useState(chordTypes[0] ?? "maj7")
   const [viewMode, setViewMode]   = useState<"tab" | "fretboard">("fretboard")
   const [labelMode, setLabelMode] = useState<"note" | "interval">("interval")
@@ -80,9 +89,16 @@ export function ArpeggioPanel({ tonic }: ArpeggioPanelProps) {
           }}
           className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
         >
-          {chordTypes.map((t) => (
-            <option key={t} value={t}>{t}</option>
-          ))}
+          <optgroup label="Common">
+            {commonTypes.map((t) => (
+              <option key={t} value={t}>{displayLabel(t)}</option>
+            ))}
+          </optgroup>
+          <optgroup label="Other">
+            {otherTypes.map((t) => (
+              <option key={t} value={t}>{displayLabel(t)}</option>
+            ))}
+          </optgroup>
         </select>
       </div>
 

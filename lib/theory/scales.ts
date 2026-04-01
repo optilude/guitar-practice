@@ -61,8 +61,9 @@ const PATTERN_TO_TONAL: Record<string, string> = {
   "Pentatonic Minor":      "minor pentatonic",
   Blues:                   "blues",
   "Whole Tone":            "whole tone",
-  "Diminished Whole-Half": "diminished whole half",
-  "Diminished Half-Whole": "diminished half whole",
+  "Diminished Whole-Half": "diminished",
+  "Diminished Half-Whole": "half-whole diminished",
+  Chromatic:               "chromatic",
 }
 
 // ---------------------------------------------------------------------------

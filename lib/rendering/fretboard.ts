@@ -40,10 +40,10 @@ export type FretboardDot = {
 // Box system availability
 // ---------------------------------------------------------------------------
 const PENTATONIC_SCALE_TYPES = new Set(["Pentatonic Major", "Pentatonic Minor", "Blues"])
-const NO_BOX_SCALE_TYPES     = new Set(["Whole Tone", "Diminished Whole-Half", "Diminished Half-Whole"])
+const NO_BOX_SCALE_TYPES     = new Set(["Whole Tone", "Diminished Whole-Half", "Diminished Half-Whole", "Chromatic"])
 
 const PENTATONIC_TYPE_MAP: Record<string, string> = {
-  "Pentatonic Minor": "pentatonic minor",
+  "Pentatonic Minor": "minor pentatonic",
   "Pentatonic Major": "major pentatonic",
   "Blues":            "minor pentatonic",
 }
