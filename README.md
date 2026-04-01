@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Guitar Practice
 
-## Getting Started
+A personal guitar practice app. Features include:
 
-First, run the development server:
+- **Library** — curated lessons from Hub Guitar, organised by category (technique, music theory, fretboard knowledge, improvisation, sight reading, songs)
+- **Reference** — interactive chord diagrams, scale/arpeggio fretboard views, triad voicings, and shell chord shapes
+- **Practice tracker** — track sessions and progress (in development)
+
+Built with Next.js 16, Tailwind CSS v4, Prisma 7, and PostgreSQL.
+
+---
+
+## Prerequisites
+
+- Node.js 20+
+- pnpm
+- PostgreSQL database
+
+---
+
+## Setup
+
+### 1. Install dependencies
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Configure environment
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Copy the example env file and fill in your database URL:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+cp .env.example .env.local
+# Edit .env.local and set DATABASE_URL=postgresql://...
+```
 
-## Learn More
+### 3. Run database migrations
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+pnpm db:migrate
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 4. Seed the lesson library
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The lesson data comes from the Hub Guitar sitemap, which is committed to the repo at `prisma/tmp/hubguitar-sitemap.xml`.
 
-## Deploy on Vercel
+```bash
+pnpm db:seed
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This imports all Hub Guitar lessons into the database, grouped by category.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 5. Start the dev server
+
+```bash
+pnpm dev
+```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+---
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `pnpm dev` | Start development server |
+| `pnpm build` | Build for production |
+| `pnpm start` | Start production server |
+| `pnpm test` | Run tests in watch mode |
+| `pnpm test:run` | Run tests once |
+| `pnpm lint` | Run ESLint |
+| `pnpm db:migrate` | Apply database migrations |
+| `pnpm db:seed` | Import lessons from `prisma/tmp/hubguitar-sitemap.xml` |
+| `pnpm db:fetch-content` | Re-download sitemap + topic order from Hub Guitar, then re-seed |
+
+---
+
+## Refreshing lesson content
+
+Hub Guitar lessons are seeded from a local snapshot of their sitemap. To pull in new or reordered lessons:
+
+```bash
+pnpm db:fetch-content
+pnpm db:seed
+```
+
+`db:fetch-content` re-downloads the sitemap from `https://hubguitar.com/sitemap.xml` and regenerates `prisma/tmp/topic-order.json` by scraping Hub Guitar's category pages for their curated lesson order.
