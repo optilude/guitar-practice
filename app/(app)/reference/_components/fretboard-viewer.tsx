@@ -2,27 +2,37 @@
 
 import { useEffect, useRef } from "react"
 import { renderFretboard } from "@/lib/rendering/fretboard"
+import type { BoxSystem } from "@/lib/rendering/fretboard"
 import type { GuitarScale } from "@/lib/theory/types"
 
 interface FretboardViewerProps {
   scale: GuitarScale
-  positionIndex: number
+  boxSystem: BoxSystem
+  boxIndex: number
   labelMode: "note" | "interval"
+  boxScaleType?: string  // parent scale type for CAGED/3NPS when showing an arpeggio
 }
 
-export function FretboardViewer({ scale, positionIndex, labelMode }: FretboardViewerProps) {
+export function FretboardViewer({
+  scale,
+  boxSystem,
+  boxIndex,
+  labelMode,
+  boxScaleType,
+}: FretboardViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!containerRef.current) return
     try {
-      renderFretboard(containerRef.current, scale, positionIndex, labelMode)
+      renderFretboard(containerRef.current, scale, boxSystem, boxIndex, labelMode, boxScaleType)
     } catch {
       if (containerRef.current) {
-        containerRef.current.innerHTML = "<p class='text-xs text-muted-foreground'>Diagram unavailable</p>"
+        containerRef.current.innerHTML =
+          "<p class='text-xs text-muted-foreground'>Diagram unavailable</p>"
       }
     }
-  }, [scale, positionIndex, labelMode])
+  }, [scale, boxSystem, boxIndex, labelMode, boxScaleType])
 
   return (
     <div
