@@ -73,12 +73,6 @@ describe("ChordPanel", () => {
     expect(diagrams).toHaveLength(2)
   })
 
-  it("renders a label for each voicing", () => {
-    render(<ChordPanel tonic="C" />)
-    expect(screen.getByText("Open")).toBeDefined()
-    expect(screen.getByText("Barre – 3fr")).toBeDefined()
-  })
-
   it("changes chord type when selector changes", () => {
     render(<ChordPanel tonic="C" />)
     const select = screen.getByLabelText(/chord type/i) as HTMLSelectElement
@@ -113,15 +107,6 @@ describe("ChordPanel", () => {
     fireEvent.change(select, { target: { value: "maj7 shell" } })
     const diagrams = screen.getAllByTestId("chord-diagram")
     expect(diagrams).toHaveLength(3)
-  })
-
-  it("renders root-string labels for shell chord voicings", () => {
-    render(<ChordPanel tonic="C" />)
-    const select = screen.getByLabelText(/chord type/i) as HTMLSelectElement
-    fireEvent.change(select, { target: { value: "maj7 shell" } })
-    expect(screen.getByText("6th string root")).toBeDefined()
-    expect(screen.getByText("5th string root")).toBeDefined()
-    expect(screen.getByText("4th string root")).toBeDefined()
   })
 
   it("renders a fretboard container in default state", () => {

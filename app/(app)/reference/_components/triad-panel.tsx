@@ -183,7 +183,7 @@ export function TriadPanel({ tonic }: TriadPanelProps) {
         <div className="space-y-8">
           {grouped.map(({ stringSet, voicings }) => (
             <div key={stringSet}>
-              <h3 className="text-xs font-medium uppercase tracking-widest text-muted-foreground mb-4">
+              <h3 className="text-xs font-medium tracking-widest text-muted-foreground mb-4">
                 {STRING_SET_LABEL[stringSet] ?? stringSet}
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
