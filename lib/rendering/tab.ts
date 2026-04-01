@@ -15,6 +15,37 @@ const { Renderer, TabStave, TabNote, Formatter } = VexFlow as unknown as {
   Formatter: any
 }
 
+// Chroma values for open strings (index 0 = string 6 low E, index 5 = string 1 high e)
+const OPEN_STRING_CHROMA = [4, 9, 2, 7, 11, 4]
+
+// Note name → chroma for looking up which scale note is at a given fret
+const NOTE_CHROMA: Record<string, number> = {
+  C: 0, "C#": 1, Db: 1, D: 2, "D#": 3, Eb: 3, E: 4, F: 5,
+  "F#": 6, Gb: 6, G: 7, "G#": 8, Ab: 8, A: 9, "A#": 10, Bb: 10, B: 11,
+}
+
+/**
+ * Interval display label → colour category.
+ * Root uses the theme accent (resolved at render time); the others are fixed.
+ */
+export const INTERVAL_DEGREE_COLORS = {
+  third:  "#16a34a", // green-600
+  fifth:  "#2563eb", // blue-600
+  seventh: "#9333ea", // purple-600
+} as const
+
+const THIRD_INTERVALS  = new Set(["3", "b3"])
+const FIFTH_INTERVALS  = new Set(["5", "b5", "#5"])
+const SEVENTH_INTERVALS = new Set(["7", "b7"])
+
+function intervalColor(interval: string, rootColor: string, mutedColor: string): string {
+  if (interval === "R") return rootColor
+  if (THIRD_INTERVALS.has(interval))   return INTERVAL_DEGREE_COLORS.third
+  if (FIFTH_INTERVALS.has(interval))   return INTERVAL_DEGREE_COLORS.fifth
+  if (SEVENTH_INTERVALS.has(interval)) return INTERVAL_DEGREE_COLORS.seventh
+  return mutedColor
+}
+
 /**
  * Renders a single scale position as guitar tablature (ascending) into containerEl.
  * Clears the container first. Safe to call multiple times.
@@ -31,7 +62,7 @@ export function renderTab(
   if (!scalePosition || scalePosition.positions.length === 0) return
 
   const renderer = new Renderer(containerEl, Renderer.Backends.SVG)
-  renderer.resize(520, 160)
+  renderer.resize(520, 220)
   const context = renderer.getContext()
 
   const stave = new TabStave(10, 25, 490)
@@ -42,31 +73,47 @@ export function renderTab(
     (a, b) => b.string - a.string || a.fret - b.fret
   )
 
-  // Resolve the accent CSS variable at render time so root notes match the theme.
-  const accentColor =
-    typeof document !== "undefined"
-      ? getComputedStyle(document.documentElement)
-          .getPropertyValue("--accent")
-          .trim() || "#b45309"
-      : "#b45309"
+  // Resolve theme colours at render time
+  const cs = typeof document !== "undefined" ? getComputedStyle(document.documentElement) : null
+  const accentColor = cs?.getPropertyValue("--accent").trim() || "#b45309"
+  const mutedColor  = cs?.getPropertyValue("--muted-foreground").trim() || "#737373"
 
   const notes = sorted.map((p) => {
     const note = new TabNote({
       positions: [{ str: p.string, fret: String(p.fret) }],
       duration: "q",
     })
-    if (p.interval === "R") {
-      note.setStyle({ fillStyle: accentColor, strokeStyle: accentColor })
-    }
+    const color = intervalColor(p.interval, accentColor, mutedColor)
+    note.setStyle({ fillStyle: color, strokeStyle: color })
     return note
   })
 
   Formatter.FormatAndDraw(context, stave, notes)
 
-  // Auto-crop: set the viewBox to the actual rendered content so VexFlow's
-  // internal top-padding doesn't leave dead whitespace above the stave.
+  // Inject note-name labels and auto-crop in a single SVG pass.
   const svgEl = containerEl.querySelector("svg")
   if (svgEl) {
+    // Note-name labels: fixed baseline just below the stave, x from each note's position.
+    const labelY = stave.getBottomLineBottomY() + 20
+    for (const [i, note] of notes.entries()) {
+      const p = sorted[i]
+      const openChroma = OPEN_STRING_CHROMA[6 - p.string]
+      const noteChroma = (openChroma + p.fret) % 12
+      const noteName = scale.notes.find((n) => (NOTE_CHROMA[n] ?? -1) === noteChroma) ?? ""
+      if (!noteName) continue
+
+      const textEl = document.createElementNS("http://www.w3.org/2000/svg", "text")
+      textEl.setAttribute("x", String(note.getAbsoluteX()))
+      textEl.setAttribute("y", String(labelY))
+      textEl.setAttribute("text-anchor", "middle")
+      textEl.setAttribute("font-size", "8")
+      textEl.setAttribute("font-weight", "300")
+      textEl.setAttribute("fill", intervalColor(p.interval, accentColor, mutedColor))
+      textEl.textContent = noteName
+      svgEl.appendChild(textEl)
+    }
+
+    // Auto-crop: resize viewBox to actual rendered content (includes labels above).
     try {
       const bbox = (svgEl as SVGSVGElement).getBBox()
       const pad = 8

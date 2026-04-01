@@ -1,13 +1,20 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import { renderTab } from "@/lib/rendering/tab"
+import { renderTab, INTERVAL_DEGREE_COLORS } from "@/lib/rendering/tab"
 import type { GuitarScale } from "@/lib/theory/types"
 
 interface TabViewerProps {
   scale: GuitarScale
   positionIndex: number
 }
+
+const COLOR_KEY = [
+  { label: "R",            color: "var(--accent)" },
+  { label: "3 / b3",       color: INTERVAL_DEGREE_COLORS.third },
+  { label: "5 / b5 / ♯5", color: INTERVAL_DEGREE_COLORS.fifth },
+  { label: "7 / b7",       color: INTERVAL_DEGREE_COLORS.seventh },
+]
 
 export function TabViewer({ scale, positionIndex }: TabViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -25,9 +32,19 @@ export function TabViewer({ scale, positionIndex }: TabViewerProps) {
   }, [scale, positionIndex])
 
   return (
-    <div
-      ref={containerRef}
-      className="w-full overflow-x-auto rounded border border-border bg-card p-2 min-h-[160px]"
-    />
+    <div className="rounded border border-border bg-card p-2">
+      <div
+        ref={containerRef}
+        className="w-full overflow-x-auto min-h-[220px]"
+      />
+      <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 px-1">
+        {COLOR_KEY.map(({ label, color }) => (
+          <span key={label} className="flex items-center gap-1 text-xs" style={{ color }}>
+            <span aria-hidden>●</span>
+            {label}
+          </span>
+        ))}
+      </div>
+    </div>
   )
 }
