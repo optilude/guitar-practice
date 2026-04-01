@@ -4,6 +4,12 @@ import { useState, useMemo } from "react"
 import { getArpeggio, listChordTypes } from "@/lib/theory"
 import { TabViewer } from "./tab-viewer"
 import { FretboardViewer } from "./fretboard-viewer"
+import {
+  getArpeggioBoxSystems,
+  CHORD_TYPE_TO_SCALE,
+} from "@/lib/rendering/fretboard"
+import type { BoxSystem } from "@/lib/rendering/fretboard"
+import SCALE_PATTERNS from "@/lib/theory/data/scale-patterns"
 import { cn } from "@/lib/utils"
 
 const TONAL_TO_DEGREE: Record<string, string> = {
@@ -17,6 +23,14 @@ const TONAL_TO_DEGREE: Record<string, string> = {
 }
 const tonalToDegree = (interval: string) => TONAL_TO_DEGREE[interval] ?? interval
 
+const BOX_SYSTEM_LABELS: Record<BoxSystem, string> = {
+  none:       "All notes",
+  caged:      "CAGED",
+  "3nps":     "3NPS",
+  pentatonic: "Pentatonic boxes",
+  windows:    "Position windows",
+}
+
 interface ArpeggioPanelProps {
   tonic: string
 }
@@ -24,42 +38,57 @@ interface ArpeggioPanelProps {
 export function ArpeggioPanel({ tonic }: ArpeggioPanelProps) {
   const chordTypes = useMemo(() => listChordTypes(), [])
   const [chordType, setChordType] = useState(chordTypes[0] ?? "maj7")
-  const [positionIndex, setPositionIndex] = useState(0)
-  const [viewMode, setViewMode] = useState<"tab" | "fretboard">("tab")
+  const [viewMode, setViewMode]   = useState<"tab" | "fretboard">("tab")
   const [labelMode, setLabelMode] = useState<"note" | "interval">("interval")
+  const [boxSystem, setBoxSystem] = useState<BoxSystem>("none")
+  const [boxIndex, setBoxIndex]   = useState(0)
+  const [positionIndex, setPositionIndex] = useState(0)
 
-  const arpeggio = useMemo(
-    () => getArpeggio(tonic, chordType),
-    [tonic, chordType]
-  )
+  const arpeggio = useMemo(() => getArpeggio(tonic, chordType), [tonic, chordType])
 
-  const positionCount = arpeggio.positions.length
-  const positionOptions = Array.from({ length: positionCount }, (_, i) => i)
+  const parentScaleType     = CHORD_TYPE_TO_SCALE[chordType]
+  const availableBoxSystems = useMemo(() => getArpeggioBoxSystems(chordType), [chordType])
+
+  const boxCount = useMemo(() => {
+    if (boxSystem === "caged" && parentScaleType)
+      return SCALE_PATTERNS[parentScaleType]?.length ?? 0
+    if (boxSystem === "3nps")    return 7
+    if (boxSystem === "windows") return arpeggio.positions.length
+    return 0
+  }, [boxSystem, chordType, arpeggio.positions.length, parentScaleType])
+
+  const safeBoxIndex      = boxIndex < boxCount ? boxIndex : 0
+  const positionCount     = arpeggio.positions.length
   const safePositionIndex = positionIndex < positionCount ? positionIndex : 0
 
   return (
     <div className="space-y-4">
-      {/* Selectors row */}
-      <div className="flex flex-wrap gap-3 items-center">
-        <div className="flex flex-col gap-1">
-          <label className="text-xs text-muted-foreground" htmlFor="arpeggio-type-select">
-            Chord type
-          </label>
-          <select
-            id="arpeggio-type-select"
-            value={chordType}
-            onChange={(e) => {
-              setChordType(e.target.value)
-              setPositionIndex(0)
-            }}
-            className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
-          >
-            {chordTypes.map((t) => (
-              <option key={t} value={t}>{t}</option>
-            ))}
-          </select>
-        </div>
+      {/* Chord type selector */}
+      <div className="flex flex-col gap-1">
+        <label className="text-xs text-muted-foreground" htmlFor="arpeggio-type-select">
+          Chord type
+        </label>
+        <select
+          id="arpeggio-type-select"
+          value={chordType}
+          onChange={(e) => {
+            const newType = e.target.value
+            setChordType(newType)
+            setPositionIndex(0)
+            setBoxIndex(0)
+            const newSystems = getArpeggioBoxSystems(newType)
+            if (!newSystems.includes(boxSystem)) setBoxSystem("none")
+          }}
+          className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
+        >
+          {chordTypes.map((t) => (
+            <option key={t} value={t}>{t}</option>
+          ))}
+        </select>
+      </div>
 
+      {/* Tab position selector — shown only in tab view */}
+      {viewMode === "tab" && (
         <div className="flex flex-col gap-1">
           <label className="text-xs text-muted-foreground" htmlFor="arpeggio-position-select">
             Position
@@ -70,14 +99,14 @@ export function ArpeggioPanel({ tonic }: ArpeggioPanelProps) {
             onChange={(e) => setPositionIndex(Number(e.target.value))}
             className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
           >
-            {positionOptions.map((i) => (
+            {Array.from({ length: positionCount }, (_, i) => (
               <option key={i} value={i}>
                 {arpeggio.positions[i]?.label ?? `Position ${i + 1}`}
               </option>
             ))}
           </select>
         </div>
-      </div>
+      )}
 
       {/* View mode toggle + label mode */}
       <div className="flex items-center gap-4">
@@ -119,18 +148,66 @@ export function ArpeggioPanel({ tonic }: ArpeggioPanelProps) {
         )}
       </div>
 
+      {/* Fretboard box controls */}
+      {viewMode === "fretboard" && availableBoxSystems.length > 1 && (
+        <div className="flex flex-wrap gap-3 items-end">
+          <div className="flex flex-col gap-1">
+            <label className="text-xs text-muted-foreground" htmlFor="arp-box-system-select">
+              Highlight
+            </label>
+            <select
+              id="arp-box-system-select"
+              value={boxSystem}
+              onChange={(e) => {
+                setBoxSystem(e.target.value as BoxSystem)
+                setBoxIndex(0)
+              }}
+              className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
+            >
+              {availableBoxSystems.map((s) => (
+                <option key={s} value={s}>{BOX_SYSTEM_LABELS[s]}</option>
+              ))}
+            </select>
+          </div>
+
+          {boxSystem !== "none" && boxCount > 0 && (
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-muted-foreground" htmlFor="arp-box-index-select">
+                Box
+              </label>
+              <select
+                id="arp-box-index-select"
+                value={safeBoxIndex}
+                onChange={(e) => setBoxIndex(Number(e.target.value))}
+                className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
+              >
+                {Array.from({ length: boxCount }, (_, i) => (
+                  <option key={i} value={i}>
+                    {boxSystem === "caged" && parentScaleType
+                      ? (SCALE_PATTERNS[parentScaleType]?.[i]?.label ?? `Position ${i + 1}`)
+                      : `Position ${i + 1}`}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Viewer */}
       {viewMode === "tab" ? (
         <TabViewer scale={arpeggio} positionIndex={safePositionIndex} />
       ) : (
         <FretboardViewer
           scale={arpeggio}
-          positionIndex={safePositionIndex}
+          boxSystem={boxSystem}
+          boxIndex={safeBoxIndex}
           labelMode={labelMode}
+          boxScaleType={parentScaleType}
         />
       )}
 
-      {/* Notes + formula display */}
+      {/* Notes + formula */}
       <div className="text-xs text-muted-foreground space-y-0.5">
         <p>Notes: {arpeggio.notes.join(" – ")}</p>
         <p>Formula: {arpeggio.intervals.map(tonalToDegree).join(" – ")}</p>
