@@ -1,29 +1,40 @@
 import { describe, it, expect, vi } from "vitest"
 import { render, screen, fireEvent } from "@testing-library/react"
 
-// Mock rendering layer
-vi.mock("svguitar", () => ({
-  ChordStyle: { normal: "normal" },
-  SVGuitarChord: class {
-    chord = vi.fn().mockReturnThis()
-    configure = vi.fn().mockReturnThis()
-    draw = vi.fn()
-  },
+// Mock react-chords Chord component (pure SVG, no DOM deps)
+vi.mock("@tombatossals/react-chords/lib/Chord", () => ({
+  default: () => <svg data-testid="chord-diagram" />,
 }))
 
 // Mock theory engine
 vi.mock("@/lib/theory", () => ({
-  listChordTypes: () => ["major", "minor", "dom7", "maj7"],
+  listChordTypes: () => ["maj", "m", "7", "maj7"],
+  listChordDbSuffixes: () => ["major", "minor", "7", "maj7"],
   getChord: (tonic: string, type: string) => ({
     tonic,
     type,
     notes: ["C", "E", "G"],
     intervals: ["1P", "3M", "5P"],
-    voicings: [
-      { frets: [3, 2, 0, 0, 0, 3], fingers: [2, 1, null, null, null, 3], label: "Open" },
-      { frets: [3, 5, 5, 4, 3, 3], fingers: [1, 3, 4, 2, 1, 1], barre: { fret: 3, fromString: 1, toString: 6 }, label: "Barre" },
-    ],
+    voicings: [],
   }),
+  getChordPositions: () => [
+    {
+      frets: [-1, 3, 2, 0, 1, 0],
+      fingers: [0, 3, 2, 0, 1, 0],
+      baseFret: 1,
+      barres: [],
+      capo: false,
+      label: "Open",
+    },
+    {
+      frets: [1, 1, 3, 3, 3, 1],
+      fingers: [1, 1, 2, 3, 4, 1],
+      baseFret: 3,
+      barres: [1],
+      capo: true,
+      label: "Barre – 3fr",
+    },
+  ],
 }))
 
 import { ChordPanel } from "@/app/(app)/reference/_components/chord-panel"
@@ -35,20 +46,24 @@ describe("ChordPanel", () => {
     expect(select).toBeDefined()
     expect(screen.getByRole("option", { name: "major" })).toBeDefined()
     expect(screen.getByRole("option", { name: "minor" })).toBeDefined()
-    expect(screen.getByRole("option", { name: "dom7" })).toBeDefined()
-  })
-
-  it("renders the voicing selector when multiple voicings exist", () => {
-    render(<ChordPanel tonic="C" />)
-    const select = screen.getByLabelText(/voicing/i)
-    expect(select).toBeDefined()
-    expect(screen.getByRole("option", { name: "Open" })).toBeDefined()
-    expect(screen.getByRole("option", { name: "Barre" })).toBeDefined()
+    expect(screen.getByRole("option", { name: "7" })).toBeDefined()
   })
 
   it("shows the notes string", () => {
     render(<ChordPanel tonic="C" />)
     expect(screen.getByText(/Notes: C – E – G/)).toBeDefined()
+  })
+
+  it("renders a diagram for each voicing position", () => {
+    render(<ChordPanel tonic="C" />)
+    const diagrams = screen.getAllByTestId("chord-diagram")
+    expect(diagrams).toHaveLength(2)
+  })
+
+  it("renders a label for each voicing", () => {
+    render(<ChordPanel tonic="C" />)
+    expect(screen.getByText("Open")).toBeDefined()
+    expect(screen.getByText("Barre – 3fr")).toBeDefined()
   })
 
   it("changes chord type when selector changes", () => {
@@ -58,17 +73,8 @@ describe("ChordPanel", () => {
     expect(select.value).toBe("minor")
   })
 
-  it("changes voicing index when voicing selector changes", () => {
+  it("does not render a voicing dropdown", () => {
     render(<ChordPanel tonic="C" />)
-    const select = screen.getByLabelText(/voicing/i) as HTMLSelectElement
-    fireEvent.change(select, { target: { value: "1" } })
-    expect(select.value).toBe("1")
-  })
-
-  it("does not render voicing selector when only one voicing exists", () => {
-    // Since mock always returns 2 voicings, this test verifies the conditional renders correctly
-    // by checking that the voicing select IS rendered (we have 2 voicings in mock).
-    render(<ChordPanel tonic="C" />)
-    expect(screen.queryByLabelText(/voicing/i)).toBeDefined()
+    expect(screen.queryByLabelText(/voicing/i)).toBeNull()
   })
 })

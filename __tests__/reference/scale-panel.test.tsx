@@ -72,8 +72,9 @@ describe("ScalePanel", () => {
     expect(screen.queryByText(/show intervals/i)).toBeNull()
   })
 
-  it("shows interval checkbox in fretboard mode", () => {
+  it("shows interval checkbox in fretboard mode", async () => {
     render(<ScalePanel tonic="C" />)
+    await userEvent.click(screen.getByRole("button", { name: /fretboard/i }))
     expect(screen.getByText(/show intervals/i)).toBeDefined()
   })
 

@@ -18,10 +18,15 @@ vi.mock("svguitar", () => ({
   },
 }))
 
+vi.mock("@tombatossals/react-chords/lib/Chord", () => ({
+  default: () => <svg data-testid="chord-diagram" />,
+}))
+
 // Mock theory engine
 vi.mock("@/lib/theory", () => ({
   listScaleTypes: () => ["Major", "Minor Pentatonic"],
   listChordTypes: () => ["major", "minor", "maj7"],
+  listChordDbSuffixes: () => ["major", "minor", "maj7"],
   getScale: (tonic: string, type: string) => ({
     tonic,
     type,
@@ -34,8 +39,11 @@ vi.mock("@/lib/theory", () => ({
     type,
     notes: ["C", "E", "G"],
     intervals: ["1P", "3M", "5P"],
-    voicings: [{ frets: [3, 2, 0, 0, 0, 3], fingers: [2, 1, null, null, null, 3] }],
+    voicings: [],
   }),
+  getChordPositions: () => [
+    { frets: [-1, 3, 2, 0, 1, 0], fingers: [0, 3, 2, 0, 1, 0], baseFret: 1, barres: [], capo: false, label: "Open" },
+  ],
   getArpeggio: (tonic: string, type: string) => ({
     tonic,
     type,

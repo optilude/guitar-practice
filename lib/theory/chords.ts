@@ -6,7 +6,7 @@ import type { ChordVoicing, GuitarChord } from "@/lib/theory/types"
 const db = guitarDb as any
 
 // ---------------------------------------------------------------------------
-// Chord type list — sourced from TonalJS chord types supported by chords-db
+// Chord type list — sourced from TonalJS chord types for arpeggio panel
 // ---------------------------------------------------------------------------
 const CHORD_TYPES = [
   // Major
@@ -25,6 +25,39 @@ const CHORD_TYPES = [
 
 export function listChordTypes(): string[] {
   return CHORD_TYPES
+}
+
+// ---------------------------------------------------------------------------
+// All chord suffixes available in chords-db across every key (intersection).
+// Ordered to match the C-key listing on tombatossals.github.io/react-chords.
+// Excludes slash chords and key-specific entries (e.g. "7sg").
+// Used by the chord panel to populate the full type dropdown.
+// ---------------------------------------------------------------------------
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const DB_SUFFIXES: string[] = (() => {
+  const keys = Object.keys(db.chords) as string[]
+
+  // Build the intersection: suffixes present in every key
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const intersection = new Set<string>((Object.values(db.chords[keys[0]]) as any[]).map((c) => c.suffix as string))
+  for (const key of keys.slice(1)) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const keySuffixes = new Set<string>((Object.values(db.chords[key]) as any[]).map((c) => c.suffix as string))
+    for (const s of intersection) {
+      if (!keySuffixes.has(s)) intersection.delete(s)
+    }
+  }
+
+  // Return in the order they appear in the C key, filtered to the intersection
+  // and excluding slash chords (start with "/")
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (Object.values(db.chords["C"]) as any[])
+    .map((c) => c.suffix as string)
+    .filter((s) => intersection.has(s) && !s.startsWith("/"))
+})()
+
+export function listChordDbSuffixes(): string[] {
+  return DB_SUFFIXES
 }
 
 // ---------------------------------------------------------------------------
@@ -155,6 +188,48 @@ export function getChord(tonic: string, type: string): GuitarChord {
     intervals,
     voicings,
   }
+}
+
+// ---------------------------------------------------------------------------
+// Raw chord positions for direct use with @tombatossals/react-chords.
+// Passes chords-db data through without transformation; fret values are
+// relative to baseFret (-1 = muted, 0 = open, 1+ = fret within window).
+// ---------------------------------------------------------------------------
+export interface ChordPosition {
+  frets: number[]
+  fingers: number[]
+  baseFret: number
+  barres: number[]
+  capo?: boolean
+  label: string
+}
+
+export function getChordPositions(tonic: string, type: string): ChordPosition[] {
+  const dbKey = TONIC_TO_DB_KEY[tonic]
+  if (!dbKey) return []
+
+  const dbSuffix = TYPE_TO_DB_SUFFIX[type] ?? type
+  const chordsArr = db.chords?.[dbKey]
+  if (!chordsArr) return []
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const chordEntry = Object.values(chordsArr).find((c: any) => c.suffix === dbSuffix) as any
+  if (!chordEntry) return []
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (chordEntry.positions ?? []).map((pos: any) => {
+    const barres: number[] = pos.barres ?? []
+    const isOpen = pos.baseFret === 1 && barres.length === 0
+    const label = isOpen ? "Open" : `Barre – ${pos.baseFret}fr`
+    return {
+      frets: pos.frets,
+      fingers: pos.fingers,
+      baseFret: pos.baseFret ?? 1,
+      barres,
+      capo: pos.capo ?? false,
+      label,
+    }
+  })
 }
 
 /**

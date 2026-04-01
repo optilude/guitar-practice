@@ -26,6 +26,7 @@ vi.mock("vexflow", () => ({
   },
   TabNote: class MockTabNote {
     constructor(public config: unknown) {}
+    setStyle = vi.fn()
   },
   Formatter: {
     FormatAndDraw: mockFormatAndDraw,

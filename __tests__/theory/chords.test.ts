@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { getChord, listChordTypes, generateDropVoicing } from "@/lib/theory/chords"
+import { getChord, listChordTypes, generateDropVoicing, getChordPositions } from "@/lib/theory/chords"
 import type { ChordVoicing } from "@/lib/theory/types"
 
 describe("listChordTypes", () => {
@@ -117,6 +117,48 @@ describe("generateDropVoicing", () => {
     }
     const drop2 = generateDropVoicing(voicingWithBarre, 2)
     expect(drop2.barre).toBeUndefined()
+  })
+})
+
+describe("getChordPositions", () => {
+  it("returns an array of positions for C major", () => {
+    const positions = getChordPositions("C", "maj")
+    expect(Array.isArray(positions)).toBe(true)
+    expect(positions.length).toBeGreaterThan(0)
+  })
+
+  it("each position has the required fields in chords-db format", () => {
+    const positions = getChordPositions("C", "maj")
+    for (const pos of positions) {
+      expect(Array.isArray(pos.frets)).toBe(true)
+      expect(pos.frets).toHaveLength(6)
+      expect(Array.isArray(pos.fingers)).toBe(true)
+      expect(typeof pos.baseFret).toBe("number")
+      expect(Array.isArray(pos.barres)).toBe(true)
+      expect(typeof pos.label).toBe("string")
+    }
+  })
+
+  it("fret values are -1 (muted), 0 (open), or positive integers", () => {
+    const positions = getChordPositions("C", "maj")
+    for (const pos of positions) {
+      for (const f of pos.frets) {
+        expect(f === -1 || f >= 0).toBe(true)
+      }
+    }
+  })
+
+  it("first position label is 'Open' for C major", () => {
+    const positions = getChordPositions("C", "maj")
+    expect(positions[0].label).toBe("Open")
+  })
+
+  it("returns empty array for unknown tonic", () => {
+    expect(getChordPositions("X", "maj")).toHaveLength(0)
+  })
+
+  it("returns empty array for chord type not in chords-db", () => {
+    expect(getChordPositions("C", "nonexistent")).toHaveLength(0)
   })
 })
 

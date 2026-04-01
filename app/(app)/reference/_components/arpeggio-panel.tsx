@@ -6,6 +6,17 @@ import { TabViewer } from "./tab-viewer"
 import { FretboardViewer } from "./fretboard-viewer"
 import { cn } from "@/lib/utils"
 
+const TONAL_TO_DEGREE: Record<string, string> = {
+  "1P": "1",
+  "2m": "b2", "2M": "2", "2A": "#2",
+  "3m": "b3", "3M": "3",
+  "4P": "4", "4A": "#4",
+  "5d": "b5", "5P": "5", "5A": "#5",
+  "6m": "b6", "6M": "6",
+  "7m": "b7", "7M": "7",
+}
+const tonalToDegree = (interval: string) => TONAL_TO_DEGREE[interval] ?? interval
+
 interface ArpeggioPanelProps {
   tonic: string
 }
@@ -119,10 +130,11 @@ export function ArpeggioPanel({ tonic }: ArpeggioPanelProps) {
         />
       )}
 
-      {/* Notes display */}
-      <p className="text-xs text-muted-foreground">
-        Notes: {arpeggio.notes.join(" – ")}
-      </p>
+      {/* Notes + formula display */}
+      <div className="text-xs text-muted-foreground space-y-0.5">
+        <p>Notes: {arpeggio.notes.join(" – ")}</p>
+        <p>Formula: {arpeggio.intervals.map(tonalToDegree).join(" – ")}</p>
+      </div>
     </div>
   )
 }

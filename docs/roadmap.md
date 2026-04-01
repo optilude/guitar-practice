@@ -36,8 +36,20 @@ Session logs, streaks, and per-topic completion status (linked to Phase 2 librar
 
 # Future ideas
 
+* Add shell chords to chord viewer
+* Add triads to chord and arpeggio viewer
+* Add drop-2 and drop-3 voicings (if not already included)
+* Add chromatic scale (to show all intervals)
+
 * Content source / attribution for all links in library
 * Admin UI to manage default links
 * UI to allow users to add their own section to the library (list of links)
+
 * More streaks/gamification features
+
 * Audio recorder for practice
+
+# Resources / notes
+
+* Guitar chords in JSON format: https://github.com/szaza/guitar-chords-db-json
+* Fretboard.js: https://github.com/moonwave99/fretboard.js
