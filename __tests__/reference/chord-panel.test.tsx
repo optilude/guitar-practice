@@ -69,6 +69,7 @@ describe("ChordPanel", () => {
 
   it("renders a diagram for each voicing position", () => {
     render(<ChordPanel tonic="C" />)
+    fireEvent.click(screen.getByRole("button", { name: /fingerings/i }))
     const diagrams = screen.getAllByTestId("chord-diagram")
     expect(diagrams).toHaveLength(2)
   })
@@ -103,6 +104,7 @@ describe("ChordPanel", () => {
 
   it("renders three diagrams for a shell chord type", () => {
     render(<ChordPanel tonic="C" />)
+    fireEvent.click(screen.getByRole("button", { name: /fingerings/i }))
     const select = screen.getByLabelText(/chord type/i) as HTMLSelectElement
     fireEvent.change(select, { target: { value: "maj7 shell" } })
     const diagrams = screen.getAllByTestId("chord-diagram")

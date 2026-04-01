@@ -14,6 +14,7 @@ import {
   CAGED_BOX_LABELS,
 } from "@/lib/rendering/fretboard"
 import type { BoxSystem } from "@/lib/rendering/fretboard"
+import { cn } from "@/lib/utils"
 
 const GUITAR_INSTRUMENT = {
   strings: 6,
@@ -76,6 +77,7 @@ export function ChordPanel({ tonic }: ChordPanelProps) {
     [dbSuffixes],
   )
   const [chordType, setChordType] = useState(COMMON_TYPES[0])
+  const [viewMode, setViewMode]   = useState<"fretboard" | "fingerings">("fretboard")
   const [labelMode, setLabelMode] = useState<"note" | "interval">("interval")
   const [boxSystem, setBoxSystem] = useState<BoxSystem>("none")
   const [boxIndex, setBoxIndex]   = useState(0)
@@ -163,85 +165,117 @@ export function ChordPanel({ tonic }: ChordPanelProps) {
         </div>
       )}
 
-      {/* Fretboard controls */}
-      <div className="flex items-end justify-between gap-4">
-        <div className="flex flex-wrap gap-3 items-end">
-          {availableBoxSystems.length > 1 && (
-            <>
-              <div className="flex flex-col gap-1">
-                <label className="text-xs text-muted-foreground" htmlFor="chord-box-system-select">
-                  Highlight
-                </label>
-                <select
-                  id="chord-box-system-select"
-                  value={boxSystem}
-                  onChange={(e) => {
-                    setBoxSystem(e.target.value as BoxSystem)
-                    setBoxIndex(0)
-                  }}
-                  className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
-                >
-                  {availableBoxSystems.map((s) => (
-                    <option key={s} value={s}>{BOX_SYSTEM_LABELS[s]}</option>
-                  ))}
-                </select>
-              </div>
-
-              {boxSystem !== "none" && boxCount > 0 && (
-                <div className="flex flex-col gap-1">
-                  <label className="text-xs text-muted-foreground" htmlFor="chord-box-index-select">
-                    Box
-                  </label>
-                  <select
-                    id="chord-box-index-select"
-                    value={safeBoxIndex}
-                    onChange={(e) => setBoxIndex(Number(e.target.value))}
-                    className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
-                  >
-                    {Array.from({ length: boxCount }, (_, i) => (
-                      <option key={i} value={i}>
-                        {boxSystem === "caged"
-                          ? `${CAGED_BOX_LABELS[i]} shape`
-                          : `Position ${i + 1}`}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-            </>
+      {/* View mode toggle */}
+      <div className="flex rounded border border-border overflow-hidden text-sm w-fit">
+        <button
+          onClick={() => setViewMode("fretboard")}
+          className={cn(
+            "px-3 py-1.5 transition-colors",
+            viewMode === "fretboard"
+              ? "bg-accent text-accent-foreground"
+              : "bg-card text-muted-foreground hover:bg-muted"
           )}
-        </div>
-
-        <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none">
-          <input
-            type="checkbox"
-            checked={labelMode === "interval"}
-            onChange={(e) => setLabelMode(e.target.checked ? "interval" : "note")}
-            className="accent-accent"
-          />
-          Show intervals
-        </label>
+        >
+          Fretboard
+        </button>
+        <button
+          onClick={() => setViewMode("fingerings")}
+          className={cn(
+            "px-3 py-1.5 transition-colors border-l border-border",
+            viewMode === "fingerings"
+              ? "bg-accent text-accent-foreground"
+              : "bg-card text-muted-foreground hover:bg-muted"
+          )}
+        >
+          Fingerings
+        </button>
       </div>
 
-      {/* Fretboard */}
-      <FretboardViewer
-        scale={chordScale}
-        boxSystem={boxSystem}
-        boxIndex={safeBoxIndex}
-        labelMode={labelMode}
-        boxScaleType={parentScaleType}
-      />
+      {/* Fretboard controls + viewer */}
+      {viewMode === "fretboard" && (
+        <>
+          <div className="flex items-end justify-between gap-4">
+            <div className="flex flex-wrap gap-3 items-end">
+              {availableBoxSystems.length > 1 && (
+                <>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-muted-foreground" htmlFor="chord-box-system-select">
+                      Highlight
+                    </label>
+                    <select
+                      id="chord-box-system-select"
+                      value={boxSystem}
+                      onChange={(e) => {
+                        setBoxSystem(e.target.value as BoxSystem)
+                        setBoxIndex(0)
+                      }}
+                      className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
+                    >
+                      {availableBoxSystems.map((s) => (
+                        <option key={s} value={s}>{BOX_SYSTEM_LABELS[s]}</option>
+                      ))}
+                    </select>
+                  </div>
 
-      {positions.length === 0 ? (
-        <p className="text-xs text-muted-foreground">No voicings available for this chord type.</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {positions.map((pos, i) => (
-            <div key={i} className="flex flex-col items-center gap-1">
-              <Chord chord={pos} instrument={GUITAR_INSTRUMENT} lite={false} />
+                  {boxSystem !== "none" && boxCount > 0 && (
+                    <div className="flex flex-col gap-1">
+                      <label className="text-xs text-muted-foreground" htmlFor="chord-box-index-select">
+                        Box
+                      </label>
+                      <select
+                        id="chord-box-index-select"
+                        value={safeBoxIndex}
+                        onChange={(e) => setBoxIndex(Number(e.target.value))}
+                        className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
+                      >
+                        {Array.from({ length: boxCount }, (_, i) => (
+                          <option key={i} value={i}>
+                            {boxSystem === "caged"
+                              ? `${CAGED_BOX_LABELS[i]} shape`
+                              : `Position ${i + 1}`}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
-          ))}
-        </div>
+
+            <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={labelMode === "interval"}
+                onChange={(e) => setLabelMode(e.target.checked ? "interval" : "note")}
+                className="accent-accent"
+              />
+              Show intervals
+            </label>
+          </div>
+
+          <FretboardViewer
+            scale={chordScale}
+            boxSystem={boxSystem}
+            boxIndex={safeBoxIndex}
+            labelMode={labelMode}
+            boxScaleType={parentScaleType}
+          />
+        </>
+      )}
+
+      {/* Fingerings */}
+      {viewMode === "fingerings" && (
+        positions.length === 0 ? (
+          <p className="text-xs text-muted-foreground">No voicings available for this chord type.</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {positions.map((pos, i) => (
+              <div key={i} className="flex flex-col items-center gap-1">
+                <Chord chord={pos} instrument={GUITAR_INSTRUMENT} lite={false} />
+              </div>
+            ))}
+          </div>
+        )
       )}
     </div>
   )

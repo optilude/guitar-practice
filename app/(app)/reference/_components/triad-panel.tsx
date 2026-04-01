@@ -10,6 +10,7 @@ import {
 } from "@/lib/theory"
 import Chord from "@tombatossals/react-chords/lib/Chord"
 import { FretboardViewer } from "./fretboard-viewer"
+import { cn } from "@/lib/utils"
 
 const GUITAR_INSTRUMENT = {
   strings: 6,
@@ -45,6 +46,7 @@ interface TriadPanelProps {
 
 export function TriadPanel({ tonic }: TriadPanelProps) {
   const [triadType, setTriadType]           = useState<string>("major")
+  const [viewMode, setViewMode]             = useState<"fretboard" | "fingerings">("fretboard")
   const [voicingFilter, setVoicingFilter]   = useState<string>("all")
   const [inversionFilter, setInvFilter]     = useState<string>("all")
   const [stringSetFilter, setStringSetFilter] = useState<string>("all")
@@ -83,73 +85,21 @@ export function TriadPanel({ tonic }: TriadPanelProps) {
 
   return (
     <div className="space-y-4">
-      {/* Filters */}
-      <div className="flex flex-wrap gap-4 items-end">
-        <div className="flex flex-col gap-1">
-          <label className="text-xs text-muted-foreground" htmlFor="triad-type-select">
-            Triad type
-          </label>
-          <select
-            id="triad-type-select"
-            value={triadType}
-            onChange={(e) => setTriadType(e.target.value)}
-            className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
-          >
-            {TRIAD_TYPES.map((t) => (
-              <option key={t} value={t}>{t}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <label className="text-xs text-muted-foreground" htmlFor="triad-voicing-select">
-            Voicing
-          </label>
-          <select
-            id="triad-voicing-select"
-            value={voicingFilter}
-            onChange={(e) => setVoicingFilter(e.target.value)}
-            className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
-          >
-            <option value="all">All</option>
-            <option value="close">Close</option>
-            <option value="open">Open</option>
-          </select>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <label className="text-xs text-muted-foreground" htmlFor="triad-inversion-select">
-            Inversion
-          </label>
-          <select
-            id="triad-inversion-select"
-            value={inversionFilter}
-            onChange={(e) => setInvFilter(e.target.value)}
-            className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
-          >
-            <option value="all">All</option>
-            <option value="root">Root position</option>
-            <option value="first">1st inversion</option>
-            <option value="second">2nd inversion</option>
-          </select>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <label className="text-xs text-muted-foreground" htmlFor="triad-stringset-select">
-            String set
-          </label>
-          <select
-            id="triad-stringset-select"
-            value={stringSetFilter}
-            onChange={(e) => setStringSetFilter(e.target.value)}
-            className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
-          >
-            <option value="all">All</option>
-            {TRIAD_STRING_SETS.map((s) => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-          </select>
-        </div>
+      {/* Triad type selector */}
+      <div className="flex flex-col gap-1">
+        <label className="text-xs text-muted-foreground" htmlFor="triad-type-select">
+          Triad type
+        </label>
+        <select
+          id="triad-type-select"
+          value={triadType}
+          onChange={(e) => setTriadType(e.target.value)}
+          className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
+        >
+          {TRIAD_TYPES.map((t) => (
+            <option key={t} value={t}>{t}</option>
+          ))}
+        </select>
       </div>
 
       {/* Notes + formula */}
@@ -158,48 +108,133 @@ export function TriadPanel({ tonic }: TriadPanelProps) {
         <p>Formula: {TRIAD_FORMULA[triadType]}</p>
       </div>
 
-      {/* Label mode toggle */}
-      <div className="flex justify-end">
-        <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none">
-          <input
-            type="checkbox"
-            checked={labelMode === "interval"}
-            onChange={(e) => setLabelMode(e.target.checked ? "interval" : "note")}
-            className="accent-accent"
-          />
-          Show intervals
-        </label>
+      {/* View mode toggle */}
+      <div className="flex rounded border border-border overflow-hidden text-sm w-fit">
+        <button
+          onClick={() => setViewMode("fretboard")}
+          className={cn(
+            "px-3 py-1.5 transition-colors",
+            viewMode === "fretboard"
+              ? "bg-accent text-accent-foreground"
+              : "bg-card text-muted-foreground hover:bg-muted"
+          )}
+        >
+          Fretboard
+        </button>
+        <button
+          onClick={() => setViewMode("fingerings")}
+          className={cn(
+            "px-3 py-1.5 transition-colors border-l border-border",
+            viewMode === "fingerings"
+              ? "bg-accent text-accent-foreground"
+              : "bg-card text-muted-foreground hover:bg-muted"
+          )}
+        >
+          Fingerings
+        </button>
       </div>
 
-      {/* Fretboard */}
-      <FretboardViewer
-        scale={triadScale}
-        boxSystem="none"
-        boxIndex={0}
-        labelMode={labelMode}
-      />
+      {/* Fretboard view */}
+      {viewMode === "fretboard" && (
+        <>
+          <div className="flex justify-end">
+            <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={labelMode === "interval"}
+                onChange={(e) => setLabelMode(e.target.checked ? "interval" : "note")}
+                className="accent-accent"
+              />
+              Show intervals
+            </label>
+          </div>
 
-      {/* Voicings grouped by string set */}
-      {grouped.length === 0 ? (
-        <p className="text-xs text-muted-foreground">No voicings match the current filters.</p>
-      ) : (
-        <div className="space-y-8">
-          {grouped.map(({ stringSet, voicings }) => (
-            <div key={stringSet}>
-              <h3 className="text-xs font-medium tracking-widest text-muted-foreground mb-4">
-                {STRING_SET_LABEL[stringSet] ?? stringSet}
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {voicings.map((pos, i) => (
-                  <div key={i} className="flex flex-col items-center gap-1">
-                    <span className="text-xs text-muted-foreground">{pos.label}</span>
-                    <Chord chord={pos} instrument={GUITAR_INSTRUMENT} lite={false} />
-                  </div>
-                ))}
-              </div>
+          <FretboardViewer
+            scale={triadScale}
+            boxSystem="none"
+            boxIndex={0}
+            labelMode={labelMode}
+          />
+        </>
+      )}
+
+      {/* Fingerings view */}
+      {viewMode === "fingerings" && (
+        <>
+          <div className="flex flex-wrap gap-4 items-end">
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-muted-foreground" htmlFor="triad-voicing-select">
+                Voicing
+              </label>
+              <select
+                id="triad-voicing-select"
+                value={voicingFilter}
+                onChange={(e) => setVoicingFilter(e.target.value)}
+                className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
+              >
+                <option value="all">All</option>
+                <option value="close">Close</option>
+                <option value="open">Open</option>
+              </select>
             </div>
-          ))}
-        </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-muted-foreground" htmlFor="triad-inversion-select">
+                Inversion
+              </label>
+              <select
+                id="triad-inversion-select"
+                value={inversionFilter}
+                onChange={(e) => setInvFilter(e.target.value)}
+                className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
+              >
+                <option value="all">All</option>
+                <option value="root">Root position</option>
+                <option value="first">1st inversion</option>
+                <option value="second">2nd inversion</option>
+              </select>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-muted-foreground" htmlFor="triad-stringset-select">
+                String set
+              </label>
+              <select
+                id="triad-stringset-select"
+                value={stringSetFilter}
+                onChange={(e) => setStringSetFilter(e.target.value)}
+                className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
+              >
+                <option value="all">All</option>
+                {TRIAD_STRING_SETS.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {grouped.length === 0 ? (
+            <p className="text-xs text-muted-foreground">No voicings match the current filters.</p>
+          ) : (
+            <div className="space-y-8">
+              {grouped.map(({ stringSet, voicings }) => (
+                <div key={stringSet}>
+                  <h3 className="text-xs font-medium tracking-widest text-muted-foreground mb-4">
+                    {STRING_SET_LABEL[stringSet] ?? stringSet}
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {voicings.map((pos, i) => (
+                      <div key={i} className="flex flex-col items-center gap-1">
+                        <span className="text-xs text-muted-foreground">{pos.label}</span>
+                        <Chord chord={pos} instrument={GUITAR_INSTRUMENT} lite={false} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   )

@@ -81,6 +81,7 @@ describe("TriadPanel", () => {
 
   it("renders the voicing, inversion, and string set filter selectors", () => {
     render(<TriadPanel tonic="C" />)
+    fireEvent.click(screen.getByRole("button", { name: /fingerings/i }))
     expect(screen.getByLabelText(/voicing/i)).toBeDefined()
     expect(screen.getByLabelText(/inversion/i)).toBeDefined()
     expect(screen.getByLabelText(/string set/i)).toBeDefined()
@@ -93,12 +94,14 @@ describe("TriadPanel", () => {
 
   it("renders a chord diagram for each voicing", () => {
     render(<TriadPanel tonic="C" />)
+    fireEvent.click(screen.getByRole("button", { name: /fingerings/i }))
     const diagrams = screen.getAllByTestId("chord-diagram")
     expect(diagrams).toHaveLength(3)
   })
 
   it("renders inversion labels", () => {
     render(<TriadPanel tonic="C" />)
+    fireEvent.click(screen.getByRole("button", { name: /fingerings/i }))
     // Labels appear in both select options and voicing spans — at least 2 occurrences each
     expect(screen.getAllByText("Root position").length).toBeGreaterThanOrEqual(2)
     expect(screen.getAllByText("1st inversion").length).toBeGreaterThanOrEqual(2)
@@ -107,6 +110,7 @@ describe("TriadPanel", () => {
 
   it("renders string-set section headings", () => {
     render(<TriadPanel tonic="C" />)
+    fireEvent.click(screen.getByRole("button", { name: /fingerings/i }))
     // Each string set appears in both the select dropdown and the section heading
     expect(screen.getAllByText(/6-5-4/).length).toBeGreaterThanOrEqual(2)
     expect(screen.getAllByText(/5-4-3/).length).toBeGreaterThanOrEqual(2)
@@ -115,8 +119,7 @@ describe("TriadPanel", () => {
 
   it("shows no-voicings message when all voicings are filtered out", () => {
     render(<TriadPanel tonic="C" />)
-    const invSelect = screen.getByLabelText(/inversion/i) as HTMLSelectElement
-    // Filter to a combination that yields no results in the mock
+    fireEvent.click(screen.getByRole("button", { name: /fingerings/i }))
     const voicingSelect = screen.getByLabelText(/voicing/i) as HTMLSelectElement
     fireEvent.change(voicingSelect, { target: { value: "open" } })
     expect(screen.getByText(/no voicings match/i)).toBeDefined()
@@ -133,6 +136,7 @@ describe("TriadPanel", () => {
 
   it("changes inversion filter", () => {
     render(<TriadPanel tonic="C" />)
+    fireEvent.click(screen.getByRole("button", { name: /fingerings/i }))
     const select = screen.getByLabelText(/inversion/i) as HTMLSelectElement
     fireEvent.change(select, { target: { value: "root" } })
     expect(select.value).toBe("root")
