@@ -1,4 +1,6 @@
 import type { ChordPosition } from "./chords"
+import type { GuitarScale } from "@/lib/theory/types"
+import { getArpeggio } from "@/lib/theory/arpeggios"
 import rawTriads from "@/data/triads.json"
 
 // ---------------------------------------------------------------------------
@@ -153,3 +155,23 @@ export function getTriadVoicings(tonic: string, type: string): TriadVoicing[] {
  * All string sets in canonical display order.
  */
 export const TRIAD_STRING_SETS: readonly string[] = STRING_SET_ORDER
+
+// ---------------------------------------------------------------------------
+// Mapping from triad type display strings to tonal.js chord symbols.
+// ---------------------------------------------------------------------------
+const TRIAD_TO_TONAL: Record<string, string> = {
+  major:      "maj",
+  minor:      "m",
+  diminished: "dim",
+  augmented:  "aug",
+}
+
+/**
+ * Returns a GuitarScale containing all positions of a triad's tones across
+ * the full fretboard. Accepts the same type strings as TRIAD_TYPES
+ * ("major", "minor", "diminished", "augmented").
+ */
+export function getTriadAsScale(tonic: string, type: string): GuitarScale {
+  const tonalSym = TRIAD_TO_TONAL[type] ?? type
+  return getArpeggio(tonic, tonalSym)
+}
