@@ -206,7 +206,96 @@ export function renderFretboard(
   boxSystem: BoxSystem,
   boxIndex: number,
   labelMode: "note" | "interval",
-  boxScaleType?: string
+  boxScaleType?: string   // for arpeggios: parent scale type for CAGED/3NPS lookup
 ): void {
-  containerEl.innerHTML = "<p class='text-xs text-muted-foreground'>Fretboard coming soon</p>"
+  containerEl.innerHTML = ""
+
+  // Resolve CSS custom properties (theme colours)
+  const cs = typeof document !== "undefined" ? getComputedStyle(document.documentElement) : null
+  const accentColor = cs?.getPropertyValue("--accent").trim() || "#b45309"
+  const mutedColor  = cs?.getPropertyValue("--muted-foreground").trim() || "#737373"
+
+  // Compute all positions of scale/arpeggio notes across the full fretboard
+  const baseDots = getAllFretboardPositions(scale.tonic, scale.notes, scale.intervals)
+
+  // Determine box membership
+  let inBoxSet: Set<string>
+  if (boxSystem === "windows") {
+    // Arpeggios only: use the pre-computed position windows from GuitarScale.positions
+    const windowPos = scale.positions[boxIndex]?.positions ?? []
+    inBoxSet = new Set(windowPos.map(p => `${p.string}:${p.fret}`))
+  } else {
+    // For CAGED/3NPS, use boxScaleType if provided (e.g., parent scale for arpeggio)
+    const lookupScaleType = boxScaleType ?? scale.type
+    inBoxSet = getBoxMembershipSet(
+      scale.tonic, lookupScaleType, boxSystem, boxIndex, scale.notes, scale.intervals
+    )
+  }
+
+  const hasBox = boxSystem !== "none"
+
+  // Attach inBox and label to each dot
+  const dots = baseDots.map(d => ({
+    ...d,
+    inBox: hasBox ? inBoxSet.has(`${d.string}:${d.fret}`) : true,
+    label: labelMode === "interval" ? d.interval : d.note,
+  }))
+
+  // Create Fretboard instance
+  // D3's select() accepts both CSS selectors and DOM elements
+  const fretboard = new (Fretboard as any)({
+    el: containerEl,
+    fretCount: 15,
+    dotText: (d: any) => d.label,
+    showFretNumbers: true,
+  })
+
+  fretboard.setDots(dots)
+
+  // Style out-of-box dots first (dimmed grey)
+  fretboard.style({
+    filter: (d: any) => !d.inBox,
+    fill: "#aaaaaa",
+    stroke: "#aaaaaa",
+    fontFill: "#aaaaaa",
+    opacity: 0.25,
+  })
+
+  // Style in-box dots by interval degree (applied after dimming — overrides)
+  const inBox = (d: any) => d.inBox
+
+  fretboard
+    .style({
+      filter: (d: any) => inBox(d) && d.interval === "R",
+      fill: accentColor,
+      stroke: accentColor,
+      fontFill: "#ffffff",
+    })
+    .style({
+      filter: (d: any) => inBox(d) && (d.interval === "3" || d.interval === "b3"),
+      fill: INTERVAL_DEGREE_COLORS.third,
+      stroke: INTERVAL_DEGREE_COLORS.third,
+      fontFill: "#ffffff",
+    })
+    .style({
+      filter: (d: any) => inBox(d) && (d.interval === "5" || d.interval === "b5" || d.interval === "#5"),
+      fill: INTERVAL_DEGREE_COLORS.fifth,
+      stroke: INTERVAL_DEGREE_COLORS.fifth,
+      fontFill: "#ffffff",
+    })
+    .style({
+      filter: (d: any) => inBox(d) && (d.interval === "7" || d.interval === "b7"),
+      fill: INTERVAL_DEGREE_COLORS.seventh,
+      stroke: INTERVAL_DEGREE_COLORS.seventh,
+      fontFill: "#ffffff",
+    })
+    .style({
+      // All other in-box intervals (2, b2, 4, #4, 6, b6, etc.)
+      filter: (d: any) => inBox(d) && !["R","3","b3","5","b5","#5","7","b7"].includes(d.interval),
+      fill: mutedColor,
+      stroke: mutedColor,
+      fontFill: "#ffffff",
+    })
+
+  fretboard.render()
 }
