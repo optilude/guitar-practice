@@ -20,6 +20,16 @@ vi.mock("svguitar", () => ({
 // Mock theory engine
 vi.mock("@/lib/theory", () => ({
   listChordTypes: () => ["maj7", "m7", "dom7"],
+  getScale: (_tonic: string, _type: string) => ({
+    tonic: _tonic,
+    type: _type,
+    notes: ["C", "D", "E", "F", "G", "A", "B"],
+    intervals: ["1P", "2M", "3M", "4P", "5P", "6M", "7M"],
+    positions: [
+      { label: "Position 1 (E shape)", positions: [] },
+      { label: "Position 2 (D shape)", positions: [] },
+    ],
+  }),
   getArpeggio: (tonic: string, type: string) => ({
     tonic,
     type,

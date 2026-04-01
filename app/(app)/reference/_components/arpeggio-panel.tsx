@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { getArpeggio, listChordTypes } from "@/lib/theory"
+import { getArpeggio, listChordTypes, getScale } from "@/lib/theory"
 import { TabViewer } from "./tab-viewer"
 import { FretboardViewer } from "./fretboard-viewer"
 import {
@@ -9,7 +9,6 @@ import {
   CHORD_TYPE_TO_SCALE,
 } from "@/lib/rendering/fretboard"
 import type { BoxSystem } from "@/lib/rendering/fretboard"
-import SCALE_PATTERNS from "@/lib/theory/data/scale-patterns"
 import { cn } from "@/lib/utils"
 
 const TONAL_TO_DEGREE: Record<string, string> = {
@@ -49,13 +48,17 @@ export function ArpeggioPanel({ tonic }: ArpeggioPanelProps) {
   const parentScaleType     = CHORD_TYPE_TO_SCALE[chordType]
   const availableBoxSystems = useMemo(() => getArpeggioBoxSystems(chordType), [chordType])
 
+  const parentScale = useMemo(
+    () => parentScaleType ? getScale(tonic, parentScaleType) : null,
+    [tonic, parentScaleType]
+  )
+
   const boxCount = useMemo(() => {
-    if (boxSystem === "caged" && parentScaleType)
-      return SCALE_PATTERNS[parentScaleType]?.length ?? 0
+    if (boxSystem === "caged")   return parentScale?.positions.length ?? 0
     if (boxSystem === "3nps")    return 7
     if (boxSystem === "windows") return arpeggio.positions.length
     return 0
-  }, [boxSystem, chordType, arpeggio.positions.length, parentScaleType])
+  }, [boxSystem, parentScale, arpeggio.positions.length])
 
   const safeBoxIndex      = boxIndex < boxCount ? boxIndex : 0
   const positionCount     = arpeggio.positions.length
@@ -183,8 +186,8 @@ export function ArpeggioPanel({ tonic }: ArpeggioPanelProps) {
               >
                 {Array.from({ length: boxCount }, (_, i) => (
                   <option key={i} value={i}>
-                    {boxSystem === "caged" && parentScaleType
-                      ? (SCALE_PATTERNS[parentScaleType]?.[i]?.label ?? `Position ${i + 1}`)
+                    {boxSystem === "caged" && parentScale
+                      ? (parentScale.positions[i]?.label ?? `Position ${i + 1}`)
                       : `Position ${i + 1}`}
                   </option>
                 ))}

@@ -225,11 +225,16 @@ export function renderFretboard(
     // Arpeggios only: use the pre-computed position windows from GuitarScale.positions
     const windowPos = scale.positions[boxIndex]?.positions ?? []
     inBoxSet = new Set(windowPos.map(p => `${p.string}:${p.fret}`))
+  } else if (boxSystem === "caged") {
+    // Use the same algorithmic position windows as the tab view (SCALE_PATTERNS
+    // shapes have incorrect fretOffsets and are not reliable for box membership).
+    // For arpeggios, resolve the parent scale so its position windows are used.
+    const sourceScale = boxScaleType ? getScale(scale.tonic, boxScaleType) : scale
+    const boxPositions = sourceScale.positions[boxIndex]?.positions ?? []
+    inBoxSet = new Set(boxPositions.map(p => `${p.string}:${p.fret}`))
   } else {
-    // For CAGED/3NPS, use boxScaleType if provided (e.g., parent scale for arpeggio)
+    // 3NPS / pentatonic
     const lookupScaleType = boxScaleType ?? scale.type
-    // 3NPS requires 7-note scale data. When showing an arpeggio box,
-    // resolve the parent scale's notes so build3NPSPositions gets a full scale.
     let boxNotes = scale.notes
     let boxIntervals = scale.intervals
     if (boxSystem === "3nps" && boxScaleType) {

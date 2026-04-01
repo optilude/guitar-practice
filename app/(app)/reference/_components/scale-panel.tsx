@@ -6,7 +6,6 @@ import { TabViewer } from "./tab-viewer"
 import { FretboardViewer } from "./fretboard-viewer"
 import { getScaleBoxSystems } from "@/lib/rendering/fretboard"
 import type { BoxSystem } from "@/lib/rendering/fretboard"
-import SCALE_PATTERNS from "@/lib/theory/data/scale-patterns"
 import { cn } from "@/lib/utils"
 
 const TONAL_TO_DEGREE: Record<string, string> = {
@@ -47,11 +46,11 @@ export function ScalePanel({ tonic }: ScalePanelProps) {
   const availableBoxSystems = useMemo(() => getScaleBoxSystems(scaleType), [scaleType])
 
   const boxCount = useMemo(() => {
-    if (boxSystem === "caged")      return SCALE_PATTERNS[scaleType]?.length ?? 0
+    if (boxSystem === "caged")      return scale.positions.length
     if (boxSystem === "3nps")       return 7
     if (boxSystem === "pentatonic") return 5
     return 0
-  }, [boxSystem, scaleType])
+  }, [boxSystem, scale.positions.length])
 
   const safeBoxIndex    = boxIndex < boxCount ? boxIndex : 0
   const positionCount   = scale.positions.length
@@ -181,7 +180,7 @@ export function ScalePanel({ tonic }: ScalePanelProps) {
                 {Array.from({ length: boxCount }, (_, i) => (
                   <option key={i} value={i}>
                     {boxSystem === "caged"
-                      ? (SCALE_PATTERNS[scaleType]?.[i]?.label ?? `Position ${i + 1}`)
+                      ? (scale.positions[i]?.label ?? `Position ${i + 1}`)
                       : `Position ${i + 1}`}
                   </option>
                 ))}
