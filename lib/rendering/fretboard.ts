@@ -262,6 +262,10 @@ export function renderFretboard(
 
   fretboard.setDots(dots)
 
+  // render() must come BEFORE style() — style() applies immediately to existing
+  // DOM elements (.dot-circle / .dot-text); calling it before render() selects nothing.
+  fretboard.render()
+
   // Style out-of-box dots first (dimmed grey)
   fretboard.style({
     filter: (d: any) => !d.inBox,
@@ -271,32 +275,39 @@ export function renderFretboard(
     opacity: 0.25,
   })
 
-  // Style in-box dots by interval degree (applied after dimming — overrides)
+  // Style in-box dots by interval degree (overrides dimming for in-box dots)
   const inBox = (d: any) => d.inBox
+
+  // dotLabel: re-supply the text so fontFill is honoured (fontFill requires text in style())
+  const dotLabel = (d: any) => d.label
 
   fretboard
     .style({
       filter: (d: any) => inBox(d) && d.interval === "R",
       fill: accentColor,
       stroke: accentColor,
+      text: dotLabel,
       fontFill: "#ffffff",
     })
     .style({
       filter: (d: any) => inBox(d) && (d.interval === "3" || d.interval === "b3"),
       fill: INTERVAL_DEGREE_COLORS.third,
       stroke: INTERVAL_DEGREE_COLORS.third,
+      text: dotLabel,
       fontFill: "#ffffff",
     })
     .style({
       filter: (d: any) => inBox(d) && (d.interval === "5" || d.interval === "b5" || d.interval === "#5"),
       fill: INTERVAL_DEGREE_COLORS.fifth,
       stroke: INTERVAL_DEGREE_COLORS.fifth,
+      text: dotLabel,
       fontFill: "#ffffff",
     })
     .style({
       filter: (d: any) => inBox(d) && (d.interval === "7" || d.interval === "b7"),
       fill: INTERVAL_DEGREE_COLORS.seventh,
       stroke: INTERVAL_DEGREE_COLORS.seventh,
+      text: dotLabel,
       fontFill: "#ffffff",
     })
     .style({
@@ -304,8 +315,7 @@ export function renderFretboard(
       filter: (d: any) => inBox(d) && !["R","3","b3","5","b5","#5","7","b7"].includes(d.interval),
       fill: mutedColor,
       stroke: mutedColor,
+      text: dotLabel,
       fontFill: "#ffffff",
     })
-
-  fretboard.render()
 }
