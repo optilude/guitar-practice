@@ -49,7 +49,17 @@ Session logs, streaks, and per-topic completion status (linked to Phase 2 librar
 
 * Audio recorder for practice
 
+* Better account management (at least change + reset password) – consider moving to OAuth
+
 # Resources / notes
 
 * Guitar chords in JSON format: https://github.com/szaza/guitar-chords-db-json
 * Fretboard.js: https://github.com/moonwave99/fretboard.js
+
+# Prompt
+
+I've noticed that on some chord types, the "Notes" list underneath the selector shows only the root, not all the notes.
+
+This is happening on: alt, aug9, maj7b5,  maj11,  mmaj7, mmaj7b5, mmaj9, mmaj11
+
+Please fix this. Please also add a "Formula: " line underneath the "Notes: " line that shows the relevant degrees of the major scale for each chord formula. 

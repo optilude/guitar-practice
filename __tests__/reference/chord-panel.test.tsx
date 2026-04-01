@@ -10,6 +10,7 @@ vi.mock("@tombatossals/react-chords/lib/Chord", () => ({
 vi.mock("@/lib/theory", () => ({
   listChordTypes: () => ["maj", "m", "7", "maj7"],
   listChordDbSuffixes: () => ["major", "minor", "7", "maj7"],
+  SHELL_CHORD_TYPES: ["maj7 shell", "m7 shell", "7 shell", "maj6 shell", "dim7/m6 shell"],
   getChord: (tonic: string, type: string) => ({
     tonic,
     type,
@@ -34,6 +35,11 @@ vi.mock("@/lib/theory", () => ({
       capo: true,
       label: "Barre – 3fr",
     },
+  ],
+  getShellChordPositions: () => [
+    { frets: [2, 1, 3, -1, -1, -1], fingers: [0, 0, 0, 0, 0, 0], baseFret: 7, barres: [], capo: false, label: "6th string root" },
+    { frets: [-1, 2, 1, 3, -1, -1], fingers: [0, 0, 0, 0, 0, 0], baseFret: 2, barres: [], capo: false, label: "5th string root" },
+    { frets: [-1, -1, 2, 1, 4, -1], fingers: [0, 0, 0, 0, 0, 0], baseFret: 9, barres: [], capo: false, label: "4th string root" },
   ],
 }))
 
@@ -76,5 +82,38 @@ describe("ChordPanel", () => {
   it("does not render a voicing dropdown", () => {
     render(<ChordPanel tonic="C" />)
     expect(screen.queryByLabelText(/voicing/i)).toBeNull()
+  })
+
+  it("renders shell chord type options in the selector", () => {
+    render(<ChordPanel tonic="C" />)
+    expect(screen.getByRole("option", { name: "maj7 shell" })).toBeDefined()
+    expect(screen.getByRole("option", { name: "m7 shell" })).toBeDefined()
+    expect(screen.getByRole("option", { name: "7 shell" })).toBeDefined()
+    expect(screen.getByRole("option", { name: "maj6 shell" })).toBeDefined()
+    expect(screen.getByRole("option", { name: "dim7/m6 shell" })).toBeDefined()
+  })
+
+  it("shows formula when a shell chord type is selected", () => {
+    render(<ChordPanel tonic="C" />)
+    const select = screen.getByLabelText(/chord type/i) as HTMLSelectElement
+    fireEvent.change(select, { target: { value: "maj7 shell" } })
+    expect(screen.getByText(/Formula: 1 – 3 – 7/)).toBeDefined()
+  })
+
+  it("renders three diagrams for a shell chord type", () => {
+    render(<ChordPanel tonic="C" />)
+    const select = screen.getByLabelText(/chord type/i) as HTMLSelectElement
+    fireEvent.change(select, { target: { value: "maj7 shell" } })
+    const diagrams = screen.getAllByTestId("chord-diagram")
+    expect(diagrams).toHaveLength(3)
+  })
+
+  it("renders root-string labels for shell chord voicings", () => {
+    render(<ChordPanel tonic="C" />)
+    const select = screen.getByLabelText(/chord type/i) as HTMLSelectElement
+    fireEvent.change(select, { target: { value: "maj7 shell" } })
+    expect(screen.getByText("6th string root")).toBeDefined()
+    expect(screen.getByText("5th string root")).toBeDefined()
+    expect(screen.getByText("4th string root")).toBeDefined()
   })
 })

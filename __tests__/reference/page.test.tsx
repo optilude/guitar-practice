@@ -27,6 +27,8 @@ vi.mock("@/lib/theory", () => ({
   listScaleTypes: () => ["Major", "Minor Pentatonic"],
   listChordTypes: () => ["major", "minor", "maj7"],
   listChordDbSuffixes: () => ["major", "minor", "maj7"],
+  SHELL_CHORD_TYPES: ["maj7 shell", "m7 shell", "7 shell", "maj6 shell", "dim7/m6 shell"],
+  getShellChordPositions: () => [],
   getScale: (tonic: string, type: string) => ({
     tonic,
     type,
