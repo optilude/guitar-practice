@@ -84,7 +84,7 @@ export function ChordPanel({ tonic }: ChordPanelProps) {
       {positions.length === 0 ? (
         <p className="text-xs text-muted-foreground">No voicings available for this chord type.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {positions.map((pos, i) => (
             <div key={i} className="flex flex-col items-center gap-1">
               <span className="text-xs text-muted-foreground">{pos.label}</span>

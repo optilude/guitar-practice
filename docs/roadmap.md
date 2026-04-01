@@ -36,9 +36,9 @@ Session logs, streaks, and per-topic completion status (linked to Phase 2 librar
 
 # Future ideas
 
-* Add shell chords to chord viewer
-* Add triads to chord and arpeggio viewer
 * Add drop-2 and drop-3 voicings (if not already included)
+* The chord viewer uses react-chords and the triads viewer uses svguitar. Apart from the inconsistency, the latter is capable of displaying intervals instead of fingerings. Consider migrating to it whilst keeping the existing shapes.
+
 * Add chromatic scale (to show all intervals)
 
 * Content source / attribution for all links in library
@@ -51,15 +51,50 @@ Session logs, streaks, and per-topic completion status (linked to Phase 2 librar
 
 * Better account management (at least change + reset password) – consider moving to OAuth
 
+# Known issues
+
+* The triad viewer sometimes renders a dot outside the box when there is a 5-fret spread, e.g. C major 4-2-1 open 2nd inversion.
+
 # Resources / notes
 
 * Guitar chords in JSON format: https://github.com/szaza/guitar-chords-db-json
 * Fretboard.js: https://github.com/moonwave99/fretboard.js
 
-# Prompt
+# Prompts
+
+## Fix chord types
 
 I've noticed that on some chord types, the "Notes" list underneath the selector shows only the root, not all the notes.
 
 This is happening on: alt, aug9, maj7b5,  maj11,  mmaj7, mmaj7b5, mmaj9, mmaj11
 
 Please fix this. Please also add a "Formula: " line underneath the "Notes: " line that shows the relevant degrees of the major scale for each chord formula. 
+
+## Sort chord types better
+
+The chord type list is pretty long. Let's group it a bit better. Start with "Common" which includes maj, maj7, m, m7, 7, 9, dim, dim7, and m7b5. Then list the "Shell voicings" (maj7, m7, 7, dim7/m6), then list everything else not included above under "Other".
+
+## Implement Fretboard.js
+
+The fretboard view of scales and arpeggios is not working. I want to change direction and use a different tool: Fretboard.js.
+
+GitHub: https://github.com/moonwave99/fretboard.js
+Docs: https://moonwave99.github.io/fretboard.js/documentation-fretboard.html and https://moonwave99.github.io/fretboard.js/documentation-music-tools.html
+
+The goal is to be able to show the whole fretboard as a single graphic, with the relevant notes overlaid and the ability to display either intervals or note names. By default, show all relevant notes, but also allow choosing _either_ a 3NPS box, a pentatonic box (only for the pentatonic and blues scales), or a CAGED anchor to highlight. See https://moonwave99.github.io/fretboard.js/examples-systems.html for an example.
+
+It should be possible to toggle between showing note names or intervals. The root, third, fifth, and seventh degrees (with accidentals relevant to the scale) should be colour-coded consistently with the colour codings used on the scale/arpeggio tab view.
+
+For argpeggios, only show the arpeggio notes, obviously, but use the same visualisation system.
+
+If Fretboard.js does not easily support certain scales/arpeggios that we currently render, keep track of which ones and ask me what to do.
+
+## Chromatic scale
+
+Add the chromanic scale to the scale viewer. The purpose of this, in particular, is to be able to show the intervals for every note on the fretboard relative to a key, as well as showing all the note names.
+
+## Add source attribution
+
+We have included links to a large number of lessons from Hub Guitar. I want to make sure there is proper attribution. Please add a field to the database for each lesson that can record its provenance. Populated all the imported Hub Guitar links with "Hub Guitar". Add this as a label on each lesson in the UI.
+
+Please also confirm that on a completely fresh build, it is possible to import this set of lessons easily.

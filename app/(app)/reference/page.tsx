@@ -5,14 +5,16 @@ import { CircleOfFifths } from "./_components/circle-of-fifths"
 import { ScalePanel } from "./_components/scale-panel"
 import { ArpeggioPanel } from "./_components/arpeggio-panel"
 import { ChordPanel } from "./_components/chord-panel"
+import { TriadPanel } from "./_components/triad-panel"
 import { cn } from "@/lib/utils"
 
-type PanelTab = "scales" | "arpeggios" | "chords"
+type PanelTab = "scales" | "arpeggios" | "chords" | "triads"
 
 const TABS: { id: PanelTab; label: string }[] = [
   { id: "scales", label: "Scales" },
   { id: "arpeggios", label: "Arpeggios" },
   { id: "chords", label: "Chords" },
+  { id: "triads", label: "Triads" },
 ]
 
 export default function ReferencePage() {
@@ -73,6 +75,7 @@ export default function ReferencePage() {
             {activeTab === "scales" && <ScalePanel tonic={selectedKey} />}
             {activeTab === "arpeggios" && <ArpeggioPanel tonic={selectedKey} />}
             {activeTab === "chords" && <ChordPanel tonic={selectedKey} />}
+            {activeTab === "triads" && <TriadPanel tonic={selectedKey} />}
           </section>
         </div>
       </div>
