@@ -1,0 +1,10 @@
+// Music theory engine — public API
+// Re-exports everything from all theory modules
+
+export * from "@/lib/theory/types"
+export * from "@/lib/theory/keys"
+export * from "@/lib/theory/scales"
+export * from "@/lib/theory/chords"
+export * from "@/lib/theory/arpeggios"
+export * from "@/lib/theory/harmony"
+export * from "@/lib/theory/progressions"
