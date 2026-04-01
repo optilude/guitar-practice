@@ -6,7 +6,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <FullscreenProvider>
       <div className="min-h-screen flex flex-col">
         <Navbar />
-        <main className="flex-1 px-5 py-8 max-w-2xl mx-auto w-full">
+        <main className="flex-1 px-5 py-8 w-full max-w-2xl lg:max-w-5xl mx-auto">
           {children}
         </main>
       </div>
