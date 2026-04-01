@@ -8,6 +8,22 @@ const MAJOR_KEYS = ["C", "G", "D", "A", "E", "B", "F#", "Db", "Ab", "Eb", "Bb", 
 // Relative minors for each major key (same order)
 const RELATIVE_MINORS = ["Am", "Em", "Bm", "F#m", "C#m", "G#m", "D#m", "Bbm", "Fm", "Cm", "Gm", "Dm"]
 
+// Accidentals for each key, in circle-of-fifths order
+const KEY_ACCIDENTALS: string[][] = [
+  [],                                       // C
+  ["F#"],                                   // G
+  ["F#", "C#"],                            // D
+  ["F#", "C#", "G#"],                      // A
+  ["F#", "C#", "G#", "D#"],               // E
+  ["F#", "C#", "G#", "D#", "A#"],         // B
+  ["F#", "C#", "G#", "D#", "A#", "E#"],   // F#
+  ["Bb", "Eb", "Ab", "Db", "Gb"],         // Db
+  ["Bb", "Eb", "Ab", "Db"],               // Ab
+  ["Bb", "Eb", "Ab"],                      // Eb
+  ["Bb", "Eb"],                            // Bb
+  ["Bb"],                                   // F
+]
+
 interface CircleOfFifthsProps {
   selectedKey: string
   onKeySelect: (tonic: string) => void
@@ -53,6 +69,7 @@ export function CircleOfFifths({ selectedKey, onKeySelect }: CircleOfFifthsProps
         width={400}
         height={400}
         viewBox="0 0 400 400"
+        style={{ overflow: "visible" }}
         role="img"
         aria-label="Circle of Fifths"
         className="max-w-full"
@@ -98,6 +115,36 @@ export function CircleOfFifths({ selectedKey, onKeySelect }: CircleOfFifthsProps
               >
                 {key}
               </text>
+
+              {/* Accidentals outside the outer ring — radius adjusted per angle so
+                  the inner text edge stays a consistent ~8px from the ring. */}
+              {(() => {
+                const acc = KEY_ACCIDENTALS[i]
+                if (acc.length === 0) return null
+                const accText = acc.join(", ")
+                const thetaRad = (midAngle * Math.PI) / 180
+                // Estimated half-width at fontSize=7, ~4.4px per char
+                const estHalfWidth = accText.length * 2.2
+                const estHalfHeight = 3.5
+                const r =
+                  outerR +
+                  8 +
+                  estHalfWidth * Math.abs(Math.sin(thetaRad)) +
+                  estHalfHeight * Math.abs(Math.cos(thetaRad))
+                const pos = polarToCartesian(midAngle, r)
+                return (
+                  <text
+                    x={pos.x}
+                    y={pos.y}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fontSize={7}
+                    className="fill-muted-foreground"
+                  >
+                    {accText}
+                  </text>
+                )
+              })()}
 
               {/* Inner ring slice (relative minor) */}
               <path
