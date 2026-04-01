@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { getAllFretboardPositions, build3NPSPositions } from "@/lib/rendering/fretboard"
+import { getAllFretboardPositions, build3NPSPositions, getBoxMembershipSet } from "@/lib/rendering/fretboard"
 
 const C_MAJOR_NOTES     = ["C", "D", "E", "F", "G", "A", "B"]
 const C_MAJOR_INTERVALS = ["1P", "2M", "3M", "4P", "5P", "6M", "7M"]
@@ -76,6 +76,48 @@ describe("build3NPSPositions", () => {
         expect(fret).toBeGreaterThanOrEqual(0)
         expect(fret).toBeLessThanOrEqual(15)
       }
+    }
+  })
+})
+
+describe("getBoxMembershipSet", () => {
+  it("returns empty set for boxSystem 'none'", () => {
+    const set = getBoxMembershipSet("C", "Major", "none", 0, C_MAJOR_NOTES, C_MAJOR_INTERVALS)
+    expect(set.size).toBe(0)
+  })
+
+  it("returns empty set for boxSystem 'windows'", () => {
+    const set = getBoxMembershipSet("C", "Major", "windows", 0, C_MAJOR_NOTES, C_MAJOR_INTERVALS)
+    expect(set.size).toBe(0)
+  })
+
+  it("CAGED: returns non-empty set for Major scale position 0", () => {
+    const set = getBoxMembershipSet("C", "Major", "caged", 0, C_MAJOR_NOTES, C_MAJOR_INTERVALS)
+    expect(set.size).toBeGreaterThan(0)
+  })
+
+  it("CAGED: position 0 of C Major includes string 6 fret 8 (root C)", () => {
+    // SCALE_PATTERNS["Major"][0] has [6, 0] entry; rootFret for C on low E = 8
+    const set = getBoxMembershipSet("C", "Major", "caged", 0, C_MAJOR_NOTES, C_MAJOR_INTERVALS)
+    expect(set.has("6:8")).toBe(true)
+  })
+
+  it("CAGED: returns empty set for an unknown scale type", () => {
+    const set = getBoxMembershipSet("C", "UnknownScale", "caged", 0, C_MAJOR_NOTES, C_MAJOR_INTERVALS)
+    expect(set.size).toBe(0)
+  })
+
+  it("3NPS: position 0 of C Major includes C at string 6 fret 8", () => {
+    const set = getBoxMembershipSet("C", "Major", "3nps", 0, C_MAJOR_NOTES, C_MAJOR_INTERVALS)
+    expect(set.has("6:8")).toBe(true)
+  })
+
+  it("3NPS: all frets in set are within 0–15", () => {
+    const set = getBoxMembershipSet("C", "Major", "3nps", 2, C_MAJOR_NOTES, C_MAJOR_INTERVALS)
+    for (const key of set) {
+      const fret = parseInt(key.split(":")[1])
+      expect(fret).toBeGreaterThanOrEqual(0)
+      expect(fret).toBeLessThanOrEqual(15)
     }
   })
 })

@@ -154,7 +154,29 @@ export function getBoxMembershipSet(
   scaleNotes: string[],
   scaleIntervals: string[]
 ): Set<string> {
-  return new Set() // stub — implemented in Task 4
+  if (boxSystem === "none" || boxSystem === "windows") return new Set()
+
+  if (boxSystem === "caged") {
+    const patterns = SCALE_PATTERNS[scaleType]
+    if (!patterns || !patterns[boxIndex]) return new Set()
+    const rootFret = ((Note.chroma(tonic) ?? 0) - OPEN_CHROMA[0] + 12) % 12
+    const set = new Set<string>()
+    for (const [guitarString, fretOffset] of patterns[boxIndex].shape) {
+      let fret = rootFret + fretOffset
+      if (fret < 0) fret += 12
+      if (fret > 15) continue
+      set.add(`${guitarString}:${fret}`)
+    }
+    return set
+  }
+
+  if (boxSystem === "3nps") {
+    const positions = build3NPSPositions(tonic, scaleNotes, scaleIntervals)
+    return positions[boxIndex] ?? new Set()
+  }
+
+  // "pentatonic" handled in Task 5
+  return new Set()
 }
 
 // ---------------------------------------------------------------------------
