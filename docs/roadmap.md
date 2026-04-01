@@ -36,8 +36,7 @@ Session logs, streaks, and per-topic completion status (linked to Phase 2 librar
 
 # Future ideas
 
-* Add drop-2 and drop-3 voicings (if not already included)
-* The chord viewer uses react-chords and the triads viewer uses svguitar. Apart from the inconsistency, the latter is capable of displaying intervals instead of fingerings. Consider migrating to it whilst keeping the existing shapes.
+* Add drop-2 and drop-3 voicings for chords (if not already included)
 
 * Add chromatic scale (to show all intervals)
 
@@ -54,6 +53,7 @@ Session logs, streaks, and per-topic completion status (linked to Phase 2 librar
 # Known issues
 
 * The triad viewer sometimes renders a dot outside the box when there is a 5-fret spread, e.g. C major 4-2-1 open 2nd inversion.
+* Some chord types are showing invalid barres e.g. 9th chords
 
 # Resources / notes
 
@@ -70,9 +70,6 @@ This is happening on: alt, aug9, maj7b5,  maj11,  mmaj7, mmaj7b5, mmaj9, mmaj11
 
 Please fix this. Please also add a "Formula: " line underneath the "Notes: " line that shows the relevant degrees of the major scale for each chord formula. 
 
-## Sort chord types better
-
-The chord type list is pretty long. Let's group it a bit better. Start with "Common" which includes maj, maj7, m, m7, 7, 9, dim, dim7, and m7b5. Then list the "Shell voicings" (maj7, m7, 7, dim7/m6), then list everything else not included above under "Other".
 
 ## Implement Fretboard.js
 

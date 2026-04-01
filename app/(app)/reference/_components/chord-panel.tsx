@@ -17,6 +17,8 @@ const GUITAR_INSTRUMENT = {
   },
 }
 
+const COMMON_TYPES = ["major", "maj7", "minor", "m7", "7", "9", "dim", "dim7", "m7b5"]
+
 const SHELL_FORMULA: Record<string, string> = {
   "maj7 shell":    "1 – 3 – 7",
   "m7 shell":      "1 – b3 – b7",
@@ -31,7 +33,15 @@ interface ChordPanelProps {
 
 export function ChordPanel({ tonic }: ChordPanelProps) {
   const dbSuffixes = useMemo(() => listChordDbSuffixes(), [])
-  const [chordType, setChordType] = useState(dbSuffixes[0] ?? "major")
+  const commonSuffixes = useMemo(
+    () => COMMON_TYPES.filter((t) => dbSuffixes.includes(t)),
+    [dbSuffixes],
+  )
+  const otherSuffixes = useMemo(
+    () => dbSuffixes.filter((t) => !COMMON_TYPES.includes(t)),
+    [dbSuffixes],
+  )
+  const [chordType, setChordType] = useState(COMMON_TYPES[0])
 
   const isShell = (SHELL_CHORD_TYPES as readonly string[]).includes(chordType)
 
@@ -58,13 +68,18 @@ export function ChordPanel({ tonic }: ChordPanelProps) {
           onChange={(e) => setChordType(e.target.value)}
           className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
         >
+          <optgroup label="Common">
+            {commonSuffixes.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </optgroup>
           <optgroup label="Shell Voicings">
             {SHELL_CHORD_TYPES.map((t) => (
               <option key={t} value={t}>{t}</option>
             ))}
           </optgroup>
-          <optgroup label="All Chord Types">
-            {dbSuffixes.map((t) => (
+          <optgroup label="Other">
+            {otherSuffixes.map((t) => (
               <option key={t} value={t}>{t}</option>
             ))}
           </optgroup>
