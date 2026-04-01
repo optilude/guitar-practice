@@ -38,11 +38,8 @@ function buildArpeggioPositions(
   const patterns = SCALE_PATTERNS["Major"]
   if (!patterns) return []
 
-  const patternSlice = positionIndex !== undefined
-    ? patterns.slice(positionIndex, positionIndex + 1)
-    : patterns
-
-  return patternSlice.map((patternPos) => {
+  // Build all positions first, then filter to chord tones
+  const allPositions = patterns.map((patternPos) => {
     const fretPositions: FretPosition[] = []
 
     for (const [guitarString, fretOffset] of patternPos.shape) {
@@ -69,6 +66,15 @@ function buildArpeggioPositions(
       positions: fretPositions,
     }
   }).filter((p) => p.positions.length > 0)
+
+  // Clamp positionIndex against the filtered positions list (same pattern as scales.ts)
+  if (positionIndex !== undefined) {
+    if (allPositions.length === 0) return []
+    const clamped = Math.max(0, Math.min(positionIndex, allPositions.length - 1))
+    return [allPositions[clamped]]
+  }
+
+  return allPositions
 }
 
 // ---------------------------------------------------------------------------

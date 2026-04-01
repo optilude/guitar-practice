@@ -56,4 +56,11 @@ describe("getArpeggio - positionIndex", () => {
     const arp = getArpeggio("C", "maj7", 0)
     expect(arp.positions).toHaveLength(1)
   })
+
+  it("clamps out-of-range positionIndex to the last valid position", () => {
+    const arpeggio = getArpeggio("C", "maj7", 99)
+    // Should return the last position, not an empty array
+    expect(arpeggio.positions.length).toBe(1)
+    expect(arpeggio.positions[0].positions.length).toBeGreaterThan(0)
+  })
 })
