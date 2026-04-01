@@ -5,9 +5,11 @@ import {
   TRIAD_TYPES,
   TRIAD_STRING_SETS,
   getTriadVoicings,
+  getTriadAsScale,
   type TriadVoicing,
 } from "@/lib/theory"
 import Chord from "@tombatossals/react-chords/lib/Chord"
+import { FretboardViewer } from "./fretboard-viewer"
 
 const GUITAR_INSTRUMENT = {
   strings: 6,
@@ -46,6 +48,12 @@ export function TriadPanel({ tonic }: TriadPanelProps) {
   const [voicingFilter, setVoicingFilter]   = useState<string>("all")
   const [inversionFilter, setInvFilter]     = useState<string>("all")
   const [stringSetFilter, setStringSetFilter] = useState<string>("all")
+  const [labelMode, setLabelMode]           = useState<"note" | "interval">("interval")
+
+  const triadScale = useMemo(
+    () => getTriadAsScale(tonic, triadType),
+    [tonic, triadType],
+  )
 
   const allVoicings = useMemo(
     () => getTriadVoicings(tonic, triadType),
@@ -148,6 +156,25 @@ export function TriadPanel({ tonic }: TriadPanelProps) {
       <p className="text-xs text-muted-foreground">
         Formula: {TRIAD_FORMULA[triadType]}
       </p>
+
+      {/* Label mode toggle */}
+      <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={labelMode === "interval"}
+          onChange={(e) => setLabelMode(e.target.checked ? "interval" : "note")}
+          className="accent-accent"
+        />
+        Show intervals
+      </label>
+
+      {/* Fretboard */}
+      <FretboardViewer
+        scale={triadScale}
+        boxSystem="none"
+        boxIndex={0}
+        labelMode={labelMode}
+      />
 
       {/* Voicings grouped by string set */}
       {grouped.length === 0 ? (

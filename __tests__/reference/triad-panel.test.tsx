@@ -13,6 +13,13 @@ vi.mock("@/lib/theory", () => ({
     "4-3-2", "4-3-1", "4-2-1",
     "3-2-1",
   ],
+  getTriadAsScale: (_tonic: string, _type: string) => ({
+    tonic: "C",
+    type: "maj",
+    notes: ["C", "E", "G"],
+    intervals: ["1P", "3M", "5P"],
+    positions: [{ label: "Position 1", positions: [{ string: 6, fret: 8, interval: "R" }] }],
+  }),
   getTriadVoicings: (tonic: string, type: string) => {
     if (tonic !== "C" || type !== "major") return []
     return [
@@ -129,5 +136,19 @@ describe("TriadPanel", () => {
     const select = screen.getByLabelText(/inversion/i) as HTMLSelectElement
     fireEvent.change(select, { target: { value: "root" } })
     expect(select.value).toBe("root")
+  })
+
+  it("renders a fretboard container", () => {
+    render(<TriadPanel tonic="C" />)
+    const fretboardEl = document.querySelector(".min-h-\\[200px\\]")
+    expect(fretboardEl).not.toBeNull()
+  })
+
+  it("show-intervals checkbox starts checked and toggles off", () => {
+    render(<TriadPanel tonic="C" />)
+    const checkbox = screen.getByRole("checkbox", { name: /show intervals/i }) as HTMLInputElement
+    expect(checkbox.checked).toBe(true)
+    fireEvent.click(checkbox)
+    expect(checkbox.checked).toBe(false)
   })
 })

@@ -38,9 +38,6 @@ Session logs, streaks, and per-topic completion status (linked to Phase 2 librar
 
 * Add drop-2 and drop-3 voicings for chords (if not already included)
 
-* Add chromatic scale (to show all intervals)
-
-* Content source / attribution for all links in library
 * Admin UI to manage default links
 * UI to allow users to add their own section to the library (list of links)
 
@@ -52,9 +49,15 @@ Session logs, streaks, and per-topic completion status (linked to Phase 2 librar
 
 # Known issues
 
+UX:
+
+* Reference view does not work well in dark mode - none of the lines are visible so we only see text
+* Titles above chord boxes are silly ("Barre – 5fr") - just remove them. They make sense on triads.
+* The words CLOSE and OPEN on the triads view should not be capitalised
+* The "show intervals" tickbox when viewing the fretboard should be next to the Highlight drop-down, not next to the tabs, but needs to be right-aligned to allow space for the secondary dropdown
+
 Scales:
 
-* Fretboard viewer is too small
 * Need to find a way to test that they are in fact being rendered correctly
 
 Chords:
@@ -65,10 +68,20 @@ Chords:
 
 # Resources / notes
 
-* Guitar chords in JSON format: https://github.com/szaza/guitar-chords-db-json
-* Fretboard.js: https://github.com/moonwave99/fretboard.js
+* Chords: https://github.com/szaza/guitar-chords-db-json - 99k voicings (machine generated)
+* Chord rendering: https://github.com/omnibrain/svguitar - can render interval names
 
 # Prompts
+
+## Fretboard viewer size and layout
+
+The fretboard view is unfortunately too small to be easily legible I think we need to go back to a vertical mode, with the circle on the top and the other factors underneath so the fretboard visualisation can be the full width of the page.
+
+Also, the white background box is too tall - the padding at the bottom beneath the fretboard view is much taller than the padding at the top or sides.
+
+Move the selectors for "Highlight" and "Show intervals" to be below the fretboard view. Put the drop-down lists below the white box and left-aligned, and the tick box ("show intervals") right-aligned.
+
+Also, on the Scales and Arpeggios view, put the "Notes: " and "Formula: " descriptors below the "Scale type" / "Chord type" drop-down boxes, rather than below the fretboard visualisation.
 
 ## Chord fretboard viewer
 
