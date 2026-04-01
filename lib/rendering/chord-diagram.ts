@@ -1,6 +1,7 @@
 import type { GuitarChord } from "@/lib/theory/types"
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+// SVGuitar is imported via ESM so that vitest's vi.mock("svguitar") intercepts it in tests.
+// Components that call renderChordDiagram() should be loaded via next/dynamic with { ssr: false }.
 import * as svguitar from "svguitar"
 
 const { SVGuitarChord, ChordStyle } = svguitar as unknown as {

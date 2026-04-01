@@ -114,4 +114,16 @@ describe("renderChordDiagram", () => {
     const configArg = mockConfigure.mock.calls[0][0] as { position: number }
     expect(configArg.position).toBe(1) // barre.fret
   })
+
+  it("maps array index to correct SVGuitar string number (svgString = 6 - i)", () => {
+    renderChordDiagram(container, G_MAJOR, 0)
+    const { fingers } = mockChord.mock.calls[0][0] as { fingers: [number, number, string?][] }
+    // G_MAJOR voicing: frets[0]=3 (low E, i=0) → svgString=6; frets[5]=3 (high e, i=5) → svgString=1
+    const lowEFinger = fingers.find((f) => f[1] === 3 && f[2] === "2") // frets[0]=3, fingers[0]=2
+    const highEFinger = fingers.find((f) => f[2] === "3") // frets[5]=3, fingers[5]=3
+    expect(lowEFinger).toBeDefined()
+    expect(lowEFinger![0]).toBe(6) // low E (i=0) → svgString = 6 - 0 = 6
+    expect(highEFinger).toBeDefined()
+    expect(highEFinger![0]).toBe(1) // high e (i=5) → svgString = 6 - 5 = 1
+  })
 })
