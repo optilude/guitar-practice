@@ -111,9 +111,7 @@ describe("ChordPanel", () => {
 
   it("renders a fretboard container in default state", () => {
     render(<ChordPanel tonic="C" />)
-    // The FretboardViewer renders a div with min-h-[200px] class
-    const fretboardEl = document.querySelector(".min-h-\\[200px\\]")
-    expect(fretboardEl).not.toBeNull()
+    expect(screen.getByTestId("fretboard-viewer")).toBeDefined()
   })
 
   it("renders the show-intervals checkbox", () => {

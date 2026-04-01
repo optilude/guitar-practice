@@ -152,22 +152,6 @@ export function TriadPanel({ tonic }: TriadPanelProps) {
         </div>
       </div>
 
-      {/* Formula */}
-      <p className="text-xs text-muted-foreground">
-        Formula: {TRIAD_FORMULA[triadType]}
-      </p>
-
-      {/* Label mode toggle */}
-      <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none">
-        <input
-          type="checkbox"
-          checked={labelMode === "interval"}
-          onChange={(e) => setLabelMode(e.target.checked ? "interval" : "note")}
-          className="accent-accent"
-        />
-        Show intervals
-      </label>
-
       {/* Fretboard */}
       <FretboardViewer
         scale={triadScale}
@@ -175,6 +159,24 @@ export function TriadPanel({ tonic }: TriadPanelProps) {
         boxIndex={0}
         labelMode={labelMode}
       />
+
+      {/* Label mode toggle */}
+      <div className="flex justify-end">
+        <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={labelMode === "interval"}
+            onChange={(e) => setLabelMode(e.target.checked ? "interval" : "note")}
+            className="accent-accent"
+          />
+          Show intervals
+        </label>
+      </div>
+
+      {/* Formula */}
+      <p className="text-xs text-muted-foreground">
+        Formula: {TRIAD_FORMULA[triadType]}
+      </p>
 
       {/* Voicings grouped by string set */}
       {grouped.length === 0 ? (

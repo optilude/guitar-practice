@@ -102,44 +102,30 @@ export function ArpeggioPanel({ tonic }: ArpeggioPanelProps) {
         </select>
       </div>
 
-      {/* View mode toggle + label mode */}
-      <div className="flex items-center gap-4">
-        <div className="flex rounded border border-border overflow-hidden text-sm">
-          <button
-            onClick={() => setViewMode("fretboard")}
-            className={cn(
-              "px-3 py-1.5 transition-colors",
-              viewMode === "fretboard"
-                ? "bg-accent text-accent-foreground"
-                : "bg-card text-muted-foreground hover:bg-muted"
-            )}
-          >
-            Fretboard
-          </button>
-          <button
-            onClick={() => setViewMode("tab")}
-            className={cn(
-              "px-3 py-1.5 transition-colors border-l border-border",
-              viewMode === "tab"
-                ? "bg-accent text-accent-foreground"
-                : "bg-card text-muted-foreground hover:bg-muted"
-            )}
-          >
-            Tab
-          </button>
-        </div>
-
-        {viewMode === "fretboard" && (
-          <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={labelMode === "interval"}
-              onChange={(e) => setLabelMode(e.target.checked ? "interval" : "note")}
-              className="accent-accent"
-            />
-            Show intervals
-          </label>
-        )}
+      {/* View mode toggle */}
+      <div className="flex rounded border border-border overflow-hidden text-sm w-fit">
+        <button
+          onClick={() => setViewMode("fretboard")}
+          className={cn(
+            "px-3 py-1.5 transition-colors",
+            viewMode === "fretboard"
+              ? "bg-accent text-accent-foreground"
+              : "bg-card text-muted-foreground hover:bg-muted"
+          )}
+        >
+          Fretboard
+        </button>
+        <button
+          onClick={() => setViewMode("tab")}
+          className={cn(
+            "px-3 py-1.5 transition-colors border-l border-border",
+            viewMode === "tab"
+              ? "bg-accent text-accent-foreground"
+              : "bg-card text-muted-foreground hover:bg-muted"
+          )}
+        >
+          Tab
+        </button>
       </div>
 
       {/* Tab position selector — shown only in tab view */}
@@ -163,52 +149,6 @@ export function ArpeggioPanel({ tonic }: ArpeggioPanelProps) {
         </div>
       )}
 
-      {/* Fretboard box controls */}
-      {viewMode === "fretboard" && availableBoxSystems.length > 1 && (
-        <div className="flex flex-wrap gap-3 items-end">
-          <div className="flex flex-col gap-1">
-            <label className="text-xs text-muted-foreground" htmlFor="arp-box-system-select">
-              Highlight
-            </label>
-            <select
-              id="arp-box-system-select"
-              value={boxSystem}
-              onChange={(e) => {
-                setBoxSystem(e.target.value as BoxSystem)
-                setBoxIndex(0)
-              }}
-              className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
-            >
-              {availableBoxSystems.map((s) => (
-                <option key={s} value={s}>{BOX_SYSTEM_LABELS[s]}</option>
-              ))}
-            </select>
-          </div>
-
-          {boxSystem !== "none" && boxCount > 0 && (
-            <div className="flex flex-col gap-1">
-              <label className="text-xs text-muted-foreground" htmlFor="arp-box-index-select">
-                Box
-              </label>
-              <select
-                id="arp-box-index-select"
-                value={safeBoxIndex}
-                onChange={(e) => setBoxIndex(Number(e.target.value))}
-                className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
-              >
-                {Array.from({ length: boxCount }, (_, i) => (
-                  <option key={i} value={i}>
-                    {boxSystem === "caged"
-                      ? `${CAGED_BOX_LABELS[i]} shape`
-                      : `Position ${i + 1}`}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-        </div>
-      )}
-
       {/* Viewer */}
       {viewMode === "tab" ? (
         <TabViewer scale={arpeggio} positionIndex={safePositionIndex} />
@@ -220,6 +160,68 @@ export function ArpeggioPanel({ tonic }: ArpeggioPanelProps) {
           labelMode={labelMode}
           boxScaleType={parentScaleType}
         />
+      )}
+
+      {/* Fretboard controls — shown only in fretboard view */}
+      {viewMode === "fretboard" && (
+        <div className="flex items-end justify-between gap-4">
+          <div className="flex flex-wrap gap-3 items-end">
+            {availableBoxSystems.length > 1 && (
+              <>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs text-muted-foreground" htmlFor="arp-box-system-select">
+                    Highlight
+                  </label>
+                  <select
+                    id="arp-box-system-select"
+                    value={boxSystem}
+                    onChange={(e) => {
+                      setBoxSystem(e.target.value as BoxSystem)
+                      setBoxIndex(0)
+                    }}
+                    className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
+                  >
+                    {availableBoxSystems.map((s) => (
+                      <option key={s} value={s}>{BOX_SYSTEM_LABELS[s]}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {boxSystem !== "none" && boxCount > 0 && (
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-muted-foreground" htmlFor="arp-box-index-select">
+                      Box
+                    </label>
+                    <select
+                      id="arp-box-index-select"
+                      value={safeBoxIndex}
+                      onChange={(e) => setBoxIndex(Number(e.target.value))}
+                      className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
+                    >
+                      {Array.from({ length: boxCount }, (_, i) => (
+                        <option key={i} value={i}>
+                          {boxSystem === "caged"
+                            ? `${CAGED_BOX_LABELS[i]} shape`
+                            : `Position ${i + 1}`}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={labelMode === "interval"}
+              onChange={(e) => setLabelMode(e.target.checked ? "interval" : "note")}
+              className="accent-accent"
+            />
+            Show intervals
+          </label>
+        </div>
       )}
 
       {/* Notes + formula */}

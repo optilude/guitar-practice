@@ -140,8 +140,7 @@ describe("TriadPanel", () => {
 
   it("renders a fretboard container", () => {
     render(<TriadPanel tonic="C" />)
-    const fretboardEl = document.querySelector(".min-h-\\[200px\\]")
-    expect(fretboardEl).not.toBeNull()
+    expect(screen.getByTestId("fretboard-viewer")).toBeDefined()
   })
 
   it("show-intervals checkbox starts checked and toggles off", () => {

@@ -37,7 +37,8 @@ export function FretboardViewer({
   return (
     <div
       ref={containerRef}
-      className="w-full overflow-x-auto rounded border border-border bg-card p-2 min-h-[200px]"
+      className="w-full overflow-x-auto rounded border border-border bg-card p-2"
+      data-testid="fretboard-viewer"
     />
   )
 }
