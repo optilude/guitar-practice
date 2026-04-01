@@ -147,6 +147,22 @@ export function ChordPanel({ tonic }: ChordPanelProps) {
         </select>
       </div>
 
+      {/* Notes + formula */}
+      {isShell ? (
+        <p className="text-xs text-muted-foreground">
+          Formula: {SHELL_FORMULA[chordType]}
+        </p>
+      ) : (
+        <div className="flex flex-col gap-0.5">
+          <p className="text-xs text-muted-foreground">
+            Notes: {chord?.notes.join(" – ")}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Formula: {chord ? intervalsToFormula(chord.intervals) : ""}
+          </p>
+        </div>
+      )}
+
       {/* Fretboard */}
       <FretboardViewer
         scale={chordScale}
@@ -215,22 +231,6 @@ export function ChordPanel({ tonic }: ChordPanelProps) {
           Show intervals
         </label>
       </div>
-
-      {/* Notes + formula */}
-      {isShell ? (
-        <p className="text-xs text-muted-foreground">
-          Formula: {SHELL_FORMULA[chordType]}
-        </p>
-      ) : (
-        <div className="flex flex-col gap-0.5">
-          <p className="text-xs text-muted-foreground">
-            Notes: {chord?.notes.join(" – ")}
-          </p>
-          <p className="text-xs text-muted-foreground">
-            Formula: {chord ? intervalsToFormula(chord.intervals) : ""}
-          </p>
-        </div>
-      )}
 
       {positions.length === 0 ? (
         <p className="text-xs text-muted-foreground">No voicings available for this chord type.</p>

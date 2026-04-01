@@ -102,6 +102,12 @@ export function ArpeggioPanel({ tonic }: ArpeggioPanelProps) {
         </select>
       </div>
 
+      {/* Notes + formula */}
+      <div className="text-xs text-muted-foreground space-y-0.5">
+        <p>Notes: {arpeggio.notes.join(" – ")}</p>
+        <p>Formula: {arpeggio.intervals.map(tonalToDegree).join(" – ")}</p>
+      </div>
+
       {/* View mode toggle */}
       <div className="flex rounded border border-border overflow-hidden text-sm w-fit">
         <button
@@ -223,12 +229,6 @@ export function ArpeggioPanel({ tonic }: ArpeggioPanelProps) {
           </label>
         </div>
       )}
-
-      {/* Notes + formula */}
-      <div className="text-xs text-muted-foreground space-y-0.5">
-        <p>Notes: {arpeggio.notes.join(" – ")}</p>
-        <p>Formula: {arpeggio.intervals.map(tonalToDegree).join(" – ")}</p>
-      </div>
     </div>
   )
 }

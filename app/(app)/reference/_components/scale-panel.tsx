@@ -83,6 +83,12 @@ export function ScalePanel({ tonic }: ScalePanelProps) {
         </select>
       </div>
 
+      {/* Notes + formula */}
+      <div className="text-xs text-muted-foreground space-y-0.5">
+        <p>Notes: {scale.notes.join(" – ")}</p>
+        <p>Formula: {scale.intervals.map(tonalToDegree).join(" – ")}</p>
+      </div>
+
       {/* View mode toggle */}
       <div className="flex rounded border border-border overflow-hidden text-sm w-fit">
         <button
@@ -203,12 +209,6 @@ export function ScalePanel({ tonic }: ScalePanelProps) {
           </label>
         </div>
       )}
-
-      {/* Notes + formula */}
-      <div className="text-xs text-muted-foreground space-y-0.5">
-        <p>Notes: {scale.notes.join(" – ")}</p>
-        <p>Formula: {scale.intervals.map(tonalToDegree).join(" – ")}</p>
-      </div>
     </div>
   )
 }

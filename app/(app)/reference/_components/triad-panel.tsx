@@ -152,6 +152,12 @@ export function TriadPanel({ tonic }: TriadPanelProps) {
         </div>
       </div>
 
+      {/* Notes + formula */}
+      <div className="text-xs text-muted-foreground space-y-0.5">
+        <p>Notes: {triadScale.notes.join(" – ")}</p>
+        <p>Formula: {TRIAD_FORMULA[triadType]}</p>
+      </div>
+
       {/* Fretboard */}
       <FretboardViewer
         scale={triadScale}
@@ -172,11 +178,6 @@ export function TriadPanel({ tonic }: TriadPanelProps) {
           Show intervals
         </label>
       </div>
-
-      {/* Formula */}
-      <p className="text-xs text-muted-foreground">
-        Formula: {TRIAD_FORMULA[triadType]}
-      </p>
 
       {/* Voicings grouped by string set */}
       {grouped.length === 0 ? (
