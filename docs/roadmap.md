@@ -62,15 +62,6 @@ Session logs, streaks, and per-topic completion status (linked to Phase 2 librar
 
 # Prompts
 
-## Fix chord types
-
-I've noticed that on some chord types, the "Notes" list underneath the selector shows only the root, not all the notes.
-
-This is happening on: alt, aug9, maj7b5,  maj11,  mmaj7, mmaj7b5, mmaj9, mmaj11
-
-Please fix this. Please also add a "Formula: " line underneath the "Notes: " line that shows the relevant degrees of the major scale for each chord formula. 
-
-
 ## Implement Fretboard.js
 
 The fretboard view of scales and arpeggios is not working. I want to change direction and use a different tool: Fretboard.js.

@@ -19,6 +19,24 @@ const GUITAR_INSTRUMENT = {
 
 const COMMON_TYPES = ["major", "maj7", "minor", "m7", "7", "9", "dim", "dim7", "m7b5"]
 
+const INTERVAL_TO_DEGREE: Record<string, string> = {
+  "1P": "1",
+  "2m": "b9", "2M": "9",  "2A": "#9",
+  "3m": "b3", "3M": "3",
+  "4P": "4",  "4A": "#4",
+  "5d": "b5", "5P": "5",  "5A": "#5",
+  "6m": "b6", "6M": "6",
+  "7m": "b7", "7M": "7",
+  "8P": "8",
+  "9m": "b9", "9M": "9",  "9A": "#9",
+  "11P": "11", "11A": "#11",
+  "13m": "b13", "13M": "13",
+}
+
+function intervalsToFormula(intervals: string[]): string {
+  return intervals.map((iv) => INTERVAL_TO_DEGREE[iv] ?? iv).join(" – ")
+}
+
 const SHELL_FORMULA: Record<string, string> = {
   "maj7 shell":    "1 – 3 – 7",
   "m7 shell":      "1 – b3 – b7",
@@ -91,9 +109,14 @@ export function ChordPanel({ tonic }: ChordPanelProps) {
           Formula: {SHELL_FORMULA[chordType]}
         </p>
       ) : (
-        <p className="text-xs text-muted-foreground">
-          Notes: {chord?.notes.join(" – ")}
-        </p>
+        <div className="flex flex-col gap-0.5">
+          <p className="text-xs text-muted-foreground">
+            Notes: {chord?.notes.join(" – ")}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Formula: {chord ? intervalsToFormula(chord.intervals) : ""}
+          </p>
+        </div>
       )}
 
       {positions.length === 0 ? (

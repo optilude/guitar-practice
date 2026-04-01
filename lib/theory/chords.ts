@@ -1,4 +1,4 @@
-import { Chord } from "tonal"
+import { Chord, Note } from "tonal"
 import guitarDb from "@tombatossals/chords-db/lib/guitar.json"
 import type { ChordVoicing, GuitarChord } from "@/lib/theory/types"
 
@@ -104,6 +104,26 @@ const TYPE_TO_DB_SUFFIX: Record<string, string> = {
 }
 
 // ---------------------------------------------------------------------------
+// Some chords-db suffixes don't match TonalJS chord symbol notation.
+// Map them to a symbol TonalJS can resolve.
+// ---------------------------------------------------------------------------
+const DB_SUFFIX_TO_TONAL: Record<string, string> = {
+  "alt":     "7alt",
+  "aug9":    "9#5",
+  "maj7b5":  "M7b5",
+  "mmaj7":   "mM7",
+  "mmaj7b5": "oM7",
+  "mmaj9":   "mM9",
+}
+
+// Chord types TonalJS has no equivalent for — provide intervals directly.
+// Notes are computed at call time via Note.transpose.
+const DB_SUFFIX_HARDCODED_INTERVALS: Record<string, string[]> = {
+  "maj11":  ["1P", "3M", "5P", "7M", "9M", "11P"],
+  "mmaj11": ["1P", "3m", "5P", "7M", "9M", "11P"],
+}
+
+// ---------------------------------------------------------------------------
 // Map a chords-db position entry to our ChordVoicing type.
 // The DB stores frets with -1 = muted, values relative to baseFret.
 // frets[0] = low E (string 6), frets[5] = high e (string 1)
@@ -175,19 +195,26 @@ function getVoicingsFromDb(tonic: string, type: string): ChordVoicing[] {
 // Public API
 // ---------------------------------------------------------------------------
 export function getChord(tonic: string, type: string): GuitarChord {
-  const chord = Chord.get(`${tonic}${type}`)
-  const notes     = chord.notes.length > 0 ? chord.notes : [tonic]
-  const intervals = chord.intervals.length > 0 ? chord.intervals : ["1P"]
+  const tonalSymbol = DB_SUFFIX_TO_TONAL[type] ?? type
+  const chord = Chord.get(`${tonic}${tonalSymbol}`)
+
+  let notes: string[]
+  let intervals: string[]
+
+  if (chord.notes.length > 0) {
+    notes = chord.notes
+    intervals = chord.intervals
+  } else if (DB_SUFFIX_HARDCODED_INTERVALS[type]) {
+    intervals = DB_SUFFIX_HARDCODED_INTERVALS[type]
+    notes = intervals.map((iv) => Note.transpose(tonic, iv)).filter(Boolean) as string[]
+  } else {
+    notes = [tonic]
+    intervals = ["1P"]
+  }
 
   const voicings = getVoicingsFromDb(tonic, type)
 
-  return {
-    tonic,
-    type,
-    notes,
-    intervals,
-    voicings,
-  }
+  return { tonic, type, notes, intervals, voicings }
 }
 
 // ---------------------------------------------------------------------------
