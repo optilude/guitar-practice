@@ -159,7 +159,7 @@ export function TriadPanel({ tonic }: TriadPanelProps) {
       </div>
 
       {/* Label mode toggle */}
-      <div className="flex items-end justify-between gap-4">
+      <div className="flex justify-end">
         <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none">
           <input
             type="checkbox"
