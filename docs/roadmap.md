@@ -65,22 +65,38 @@ Chords:
 
 # Prompts
 
-## Implement Fretboard.js
-
-The fretboard view of scales and arpeggios is not working. I want to change direction and use a different tool: Fretboard.js.
-
-GitHub: https://github.com/moonwave99/fretboard.js
-Docs: https://moonwave99.github.io/fretboard.js/documentation-fretboard.html and https://moonwave99.github.io/fretboard.js/documentation-music-tools.html
-
-The goal is to be able to show the whole fretboard as a single graphic, with the relevant notes overlaid and the ability to display either intervals or note names. By default, show all relevant notes, but also allow choosing _either_ a 3NPS box, a pentatonic box (only for the pentatonic and blues scales), or a CAGED anchor to highlight. See https://moonwave99.github.io/fretboard.js/examples-systems.html for an example.
-
-It should be possible to toggle between showing note names or intervals. The root, third, fifth, and seventh degrees (with accidentals relevant to the scale) should be colour-coded consistently with the colour codings used on the scale/arpeggio tab view.
-
-For argpeggios, only show the arpeggio notes, obviously, but use the same visualisation system.
-
-If Fretboard.js does not easily support certain scales/arpeggios that we currently render, keep track of which ones and ask me what to do.
-
 ## Chromatic scale
 
 Add the chromanic scale to the scale viewer. The purpose of this, in particular, is to be able to show the intervals for every note on the fretboard relative to a key, as well as showing all the note names.
 
+## Arpeggio viewer
+
+I'd like the chord selector for the arpeggio viewer to be the same as for the chord viewer. If it's impractical to include all chord types, I'm ok to limit them, but they should be in the same groupings and order.
+
+## Start phase 4
+
+Phase 3 is done for now! Let's move onto Phase 4: Goals, Routines & Practice Session UI. This covers the core practice workflow:
+- Set learning goals
+- Build practice routines (drawing from the library)
+- Run a session: timer, metronome, flashcards, notes
+
+Here are the original specifications, slightly expanded:
+
+Basic flow:
+
+- Let the user define goals, eg “Follow the changes on a jazz blues progression”. Goals should have a title and a short description. Bonus if this can be Markdown formatted.
+- It should also be possible to rename, archive, unarchive, and delete goals
+- At any one time, a single goal is active, and the previous session’s goal should be the default. Other unarchived goals should be quick to select. Archived goals should be hidden behind a secondary page/UI. The goal should be persistent across sessions for each user, i.e. the currently active goal is saved.
+- For each goal, pick the relevant topics to study. This should include conceptual lessons as well as specific scales, arpeggios, chords/voicings etc from the music theory system. So either – pick one or more lessons from the list of lessons, or pick one or more scales, arpeggios, chords, or triads using filters equivalent to the ones on the Reference page.
+- Create (CRUD) one or more routines against this goal. A routine has a fixed duration in minutes. It consists of separately timed sections by type eg technique warmup, scales/arpeggio warmup, the main topic(s), song practice, free practice. Research recommended guitar practice routines to suggest a default structure, but allow it to be modified: elements included, their order, and duration.
+- The front page of the app should simply and easily give access to the current goal and practice routine, and make it easy to change to a different route within the goal or a different goal.
+- A one click action should launch the routine with a timer keeping track of routine timings. It must be possible to pause the timer, or prematurely end the session.
+- When ending a session (either manually or because the timer ran out), give the option to save it (default) or discard it.
+
+More details on practice routine elements:
+
+- Routine elements need to support different types
+- Lesson: Provide a link to the lesson but otherwise just show a timer
+- Scale, arpeggio practice, chord: Moving through the selected key(s) either chromatically, randomly, or through the circle of fourths/fifths (user can choose which when setting up the routine).
+- When running a routine, show a “flash card” for each element, where an item to practice is shown without detail, but the detail is revealed if the user clicks the card to “turn it”. The timer should be shown next to the flash card.
+- Include a simple metronome function that can be started or stopped at any time. It can play a basic sound but should support different tempos, time signatures and beat patterns. Let this be available during any practice session and at all times.

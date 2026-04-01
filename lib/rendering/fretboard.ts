@@ -1,7 +1,6 @@
 import { Note } from "tonal"
 import type { GuitarScale } from "@/lib/theory/types"
 import { INTERVAL_DEGREE_COLORS } from "@/lib/rendering/tab"
-import SCALE_PATTERNS from "@/lib/theory/data/scale-patterns"
 
 // ---------------------------------------------------------------------------
 // Fretboard.js — imported via ESM. Rendering only runs client-side (useEffect).
@@ -119,100 +118,6 @@ export function getAllFretboardPositions(
   return dots
 }
 
-// ---------------------------------------------------------------------------
-// 3NPS position computation — stubs filled in Task 3
-// ---------------------------------------------------------------------------
-export function build3NPSPositions(
-  _tonic: string,
-  scaleNotes: string[],
-  _scaleIntervals: string[]
-): Set<string>[] {
-  if (scaleNotes.length < 7) return []
-
-  const scaleChroma = scaleNotes.map(n => Note.chroma(n) ?? -1)
-
-  // For each string, all frets 0–17 that are scale tones (extends to 17 for positional overlap)
-  const fretsByString: number[][] = OPEN_CHROMA.map(openCh => {
-    const frets: number[] = []
-    for (let f = 0; f <= 17; f++) {
-      if (scaleChroma.includes((openCh + f) % 12)) frets.push(f)
-    }
-    return frets
-  })
-
-  // 7 positions: one starting on each scale degree.
-  // startFret for position i = lowest fret of scale degree i on string 6.
-  return scaleChroma.map(degChroma => {
-    const inBox = new Set<string>()
-    let startFret = ((degChroma - OPEN_CHROMA[0] + 12) % 12)
-
-    for (let strIdx = 0; strIdx < 6; strIdx++) {
-      const guitarString = 6 - strIdx
-      // Take first 3 scale tones at or above startFret on this string
-      const chosen = fretsByString[strIdx].filter(f => f >= startFret).slice(0, 3)
-      // Only add frets within display range (0–15)
-      chosen.forEach(f => { if (f <= 15) inBox.add(`${guitarString}:${f}`) })
-      // Carry the lowest chosen fret forward as the anchor for the next string
-      if (chosen.length > 0) startFret = chosen[0]
-    }
-
-    return inBox
-  })
-}
-
-// ---------------------------------------------------------------------------
-// Box membership — stub filled in Task 4
-// ---------------------------------------------------------------------------
-export function getBoxMembershipSet(
-  tonic: string,
-  scaleType: string,
-  boxSystem: BoxSystem,
-  boxIndex: number,
-  scaleNotes: string[],
-  scaleIntervals: string[]
-): Set<string> {
-  if (boxSystem === "none" || boxSystem === "windows") return new Set()
-
-  if (boxSystem === "caged") {
-    const patterns = SCALE_PATTERNS[scaleType]
-    if (!patterns || !patterns[boxIndex]) return new Set()
-    const rootFret = ((Note.chroma(tonic) ?? 0) - OPEN_CHROMA[0] + 12) % 12
-    const set = new Set<string>()
-    for (const [guitarString, fretOffset] of patterns[boxIndex].shape) {
-      let fret = rootFret + fretOffset
-      if (fret < 0) fret += 12
-      if (fret > 15) continue
-      set.add(`${guitarString}:${fret}`)
-    }
-    return set
-  }
-
-  if (boxSystem === "3nps") {
-    const positions = build3NPSPositions(tonic, scaleNotes, scaleIntervals)
-    return positions[boxIndex] ?? new Set()
-  }
-
-  if (boxSystem === "pentatonic") {
-    const fbType = PENTATONIC_TYPE_MAP[scaleType]
-    if (!fbType) {
-      // No Fretboard.js mapping → fall back to CAGED from SCALE_PATTERNS
-      return getBoxMembershipSet(tonic, scaleType, "caged", boxIndex, scaleNotes, scaleIntervals)
-    }
-    try {
-      const system = new FretboardSystem()
-      const dots = system.getScale({
-        type: fbType,
-        root: tonic,
-        box: { box: boxIndex + 1, system: Systems.pentatonic },
-      }) as Array<{ string: number; fret: number; inBox: boolean }>
-      return new Set(dots.filter(d => d.inBox).map(d => `${d.string}:${d.fret}`))
-    } catch {
-      return getBoxMembershipSet(tonic, scaleType, "caged", boxIndex, scaleNotes, scaleIntervals)
-    }
-  }
-
-  return new Set()
-}
 
 // ---------------------------------------------------------------------------
 // renderFretboard — stub filled in Task 6
@@ -264,10 +169,23 @@ export function renderFretboard(
       inBoxSet = new Set()
     }
   } else {
-    // pentatonic — uses FretboardSystem via getBoxMembershipSet
-    inBoxSet = getBoxMembershipSet(
-      scale.tonic, scale.type, boxSystem, boxIndex, scale.notes, scale.intervals
-    )
+    // pentatonic — delegate to Fretboard.js Systems.pentatonic
+    const fbType = PENTATONIC_TYPE_MAP[scale.type]
+    if (fbType) {
+      try {
+        const system = new FretboardSystem()
+        const dots = system.getScale({
+          type: fbType,
+          root: scale.tonic,
+          box: { box: boxIndex + 1, system: Systems.pentatonic },
+        }) as Array<{ string: number; fret: number; inBox: boolean }>
+        inBoxSet = new Set(dots.filter(d => d.inBox).map(d => `${d.string}:${d.fret}`))
+      } catch {
+        inBoxSet = new Set()
+      }
+    } else {
+      inBoxSet = new Set()
+    }
   }
 
   const hasBox = boxSystem !== "none"
