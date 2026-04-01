@@ -25,8 +25,8 @@ export function CircleOfFifths({ selectedKey, onKeySelect }: CircleOfFifthsProps
   function polarToCartesian(angle: number, radius: number) {
     const rad = ((angle - 90) * Math.PI) / 180
     return {
-      x: cx + radius * Math.cos(rad),
-      y: cy + radius * Math.sin(rad),
+      x: parseFloat((cx + radius * Math.cos(rad)).toFixed(4)),
+      y: parseFloat((cy + radius * Math.sin(rad)).toFixed(4)),
     }
   }
 

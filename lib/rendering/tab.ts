@@ -31,10 +31,10 @@ export function renderTab(
   if (!scalePosition || scalePosition.positions.length === 0) return
 
   const renderer = new Renderer(containerEl, Renderer.Backends.SVG)
-  renderer.resize(520, 130)
+  renderer.resize(520, 160)
   const context = renderer.getContext()
 
-  const stave = new TabStave(10, 10, 490)
+  const stave = new TabStave(10, 25, 490)
   stave.addClef("tab").setContext(context).draw()
 
   // Sort ascending: low strings (6) first, then by fret
@@ -51,4 +51,21 @@ export function renderTab(
   )
 
   Formatter.FormatAndDraw(context, stave, notes)
+
+  // Auto-crop: set the viewBox to the actual rendered content so VexFlow's
+  // internal top-padding doesn't leave dead whitespace above the stave.
+  const svgEl = containerEl.querySelector("svg")
+  if (svgEl) {
+    try {
+      const bbox = (svgEl as SVGSVGElement).getBBox()
+      const pad = 8
+      svgEl.setAttribute(
+        "viewBox",
+        `${bbox.x - pad} ${bbox.y - pad} ${bbox.width + pad * 2} ${bbox.height + pad * 2}`
+      )
+      svgEl.setAttribute("height", String(Math.round(bbox.height + pad * 2)))
+    } catch {
+      // getBBox unavailable in non-browser environments (e.g. jsdom without layout)
+    }
+  }
 }

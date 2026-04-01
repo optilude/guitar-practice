@@ -14,7 +14,7 @@ export function ArpeggioPanel({ tonic }: ArpeggioPanelProps) {
   const chordTypes = useMemo(() => listChordTypes(), [])
   const [chordType, setChordType] = useState(chordTypes[0] ?? "maj7")
   const [positionIndex, setPositionIndex] = useState(0)
-  const [viewMode, setViewMode] = useState<"tab" | "fretboard">("fretboard")
+  const [viewMode, setViewMode] = useState<"tab" | "fretboard">("tab")
   const [labelMode, setLabelMode] = useState<"note" | "interval">("interval")
 
   const arpeggio = useMemo(

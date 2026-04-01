@@ -36,6 +36,8 @@ Session logs, streaks, and per-topic completion status (linked to Phase 2 librar
 
 # Future ideas
 
+* Content source / attribution for all links in library
+* Admin UI to manage default links
 * UI to allow users to add their own section to the library (list of links)
 * More streaks/gamification features
 * Audio recorder for practice

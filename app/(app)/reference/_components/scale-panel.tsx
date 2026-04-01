@@ -14,7 +14,7 @@ export function ScalePanel({ tonic }: ScalePanelProps) {
   const scaleTypes = useMemo(() => listScaleTypes(), [])
   const [scaleType, setScaleType] = useState(scaleTypes[0] ?? "Major")
   const [positionIndex, setPositionIndex] = useState(0)
-  const [viewMode, setViewMode] = useState<"tab" | "fretboard">("fretboard")
+  const [viewMode, setViewMode] = useState<"tab" | "fretboard">("tab")
   const [labelMode, setLabelMode] = useState<"note" | "interval">("interval")
 
   const scale = useMemo(

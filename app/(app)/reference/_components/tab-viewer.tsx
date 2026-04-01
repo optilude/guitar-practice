@@ -27,7 +27,7 @@ export function TabViewer({ scale, positionIndex }: TabViewerProps) {
   return (
     <div
       ref={containerRef}
-      className="w-full overflow-x-auto rounded border border-border bg-card p-2 min-h-[130px]"
+      className="w-full overflow-x-auto rounded border border-border bg-card p-2 min-h-[160px]"
     />
   )
 }
