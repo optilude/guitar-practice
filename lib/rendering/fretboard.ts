@@ -108,9 +108,39 @@ export function getAllFretboardPositions(
 export function build3NPSPositions(
   tonic: string,
   scaleNotes: string[],
-  scaleIntervals: string[]
+  _scaleIntervals: string[]
 ): Set<string>[] {
-  return [] // stub — implemented in Task 3
+  if (scaleNotes.length < 7) return []
+
+  const scaleChroma = scaleNotes.map(n => Note.chroma(n) ?? -1)
+
+  // For each string, all frets 0–17 that are scale tones (extends to 17 for positional overlap)
+  const fretsByString: number[][] = OPEN_CHROMA.map(openCh => {
+    const frets: number[] = []
+    for (let f = 0; f <= 17; f++) {
+      if (scaleChroma.includes((openCh + f) % 12)) frets.push(f)
+    }
+    return frets
+  })
+
+  // 7 positions: one starting on each scale degree.
+  // startFret for position i = lowest fret of scale degree i on string 6.
+  return scaleChroma.map(degChroma => {
+    const inBox = new Set<string>()
+    let startFret = ((degChroma - OPEN_CHROMA[0] + 12) % 12)
+
+    for (let strIdx = 0; strIdx < 6; strIdx++) {
+      const guitarString = 6 - strIdx
+      // Take first 3 scale tones at or above startFret on this string
+      const chosen = fretsByString[strIdx].filter(f => f >= startFret).slice(0, 3)
+      // Only add frets within display range (0–15)
+      chosen.forEach(f => { if (f <= 15) inBox.add(`${guitarString}:${f}`) })
+      // Carry the lowest chosen fret forward as the anchor for the next string
+      if (chosen.length > 0) startFret = chosen[0]
+    }
+
+    return inBox
+  })
 }
 
 // ---------------------------------------------------------------------------
