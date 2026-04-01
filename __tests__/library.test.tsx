@@ -72,6 +72,7 @@ const mockCategory = {
       order: 1,
       categoryId: "1",
       sourceId: "s1",
+      source: { id: "s1", name: "HubGuitar", baseUrl: "https://hubguitar.com" },
       createdAt: new Date(),
     },
     {
@@ -82,6 +83,7 @@ const mockCategory = {
       order: 2,
       categoryId: "1",
       sourceId: "s1",
+      source: { id: "s1", name: "HubGuitar", baseUrl: "https://hubguitar.com" },
       createdAt: new Date(),
     },
   ],

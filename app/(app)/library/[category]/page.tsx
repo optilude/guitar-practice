@@ -11,7 +11,7 @@ export default async function CategoryPage({
 
   const data = await db.category.findUnique({
     where: { slug: category },
-    include: { topics: { orderBy: { order: "asc" } } },
+    include: { topics: { orderBy: { order: "asc" }, include: { source: true } } },
   })
 
   if (!data) return notFound()
@@ -35,7 +35,12 @@ export default async function CategoryPage({
               className="flex items-center justify-between py-2 text-base text-foreground hover:text-muted-foreground transition-colors"
             >
               <span>{topic.title}</span>
-              <span className="text-muted-foreground ml-4 flex-shrink-0">↗</span>
+              <span className="flex items-center gap-2 ml-4 flex-shrink-0">
+                <span className="text-xs text-muted-foreground border border-border px-1.5 py-0.5 rounded">
+                  {topic.source.name}
+                </span>
+                <span className="text-muted-foreground">↗</span>
+              </span>
             </a>
           </li>
         ))}

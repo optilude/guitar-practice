@@ -52,6 +52,9 @@ Session logs, streaks, and per-topic completion status (linked to Phase 2 librar
 
 # Known issues
 
+Chords:
+
+* There are reported issues with some of the chord voicings. We might need a better source library and/or renderer than chords-db/react-chord.
 * The triad viewer sometimes renders a dot outside the box when there is a 5-fret spread, e.g. C major 4-2-1 open 2nd inversion.
 * Some chord types are showing invalid barres e.g. 9th chords
 
@@ -81,8 +84,3 @@ If Fretboard.js does not easily support certain scales/arpeggios that we current
 
 Add the chromanic scale to the scale viewer. The purpose of this, in particular, is to be able to show the intervals for every note on the fretboard relative to a key, as well as showing all the note names.
 
-## Add source attribution
-
-We have included links to a large number of lessons from Hub Guitar. I want to make sure there is proper attribution. Please add a field to the database for each lesson that can record its provenance. Populated all the imported Hub Guitar links with "Hub Guitar". Add this as a label on each lesson in the UI.
-
-Please also confirm that on a completely fresh build, it is possible to import this set of lessons easily.
