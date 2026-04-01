@@ -118,6 +118,11 @@ describe("getScale - positionIndex", () => {
     const scale = getScale("C", "Major", 0)
     expect(scale.positions[0].label).toContain("Position 1")
   })
+
+  it("clamps out-of-bounds positionIndex to last valid position", () => {
+    const scale = getScale("C", "Major", 99)
+    expect(scale.positions).toHaveLength(1)
+  })
 })
 
 describe("getScale - G Major fret positions sanity", () => {

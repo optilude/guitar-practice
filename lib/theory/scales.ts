@@ -98,7 +98,7 @@ function buildPositions(
       const absoluteFret = rootFret + fretOffset
       const stringIndex = 6 - guitarString // 0=str6, 5=str1
       const openC = OPEN_CHROMA[stringIndex]
-      const noteChroma = (openC + absoluteFret + 1200) % 12
+      const noteChroma = (openC + absoluteFret + 1200) % 12 // +1200 keeps result positive when absoluteFret is negative
 
       // Only include notes that are actually in the scale
       const noteIndex = scaleNotes.findIndex(
@@ -149,7 +149,8 @@ export function getScale(
   let positions = buildPositions(patternKey, rootFret, notes, intervals)
 
   if (positionIndex !== undefined) {
-    positions = positions.slice(positionIndex, positionIndex + 1)
+    const clamped = Math.max(0, Math.min(positionIndex, positions.length - 1))
+    positions = positions.slice(clamped, clamped + 1)
   }
 
   return {
