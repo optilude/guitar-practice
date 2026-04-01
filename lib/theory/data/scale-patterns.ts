@@ -25,6 +25,9 @@ export type ScalePatternMap = Record<string, PatternPosition[]>
 // String 6 (low E) = 4, String 5 (A) = 9, String 4 (D) = 2,
 // String 3 (G) = 7, String 2 (B) = 11, String 1 (high e) = 4
 
+// NOTE: These patterns are shape-based. Each shape entry is [guitarString, fretOffset]
+// where fretOffset is relative to the root note's fret on string 6 (low E).
+// Pattern correctness should be verified by playing each position on a real guitar.
 const SCALE_PATTERNS: ScalePatternMap = {
   // =========================================================================
   // MAJOR (Ionian) — 5 CAGED positions
@@ -34,7 +37,7 @@ const SCALE_PATTERNS: ScalePatternMap = {
       label: "Position 1 (E shape)",
       shape: [
         [6, 0], [6, 2],
-        [5, -1], [5, 1], [5, 2],
+        [5, -1], [5, 0], [5, 2],
         [4, -1], [4, 1],
         [3, -1], [3, 1],
         [2, 0], [2, 2],
