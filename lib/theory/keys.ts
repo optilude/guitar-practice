@@ -40,7 +40,7 @@ const QUALITY_MAP: Record<string, string> = {
   "":    "major",
   m7:    "minor",
   m:     "minor",
-  "7":   "dominant",
+  "7":   "major",
   m7b5:  "diminished",
   dim7:  "diminished",
   aug:   "augmented",
