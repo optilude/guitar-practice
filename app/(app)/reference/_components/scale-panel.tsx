@@ -35,7 +35,7 @@ interface ScalePanelProps {
 export function ScalePanel({ tonic }: ScalePanelProps) {
   const scaleTypes = useMemo(() => listScaleTypes(), [])
   const [scaleType, setScaleType] = useState(scaleTypes[0] ?? "Major")
-  const [viewMode, setViewMode]   = useState<"tab" | "fretboard">("tab")
+  const [viewMode, setViewMode]   = useState<"tab" | "fretboard">("fretboard")
   const [labelMode, setLabelMode] = useState<"note" | "interval">("interval")
   const [boxSystem, setBoxSystem] = useState<BoxSystem>("none")
   const [boxIndex, setBoxIndex]   = useState(0)
@@ -84,27 +84,6 @@ export function ScalePanel({ tonic }: ScalePanelProps) {
         </select>
       </div>
 
-      {/* Tab position selector — shown only in tab view */}
-      {viewMode === "tab" && (
-        <div className="flex flex-col gap-1">
-          <label className="text-xs text-muted-foreground" htmlFor="scale-position-select">
-            Position
-          </label>
-          <select
-            id="scale-position-select"
-            value={safePositionIndex}
-            onChange={(e) => setPositionIndex(Number(e.target.value))}
-            className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
-          >
-            {Array.from({ length: positionCount }, (_, i) => (
-              <option key={i} value={i}>
-                {scale.positions[i]?.label ?? `Position ${i + 1}`}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-
       {/* View mode toggle + label mode */}
       <div className="flex items-center gap-4">
         <div className="flex rounded border border-border overflow-hidden text-sm">
@@ -144,6 +123,27 @@ export function ScalePanel({ tonic }: ScalePanelProps) {
           </label>
         )}
       </div>
+
+      {/* Tab position selector — shown only in tab view */}
+      {viewMode === "tab" && (
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-muted-foreground" htmlFor="scale-position-select">
+            Position
+          </label>
+          <select
+            id="scale-position-select"
+            value={safePositionIndex}
+            onChange={(e) => setPositionIndex(Number(e.target.value))}
+            className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
+          >
+            {Array.from({ length: positionCount }, (_, i) => (
+              <option key={i} value={i}>
+                {scale.positions[i]?.label ?? `Position ${i + 1}`}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {/* Fretboard box controls — shown only in fretboard view */}
       {viewMode === "fretboard" && availableBoxSystems.length > 1 && (

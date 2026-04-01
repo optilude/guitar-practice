@@ -211,10 +211,10 @@ export function renderFretboard(
 ): void {
   containerEl.innerHTML = ""
 
-  // Resolve CSS custom properties (theme colours)
-  const cs = typeof document !== "undefined" ? getComputedStyle(document.documentElement) : null
-  const accentColor = cs?.getPropertyValue("--accent").trim() || "#b45309"
-  const mutedColor  = cs?.getPropertyValue("--muted-foreground").trim() || "#737373"
+  // Use theme-aware hex colors (CSS vars use oklch format which D3/SVG may not parse)
+  const isDark = typeof document !== "undefined" && document.documentElement.classList.contains("dark")
+  const accentColor = isDark ? "#d97706" : "#b45309"  // amber-600 dark / amber-700 light
+  const mutedColor  = isDark ? "#888888" : "#737373"
 
   // Compute all positions of scale/arpeggio notes across the full fretboard
   const baseDots = getAllFretboardPositions(scale.tonic, scale.notes, scale.intervals)

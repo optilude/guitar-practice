@@ -45,8 +45,10 @@ describe("ScalePanel", () => {
     expect(screen.getByRole("option", { name: "Dorian" })).toBeDefined()
   })
 
-  it("renders the position selector", () => {
+  it("renders the position selector in tab mode", () => {
     render(<ScalePanel tonic="C" />)
+    // Position selector is only visible in tab mode (default is fretboard)
+    fireEvent.click(screen.getByRole("button", { name: /tab/i }))
     const select = screen.getByLabelText(/position/i)
     expect(select).toBeDefined()
     expect(screen.getByRole("option", { name: "Position 1" })).toBeDefined()

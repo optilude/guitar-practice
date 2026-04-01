@@ -42,8 +42,10 @@ describe("ArpeggioPanel", () => {
     expect(screen.getByRole("option", { name: "m7" })).toBeDefined()
   })
 
-  it("renders the position selector", () => {
+  it("renders the position selector in tab mode", () => {
     render(<ArpeggioPanel tonic="C" />)
+    // Position selector is only visible in tab mode (default is fretboard)
+    fireEvent.click(screen.getByRole("button", { name: /tab/i }))
     expect(screen.getByLabelText(/position/i)).toBeDefined()
   })
 
