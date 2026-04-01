@@ -1,6 +1,7 @@
 import { Chord, Note } from "tonal"
 import guitarDb from "@tombatossals/chords-db/lib/guitar.json"
-import type { ChordVoicing, GuitarChord } from "@/lib/theory/types"
+import type { ChordVoicing, GuitarChord, GuitarScale } from "@/lib/theory/types"
+import { getArpeggio } from "@/lib/theory/arpeggios"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = guitarDb as any
@@ -291,4 +292,48 @@ export function generateDropVoicing(voicing: ChordVoicing, drop: 2 | 3): ChordVo
     barre: undefined, // drop operation invalidates barre layout
     label: `Drop ${drop}`,
   }
+}
+
+// ---------------------------------------------------------------------------
+// Mapping from chords-db suffix strings to tonal.js chord symbols.
+// Used by getChordAsScale to bridge the chord panel's type identifiers
+// to the tonal.js symbols that getArpeggio() expects.
+// ---------------------------------------------------------------------------
+const CHORD_DB_TO_TONAL: Record<string, string> = {
+  // Shell chord types (contain spaces — matched before passthrough)
+  "maj7 shell":    "maj7",
+  "m7 shell":      "m7",
+  "7 shell":       "7",
+  "maj6 shell":    "6",
+  "dim7/m6 shell": "m6",
+  // Common suffixes that differ between chords-db and tonal.js
+  major: "maj",
+  minor: "m",
+  // Edge cases from DB_SUFFIX_TO_TONAL (chords-db suffixes not valid as tonal symbols)
+  alt:       "7alt",
+  aug9:      "9#5",
+  "maj7b5":  "M7b5",
+  mmaj7:     "mM7",
+  "mmaj7b5": "oM7",
+  mmaj9:     "mM9",
+  // Approximations: tonal.js has no exact maj11 or mmaj11 symbol.
+  // maj11 ≈ maj9 (omits the 11th); mmaj11 ≈ mM9 (omits the 11th).
+  // Better than showing only the root note.
+  maj11:     "maj9",
+  mmaj11:    "mM9",
+  // All other suffixes (maj7, m7, 7, dim7, dim, aug, 9, sus2, sus4, 7sus4,
+  // m7b5, 6, m6, add9, madd9, etc.) are already valid tonal symbols and
+  // fall through to the passthrough default below.
+}
+
+/**
+ * Returns a GuitarScale containing all positions of a chord's tones across
+ * the full fretboard. Accepts chords-db suffix strings (the same identifiers
+ * used by the chord panel). The returned GuitarScale.type is the tonal.js
+ * symbol, which is compatible with getArpeggioBoxSystems() and
+ * CHORD_TYPE_TO_SCALE from lib/rendering/fretboard.ts.
+ */
+export function getChordAsScale(tonic: string, dbSuffix: string): GuitarScale {
+  const tonalSym = CHORD_DB_TO_TONAL[dbSuffix] ?? dbSuffix
+  return getArpeggio(tonic, tonalSym)
 }
