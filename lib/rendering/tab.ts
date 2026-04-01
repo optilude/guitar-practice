@@ -1,8 +1,7 @@
 import type { GuitarScale } from "@/lib/theory/types"
 
 // VexFlow is imported via ESM so that vitest's vi.mock("vexflow") intercepts it in tests.
-// Components that call renderTab() should be loaded via next/dynamic with ssr:false to
-// keep VexFlow out of the SSR bundle.
+// Rendering only runs client-side via useEffect in viewer components.
 //
 // IMPORTANT: Before modifying this file, check the actual VexFlow API:
 //   node_modules/vexflow/build/types/src/index.d.ts

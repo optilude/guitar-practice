@@ -1,7 +1,7 @@
 import type { GuitarChord } from "@/lib/theory/types"
 
 // SVGuitar is imported via ESM so that vitest's vi.mock("svguitar") intercepts it in tests.
-// Components that call renderChordDiagram() should be loaded via next/dynamic with { ssr: false }.
+// Rendering only runs client-side via useEffect in viewer components.
 import * as svguitar from "svguitar"
 
 const { SVGuitarChord, ChordStyle } = svguitar as unknown as {
