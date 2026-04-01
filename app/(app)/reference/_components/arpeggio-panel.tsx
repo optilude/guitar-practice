@@ -87,7 +87,7 @@ export function ArpeggioPanel({ tonic }: ArpeggioPanelProps) {
             const newSystems = getArpeggioBoxSystems(newType)
             if (!newSystems.includes(boxSystem)) setBoxSystem("none")
           }}
-          className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
+          className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
         >
           <optgroup label="Common">
             {commonTypes.map((t) => (
@@ -144,7 +144,7 @@ export function ArpeggioPanel({ tonic }: ArpeggioPanelProps) {
             id="arpeggio-position-select"
             value={safePositionIndex}
             onChange={(e) => setPositionIndex(Number(e.target.value))}
-            className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
+            className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
           >
             {Array.from({ length: positionCount }, (_, i) => (
               <option key={i} value={i}>

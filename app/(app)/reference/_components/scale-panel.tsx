@@ -75,7 +75,7 @@ export function ScalePanel({ tonic }: ScalePanelProps) {
             const newSystems = getScaleBoxSystems(newType)
             if (!newSystems.includes(boxSystem)) setBoxSystem("none")
           }}
-          className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
+          className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
         >
           {scaleTypes.map((t) => (
             <option key={t} value={t}>{t}</option>
@@ -125,7 +125,7 @@ export function ScalePanel({ tonic }: ScalePanelProps) {
             id="scale-position-select"
             value={safePositionIndex}
             onChange={(e) => setPositionIndex(Number(e.target.value))}
-            className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
+            className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
           >
             {Array.from({ length: positionCount }, (_, i) => (
               <option key={i} value={i}>
