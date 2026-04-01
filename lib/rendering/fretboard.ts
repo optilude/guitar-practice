@@ -50,10 +50,13 @@ const PENTATONIC_TYPE_MAP: Record<string, string> = {
 }
 
 export const CHORD_TYPE_TO_SCALE: Record<string, string> = {
-  major:   "Major",  maj7: "Major",  maj9: "Major",  "6": "Major",  maj6: "Major",  add9: "Major",
-  minor:   "Aeolian", m:   "Aeolian",
-  m7:      "Dorian",  m9:  "Dorian",
+  // Major family
+  maj:     "Major",  maj7: "Major",  maj9: "Major",  "6": "Major",  add9: "Major",
+  // Minor family — all minor types use Dorian as parent scale (per design spec)
+  m:       "Dorian",  m6:  "Dorian",  m7: "Dorian",  m9: "Dorian",  madd9: "Dorian",
+  // Dominant family
   "7":     "Mixolydian", "9": "Mixolydian", "11": "Mixolydian", "13": "Mixolydian",
+  // Diminished / other
   m7b5:    "Locrian",
   mmaj7:   "Melodic Minor",  mmaj9: "Melodic Minor",
 }
