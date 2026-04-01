@@ -135,11 +135,13 @@ export function renderTab(
     try {
       const bbox = (svgEl as SVGSVGElement).getBBox()
       const pad = 8
+      const croppedHeight = Math.round(bbox.height + pad * 2)
       svgEl.setAttribute(
         "viewBox",
         `${bbox.x - pad} ${bbox.y - pad} ${bbox.width + pad * 2} ${bbox.height + pad * 2}`
       )
-      svgEl.setAttribute("height", String(Math.round(bbox.height + pad * 2)))
+      svgEl.setAttribute("height", String(croppedHeight))
+      svgEl.style.height = `${croppedHeight}px`
     } catch {
       // getBBox unavailable in non-browser environments (e.g. jsdom without layout)
     }
