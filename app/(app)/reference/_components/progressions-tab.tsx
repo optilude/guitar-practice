@@ -62,7 +62,7 @@ export function ProgressionsTab({ tonic }: ProgressionsTabProps) {
         <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">
           Chords in {tonic} · {prog.romanDisplay}
         </p>
-        <div className="flex items-center gap-1 overflow-x-auto pb-2">
+        <div role="group" aria-label="Progression chords" className="flex items-center gap-1 overflow-x-auto pb-2">
           {chords.map((chord, i) => (
             <div key={i} className="flex items-center gap-1 flex-shrink-0">
               {i > 0 && (
