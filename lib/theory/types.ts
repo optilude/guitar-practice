@@ -55,9 +55,13 @@ export interface CircleEntry {
 }
 
 export interface Progression {
-  name: string // "Jazz Blues", "II-V-I", "I-IV-V", etc.
-  description: string
-  degrees: string[] // ["I", "IV", "V"]
+  name: string          // slug identifier: "pop-standard"
+  displayName: string   // "Pop Standard"
+  romanDisplay: string  // "I – V – vi – IV"
+  description: string   // short prose
+  degrees: string[]     // ["I", "V", "vi", "IV"] — may include "♭VII"
+  mode: string          // TonalJS mode name: "ionian", "aeolian", "mixolydian"
+  recommendedScaleType: string // "Major Scale", "Natural Minor Scale", "Mixolydian Scale"
 }
 
 export interface ProgressionChord {
@@ -65,6 +69,19 @@ export interface ProgressionChord {
   nashville: string
   tonic: NoteName
   type: ChordType
+  quality: string  // "major" | "minor" | "dominant" | "diminished"
+  degree: number   // 1–7
+}
+
+export interface SoloScaleEntry {
+  scaleName: string  // type only, no tonic: "Mixolydian", "Minor Pentatonic"
+  hint?: string      // "bluesy", "lifted feel", "brighter", "adds ♭5 colour"
+}
+
+export interface SoloScales {
+  chordTonic: NoteName        // e.g. "G" — prepend to scale name for display
+  primary: SoloScaleEntry
+  additional: SoloScaleEntry[]
 }
 
 export interface Key {
