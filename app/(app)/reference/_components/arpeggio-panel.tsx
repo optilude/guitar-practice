@@ -47,7 +47,7 @@ export function ArpeggioPanel({ tonic }: ArpeggioPanelProps) {
   const commonTypes  = useMemo(() => ARPEGGIO_COMMON_TYPES.filter(t => chordTypes.includes(t)), [chordTypes])
   const otherTypes   = useMemo(() => chordTypes.filter(t => !ARPEGGIO_COMMON_TYPES.includes(t)), [chordTypes])
   const [chordType, setChordType] = useState(chordTypes[0] ?? "maj7")
-  const [viewMode, setViewMode]   = useState<"tab" | "fretboard">("fretboard")
+  const [viewMode, setViewMode]   = useState<"notes" | "fretboard">("fretboard")
   const [labelMode, setLabelMode] = useState<"note" | "interval">("interval")
   const [boxSystem, setBoxSystem] = useState<BoxSystem>("none")
   const [boxIndex, setBoxIndex]   = useState(0)
@@ -122,20 +122,20 @@ export function ArpeggioPanel({ tonic }: ArpeggioPanelProps) {
           Fretboard
         </button>
         <button
-          onClick={() => setViewMode("tab")}
+          onClick={() => setViewMode("notes")}
           className={cn(
             "px-3 py-1.5 transition-colors border-l border-border",
-            viewMode === "tab"
+            viewMode === "notes"
               ? "bg-accent text-accent-foreground"
               : "bg-card text-muted-foreground hover:bg-muted"
           )}
         >
-          Tab
+          Notes
         </button>
       </div>
 
-      {/* Tab position selector — shown only in tab view */}
-      {viewMode === "tab" && (
+      {/* Position selector — shown only in notes view */}
+      {viewMode === "notes" && (
         <div className="flex flex-col gap-1">
           <label className="text-xs text-muted-foreground" htmlFor="arpeggio-position-select">
             Position
@@ -218,7 +218,7 @@ export function ArpeggioPanel({ tonic }: ArpeggioPanelProps) {
       )}
 
       {/* Viewer */}
-      {viewMode === "tab" ? (
+      {viewMode === "notes" ? (
         <NotesViewer scale={arpeggio} positionIndex={safePositionIndex} />
       ) : (
         <FretboardViewer
