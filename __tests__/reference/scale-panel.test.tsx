@@ -48,10 +48,10 @@ describe("ScalePanel", () => {
     expect(screen.getByRole("option", { name: "Dorian" })).toBeDefined()
   })
 
-  it("renders the position selector in tab mode", () => {
+  it("renders the position selector in notes mode", () => {
     render(<ScalePanel tonic="C" />)
-    // Position selector is only visible in tab mode (default is fretboard)
-    fireEvent.click(screen.getByRole("button", { name: /tab/i }))
+    // Position selector is only visible in notes mode (default is fretboard)
+    fireEvent.click(screen.getByRole("button", { name: /notes/i }))
     const select = screen.getByLabelText(/position/i)
     expect(select).toBeDefined()
     expect(screen.getByRole("option", { name: "Position 1" })).toBeDefined()
@@ -69,9 +69,9 @@ describe("ScalePanel", () => {
     expect(screen.getByRole("button", { name: /fretboard/i })).toBeDefined()
   })
 
-  it("switches to tab view when Tab button is clicked", async () => {
+  it("switches to notes view when Notes button is clicked", async () => {
     render(<ScalePanel tonic="C" />)
-    const tabButton = screen.getByRole("button", { name: /tab/i })
+    const tabButton = screen.getByRole("button", { name: /notes/i })
     await userEvent.click(tabButton)
     // After switching, the 'Show intervals' checkbox should disappear
     expect(screen.queryByText(/show intervals/i)).toBeNull()

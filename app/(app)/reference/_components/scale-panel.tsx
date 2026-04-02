@@ -49,11 +49,10 @@ export function ScalePanel({ tonic }: ScalePanelProps) {
     [scaleTypes]
   )
   const [scaleType, setScaleType] = useState(scaleTypes[0] ?? "Major")
-  const [viewMode, setViewMode]   = useState<"tab" | "fretboard">("fretboard")
+  const [viewMode, setViewMode]   = useState<"notes" | "fretboard">("fretboard")
   const [labelMode, setLabelMode] = useState<"note" | "interval">("interval")
   const [boxSystem, setBoxSystem] = useState<BoxSystem>("none")
   const [boxIndex, setBoxIndex]   = useState(0)
-  // Tab view position selector (unchanged from original)
   const [positionIndex, setPositionIndex] = useState(0)
 
   const scale = useMemo(() => getScale(tonic, scaleType), [tonic, scaleType])
@@ -132,20 +131,20 @@ export function ScalePanel({ tonic }: ScalePanelProps) {
           Fretboard
         </button>
         <button
-          onClick={() => setViewMode("tab")}
+          onClick={() => setViewMode("notes")}
           className={cn(
             "px-3 py-1.5 transition-colors border-l border-border",
-            viewMode === "tab"
+            viewMode === "notes"
               ? "bg-accent text-accent-foreground"
               : "bg-card text-muted-foreground hover:bg-muted"
           )}
         >
-          Tab
+          Notes
         </button>
       </div>
 
-      {/* Tab position selector — shown only in tab view */}
-      {viewMode === "tab" && (
+      {/* Position selector — shown only in notes view */}
+      {viewMode === "notes" && (
         <div className="flex flex-col gap-1">
           <label className="text-xs text-muted-foreground" htmlFor="scale-position-select">
             Position
@@ -228,7 +227,7 @@ export function ScalePanel({ tonic }: ScalePanelProps) {
       )}
 
       {/* Viewer */}
-      {viewMode === "tab" ? (
+      {viewMode === "notes" ? (
         <NotesViewer scale={scale} positionIndex={safePositionIndex} />
       ) : (
         <FretboardViewer
