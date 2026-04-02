@@ -5,8 +5,11 @@ import userEvent from "@testing-library/user-event"
 // Mock all rendering-layer dependencies
 vi.mock("vexflow", () => ({
   Renderer: class { static Backends = { SVG: "svg" }; resize = vi.fn(); getContext = vi.fn(() => ({})) },
-  TabStave: class { addClef = vi.fn().mockReturnThis(); setContext = vi.fn().mockReturnThis(); draw = vi.fn() },
-  TabNote: class { constructor(public c: unknown) {} },
+  Stave: class { addClef = vi.fn().mockReturnThis(); setContext = vi.fn().mockReturnThis(); draw = vi.fn(); getBottomLineBottomY = vi.fn(() => 100); getNoteStartX = vi.fn(() => 80); setNoteStartX = vi.fn() },
+  StaveNote: class { constructor(public c: unknown) {} setStyle = vi.fn(); addModifier = vi.fn() },
+  Accidental: class { constructor(public type: string) {} },
+  TabStave: class { addClef = vi.fn().mockReturnThis(); setContext = vi.fn().mockReturnThis(); draw = vi.fn(); getBottomLineBottomY = vi.fn(() => 200); getNoteStartX = vi.fn(() => 80); setNoteStartX = vi.fn() },
+  TabNote: class { constructor(public c: unknown) {} getAbsoluteX = vi.fn(() => 50) },
   Formatter: { FormatAndDraw: vi.fn() },
 }))
 vi.mock("svguitar", () => ({
