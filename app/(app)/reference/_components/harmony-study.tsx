@@ -38,7 +38,7 @@ export function HarmonyStudy({ tonic }: HarmonyStudyProps) {
             tabIndex={tab === id ? 0 : -1}
             onClick={() => setTab(id)}
             className={cn(
-              "px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors capitalize",
+              "px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors",
               tab === id
                 ? "border-accent text-accent"
                 : "border-transparent text-muted-foreground hover:text-foreground"
