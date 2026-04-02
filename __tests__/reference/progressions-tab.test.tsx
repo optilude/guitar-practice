@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest"
-import { render, screen } from "@testing-library/react"
+import { render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 
 vi.mock("tonal", () => ({
@@ -10,9 +10,12 @@ vi.mock("@/lib/theory", () => ({
   listProgressions: () => [
     {
       name: "pop-standard",
-      displayName: "Pop Standard",
+      displayName: "Pop Axis",
+      category: "Pop",
       romanDisplay: "I – V – vi – IV",
-      description: "The most common pop progression",
+      description: "The most widely used progression in modern pop",
+      examples: "Let It Be, No Woman No Cry, With or Without You",
+      notes: "The most widely used progression in modern pop.",
       degrees: ["I", "V", "vi", "IV"],
       mode: "ionian",
       recommendedScaleType: "Major Scale",
@@ -20,9 +23,12 @@ vi.mock("@/lib/theory", () => ({
     {
       name: "jazz-turnaround",
       displayName: "Jazz Turnaround",
-      romanDisplay: "ii – V – I",
-      description: "The most important cadence in jazz",
-      degrees: ["ii", "V", "I"],
+      category: "Jazz",
+      romanDisplay: "Imaj7 – VI7 – II7 – V7",
+      description: "Secondary dominants create harmonic momentum",
+      examples: "Rhythm Changes endings, many standard codas",
+      notes: "Secondary dominants replace diatonic chords to create harmonic momentum.",
+      degrees: ["I", "VI", "II", "V"],
       mode: "ionian",
       recommendedScaleType: "Major Scale",
     },
@@ -68,8 +74,9 @@ describe("ProgressionsTab", () => {
 
   it("shows per-chord scale panel with Also works when chord is clicked", async () => {
     render(<ProgressionsTab tonic="C" />)
-    const buttons = screen.getAllByRole("button")
-    await userEvent.click(buttons[1]) // click second chord (G7)
+    const chordGroup = screen.getByRole("group", { name: /progression chords/i })
+    const chordButtons = within(chordGroup).getAllByRole("button")
+    await userEvent.click(chordButtons[1]) // click second chord (G7)
     expect(screen.getByText(/scales to solo over/i)).toBeDefined()
     expect(screen.getByText(/also works/i)).toBeDefined()
     expect(screen.getByText(/minor pentatonic/i)).toBeDefined()
@@ -77,17 +84,19 @@ describe("ProgressionsTab", () => {
 
   it("hides per-chord panel when same chord is clicked again", async () => {
     render(<ProgressionsTab tonic="C" />)
-    const buttons = screen.getAllByRole("button")
-    await userEvent.click(buttons[1]) // select second chord
+    const chordGroup = screen.getByRole("group", { name: /progression chords/i })
+    const chordButtons = within(chordGroup).getAllByRole("button")
+    await userEvent.click(chordButtons[1]) // select second chord
     expect(screen.getByText(/scales to solo over/i)).toBeDefined()
-    await userEvent.click(buttons[1]) // deselect
+    await userEvent.click(chordButtons[1]) // deselect
     expect(screen.queryByText(/scales to solo over/i)).toBeNull()
   })
 
   it("resets to first chord when progression changes", async () => {
     render(<ProgressionsTab tonic="C" />)
-    const buttons = screen.getAllByRole("button")
-    await userEvent.click(buttons[1]) // select chord at index 1
+    const chordGroup = screen.getByRole("group", { name: /progression chords/i })
+    const chordButtons = within(chordGroup).getAllByRole("button")
+    await userEvent.click(chordButtons[1]) // select chord at index 1
     await userEvent.selectOptions(
       screen.getByRole("combobox", { name: /progression/i }),
       "jazz-turnaround"

@@ -2,16 +2,19 @@ import { describe, it, expect } from "vitest"
 import { listProgressions, getProgression } from "@/lib/theory/progressions"
 
 describe("listProgressions", () => {
-  it("returns exactly 15 progressions", () => {
-    expect(listProgressions()).toHaveLength(15)
+  it("returns exactly 26 progressions", () => {
+    expect(listProgressions()).toHaveLength(26)
   })
 
   it("every progression has required fields", () => {
     for (const p of listProgressions()) {
       expect(typeof p.name).toBe("string")
       expect(typeof p.displayName).toBe("string")
+      expect(typeof p.category).toBe("string")
       expect(typeof p.romanDisplay).toBe("string")
       expect(typeof p.description).toBe("string")
+      expect(typeof p.examples).toBe("string")
+      expect(typeof p.notes).toBe("string")
       expect(Array.isArray(p.degrees)).toBe(true)
       expect(p.degrees.length).toBeGreaterThan(0)
       expect(typeof p.mode).toBe("string")
@@ -24,6 +27,16 @@ describe("listProgressions", () => {
     expect(names).toContain("pop-standard")
     expect(names).toContain("jazz-turnaround")
     expect(names).toContain("folk-rock")
+  })
+
+  it("covers all six categories", () => {
+    const cats = new Set(listProgressions().map((p) => p.category))
+    expect(cats).toContain("Pop")
+    expect(cats).toContain("Blues")
+    expect(cats).toContain("Jazz")
+    expect(cats).toContain("Rock")
+    expect(cats).toContain("Folk / Country")
+    expect(cats).toContain("Classical / Modal")
   })
 })
 
@@ -62,8 +75,17 @@ describe("getProgression", () => {
     expect(chords.map((c) => c.tonic)).toEqual(["A", "F", "C", "G"])
   })
 
-  it("resolves jazz-turnaround in C: Dm7 → G7 → Cmaj7", () => {
+  it("resolves jazz-turnaround in C: Cmaj7 → Am7 → Dm7 → G7 (I–VI–II–V)", () => {
     const chords = getProgression("jazz-turnaround", "C")
+    expect(chords).toHaveLength(4)
+    expect(chords[0].tonic).toBe("C")
+    expect(chords[1].tonic).toBe("A")
+    expect(chords[2].tonic).toBe("D")
+    expect(chords[3].tonic).toBe("G")
+  })
+
+  it("resolves ii-v-i-major in C: Dm7 → G7 → Cmaj7", () => {
+    const chords = getProgression("ii-v-i-major", "C")
     expect(chords).toHaveLength(3)
     expect(chords[0].tonic).toBe("D")
     expect(chords[0].type).toBe("m7")

@@ -40,7 +40,8 @@ Run a practice session: timer, metronome, flashcards, notes. Session logs, strea
 * Admin UI: Remove users, manage library content
 * Allow users to add their own, personal content to the library via UI
 
-* Harmonic Minor and Melodic Minor mode systems for harmony viewer
+* Add Blues as a "mode" with all 7th chords and different linked scales?
+* Harmonic Minor and Melodic Minor mode systems?
 * Are there other relevant harmony systems?
 
 * Enrich the set of "scales to solo over this chord" options
@@ -52,22 +53,17 @@ Run a practice session: timer, metronome, flashcards, notes. Session logs, strea
 * Add more progressions
 * Specifically, add blues progressions (regular, jazz, minor, etc.) - these may require special consideration for soloing scales
 
-
-
 * More streaks/gamification features
 
 * Audio recorder for practice (note this will really change data storage and storage costs)
 
 # Known issues
 
-UX:
-
-* Reference view does not work well in dark mode - none of the lines are visible so we only see text
-
 Scales:
 
+* When switching between light and dark mode, the stave view is corrupted until the view is changed (e.g. click a different tab in the UI)
 * Scales note viewer has standard notation on a stave. Some of the low notes appear really low - are they actually correct? They may be transposed down an octive or two.
-* Look fine now but we need to more formally test their correctness
+* Find a way to test scale patterns and tabs for accuracy
 
 Chords:
 

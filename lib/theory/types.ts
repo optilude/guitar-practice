@@ -57,8 +57,11 @@ export interface CircleEntry {
 export interface Progression {
   name: string          // slug identifier: "pop-standard"
   displayName: string   // "Pop Standard"
+  category: string      // "Pop" | "Blues" | "Jazz" | "Rock" | "Folk / Country" | "Classical / Modal"
   romanDisplay: string  // "I – V – vi – IV"
   description: string   // short prose
+  examples: string      // comma-separated song examples
+  notes: string         // explanatory note for the info popover
   degrees: string[]     // ["I", "V", "vi", "IV"] — may include "♭VII"
   mode: string          // TonalJS mode name: "ionian", "aeolian", "mixolydian"
   recommendedScaleType: string // "Major Scale", "Natural Minor Scale", "Mixolydian Scale"
