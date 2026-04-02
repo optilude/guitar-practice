@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest"
+import { describe, it, expect, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 
@@ -60,7 +60,7 @@ describe("HarmonyTab", () => {
   it("hides solo scales panel when same chord is clicked again (toggle)", async () => {
     render(<HarmonyTab tonic="C" />)
     const buttons = screen.getAllByRole("button")
-    const g7Button = buttons.find((b) => b.textContent?.includes("G7") || b.textContent?.includes("7"))!
+    const g7Button = buttons[4] // degree 5 (G7), same index as the mode-change test
     await userEvent.click(g7Button)
     expect(screen.queryByText(/click a chord/i)).toBeNull()
     await userEvent.click(g7Button)
