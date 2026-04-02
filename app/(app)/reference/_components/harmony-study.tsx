@@ -11,6 +11,8 @@ interface HarmonyStudyProps {
 
 type HarmonySubTab = "harmony" | "progressions"
 
+const TABS: HarmonySubTab[] = ["harmony", "progressions"]
+
 export function HarmonyStudy({ tonic }: HarmonyStudyProps) {
   const [tab, setTab] = useState<HarmonySubTab>("harmony")
 
@@ -19,15 +21,21 @@ export function HarmonyStudy({ tonic }: HarmonyStudyProps) {
       {/* Sub-tab bar */}
       <div
         role="tablist"
-        aria-label="Harmony study panels"
+        aria-label="Harmony study tabs"
         className="flex border-b border-border mb-4"
+        onKeyDown={(e) => {
+          const current = TABS.indexOf(tab)
+          if (e.key === "ArrowRight") setTab(TABS[(current + 1) % TABS.length])
+          if (e.key === "ArrowLeft") setTab(TABS[(current - 1 + TABS.length) % TABS.length])
+        }}
       >
-        {(["harmony", "progressions"] as const).map((id) => (
+        {TABS.map((id) => (
           <button
             key={id}
+            id={`harmony-study-tab-${id}`}
             role="tab"
             aria-selected={tab === id}
-            aria-controls="harmony-study-panel"
+            tabIndex={tab === id ? 0 : -1}
             onClick={() => setTab(id)}
             className={cn(
               "px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors capitalize",
@@ -36,13 +44,17 @@ export function HarmonyStudy({ tonic }: HarmonyStudyProps) {
                 : "border-transparent text-muted-foreground hover:text-foreground"
             )}
           >
-            {id === "harmony" ? "Harmony" : "Progressions"}
+            {id.charAt(0).toUpperCase() + id.slice(1)}
           </button>
         ))}
       </div>
 
       {/* Tab panel */}
-      <div id="harmony-study-panel" role="tabpanel">
+      <div
+        id="harmony-study-panel"
+        role="tabpanel"
+        aria-labelledby={`harmony-study-tab-${tab}`}
+      >
         {tab === "harmony" && <HarmonyTab tonic={tonic} />}
         {tab === "progressions" && <ProgressionsTab tonic={tonic} />}
       </div>
