@@ -112,7 +112,7 @@ describe("ReferencePage", () => {
     expect(cElements.length).toBeGreaterThanOrEqual(1)
   })
 
-  it("renders Harmony and Progressions tab buttons in the Harmony Study panel", () => {
+  it("renders Harmony and Progressions tab buttons", () => {
     render(<ReferencePage />)
     expect(screen.getByRole("tab", { name: "Harmony" })).toBeDefined()
     expect(screen.getByRole("tab", { name: "Progressions" })).toBeDefined()

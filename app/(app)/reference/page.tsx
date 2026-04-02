@@ -22,6 +22,8 @@ export default function ReferencePage() {
   const [selectedKey, setSelectedKey] = useState("C")
   const [activeTab, setActiveTab] = useState<PanelTab>("scales")
 
+  const TAB_IDS = TABS.map((t) => t.id)
+
   return (
     <div className="pt-6 space-y-6">
       <div>
@@ -51,6 +53,11 @@ export default function ReferencePage() {
           role="tablist"
           aria-label="Reference panels"
           className="flex border-b border-border"
+          onKeyDown={(e) => {
+            const current = TAB_IDS.indexOf(activeTab)
+            if (e.key === "ArrowRight") setActiveTab(TAB_IDS[(current + 1) % TAB_IDS.length])
+            if (e.key === "ArrowLeft") setActiveTab(TAB_IDS[(current - 1 + TAB_IDS.length) % TAB_IDS.length])
+          }}
         >
           {TABS.map((tab) => (
             <button
@@ -59,6 +66,7 @@ export default function ReferencePage() {
               aria-selected={activeTab === tab.id}
               aria-controls={`panel-${tab.id}`}
               id={`tab-${tab.id}`}
+              tabIndex={activeTab === tab.id ? 0 : -1}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
                 "px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors",
