@@ -21,9 +21,11 @@ vi.mock("svguitar", () => ({
     draw = vi.fn()
   },
 }))
-
 vi.mock("@tombatossals/react-chords/lib/Chord", () => ({
   default: () => <svg data-testid="chord-diagram" />,
+}))
+vi.mock("tonal", () => ({
+  Scale: { get: () => ({ notes: ["C", "D", "E", "F", "G", "A", "B"] }) },
 }))
 
 // Mock theory engine
@@ -64,6 +66,31 @@ vi.mock("@/lib/theory", () => ({
     intervals: ["1P", "3M", "5P"],
     positions: [{ label: "Position 1", positions: [{ string: 6, fret: 8, interval: "R" }] }],
   }),
+  // New: Harmony Study functions
+  getDiatonicChords: () => [
+    { degree: 1, roman: "I",  tonic: "C", type: "maj7", quality: "major",    nashville: "1" },
+    { degree: 5, roman: "V",  tonic: "G", type: "7",    quality: "dominant", nashville: "5" },
+    { degree: 6, roman: "vi", tonic: "A", type: "m7",   quality: "minor",    nashville: "6" },
+  ],
+  getSoloScales: () => ({
+    chordTonic: "G",
+    primary: { scaleName: "Mixolydian" },
+    additional: [],
+  }),
+  listProgressions: () => [
+    {
+      name: "pop-standard",
+      displayName: "Pop Standard",
+      romanDisplay: "I – V – vi – IV",
+      description: "The most common pop progression",
+      degrees: ["I", "V", "vi", "IV"],
+      mode: "ionian",
+      recommendedScaleType: "Major Scale",
+    },
+  ],
+  getProgression: (_name: string, tonic: string) => [
+    { roman: "I", nashville: "1", tonic, type: "maj7", quality: "major", degree: 1 },
+  ],
 }))
 
 import ReferencePage from "@/app/(app)/reference/page"
@@ -81,16 +108,22 @@ describe("ReferencePage", () => {
 
   it("defaults to key C shown in the circle centre", () => {
     render(<ReferencePage />)
-    // The centre text in CircleOfFifths shows the selected key; it appears multiple times
     const cElements = screen.getAllByText("C")
     expect(cElements.length).toBeGreaterThanOrEqual(1)
   })
 
-  it("renders three tab buttons: Scales, Arpeggios, Chords", () => {
+  it("renders Harmony and Progressions tab buttons in the Harmony Study panel", () => {
+    render(<ReferencePage />)
+    expect(screen.getByRole("tab", { name: "Harmony" })).toBeDefined()
+    expect(screen.getByRole("tab", { name: "Progressions" })).toBeDefined()
+  })
+
+  it("renders Study Tools tab buttons: Scales, Arpeggios, Chords, Triads", () => {
     render(<ReferencePage />)
     expect(screen.getByRole("tab", { name: "Scales" })).toBeDefined()
     expect(screen.getByRole("tab", { name: "Arpeggios" })).toBeDefined()
     expect(screen.getByRole("tab", { name: "Chords" })).toBeDefined()
+    expect(screen.getByRole("tab", { name: "Triads" })).toBeDefined()
   })
 
   it("defaults to the Scales tab", () => {
@@ -103,7 +136,6 @@ describe("ReferencePage", () => {
     render(<ReferencePage />)
     await userEvent.click(screen.getByRole("tab", { name: "Chords" }))
     expect(screen.getByRole("tab", { name: "Chords" })).toHaveAttribute("aria-selected", "true")
-    // Chord type selector should now be visible
     expect(screen.getByLabelText(/chord type/i)).toBeDefined()
   })
 
@@ -117,7 +149,6 @@ describe("ReferencePage", () => {
     render(<ReferencePage />)
     const gButton = screen.getByRole("button", { name: "Select key G" })
     await userEvent.click(gButton)
-    // G should now appear in the centre (multiple elements) and the G button should be pressed
     expect(gButton).toHaveAttribute("aria-pressed", "true")
   })
 })
