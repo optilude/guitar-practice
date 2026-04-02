@@ -85,11 +85,16 @@ export function renderNotesView(
   const context = renderer.getContext()
 
   // ── Notation stave (treble clef) ───────────────────────────────────────────
-  const notationStave = new Stave(10, 10, 490)
+  // space_above_staff_ln: 1 (vs default 4) places the first staff line at
+  // stave.y + 10 instead of stave.y + 40, eliminating most of the whitespace
+  // that would otherwise appear above the stave in the auto-cropped SVG.
+  const notationStave = new Stave(10, 10, 490, { space_above_staff_ln: 1 })
   notationStave.addClef("treble").setContext(context).draw()
 
   // ── Tab stave, positioned below notation stave ─────────────────────────────
-  const tabStaveY = notationStave.getBottomLineBottomY() + 15
+  // 40px gap (vs 15) gives ledger lines below the bottom staff line room to
+  // breathe; notes in keys like G or E can extend 25–35px below getBottomLineBottomY.
+  const tabStaveY = notationStave.getBottomLineBottomY() + 40
   const tabStave  = new TabStave(10, tabStaveY, 490)
   tabStave.addClef("tab").setContext(context).draw()
 
