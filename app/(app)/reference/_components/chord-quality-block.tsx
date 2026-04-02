@@ -1,3 +1,5 @@
+"use client"
+
 import { cn } from "@/lib/utils"
 
 interface ChordQualityBlockProps {
@@ -37,6 +39,7 @@ export function ChordQualityBlock({
       onClick={onClick}
       className={cn(
         "flex flex-col items-center rounded-lg px-3 py-2.5 text-center transition-all min-w-[68px] flex-shrink-0",
+        "focus:outline-none focus:ring-1 focus:ring-accent",
         colors.bg,
         isSelected
           ? cn("border-2 ring-2 ring-offset-1 ring-offset-background", colors.border)
