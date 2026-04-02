@@ -1,0 +1,73 @@
+import { describe, it, expect, vi } from "vitest"
+import { render, screen } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
+
+vi.mock("tonal", () => ({
+  Scale: { get: () => ({ notes: ["C", "D", "E", "F", "G", "A", "B"] }) },
+}))
+
+vi.mock("@/lib/theory", () => ({
+  getDiatonicChords: () => [
+    { degree: 1, roman: "I",  tonic: "C", type: "maj7", quality: "major",    nashville: "1" },
+    { degree: 5, roman: "V",  tonic: "G", type: "7",    quality: "dominant", nashville: "5" },
+    { degree: 6, roman: "vi", tonic: "A", type: "m7",   quality: "minor",    nashville: "6" },
+  ],
+  getSoloScales: () => ({
+    chordTonic: "G",
+    primary: { scaleName: "Mixolydian" },
+    additional: [],
+  }),
+  listProgressions: () => [
+    {
+      name: "pop-standard",
+      displayName: "Pop Standard",
+      romanDisplay: "I – V – vi – IV",
+      description: "The most common pop progression",
+      degrees: ["I", "V", "vi", "IV"],
+      mode: "ionian",
+      recommendedScaleType: "Major Scale",
+    },
+  ],
+  getProgression: (_name: string, tonic: string) => [
+    { roman: "I", nashville: "1", tonic, type: "maj7", quality: "major", degree: 1 },
+    { roman: "V", nashville: "5", tonic: "G", type: "7", quality: "dominant", degree: 5 },
+  ],
+}))
+
+import { HarmonyStudy } from "@/app/(app)/reference/_components/harmony-study"
+
+describe("HarmonyStudy", () => {
+  it("renders Harmony and Progressions tab buttons", () => {
+    render(<HarmonyStudy tonic="C" />)
+    expect(screen.getByRole("tab", { name: "Harmony" })).toBeDefined()
+    expect(screen.getByRole("tab", { name: "Progressions" })).toBeDefined()
+  })
+
+  it("defaults to Harmony tab active", () => {
+    render(<HarmonyStudy tonic="C" />)
+    const harmonyTab = screen.getByRole("tab", { name: "Harmony" })
+    expect(harmonyTab).toHaveAttribute("aria-selected", "true")
+  })
+
+  it("Progressions tab is not selected by default", () => {
+    render(<HarmonyStudy tonic="C" />)
+    const progressionsTab = screen.getByRole("tab", { name: "Progressions" })
+    expect(progressionsTab).toHaveAttribute("aria-selected", "false")
+  })
+
+  it("clicking Progressions tab shows progressions content", async () => {
+    render(<HarmonyStudy tonic="C" />)
+    await userEvent.click(screen.getByRole("tab", { name: "Progressions" }))
+    expect(screen.getByRole("tab", { name: "Progressions" })).toHaveAttribute("aria-selected", "true")
+    // ProgressionsTab shows a progression selector
+    expect(screen.getByRole("combobox", { name: /progression/i })).toBeDefined()
+  })
+
+  it("clicking Harmony tab after Progressions returns to harmony content", async () => {
+    render(<HarmonyStudy tonic="C" />)
+    await userEvent.click(screen.getByRole("tab", { name: "Progressions" }))
+    await userEvent.click(screen.getByRole("tab", { name: "Harmony" }))
+    expect(screen.getByRole("tab", { name: "Harmony" })).toHaveAttribute("aria-selected", "true")
+    expect(screen.getByRole("combobox", { name: /mode/i })).toBeDefined()
+  })
+})
