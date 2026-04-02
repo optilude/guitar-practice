@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react"
 import { getArpeggio, listChordTypes } from "@/lib/theory"
-import { TabViewer } from "./tab-viewer"
+import { NotesViewer } from "./notes-viewer"
 import { FretboardViewer } from "./fretboard-viewer"
 import {
   getArpeggioBoxSystems,
@@ -219,7 +219,7 @@ export function ArpeggioPanel({ tonic }: ArpeggioPanelProps) {
 
       {/* Viewer */}
       {viewMode === "tab" ? (
-        <TabViewer scale={arpeggio} positionIndex={safePositionIndex} />
+        <NotesViewer scale={arpeggio} positionIndex={safePositionIndex} />
       ) : (
         <FretboardViewer
           scale={arpeggio}

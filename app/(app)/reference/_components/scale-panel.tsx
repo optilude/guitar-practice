@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react"
 import { getScale, listScaleTypes } from "@/lib/theory"
-import { TabViewer } from "./tab-viewer"
+import { NotesViewer } from "./notes-viewer"
 import { FretboardViewer } from "./fretboard-viewer"
 import { getScaleBoxSystems, CAGED_BOX_LABELS } from "@/lib/rendering/fretboard"
 import type { BoxSystem } from "@/lib/rendering/fretboard"
@@ -229,7 +229,7 @@ export function ScalePanel({ tonic }: ScalePanelProps) {
 
       {/* Viewer */}
       {viewMode === "tab" ? (
-        <TabViewer scale={scale} positionIndex={safePositionIndex} />
+        <NotesViewer scale={scale} positionIndex={safePositionIndex} />
       ) : (
         <FretboardViewer
           scale={scale}
