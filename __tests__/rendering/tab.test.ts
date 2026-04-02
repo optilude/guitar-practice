@@ -6,9 +6,12 @@ import type { GuitarScale } from "@/lib/theory/types"
 // vi.mock() is hoisted to the top of the file, so variables used inside the
 // factory must be declared with vi.hoisted() to be available at hoist time.
 // ---------------------------------------------------------------------------
-const { mockDraw, mockFormatAndDraw, mockSetContext, mockAddClef } = vi.hoisted(() => ({
+const { mockDraw, mockFormat, mockVoiceDraw, mockVoiceAddTickables, mockVoiceSetMode, mockSetContext, mockAddClef } = vi.hoisted(() => ({
   mockDraw: vi.fn(),
-  mockFormatAndDraw: vi.fn(),
+  mockFormat: vi.fn(),
+  mockVoiceDraw: vi.fn(),
+  mockVoiceAddTickables: vi.fn().mockReturnThis(),
+  mockVoiceSetMode: vi.fn().mockReturnThis(),
   mockSetContext: vi.fn().mockReturnThis(),
   mockAddClef: vi.fn().mockReturnThis(),
 }))
@@ -48,8 +51,13 @@ vi.mock("vexflow", () => ({
     setStyle = vi.fn()
     getAbsoluteX = vi.fn(() => 50)
   },
-  Formatter: {
-    FormatAndDraw: mockFormatAndDraw,
+  Formatter: class MockFormatter {
+    format = mockFormat
+  },
+  Voice: class MockVoice {
+    addTickables = mockVoiceAddTickables
+    setMode = mockVoiceSetMode
+    draw = mockVoiceDraw
   },
 }))
 
@@ -84,7 +92,10 @@ describe("renderNotesView", () => {
   beforeEach(() => {
     container = document.createElement("div")
     mockDraw.mockClear()
-    mockFormatAndDraw.mockClear()
+    mockFormat.mockClear()
+    mockVoiceDraw.mockClear()
+    mockVoiceAddTickables.mockClear()
+    mockVoiceSetMode.mockClear()
     mockAddClef.mockClear()
     mockSetContext.mockClear()
   })
@@ -103,30 +114,35 @@ describe("renderNotesView", () => {
 
   it("does not throw when positionIndex is out of range", () => {
     expect(() => renderNotesView(container, SCALE, 99)).not.toThrow()
-    expect(mockFormatAndDraw).not.toHaveBeenCalled()
+    expect(mockFormat).not.toHaveBeenCalled()
   })
 
   it("does not throw for an empty positions array", () => {
     const emptyScale: GuitarScale = { ...SCALE, positions: [] }
     expect(() => renderNotesView(container, emptyScale, 0)).not.toThrow()
-    expect(mockFormatAndDraw).not.toHaveBeenCalled()
+    expect(mockFormat).not.toHaveBeenCalled()
   })
 
-  it("calls FormatAndDraw twice (once per stave) with notes sorted low-string-first", () => {
+  it("uses a shared Formatter for both voices and draws each voice on its stave", () => {
     renderNotesView(container, SCALE, 0)
-    expect(mockFormatAndDraw).toHaveBeenCalledTimes(2)
-    // Second call is the tab stave; verify tab notes are sorted low-string-first
+    // format() called once with both voices; voice.draw() called once per stave
+    expect(mockFormat).toHaveBeenCalledTimes(1)
+    expect(mockVoiceDraw).toHaveBeenCalledTimes(2)
+  })
+
+  it("passes tab notes sorted low-string-first to Voice, with notes from string 6 first", () => {
+    renderNotesView(container, SCALE, 0)
+    // addTickables is called twice: first for staveNotes, second for tabNotes
     const tabNotes: Array<{ config: { positions: Array<{ str: number; fret: string }> } }> =
-      mockFormatAndDraw.mock.calls[1][2]
-    // First note should be from string 6 (lowest)
+      mockVoiceAddTickables.mock.calls[1][0]
     expect(tabNotes[0].config.positions[0].str).toBe(6)
   })
 
   it("converts fret numbers to strings in TabNote positions", () => {
     renderNotesView(container, SCALE, 0)
-    // Second FormatAndDraw call is the tab stave
+    // addTickables second call = tab notes
     const tabNotes: Array<{ config: { positions: Array<{ str: number; fret: string }> } }> =
-      mockFormatAndDraw.mock.calls[1][2]
+      mockVoiceAddTickables.mock.calls[1][0]
     for (const note of tabNotes) {
       expect(typeof note.config.positions[0].fret).toBe("string")
     }

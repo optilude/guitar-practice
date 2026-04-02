@@ -8,7 +8,7 @@ import type { GuitarScale } from "@/lib/theory/types"
 // VexFlow 5.x uses named exports directly.
 import * as VexFlow from "vexflow"
 
-const { Renderer, Stave, StaveNote, Accidental, TabStave, TabNote, Formatter } = VexFlow as unknown as {
+const { Renderer, Stave, StaveNote, Accidental, TabStave, TabNote, Formatter, Voice } = VexFlow as unknown as {
   Renderer: any
   Stave: any
   StaveNote: any
@@ -16,6 +16,7 @@ const { Renderer, Stave, StaveNote, Accidental, TabStave, TabNote, Formatter } =
   TabStave: any
   TabNote: any
   Formatter: any
+  Voice: any
 }
 
 // Chroma values for open strings (index 0 = string 6 low E, index 5 = string 1 high e)
@@ -129,14 +130,27 @@ export function renderNotesView(
 
   // ── Tab notes (unchanged from original renderTab) ──────────────────────────
   const tabNotes = sorted.map((p) => {
-    const note  = new TabNote({ positions: [{ str: p.string, fret: String(p.fret) }], duration: "q" })
+    const note  = new TabNote({ positions: [{ str: p.string, fret: String(p.fret) }], duration: "w" })
     const color = intervalColor(p.interval, accentColor, mutedColor)
     note.setStyle({ fillStyle: color, strokeStyle: color })
     return note
   })
 
-  Formatter.FormatAndDraw(context, notationStave, staveNotes)
-  Formatter.FormatAndDraw(context, tabStave, tabNotes)
+  // Co-format both voices with a shared Formatter so that accidentals in the
+  // notation stave don't shift note positions relative to the tab stave.
+  // Two independent FormatAndDraw calls each compute their own spacing, which
+  // diverges when accidentals claim extra horizontal space. A single format()
+  // call sees both voices and assigns the same x to every pair of notes.
+  const availableWidth = 500 - noteStartX - 10 // stave right edge (x:10 + w:490) minus note-start
+  const voice1 = new Voice()
+  voice1.setMode(2) // SOFT — don't enforce strict beat counts
+  voice1.addTickables(staveNotes)
+  const voice2 = new Voice()
+  voice2.setMode(2)
+  voice2.addTickables(tabNotes)
+  new Formatter().format([voice1, voice2], availableWidth)
+  voice1.draw(context, notationStave)
+  voice2.draw(context, tabStave)
 
   // ── SVG label injection and auto-crop ──────────────────────────────────────
   const svgEl = containerEl.querySelector("svg")

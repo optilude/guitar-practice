@@ -9,7 +9,8 @@ vi.mock("vexflow", () => ({
   Accidental: class { constructor(public type: string) {} },
   TabStave: class { addClef = vi.fn().mockReturnThis(); setContext = vi.fn().mockReturnThis(); draw = vi.fn(); getBottomLineBottomY = vi.fn(() => 200); getNoteStartX = vi.fn(() => 80); setNoteStartX = vi.fn() },
   TabNote: class { constructor(public c: unknown) {} getAbsoluteX = vi.fn(() => 50) },
-  Formatter: { FormatAndDraw: vi.fn() },
+  Formatter: class { format = vi.fn() },
+  Voice: class { addTickables = vi.fn().mockReturnThis(); setMode = vi.fn().mockReturnThis(); draw = vi.fn() },
 }))
 vi.mock("svguitar", () => ({
   ChordStyle: { normal: "normal" },
