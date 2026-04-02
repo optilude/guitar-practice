@@ -72,22 +72,6 @@ Chords:
 
 # Prompts
 
-## Scale selector
-
-Decouple the circle of fifths from the Scale, Arpeggio, Chord, and Triad references.
-
-For each, add a "Root" dropdown to the left of the existing "Scale type", "Chord type", and "Triad type" selectors. This should contain all possible roots notes in alphabetical order. Show enharmonic notes as two separate entities so it goes "Ab, A, A#, Bb, B, C, C#, Db, D" and so on.
-
-Make the rest of the content in each tab use this as its root, rather than the Circle of Fifths data.
-
-## Scale linking
-
-When changing the selection in the Circle of Fifths (which also preselects the root in the harmony view), default all root note selectors to match the chosen key.
-
-When clicking on a chord in the Harmony or Progressions list, or when the root is auto-selected because of a change in mode or progression, set the root note and – for chords and triads – chord quality (insfar as possible, i.e. for triads only choose major, minor, diminished, augmented) to match.
-
-Make the "Scales to solo over" clickable. When clicked, select the corresponding scale on the Scales tab and switch to it.
-
 ## Dark mode
 
 Dark mode is too difficult to use currently. Please improve contrast and colours:

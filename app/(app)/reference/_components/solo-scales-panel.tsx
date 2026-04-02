@@ -29,11 +29,14 @@ export function SoloScalesPanel({ scales, chordName, onScaleSelect }: SoloScales
       <button
         type="button"
         onClick={() => onScaleSelect?.(scales.chordTonic, scales.primary.scaleName)}
-        className="flex items-center gap-3 flex-wrap text-left group"
+        className="flex items-center gap-3 flex-wrap text-left group cursor-pointer"
         title="Open in Scales tab"
       >
-        <span className="text-base font-semibold text-foreground group-hover:text-accent transition-colors">
-          {scales.chordTonic} {scales.primary.scaleName}
+        <span className="flex items-baseline gap-1">
+          <span className="text-base font-semibold text-foreground group-hover:text-accent transition-colors">
+            {scales.chordTonic} {scales.primary.scaleName}
+          </span>
+          <span className="text-xs text-muted-foreground/40 group-hover:text-accent transition-colors select-none">↗</span>
         </span>
         {primaryNotes && (
           <span className="text-xs text-muted-foreground">· {primaryNotes}</span>
@@ -55,12 +58,15 @@ export function SoloScalesPanel({ scales, chordName, onScaleSelect }: SoloScales
                   key={entry.scaleName}
                   type="button"
                   onClick={() => onScaleSelect?.(scales.chordTonic, entry.scaleName)}
-                  className="flex items-center gap-2 flex-wrap text-left w-full group"
+                  className="flex items-center gap-2 flex-wrap text-left w-full group cursor-pointer"
                   title="Open in Scales tab"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40 flex-shrink-0" />
-                  <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
-                    {scales.chordTonic} {entry.scaleName}
+                  <span className="flex items-baseline gap-1">
+                    <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                      {scales.chordTonic} {entry.scaleName}
+                    </span>
+                    <span className="text-xs text-muted-foreground/30 group-hover:text-muted-foreground transition-colors select-none">↗</span>
                   </span>
                   {notes && (
                     <span className="text-xs text-muted-foreground/60">· {notes}</span>

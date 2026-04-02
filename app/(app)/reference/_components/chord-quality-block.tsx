@@ -43,7 +43,7 @@ export function ChordQualityBlock({
       aria-pressed={isSelected}
       onClick={onClick}
       // border-2 always present so selection never shifts layout
-      className="flex flex-col items-center rounded-lg border-2 px-3 py-2.5 text-center min-w-[68px] flex-shrink-0 transition-colors focus:outline-none focus:ring-1 focus:ring-accent"
+      className="flex flex-col items-center rounded-lg border-2 px-3 py-2.5 text-center min-w-[68px] flex-shrink-0 transition-colors focus:outline-none focus:ring-1 focus:ring-accent cursor-pointer"
       style={{
         borderColor:     hexToRgba(hex, isSelected ? 0.6 : 0.2),
         backgroundColor: hexToRgba(hex, isSelected ? 0.2 : 0.1),
