@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { getArpeggio, listChordTypes } from "@/lib/theory"
 import { NotesViewer } from "./notes-viewer"
 import { FretboardViewer } from "./fretboard-viewer"
@@ -30,6 +30,10 @@ const ARPEGGIO_COMMON_TYPES = ["maj", "maj7", "m", "m7", "7", "9", "dim", "dim7"
 const CHORD_TYPE_DISPLAY: Record<string, string> = { maj: "major", m: "minor" }
 const displayLabel = (t: string) => CHORD_TYPE_DISPLAY[t] ?? t
 
+const ROOT_NOTES = [
+  "Ab", "A", "A#", "Bb", "B", "C", "C#", "Db", "D", "D#", "Eb", "E", "F", "F#", "Gb", "G", "G#",
+]
+
 const BOX_SYSTEM_LABELS: Record<BoxSystem, string> = {
   none:       "All notes",
   caged:      "CAGED",
@@ -39,21 +43,31 @@ const BOX_SYSTEM_LABELS: Record<BoxSystem, string> = {
 }
 
 interface ArpeggioPanelProps {
-  tonic: string
+  root: string
+  onRootChange: (root: string) => void
+  chordTypeTrigger?: { type: string } | null
 }
 
-export function ArpeggioPanel({ tonic }: ArpeggioPanelProps) {
+export function ArpeggioPanel({ root, onRootChange, chordTypeTrigger }: ArpeggioPanelProps) {
   const chordTypes   = useMemo(() => listChordTypes(), [])
   const commonTypes  = useMemo(() => ARPEGGIO_COMMON_TYPES.filter(t => chordTypes.includes(t)), [chordTypes])
   const otherTypes   = useMemo(() => chordTypes.filter(t => !ARPEGGIO_COMMON_TYPES.includes(t)), [chordTypes])
   const [chordType, setChordType] = useState(chordTypes[0] ?? "maj7")
+
+  useEffect(() => {
+    if (chordTypeTrigger && chordTypes.includes(chordTypeTrigger.type)) {
+      setChordType(chordTypeTrigger.type)
+      setPositionIndex(0)
+      setBoxIndex(0)
+    }
+  }, [chordTypeTrigger]) // eslint-disable-line react-hooks/exhaustive-deps
   const [viewMode, setViewMode]   = useState<"notes" | "fretboard">("fretboard")
   const [labelMode, setLabelMode] = useState<"note" | "interval">("interval")
   const [boxSystem, setBoxSystem] = useState<BoxSystem>("none")
   const [boxIndex, setBoxIndex]   = useState(0)
   const [positionIndex, setPositionIndex] = useState(0)
 
-  const arpeggio = useMemo(() => getArpeggio(tonic, chordType), [tonic, chordType])
+  const arpeggio = useMemo(() => getArpeggio(root, chordType), [root, chordType])
 
   const parentScaleType     = CHORD_TYPE_TO_SCALE[chordType]
   const availableBoxSystems = useMemo(() => getArpeggioBoxSystems(chordType), [chordType])
@@ -71,35 +85,53 @@ export function ArpeggioPanel({ tonic }: ArpeggioPanelProps) {
 
   return (
     <div className="space-y-4">
-      {/* Chord type selector */}
-      <div className="flex flex-col gap-1">
-        <label className="text-xs text-muted-foreground" htmlFor="arpeggio-type-select">
-          Chord type
-        </label>
-        <select
-          id="arpeggio-type-select"
-          value={chordType}
-          onChange={(e) => {
-            const newType = e.target.value
-            setChordType(newType)
-            setPositionIndex(0)
-            setBoxIndex(0)
-            const newSystems = getArpeggioBoxSystems(newType)
-            if (!newSystems.includes(boxSystem)) setBoxSystem("none")
-          }}
-          className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
-        >
-          <optgroup label="Common">
-            {commonTypes.map((t) => (
-              <option key={t} value={t}>{displayLabel(t)}</option>
+      {/* Root + Chord type selectors */}
+      <div className="flex flex-wrap gap-4 items-end">
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-muted-foreground" htmlFor="arpeggio-root-select">
+            Root
+          </label>
+          <select
+            id="arpeggio-root-select"
+            aria-label="Root"
+            value={root}
+            onChange={(e) => onRootChange(e.target.value)}
+            className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
+          >
+            {ROOT_NOTES.map((n) => (
+              <option key={n} value={n}>{n}</option>
             ))}
-          </optgroup>
-          <optgroup label="Other">
-            {otherTypes.map((t) => (
-              <option key={t} value={t}>{displayLabel(t)}</option>
-            ))}
-          </optgroup>
-        </select>
+          </select>
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-muted-foreground" htmlFor="arpeggio-type-select">
+            Chord type
+          </label>
+          <select
+            id="arpeggio-type-select"
+            value={chordType}
+            onChange={(e) => {
+              const newType = e.target.value
+              setChordType(newType)
+              setPositionIndex(0)
+              setBoxIndex(0)
+              const newSystems = getArpeggioBoxSystems(newType)
+              if (!newSystems.includes(boxSystem)) setBoxSystem("none")
+            }}
+            className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
+          >
+            <optgroup label="Common">
+              {commonTypes.map((t) => (
+                <option key={t} value={t}>{displayLabel(t)}</option>
+              ))}
+            </optgroup>
+            <optgroup label="Other">
+              {otherTypes.map((t) => (
+                <option key={t} value={t}>{displayLabel(t)}</option>
+              ))}
+            </optgroup>
+          </select>
+        </div>
       </div>
 
       {/* Notes + formula */}

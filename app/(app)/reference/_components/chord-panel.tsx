@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import {
   getChord, listChordDbSuffixes, getChordPositions,
   SHELL_CHORD_TYPES, getShellChordPositions,
@@ -54,6 +54,10 @@ const SHELL_FORMULA: Record<string, string> = {
   "dim7/m6 shell": "1 – b3 – 6",
 }
 
+const ROOT_NOTES = [
+  "Ab", "A", "A#", "Bb", "B", "C", "C#", "Db", "D", "D#", "Eb", "E", "F", "F#", "Gb", "G", "G#",
+]
+
 const BOX_SYSTEM_LABELS: Record<BoxSystem, string> = {
   none:       "All notes",
   caged:      "CAGED",
@@ -63,10 +67,12 @@ const BOX_SYSTEM_LABELS: Record<BoxSystem, string> = {
 }
 
 interface ChordPanelProps {
-  tonic: string
+  root: string
+  onRootChange: (root: string) => void
+  chordTypeTrigger?: { type: string } | null
 }
 
-export function ChordPanel({ tonic }: ChordPanelProps) {
+export function ChordPanel({ root, onRootChange, chordTypeTrigger }: ChordPanelProps) {
   const dbSuffixes = useMemo(() => listChordDbSuffixes(), [])
   const commonSuffixes = useMemo(
     () => COMMON_TYPES.filter((t) => dbSuffixes.includes(t)),
@@ -77,14 +83,18 @@ export function ChordPanel({ tonic }: ChordPanelProps) {
     [dbSuffixes],
   )
   const [chordType, setChordType] = useState(COMMON_TYPES[0])
+
+  useEffect(() => {
+    if (chordTypeTrigger) setChordType(chordTypeTrigger.type)
+  }, [chordTypeTrigger]) // eslint-disable-line react-hooks/exhaustive-deps
   const [viewMode, setViewMode]   = useState<"fretboard" | "fingerings">("fretboard")
   const [labelMode, setLabelMode] = useState<"note" | "interval">("interval")
   const [boxSystem, setBoxSystem] = useState<BoxSystem>("none")
   const [boxIndex, setBoxIndex]   = useState(0)
 
   const chordScale = useMemo(
-    () => getChordAsScale(tonic, chordType),
-    [tonic, chordType]
+    () => getChordAsScale(root, chordType),
+    [root, chordType]
   )
   const availableBoxSystems = useMemo(
     () => getArpeggioBoxSystems(chordScale.type),
@@ -102,51 +112,70 @@ export function ChordPanel({ tonic }: ChordPanelProps) {
   const isShell = (SHELL_CHORD_TYPES as readonly string[]).includes(chordType)
 
   const chord = useMemo(
-    () => isShell ? null : getChord(tonic, chordType),
-    [tonic, chordType, isShell]
+    () => isShell ? null : getChord(root, chordType),
+    [root, chordType, isShell]
   )
   const positions = useMemo(
     () => isShell
-      ? getShellChordPositions(tonic, chordType)
-      : getChordPositions(tonic, chordType),
-    [tonic, chordType, isShell]
+      ? getShellChordPositions(root, chordType)
+      : getChordPositions(root, chordType),
+    [root, chordType, isShell]
   )
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-1">
-        <label className="text-xs text-muted-foreground" htmlFor="chord-type-select">
-          Chord type
-        </label>
-        <select
-          id="chord-type-select"
-          value={chordType}
-          onChange={(e) => {
-            const newType = e.target.value
-            setChordType(newType)
-            setBoxIndex(0)
-            const newScale = getChordAsScale(tonic, newType)
-            const newSystems = getArpeggioBoxSystems(newScale.type)
-            if (!newSystems.includes(boxSystem)) setBoxSystem("none")
-          }}
-          className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
-        >
-          <optgroup label="Common">
-            {commonSuffixes.map((t) => (
-              <option key={t} value={t}>{t}</option>
+      {/* Root + Chord type selectors */}
+      <div className="flex flex-wrap gap-4 items-end">
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-muted-foreground" htmlFor="chord-root-select">
+            Root
+          </label>
+          <select
+            id="chord-root-select"
+            aria-label="Root"
+            value={root}
+            onChange={(e) => onRootChange(e.target.value)}
+            className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
+          >
+            {ROOT_NOTES.map((n) => (
+              <option key={n} value={n}>{n}</option>
             ))}
-          </optgroup>
-          <optgroup label="Shell Voicings">
-            {SHELL_CHORD_TYPES.map((t) => (
-              <option key={t} value={t}>{t}</option>
-            ))}
-          </optgroup>
-          <optgroup label="Other">
-            {otherSuffixes.map((t) => (
-              <option key={t} value={t}>{t}</option>
-            ))}
-          </optgroup>
-        </select>
+          </select>
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-muted-foreground" htmlFor="chord-type-select">
+            Chord type
+          </label>
+          <select
+            id="chord-type-select"
+            value={chordType}
+            onChange={(e) => {
+              const newType = e.target.value
+              setChordType(newType)
+              setBoxIndex(0)
+              const newScale = getChordAsScale(root, newType)
+              const newSystems = getArpeggioBoxSystems(newScale.type)
+              if (!newSystems.includes(boxSystem)) setBoxSystem("none")
+            }}
+            className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
+          >
+            <optgroup label="Common">
+              {commonSuffixes.map((t) => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </optgroup>
+            <optgroup label="Shell Voicings">
+              {SHELL_CHORD_TYPES.map((t) => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </optgroup>
+            <optgroup label="Other">
+              {otherSuffixes.map((t) => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </optgroup>
+          </select>
+        </div>
       </div>
 
       {/* Notes + formula */}

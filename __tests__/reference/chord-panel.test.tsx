@@ -54,7 +54,7 @@ import { ChordPanel } from "@/app/(app)/reference/_components/chord-panel"
 
 describe("ChordPanel", () => {
   it("renders the chord type selector with all types", () => {
-    render(<ChordPanel tonic="C" />)
+    render(<ChordPanel root="C" onRootChange={vi.fn()} />)
     const select = screen.getByLabelText(/chord type/i)
     expect(select).toBeDefined()
     expect(screen.getByRole("option", { name: "major" })).toBeDefined()
@@ -63,31 +63,31 @@ describe("ChordPanel", () => {
   })
 
   it("shows the notes string", () => {
-    render(<ChordPanel tonic="C" />)
+    render(<ChordPanel root="C" onRootChange={vi.fn()} />)
     expect(screen.getByText(/Notes: C – E – G/)).toBeDefined()
   })
 
   it("renders a diagram for each voicing position", () => {
-    render(<ChordPanel tonic="C" />)
+    render(<ChordPanel root="C" onRootChange={vi.fn()} />)
     fireEvent.click(screen.getByRole("button", { name: /fingerings/i }))
     const diagrams = screen.getAllByTestId("chord-diagram")
     expect(diagrams).toHaveLength(2)
   })
 
   it("changes chord type when selector changes", () => {
-    render(<ChordPanel tonic="C" />)
+    render(<ChordPanel root="C" onRootChange={vi.fn()} />)
     const select = screen.getByLabelText(/chord type/i) as HTMLSelectElement
     fireEvent.change(select, { target: { value: "minor" } })
     expect(select.value).toBe("minor")
   })
 
   it("does not render a voicing dropdown", () => {
-    render(<ChordPanel tonic="C" />)
+    render(<ChordPanel root="C" onRootChange={vi.fn()} />)
     expect(screen.queryByLabelText(/voicing/i)).toBeNull()
   })
 
   it("renders shell chord type options in the selector", () => {
-    render(<ChordPanel tonic="C" />)
+    render(<ChordPanel root="C" onRootChange={vi.fn()} />)
     expect(screen.getByRole("option", { name: "maj7 shell" })).toBeDefined()
     expect(screen.getByRole("option", { name: "m7 shell" })).toBeDefined()
     expect(screen.getByRole("option", { name: "7 shell" })).toBeDefined()
@@ -96,14 +96,14 @@ describe("ChordPanel", () => {
   })
 
   it("shows formula when a shell chord type is selected", () => {
-    render(<ChordPanel tonic="C" />)
+    render(<ChordPanel root="C" onRootChange={vi.fn()} />)
     const select = screen.getByLabelText(/chord type/i) as HTMLSelectElement
     fireEvent.change(select, { target: { value: "maj7 shell" } })
     expect(screen.getByText(/Formula: 1 – 3 – 7/)).toBeDefined()
   })
 
   it("renders three diagrams for a shell chord type", () => {
-    render(<ChordPanel tonic="C" />)
+    render(<ChordPanel root="C" onRootChange={vi.fn()} />)
     fireEvent.click(screen.getByRole("button", { name: /fingerings/i }))
     const select = screen.getByLabelText(/chord type/i) as HTMLSelectElement
     fireEvent.change(select, { target: { value: "maj7 shell" } })
@@ -112,13 +112,32 @@ describe("ChordPanel", () => {
   })
 
   it("renders a fretboard container in default state", () => {
-    render(<ChordPanel tonic="C" />)
+    render(<ChordPanel root="C" onRootChange={vi.fn()} />)
     expect(screen.getByTestId("fretboard-viewer")).toBeDefined()
   })
 
   it("renders the show-intervals checkbox", () => {
-    render(<ChordPanel tonic="C" />)
+    render(<ChordPanel root="C" onRootChange={vi.fn()} />)
     const checkbox = screen.getByRole("checkbox", { name: /show intervals/i })
     expect(checkbox).toBeDefined()
+  })
+
+  it("renders the root selector with alphabetical enharmonic options", () => {
+    render(<ChordPanel root="C" onRootChange={vi.fn()} />)
+    const select = screen.getByLabelText(/^root$/i) as HTMLSelectElement
+    expect(select).toBeDefined()
+    expect(screen.getByRole("option", { name: "Ab" })).toBeDefined()
+    expect(screen.getByRole("option", { name: "A#" })).toBeDefined()
+    expect(screen.getByRole("option", { name: "Bb" })).toBeDefined()
+    expect(screen.getByRole("option", { name: "G#" })).toBeDefined()
+  })
+
+  it("initialises root to the prop and calls onRootChange when changed", () => {
+    const onRootChange = vi.fn()
+    render(<ChordPanel root="G" onRootChange={onRootChange} />)
+    const select = screen.getByLabelText(/^root$/i) as HTMLSelectElement
+    expect(select.value).toBe("G")
+    fireEvent.change(select, { target: { value: "D" } })
+    expect(onRootChange).toHaveBeenCalledWith("D")
   })
 })

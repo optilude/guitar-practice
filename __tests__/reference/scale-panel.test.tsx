@@ -41,7 +41,7 @@ import { ScalePanel } from "@/app/(app)/reference/_components/scale-panel"
 
 describe("ScalePanel", () => {
   it("renders the scale type selector with all types", () => {
-    render(<ScalePanel tonic="C" />)
+    render(<ScalePanel root="C" onRootChange={vi.fn()} />)
     const select = screen.getByLabelText(/scale type/i)
     expect(select).toBeDefined()
     expect(screen.getByRole("option", { name: "Ionian (major)" })).toBeDefined()
@@ -50,7 +50,7 @@ describe("ScalePanel", () => {
   })
 
   it("renders the position selector in notes mode", () => {
-    render(<ScalePanel tonic="C" />)
+    render(<ScalePanel root="C" onRootChange={vi.fn()} />)
     // Position selector is only visible in notes mode (default is fretboard)
     fireEvent.click(screen.getByRole("button", { name: /notes/i }))
     const select = screen.getByLabelText(/position/i)
@@ -60,18 +60,18 @@ describe("ScalePanel", () => {
   })
 
   it("shows the notes string", () => {
-    render(<ScalePanel tonic="C" />)
+    render(<ScalePanel root="C" onRootChange={vi.fn()} />)
     expect(screen.getByText(/Notes: C – D – E/)).toBeDefined()
   })
 
   it("defaults to fretboard view mode", () => {
-    render(<ScalePanel tonic="C" />)
+    render(<ScalePanel root="C" onRootChange={vi.fn()} />)
     // The fretboard button should exist and be styled as active
     expect(screen.getByRole("button", { name: /fretboard/i })).toBeDefined()
   })
 
   it("switches to notes view when Notes button is clicked", async () => {
-    render(<ScalePanel tonic="C" />)
+    render(<ScalePanel root="C" onRootChange={vi.fn()} />)
     const tabButton = screen.getByRole("button", { name: /notes/i })
     await userEvent.click(tabButton)
     // After switching, the 'Show intervals' checkbox should disappear
@@ -79,15 +79,34 @@ describe("ScalePanel", () => {
   })
 
   it("shows interval checkbox in fretboard mode", async () => {
-    render(<ScalePanel tonic="C" />)
+    render(<ScalePanel root="C" onRootChange={vi.fn()} />)
     await userEvent.click(screen.getByRole("button", { name: /fretboard/i }))
     expect(screen.getByText(/show intervals/i)).toBeDefined()
   })
 
   it("changes scale type when selector changes", async () => {
-    render(<ScalePanel tonic="C" />)
+    render(<ScalePanel root="C" onRootChange={vi.fn()} />)
     const select = screen.getByLabelText(/scale type/i) as HTMLSelectElement
     fireEvent.change(select, { target: { value: "Dorian" } })
     expect(select.value).toBe("Dorian")
+  })
+
+  it("renders the root selector with alphabetical enharmonic options", () => {
+    render(<ScalePanel root="C" onRootChange={vi.fn()} />)
+    const select = screen.getByLabelText(/^root$/i) as HTMLSelectElement
+    expect(select).toBeDefined()
+    expect(screen.getByRole("option", { name: "Ab" })).toBeDefined()
+    expect(screen.getByRole("option", { name: "A#" })).toBeDefined()
+    expect(screen.getByRole("option", { name: "Bb" })).toBeDefined()
+    expect(screen.getByRole("option", { name: "G#" })).toBeDefined()
+  })
+
+  it("initialises root to the tonic prop and calls onRootChange when changed", () => {
+    const onRootChange = vi.fn()
+    render(<ScalePanel root="G" onRootChange={onRootChange} />)
+    const select = screen.getByLabelText(/^root$/i) as HTMLSelectElement
+    expect(select.value).toBe("G")
+    fireEvent.change(select, { target: { value: "D" } })
+    expect(onRootChange).toHaveBeenCalledWith("D")
   })
 })

@@ -7,6 +7,7 @@ import type { SoloScales } from "@/lib/theory/types"
 interface SoloScalesPanelProps {
   scales: SoloScales
   chordName: string  // e.g. "G7", "Am7" — used in heading
+  onScaleSelect?: (tonic: string, scaleName: string) => void
 }
 
 function noteString(tonic: string, scaleName: string): string {
@@ -15,7 +16,7 @@ function noteString(tonic: string, scaleName: string): string {
   return Scale.get(`${tonic} ${tonalName}`).notes.join(" ")
 }
 
-export function SoloScalesPanel({ scales, chordName }: SoloScalesPanelProps) {
+export function SoloScalesPanel({ scales, chordName, onScaleSelect }: SoloScalesPanelProps) {
   const primaryNotes = noteString(scales.chordTonic, scales.primary.scaleName)
 
   return (
@@ -25,14 +26,19 @@ export function SoloScalesPanel({ scales, chordName }: SoloScalesPanelProps) {
       </p>
 
       {/* Primary scale */}
-      <div className="flex items-center gap-3 flex-wrap">
-        <span className="text-base font-semibold text-foreground">
+      <button
+        type="button"
+        onClick={() => onScaleSelect?.(scales.chordTonic, scales.primary.scaleName)}
+        className="flex items-center gap-3 flex-wrap text-left group"
+        title="Open in Scales tab"
+      >
+        <span className="text-base font-semibold text-foreground group-hover:text-accent transition-colors">
           {scales.chordTonic} {scales.primary.scaleName}
         </span>
         {primaryNotes && (
           <span className="text-xs text-muted-foreground">· {primaryNotes}</span>
         )}
-      </div>
+      </button>
 
       {/* Also works */}
       {scales.additional.length > 0 && (
@@ -45,9 +51,15 @@ export function SoloScalesPanel({ scales, chordName }: SoloScalesPanelProps) {
             {scales.additional.map((entry) => {
               const notes = noteString(scales.chordTonic, entry.scaleName)
               return (
-                <div key={entry.scaleName} className="flex items-center gap-2 flex-wrap">
+                <button
+                  key={entry.scaleName}
+                  type="button"
+                  onClick={() => onScaleSelect?.(scales.chordTonic, entry.scaleName)}
+                  className="flex items-center gap-2 flex-wrap text-left w-full group"
+                  title="Open in Scales tab"
+                >
                   <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40 flex-shrink-0" />
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
                     {scales.chordTonic} {entry.scaleName}
                   </span>
                   {notes && (
@@ -56,7 +68,7 @@ export function SoloScalesPanel({ scales, chordName }: SoloScalesPanelProps) {
                   {entry.hint && (
                     <span className="text-xs text-muted-foreground/60">· {entry.hint}</span>
                   )}
-                </div>
+                </button>
               )
             })}
           </div>

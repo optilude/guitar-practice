@@ -7,6 +7,8 @@ import { ProgressionsTab } from "./progressions-tab"
 
 interface HarmonyStudyProps {
   tonic: string
+  onChordSelect?: (tonic: string, type: string, quality: string, primaryScaleName: string) => void
+  onScaleSelect?: (tonic: string, scaleName: string) => void
 }
 
 type HarmonySubTab = "harmony" | "progressions"
@@ -18,7 +20,7 @@ const TAB_LABELS: Record<HarmonySubTab, string> = {
   progressions: "Progressions",
 }
 
-export function HarmonyStudy({ tonic }: HarmonyStudyProps) {
+export function HarmonyStudy({ tonic, onChordSelect, onScaleSelect }: HarmonyStudyProps) {
   const [tab, setTab] = useState<HarmonySubTab>("harmony")
 
   return (
@@ -61,8 +63,8 @@ export function HarmonyStudy({ tonic }: HarmonyStudyProps) {
         aria-labelledby={`harmony-study-tab-${tab}`}
         className="pt-4"
       >
-        {tab === "harmony" && <HarmonyTab tonic={tonic} />}
-        {tab === "progressions" && <ProgressionsTab tonic={tonic} />}
+        {tab === "harmony" && <HarmonyTab tonic={tonic} onChordSelect={onChordSelect} onScaleSelect={onScaleSelect} />}
+        {tab === "progressions" && <ProgressionsTab tonic={tonic} onChordSelect={onChordSelect} onScaleSelect={onScaleSelect} />}
       </div>
     </div>
   )

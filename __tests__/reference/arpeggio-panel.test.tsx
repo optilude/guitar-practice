@@ -39,7 +39,7 @@ import { ArpeggioPanel } from "@/app/(app)/reference/_components/arpeggio-panel"
 
 describe("ArpeggioPanel", () => {
   it("renders the chord type selector with all types", () => {
-    render(<ArpeggioPanel tonic="C" />)
+    render(<ArpeggioPanel root="C" onRootChange={vi.fn()} />)
     const select = screen.getByLabelText(/chord type/i)
     expect(select).toBeDefined()
     expect(screen.getByRole("option", { name: "maj7" })).toBeDefined()
@@ -47,26 +47,45 @@ describe("ArpeggioPanel", () => {
   })
 
   it("renders the position selector in notes mode", () => {
-    render(<ArpeggioPanel tonic="C" />)
+    render(<ArpeggioPanel root="C" onRootChange={vi.fn()} />)
     // Position selector is only visible in notes mode (default is fretboard)
     fireEvent.click(screen.getByRole("button", { name: /notes/i }))
     expect(screen.getByLabelText(/position/i)).toBeDefined()
   })
 
   it("shows the notes string", () => {
-    render(<ArpeggioPanel tonic="C" />)
+    render(<ArpeggioPanel root="C" onRootChange={vi.fn()} />)
     expect(screen.getByText(/Notes: C – E – G – B/)).toBeDefined()
   })
 
   it("defaults to fretboard view mode", () => {
-    render(<ArpeggioPanel tonic="C" />)
+    render(<ArpeggioPanel root="C" onRootChange={vi.fn()} />)
     expect(screen.getByRole("button", { name: /fretboard/i })).toBeDefined()
   })
 
   it("changes chord type when selector changes", () => {
-    render(<ArpeggioPanel tonic="C" />)
+    render(<ArpeggioPanel root="C" onRootChange={vi.fn()} />)
     const select = screen.getByLabelText(/chord type/i) as HTMLSelectElement
     fireEvent.change(select, { target: { value: "m7" } })
     expect(select.value).toBe("m7")
+  })
+
+  it("renders the root selector with alphabetical enharmonic options", () => {
+    render(<ArpeggioPanel root="C" onRootChange={vi.fn()} />)
+    const select = screen.getByLabelText(/^root$/i) as HTMLSelectElement
+    expect(select).toBeDefined()
+    expect(screen.getByRole("option", { name: "Ab" })).toBeDefined()
+    expect(screen.getByRole("option", { name: "A#" })).toBeDefined()
+    expect(screen.getByRole("option", { name: "Bb" })).toBeDefined()
+    expect(screen.getByRole("option", { name: "G#" })).toBeDefined()
+  })
+
+  it("initialises root to the tonic prop and calls onRootChange when changed", () => {
+    const onRootChange = vi.fn()
+    render(<ArpeggioPanel root="G" onRootChange={onRootChange} />)
+    const select = screen.getByLabelText(/^root$/i) as HTMLSelectElement
+    expect(select.value).toBe("G")
+    fireEvent.change(select, { target: { value: "D" } })
+    expect(onRootChange).toHaveBeenCalledWith("D")
   })
 })

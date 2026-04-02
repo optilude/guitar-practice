@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { getScale, listScaleTypes } from "@/lib/theory"
 import { NotesViewer } from "./notes-viewer"
 import { FretboardViewer } from "./fretboard-viewer"
@@ -30,17 +30,25 @@ const BOX_SYSTEM_LABELS: Record<BoxSystem, string> = {
 const MODES = ["Major", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrian"]
 const PENTATONICS = ["Pentatonic Major", "Pentatonic Minor", "Blues"]
 
+const ROOT_NOTES = [
+  "Ab", "A", "A#", "Bb", "B", "C", "C#", "Db", "D", "D#", "Eb", "E", "F", "F#", "Gb", "G", "G#",
+]
+
 const SCALE_DISPLAY_LABELS: Record<string, string> = {
-  "Major":   "Ionian (major)",
-  "Aeolian": "Aeolian (natural minor)",
+  "Major":           "Ionian (major)",
+  "Aeolian":         "Aeolian (natural minor)",
+  "Pentatonic Major": "Major Pentatonic",
+  "Pentatonic Minor": "Minor Pentatonic",
 }
 const scaleLabel = (t: string) => SCALE_DISPLAY_LABELS[t] ?? t
 
 interface ScalePanelProps {
-  tonic: string
+  root: string
+  onRootChange: (root: string) => void
+  scaleTypeTrigger?: { type: string } | null
 }
 
-export function ScalePanel({ tonic }: ScalePanelProps) {
+export function ScalePanel({ root, onRootChange, scaleTypeTrigger }: ScalePanelProps) {
   const scaleTypes      = useMemo(() => listScaleTypes(), [])
   const modeTypes       = useMemo(() => MODES.filter(t => scaleTypes.includes(t)), [scaleTypes])
   const pentatonicTypes = useMemo(() => PENTATONICS.filter(t => scaleTypes.includes(t)), [scaleTypes])
@@ -49,13 +57,21 @@ export function ScalePanel({ tonic }: ScalePanelProps) {
     [scaleTypes]
   )
   const [scaleType, setScaleType] = useState(scaleTypes[0] ?? "Major")
+
+  useEffect(() => {
+    if (scaleTypeTrigger && scaleTypes.includes(scaleTypeTrigger.type)) {
+      setScaleType(scaleTypeTrigger.type)
+      setPositionIndex(0)
+      setBoxIndex(0)
+    }
+  }, [scaleTypeTrigger]) // eslint-disable-line react-hooks/exhaustive-deps
   const [viewMode, setViewMode]   = useState<"notes" | "fretboard">("fretboard")
   const [labelMode, setLabelMode] = useState<"note" | "interval">("interval")
   const [boxSystem, setBoxSystem] = useState<BoxSystem>("none")
   const [boxIndex, setBoxIndex]   = useState(0)
   const [positionIndex, setPositionIndex] = useState(0)
 
-  const scale = useMemo(() => getScale(tonic, scaleType), [tonic, scaleType])
+  const scale = useMemo(() => getScale(root, scaleType), [root, scaleType])
 
   const availableBoxSystems = useMemo(() => getScaleBoxSystems(scaleType), [scaleType])
 
@@ -72,8 +88,25 @@ export function ScalePanel({ tonic }: ScalePanelProps) {
 
   return (
     <div className="space-y-4">
-      {/* Scale type selector */}
-      <div className="flex flex-col gap-1">
+      {/* Root + Scale type selectors */}
+      <div className="flex flex-wrap gap-4 items-end">
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-muted-foreground" htmlFor="scale-root-select">
+            Root
+          </label>
+          <select
+            id="scale-root-select"
+            aria-label="Root"
+            value={root}
+            onChange={(e) => onRootChange(e.target.value)}
+            className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
+          >
+            {ROOT_NOTES.map((n) => (
+              <option key={n} value={n}>{n}</option>
+            ))}
+          </select>
+        </div>
+        <div className="flex flex-col gap-1">
         <label className="text-xs text-muted-foreground" htmlFor="scale-type-select">
           Scale type
         </label>
@@ -109,6 +142,7 @@ export function ScalePanel({ tonic }: ScalePanelProps) {
             </optgroup>
           )}
         </select>
+        </div>
       </div>
 
       {/* Notes + formula */}

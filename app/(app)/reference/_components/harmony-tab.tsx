@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Note } from "tonal"
 import { getDiatonicChords, getSoloScales } from "@/lib/theory"
 import { ChordQualityBlock } from "./chord-quality-block"
@@ -8,6 +8,8 @@ import { SoloScalesPanel } from "./solo-scales-panel"
 
 interface HarmonyTabProps {
   tonic: string
+  onChordSelect?: (tonic: string, type: string, quality: string, primaryScaleName: string) => void
+  onScaleSelect?: (tonic: string, scaleName: string) => void
 }
 
 const MODE_OPTIONS = [
@@ -40,7 +42,7 @@ const MAJOR_ROMAN: Record<number, string> = {
   1: "I", 2: "ii", 3: "iii", 4: "IV", 5: "V", 6: "vi", 7: "vii°",
 }
 
-export function HarmonyTab({ tonic }: HarmonyTabProps) {
+export function HarmonyTab({ tonic, onChordSelect, onScaleSelect }: HarmonyTabProps) {
   const [mode, setMode] = useState("ionian")
   const [selectedDegree, setSelectedDegree] = useState<number | null>(1)
   const [relative, setRelative] = useState(false)
@@ -55,6 +57,16 @@ export function HarmonyTab({ tonic }: HarmonyTabProps) {
       )
     : null
 
+  // Notify parent of the initial/auto-selected chord on mount
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const chord = chords.find((c) => c.degree === 1)
+    if (chord) {
+      const soloScales = getSoloScales({ tonic: chord.tonic, type: chord.type, degree: chord.degree }, "ionian")
+      onChordSelect?.(chord.tonic, chord.type, chord.quality, soloScales.primary.scaleName)
+    }
+  }, []) // intentionally empty: only on mount
+
   const parentKey = mode !== "ionian"
     ? Note.transpose(tonic, MODE_PARENT_INTERVAL[mode])
     : null
@@ -67,6 +79,13 @@ export function HarmonyTab({ tonic }: HarmonyTabProps) {
   }
 
   function handleChordClick(degree: number) {
+    if (selectedDegree !== degree) {
+      const chord = chords.find((c) => c.degree === degree)
+      if (chord) {
+        const soloScales = getSoloScales({ tonic: chord.tonic, type: chord.type, degree: chord.degree }, mode)
+        onChordSelect?.(chord.tonic, chord.type, chord.quality, soloScales.primary.scaleName)
+      }
+    }
     setSelectedDegree((prev) => (prev === degree ? null : degree))
   }
 
@@ -85,8 +104,15 @@ export function HarmonyTab({ tonic }: HarmonyTabProps) {
           aria-label="Mode"
           value={mode}
           onChange={(e) => {
-            setMode(e.target.value)
+            const newMode = e.target.value
+            setMode(newMode)
             setSelectedDegree(1)
+            const newChords = getDiatonicChords(tonic, newMode)
+            const degree1 = newChords.find((c) => c.degree === 1)
+            if (degree1) {
+              const soloScales = getSoloScales({ tonic: degree1.tonic, type: degree1.type, degree: degree1.degree }, newMode)
+              onChordSelect?.(degree1.tonic, degree1.type, degree1.quality, soloScales.primary.scaleName)
+            }
           }}
           className="bg-card border border-border rounded px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent w-fit"
         >
@@ -109,18 +135,20 @@ export function HarmonyTab({ tonic }: HarmonyTabProps) {
           <p className="text-xs uppercase tracking-widest text-muted-foreground">
             Diatonic 7th chords
           </p>
-          <label
-            className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-pointer select-none"
-            title="Show each chord's scale degree in the parent major key"
-          >
-            <input
-              type="checkbox"
-              checked={relative}
-              onChange={(e) => setRelative(e.target.checked)}
-              className="accent-accent"
-            />
-            Relative
-          </label>
+          {mode !== "ionian" && (
+            <label
+              className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-pointer select-none"
+              title="Show each chord's scale degree in the parent major key"
+            >
+              <input
+                type="checkbox"
+                checked={relative}
+                onChange={(e) => setRelative(e.target.checked)}
+                className="accent-accent"
+              />
+              Relative
+            </label>
+          )}
         </div>
         <div role="group" aria-label="Diatonic chords" className="flex gap-2 overflow-x-auto pb-2">
           {chords.map((chord) => (
@@ -141,6 +169,7 @@ export function HarmonyTab({ tonic }: HarmonyTabProps) {
         <SoloScalesPanel
           scales={scales}
           chordName={`${selectedChord.tonic}${selectedChord.type}`}
+          onScaleSelect={onScaleSelect}
         />
       )}
     </div>

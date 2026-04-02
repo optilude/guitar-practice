@@ -18,9 +18,61 @@ const TABS: { id: PanelTab; label: string }[] = [
   { id: "triads",    label: "Triads" },
 ]
 
+// Diatonic chord quality → TriadPanel triad type
+const QUALITY_TO_TRIAD_TYPE: Record<string, string> = {
+  major:      "major",
+  minor:      "minor",
+  dominant:   "major",   // dominant 7th has a major triad on top
+  diminished: "diminished",
+  augmented:  "augmented",
+}
+
+// Solo scale display name → ScalePanel scale type value
+const SOLO_SCALE_TO_PANEL_TYPE: Record<string, string> = {
+  "Ionian (major)":          "Major",
+  "Dorian":                  "Dorian",
+  "Phrygian":                "Phrygian",
+  "Lydian":                  "Lydian",
+  "Mixolydian":              "Mixolydian",
+  "Aeolian (natural minor)": "Aeolian",
+  "Locrian":                 "Locrian",
+  "Major Pentatonic":        "Pentatonic Major",
+  "Minor Pentatonic":        "Pentatonic Minor",
+  "Blues Scale":             "Blues",
+}
+
 export default function ReferencePage() {
   const [selectedKey, setSelectedKey] = useState("C")
   const [activeTab, setActiveTab] = useState<PanelTab>("scales")
+
+  // Shared panel state — driven by Circle of Fifths, chord clicks, and scale clicks
+  const [panelRoot, setPanelRoot] = useState("C")
+  const [panelScaleTypeTrigger, setPanelScaleTypeTrigger] = useState<{ type: string } | null>(null)
+  const [panelChordTypeTrigger, setPanelChordTypeTrigger] = useState<{ type: string } | null>(null)
+  const [panelArpeggioTypeTrigger, setPanelArpeggioTypeTrigger] = useState<{ type: string } | null>(null)
+  const [panelTriadTypeTrigger, setPanelTriadTypeTrigger] = useState<{ type: string } | null>(null)
+
+  function handleKeySelect(key: string) {
+    setSelectedKey(key)
+    setPanelRoot(key)
+  }
+
+  function handleChordSelect(chordTonic: string, type: string, quality: string, primaryScaleName: string) {
+    setPanelRoot(chordTonic)
+    setPanelChordTypeTrigger({ type })
+    setPanelArpeggioTypeTrigger({ type })
+    const triadType = QUALITY_TO_TRIAD_TYPE[quality]
+    if (triadType) setPanelTriadTypeTrigger({ type: triadType })
+    const panelScaleType = SOLO_SCALE_TO_PANEL_TYPE[primaryScaleName]
+    if (panelScaleType) setPanelScaleTypeTrigger({ type: panelScaleType })
+  }
+
+  function handleScaleSelect(scaleTonic: string, scaleName: string) {
+    setPanelRoot(scaleTonic)
+    const panelType = SOLO_SCALE_TO_PANEL_TYPE[scaleName]
+    if (panelType) setPanelScaleTypeTrigger({ type: panelType })
+    setActiveTab("scales")
+  }
 
   const TAB_IDS = TABS.map((t) => t.id)
 
@@ -39,11 +91,11 @@ export default function ReferencePage() {
           aria-label="Circle of Fifths key picker"
           className="lg:sticky lg:top-6 lg:w-[400px] lg:shrink-0"
         >
-          <CircleOfFifths selectedKey={selectedKey} onKeySelect={setSelectedKey} />
+          <CircleOfFifths selectedKey={selectedKey} onKeySelect={handleKeySelect} />
         </section>
 
         <div className="flex-1 min-w-0">
-          <HarmonyStudy tonic={selectedKey} />
+          <HarmonyStudy tonic={selectedKey} onChordSelect={handleChordSelect} onScaleSelect={handleScaleSelect} />
         </div>
       </div>
 
@@ -86,10 +138,10 @@ export default function ReferencePage() {
           aria-labelledby={`tab-${activeTab}`}
           className="pt-6"
         >
-          {activeTab === "scales"    && <ScalePanel    tonic={selectedKey} />}
-          {activeTab === "arpeggios" && <ArpeggioPanel tonic={selectedKey} />}
-          {activeTab === "chords"    && <ChordPanel    tonic={selectedKey} />}
-          {activeTab === "triads"    && <TriadPanel    tonic={selectedKey} />}
+          {activeTab === "scales"    && <ScalePanel    root={panelRoot} onRootChange={setPanelRoot} scaleTypeTrigger={panelScaleTypeTrigger} />}
+          {activeTab === "arpeggios" && <ArpeggioPanel root={panelRoot} onRootChange={setPanelRoot} chordTypeTrigger={panelArpeggioTypeTrigger} />}
+          {activeTab === "chords"    && <ChordPanel    root={panelRoot} onRootChange={setPanelRoot} chordTypeTrigger={panelChordTypeTrigger} />}
+          {activeTab === "triads"    && <TriadPanel    root={panelRoot} onRootChange={setPanelRoot} triadTypeTrigger={panelTriadTypeTrigger} />}
         </div>
       </section>
     </div>

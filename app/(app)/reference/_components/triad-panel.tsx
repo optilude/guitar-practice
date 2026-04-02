@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import {
   TRIAD_TYPES,
   TRIAD_STRING_SETS,
@@ -19,6 +19,10 @@ const GUITAR_INSTRUMENT = {
   keys: [] as string[],
   tunings: { standard: ["E", "A", "D", "G", "B", "E"] },
 }
+
+const ROOT_NOTES = [
+  "Ab", "A", "A#", "Bb", "B", "C", "C#", "Db", "D", "D#", "Eb", "E", "F", "F#", "Gb", "G", "G#",
+]
 
 const TRIAD_FORMULA: Record<string, string> = {
   major:      "1 – 3 – 5",
@@ -41,11 +45,17 @@ const STRING_SET_LABEL: Record<string, string> = {
 }
 
 interface TriadPanelProps {
-  tonic: string
+  root: string
+  onRootChange: (root: string) => void
+  triadTypeTrigger?: { type: string } | null
 }
 
-export function TriadPanel({ tonic }: TriadPanelProps) {
+export function TriadPanel({ root, onRootChange, triadTypeTrigger }: TriadPanelProps) {
   const [triadType, setTriadType]           = useState<string>("major")
+
+  useEffect(() => {
+    if (triadTypeTrigger) setTriadType(triadTypeTrigger.type)
+  }, [triadTypeTrigger]) // eslint-disable-line react-hooks/exhaustive-deps
   const [viewMode, setViewMode]             = useState<"fretboard" | "fingerings">("fretboard")
   const [voicingFilter, setVoicingFilter]   = useState<string>("all")
   const [inversionFilter, setInvFilter]     = useState<string>("all")
@@ -53,13 +63,13 @@ export function TriadPanel({ tonic }: TriadPanelProps) {
   const [labelMode, setLabelMode]           = useState<"note" | "interval">("interval")
 
   const triadScale = useMemo(
-    () => getTriadAsScale(tonic, triadType),
-    [tonic, triadType],
+    () => getTriadAsScale(root, triadType),
+    [root, triadType],
   )
 
   const allVoicings = useMemo(
-    () => getTriadVoicings(tonic, triadType),
-    [tonic, triadType],
+    () => getTriadVoicings(root, triadType),
+    [root, triadType],
   )
 
   const filtered = useMemo(() => {
@@ -85,21 +95,39 @@ export function TriadPanel({ tonic }: TriadPanelProps) {
 
   return (
     <div className="space-y-4">
-      {/* Triad type selector */}
-      <div className="flex flex-col gap-1">
-        <label className="text-xs text-muted-foreground" htmlFor="triad-type-select">
-          Triad type
-        </label>
-        <select
-          id="triad-type-select"
-          value={triadType}
-          onChange={(e) => setTriadType(e.target.value)}
-          className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
-        >
-          {TRIAD_TYPES.map((t) => (
-            <option key={t} value={t}>{t}</option>
-          ))}
-        </select>
+      {/* Root + Triad type selectors */}
+      <div className="flex flex-wrap gap-4 items-end">
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-muted-foreground" htmlFor="triad-root-select">
+            Root
+          </label>
+          <select
+            id="triad-root-select"
+            aria-label="Root"
+            value={root}
+            onChange={(e) => onRootChange(e.target.value)}
+            className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
+          >
+            {ROOT_NOTES.map((n) => (
+              <option key={n} value={n}>{n}</option>
+            ))}
+          </select>
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-muted-foreground" htmlFor="triad-type-select">
+            Triad type
+          </label>
+          <select
+            id="triad-type-select"
+            value={triadType}
+            onChange={(e) => setTriadType(e.target.value)}
+            className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
+          >
+            {TRIAD_TYPES.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Notes + formula */}

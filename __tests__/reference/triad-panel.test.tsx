@@ -67,12 +67,12 @@ import { TriadPanel } from "@/app/(app)/reference/_components/triad-panel"
 
 describe("TriadPanel", () => {
   it("renders the triad type selector", () => {
-    render(<TriadPanel tonic="C" />)
+    render(<TriadPanel root="C" onRootChange={vi.fn()} />)
     expect(screen.getByLabelText(/triad type/i)).toBeDefined()
   })
 
   it("renders all four triad type options", () => {
-    render(<TriadPanel tonic="C" />)
+    render(<TriadPanel root="C" onRootChange={vi.fn()} />)
     expect(screen.getByRole("option", { name: "major" })).toBeDefined()
     expect(screen.getByRole("option", { name: "minor" })).toBeDefined()
     expect(screen.getByRole("option", { name: "diminished" })).toBeDefined()
@@ -80,7 +80,7 @@ describe("TriadPanel", () => {
   })
 
   it("renders the voicing, inversion, and string set filter selectors", () => {
-    render(<TriadPanel tonic="C" />)
+    render(<TriadPanel root="C" onRootChange={vi.fn()} />)
     fireEvent.click(screen.getByRole("button", { name: /fingerings/i }))
     expect(screen.getByLabelText(/voicing/i)).toBeDefined()
     expect(screen.getByLabelText(/inversion/i)).toBeDefined()
@@ -88,19 +88,19 @@ describe("TriadPanel", () => {
   })
 
   it("shows the formula for the selected triad type", () => {
-    render(<TriadPanel tonic="C" />)
+    render(<TriadPanel root="C" onRootChange={vi.fn()} />)
     expect(screen.getByText(/Formula: 1 – 3 – 5/)).toBeDefined()
   })
 
   it("renders a chord diagram for each voicing", () => {
-    render(<TriadPanel tonic="C" />)
+    render(<TriadPanel root="C" onRootChange={vi.fn()} />)
     fireEvent.click(screen.getByRole("button", { name: /fingerings/i }))
     const diagrams = screen.getAllByTestId("chord-diagram")
     expect(diagrams).toHaveLength(3)
   })
 
   it("renders inversion labels", () => {
-    render(<TriadPanel tonic="C" />)
+    render(<TriadPanel root="C" onRootChange={vi.fn()} />)
     fireEvent.click(screen.getByRole("button", { name: /fingerings/i }))
     // Labels appear in both select options and voicing spans — at least 2 occurrences each
     expect(screen.getAllByText("Root position").length).toBeGreaterThanOrEqual(2)
@@ -109,7 +109,7 @@ describe("TriadPanel", () => {
   })
 
   it("renders string-set section headings", () => {
-    render(<TriadPanel tonic="C" />)
+    render(<TriadPanel root="C" onRootChange={vi.fn()} />)
     fireEvent.click(screen.getByRole("button", { name: /fingerings/i }))
     // Each string set appears in both the select dropdown and the section heading
     expect(screen.getAllByText(/6-5-4/).length).toBeGreaterThanOrEqual(2)
@@ -118,7 +118,7 @@ describe("TriadPanel", () => {
   })
 
   it("shows no-voicings message when all voicings are filtered out", () => {
-    render(<TriadPanel tonic="C" />)
+    render(<TriadPanel root="C" onRootChange={vi.fn()} />)
     fireEvent.click(screen.getByRole("button", { name: /fingerings/i }))
     const voicingSelect = screen.getByLabelText(/voicing/i) as HTMLSelectElement
     fireEvent.change(voicingSelect, { target: { value: "open" } })
@@ -126,7 +126,7 @@ describe("TriadPanel", () => {
   })
 
   it("changes triad type and updates formula", () => {
-    render(<TriadPanel tonic="C" />)
+    render(<TriadPanel root="C" onRootChange={vi.fn()} />)
     const select = screen.getByLabelText(/triad type/i) as HTMLSelectElement
     fireEvent.change(select, { target: { value: "minor" } })
     expect(select.value).toBe("minor")
@@ -135,7 +135,7 @@ describe("TriadPanel", () => {
   })
 
   it("changes inversion filter", () => {
-    render(<TriadPanel tonic="C" />)
+    render(<TriadPanel root="C" onRootChange={vi.fn()} />)
     fireEvent.click(screen.getByRole("button", { name: /fingerings/i }))
     const select = screen.getByLabelText(/inversion/i) as HTMLSelectElement
     fireEvent.change(select, { target: { value: "root" } })
@@ -143,15 +143,34 @@ describe("TriadPanel", () => {
   })
 
   it("renders a fretboard container", () => {
-    render(<TriadPanel tonic="C" />)
+    render(<TriadPanel root="C" onRootChange={vi.fn()} />)
     expect(screen.getByTestId("fretboard-viewer")).toBeDefined()
   })
 
   it("show-intervals checkbox starts checked and toggles off", () => {
-    render(<TriadPanel tonic="C" />)
+    render(<TriadPanel root="C" onRootChange={vi.fn()} />)
     const checkbox = screen.getByRole("checkbox", { name: /show intervals/i }) as HTMLInputElement
     expect(checkbox.checked).toBe(true)
     fireEvent.click(checkbox)
     expect(checkbox.checked).toBe(false)
+  })
+
+  it("renders the root selector with alphabetical enharmonic options", () => {
+    render(<TriadPanel root="C" onRootChange={vi.fn()} />)
+    const select = screen.getByLabelText(/^root$/i) as HTMLSelectElement
+    expect(select).toBeDefined()
+    expect(screen.getByRole("option", { name: "Ab" })).toBeDefined()
+    expect(screen.getByRole("option", { name: "A#" })).toBeDefined()
+    expect(screen.getByRole("option", { name: "Bb" })).toBeDefined()
+    expect(screen.getByRole("option", { name: "G#" })).toBeDefined()
+  })
+
+  it("initialises root to the prop and calls onRootChange when changed", () => {
+    const onRootChange = vi.fn()
+    render(<TriadPanel root="G" onRootChange={onRootChange} />)
+    const select = screen.getByLabelText(/^root$/i) as HTMLSelectElement
+    expect(select.value).toBe("G")
+    fireEvent.change(select, { target: { value: "D" } })
+    expect(onRootChange).toHaveBeenCalledWith("D")
   })
 })
