@@ -52,6 +52,9 @@ const ADDITIONAL_BY_TYPE: Record<string, SoloScaleEntry[]> = {
   m7b5: [
     { scaleName: "Locrian #2", hint: "less dissonant" },
   ],
+  dim7: [
+    { scaleName: "Locrian #2", hint: "less dissonant" },
+  ],
 }
 
 // ---------------------------------------------------------------------------
