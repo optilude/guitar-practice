@@ -73,29 +73,33 @@ function intervalColor(interval: string, rootColor: string, mutedColor: string):
 export function renderNotesView(
   containerEl: HTMLElement,
   scale: GuitarScale,
-  positionIndex: number
+  positionIndex: number,
+  containerWidth = 490
 ): void {
   containerEl.innerHTML = ""
 
   const scalePosition = scale.positions[positionIndex]
   if (!scalePosition || scalePosition.positions.length === 0) return
 
+  // 10px margin on each side; minimum 300px so notes don't overlap on narrow screens
+  const staveWidth = Math.max(containerWidth - 20, 300)
+
   const renderer = new Renderer(containerEl, Renderer.Backends.SVG)
-  renderer.resize(520, 400) // tall initial canvas; auto-crop trims excess
+  renderer.resize(staveWidth + 30, 400) // tall initial canvas; auto-crop trims excess
   const context = renderer.getContext()
 
   // ── Notation stave (treble clef) ───────────────────────────────────────────
   // space_above_staff_ln: 1 (vs default 4) places the first staff line at
   // stave.y + 10 instead of stave.y + 40, eliminating most of the whitespace
   // that would otherwise appear above the stave in the auto-cropped SVG.
-  const notationStave = new Stave(10, 10, 490, { space_above_staff_ln: 1 })
+  const notationStave = new Stave(10, 10, staveWidth, { space_above_staff_ln: 1 })
   notationStave.addClef("treble").setContext(context).draw()
 
   // ── Tab stave, positioned below notation stave ─────────────────────────────
   // 40px gap (vs 15) gives ledger lines below the bottom staff line room to
   // breathe; notes in keys like G or E can extend 25–35px below getBottomLineBottomY.
   const tabStaveY = notationStave.getBottomLineBottomY() + 40
-  const tabStave  = new TabStave(10, tabStaveY, 490)
+  const tabStave  = new TabStave(10, tabStaveY, staveWidth)
   tabStave.addClef("tab").setContext(context).draw()
 
   // Sync note-start x so noteheads align vertically between staves
@@ -146,7 +150,7 @@ export function renderNotesView(
   // Two independent FormatAndDraw calls each compute their own spacing, which
   // diverges when accidentals claim extra horizontal space. A single format()
   // call sees both voices and assigns the same x to every pair of notes.
-  const availableWidth = 500 - noteStartX - 10 // stave right edge (x:10 + w:490) minus note-start
+  const availableWidth = staveWidth - noteStartX // stave right edge (x:10 + staveWidth) minus note-start minus left margin
   const voice1 = new Voice()
   voice1.setMode(2) // SOFT — don't enforce strict beat counts
   voice1.addTickables(staveNotes)
@@ -198,12 +202,15 @@ export function renderNotesView(
     try {
       const bbox          = (svgEl as SVGSVGElement).getBBox()
       const pad           = 8
+      const croppedWidth  = Math.round(bbox.width  + pad * 2)
       const croppedHeight = Math.round(bbox.height + pad * 2)
       svgEl.setAttribute(
         "viewBox",
         `${bbox.x - pad} ${bbox.y - pad} ${bbox.width + pad * 2} ${bbox.height + pad * 2}`
       )
+      svgEl.setAttribute("width",  String(croppedWidth))
       svgEl.setAttribute("height", String(croppedHeight))
+      svgEl.style.width  = `${croppedWidth}px`
       svgEl.style.height = `${croppedHeight}px`
     } catch {
       // getBBox unavailable in non-browser environments (e.g. jsdom without layout)

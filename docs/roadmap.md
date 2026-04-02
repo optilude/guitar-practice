@@ -24,18 +24,21 @@ Integrate TonalJS to power interactive music theory tools: scales, chords, circl
 ## Phase 4: Goals, Routines & Practice Session UI
 The core practice workflow:
 - Set learning goals
-- Build practice routines (drawing from the library)
-- Run a session: timer, metronome, flashcards, notes
+- Build practice routines (drawing from the library and reference)
+
 
 ---
 
 ## Phase 5: Progress Tracking
-Session logs, streaks, and per-topic completion status (linked to Phase 2 library content). Phase 4 and 5 are closely coupled — may be worth combining into one phase when the time comes.
+Run a practice session: timer, metronome, flashcards, notes. Session logs, streaks, and per-topic completion status (linked to Phase 2 library content). Phase 4 and 5 are closely coupled — may be worth combining into one phase when the time comes.
 
 ---
 
 # Future ideas
 
+* Better account management (at least change + reset password) – consider moving to OAuth
+
+* Harmonic Minor and Melodic Minor mode systems for harmony viewer
 * Add drop-2 and drop-3 voicings for chords (if not already included)
 
 * Admin UI to manage default links
@@ -45,16 +48,11 @@ Session logs, streaks, and per-topic completion status (linked to Phase 2 librar
 
 * Audio recorder for practice
 
-* Better account management (at least change + reset password) – consider moving to OAuth
-
 # Known issues
 
 UX:
 
 * Reference view does not work well in dark mode - none of the lines are visible so we only see text
-* Titles above chord boxes are silly ("Barre – 5fr") - just remove them. They make sense on triads.
-* The words CLOSE and OPEN on the triads view should not be capitalised
-* The "show intervals" tickbox when viewing the fretboard should be next to the Highlight drop-down, not next to the tabs, but needs to be right-aligned to allow space for the secondary dropdown
 
 Scales:
 
@@ -62,55 +60,47 @@ Scales:
 
 Chords:
 
-* There are reported issues with some of the chord voicings. We might need a better source library and/or renderer than chords-db/react-chord.
-* The triad viewer sometimes renders a dot outside the box when there is a 5-fret spread, e.g. C major 4-2-1 open 2nd inversion.
-* Some chord types are showing invalid barres e.g. 9th chords
+* There are issues with some of the chord voicings (e.g. strange barres)
+* Some chord voicings are missing
+* The triad viewer sometimes renders a dot outside the box when there is a 5-fret spread
 
 # Resources / notes
 
 * Chords: https://github.com/szaza/guitar-chords-db-json - 99k voicings (machine generated)
 * Chord rendering: https://github.com/omnibrain/svguitar - can render interval names
 
-# Prompts
-
-## Fretboard viewer size and layout
-
-The fretboard view is unfortunately too small to be easily legible I think we need to go back to a vertical mode, with the circle on the top and the other factors underneath so the fretboard visualisation can be the full width of the page.
-
-Also, the white background box is too tall - the padding at the bottom beneath the fretboard view is much taller than the padding at the top or sides.
-
-Move the selectors for "Highlight" and "Show intervals" to be below the fretboard view. Put the drop-down lists below the white box and left-aligned, and the tick box ("show intervals") right-aligned.
-
-Also, on the Scales and Arpeggios view, put the "Notes: " and "Formula: " descriptors below the "Scale type" / "Chord type" drop-down boxes, rather than below the fretboard visualisation.
-
-## Chord fretboard viewer
-
-I'd like to create a fretboard view of chords and separately a fretboard view of triads. The starting point would be the same visualisation as scales and arpeggios. All chord tones (with either note name or intervals) on the fretboard should then be shown on a single fretboard diagram.
-
 ## Start phase 4
 
-Phase 3 is done for now! Let's move onto Phase 4: Goals, Routines & Practice Session UI. This covers the core practice workflow:
+Phase 3 is done for now! Let's move onto Phase 4: Goals and Routines. We will cover the 
 - Set learning goals
 - Build practice routines (drawing from the library)
-- Run a session: timer, metronome, flashcards, notes
+- Manage goals and routines 
 
-Here are the original specifications, slightly expanded:
+Managing goals:
 
-Basic flow:
-
-- Let the user define goals, eg “Follow the changes on a jazz blues progression”. Goals should have a title and a short description. Bonus if this can be Markdown formatted.
+- Let the user define **Goals**, eg “Follow the changes on a jazz blues progression”. 
+- Goals should have a title and a short description, which should be simple Markdown formatted.
 - It should also be possible to rename, archive, unarchive, and delete goals
-- At any one time, a single goal is active, and the previous session’s goal should be the default. Other unarchived goals should be quick to select. Archived goals should be hidden behind a secondary page/UI. The goal should be persistent across sessions for each user, i.e. the currently active goal is saved.
-- For each goal, pick the relevant topics to study. This should include conceptual lessons as well as specific scales, arpeggios, chords/voicings etc from the music theory system. So either – pick one or more lessons from the list of lessons, or pick one or more scales, arpeggios, chords, or triads using filters equivalent to the ones on the Reference page.
-- Create (CRUD) one or more routines against this goal. A routine has a fixed duration in minutes. It consists of separately timed sections by type eg technique warmup, scales/arpeggio warmup, the main topic(s), song practice, free practice. Research recommended guitar practice routines to suggest a default structure, but allow it to be modified: elements included, their order, and duration.
-- The front page of the app should simply and easily give access to the current goal and practice routine, and make it easy to change to a different route within the goal or a different goal.
-- A one click action should launch the routine with a timer keeping track of routine timings. It must be possible to pause the timer, or prematurely end the session.
-- When ending a session (either manually or because the timer ran out), give the option to save it (default) or discard it.
+- At any one time, a single goal is active, and this should be persisted across browser sessions and logins.
+- Other unarchived goals should be quick to select, maybe from the top level bar.
+- Archived goals should be hidden behind a secondary page/UI, from which they can be unarchived or deleted permanently.
 
-More details on practice routine elements:
+Assigning topics to goals:
 
-- Routine elements need to support different types
-- Lesson: Provide a link to the lesson but otherwise just show a timer
-- Scale, arpeggio practice, chord: Moving through the selected key(s) either chromatically, randomly, or through the circle of fourths/fifths (user can choose which when setting up the routine).
-- When running a routine, show a “flash card” for each element, where an item to practice is shown without detail, but the detail is revealed if the user clicks the card to “turn it”. The timer should be shown next to the flash card.
-- Include a simple metronome function that can be started or stopped at any time. It can play a basic sound but should support different tempos, time signatures and beat patterns. Let this be available during any practice session and at all times.
+- Against any lesson or reference item, the user can click "Add to goal" to make it a **Topic** of study against a goal.
+- This should default to the currently active goal, but also easily allow any other un-archived goal to be used, probably in an overlay dialogue box.
+- We will need an unobtrusive but obvious way to do this at various points in the UI, e.g. next to a lesson in the topic list, for a given scale, arpeggio type, chord type, triad, harmony, or progression. In the reference viewer, this will probably be next to the top level selector for "Triad type", "Chord type", "Scale type", etc.
+- For each topic of study linked to a goal, we need to store what it is (lesson, triad, arpeggio, progression, etc.), and the type of thing per the primary selector (e.g. "maj7 arpeggio" or "diminished triad"), and the _default_ key (i.e. the one currently selected), though later we will have more options for modulating the key.
+
+Managing routines
+
+- Against each goal, we need a way to create/manage (CRUD) one or more **Routines**
+- A routine has a fixed duration in minutes, a title, and a Markdown-formatted description.
+- A routine consists of multiple, separately timed **Sections** of different **Section Types**: warmup, technique, theory, lessons, songs, free practice. It can include 0, 1, or multiple sections of each type.
+- Research recommended guitar practice routines to suggest a default structure, but allow it to be modified
+- This means we need a simple UI to add, remove, and re-order sections in a routine.
+- Each section should have a title, description (Markdown formatted again) and zero or more relevant topics
+- The topics are selected from the list of Topics previously added to the Goal.
+- When adding a reference topic that is relevant to a key, default to the key that was saved when the topic was added, but also allow selecting all or a set of keys from a list, and then choosing: chromatic up, chromatic down, circle of fifths up, circle of fourths down, or random. This will be used in the practice session later.
+
+This phase is finished when we have a robust way to manage goals, assign study topics to goals, create routines within a goal, and manage the sections within each routine.x    

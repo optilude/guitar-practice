@@ -16,22 +16,43 @@ const COLOR_KEY = [
   { label: "7 / b7",       color: INTERVAL_DEGREE_COLORS.seventh },
 ]
 
+// p-2 padding (8px each side) on the card
+const CARD_PADDING = 16
+
 export function NotesViewer({ scale, positionIndex }: NotesViewerProps) {
+  const cardRef      = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!containerRef.current) return
-    try {
-      renderNotesView(containerRef.current, scale, positionIndex)
-    } catch {
-      if (containerRef.current) {
-        containerRef.current.innerHTML = "<p class='text-xs text-muted-foreground'>Notes view unavailable</p>"
+    const card = cardRef.current
+    const el   = containerRef.current
+    if (!card || !el) return
+
+    const parent = card.parentElement
+    if (!parent) return
+
+    function render() {
+      // Measure available width from the card's parent — not the card itself,
+      // so that setting card.style.width below doesn't create a feedback loop.
+      const parentWidth = parent!.clientWidth || 490
+      const cardWidth   = Math.round(parentWidth * 2 / 3)
+      card!.style.width = `${cardWidth}px`
+      try {
+        // Inner div is w-full → fills card content area (cardWidth minus padding)
+        renderNotesView(el!, scale, positionIndex, cardWidth - CARD_PADDING)
+      } catch {
+        el!.innerHTML = "<p class='text-xs text-muted-foreground'>Notes view unavailable</p>"
       }
     }
+
+    render()
+    const ro = new ResizeObserver(render)
+    ro.observe(parent)
+    return () => ro.disconnect()
   }, [scale, positionIndex])
 
   return (
-    <div className="rounded border border-border bg-card p-2">
+    <div ref={cardRef} className="rounded border border-border bg-card p-2">
       <div
         ref={containerRef}
         className="w-full overflow-x-auto"
