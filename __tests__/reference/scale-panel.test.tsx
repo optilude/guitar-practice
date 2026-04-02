@@ -40,7 +40,7 @@ describe("ScalePanel", () => {
     render(<ScalePanel tonic="C" />)
     const select = screen.getByLabelText(/scale type/i)
     expect(select).toBeDefined()
-    expect(screen.getByRole("option", { name: "Major" })).toBeDefined()
+    expect(screen.getByRole("option", { name: "Ionian (major)" })).toBeDefined()
     expect(screen.getByRole("option", { name: "Minor Pentatonic" })).toBeDefined()
     expect(screen.getByRole("option", { name: "Dorian" })).toBeDefined()
   })

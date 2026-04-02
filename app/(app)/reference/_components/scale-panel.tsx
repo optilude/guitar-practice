@@ -27,12 +27,27 @@ const BOX_SYSTEM_LABELS: Record<BoxSystem, string> = {
   windows:    "Position windows",
 }
 
+const MODES = ["Major", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrian"]
+const PENTATONICS = ["Pentatonic Major", "Pentatonic Minor", "Blues"]
+
+const SCALE_DISPLAY_LABELS: Record<string, string> = {
+  "Major":   "Ionian (major)",
+  "Aeolian": "Aeolian (natural minor)",
+}
+const scaleLabel = (t: string) => SCALE_DISPLAY_LABELS[t] ?? t
+
 interface ScalePanelProps {
   tonic: string
 }
 
 export function ScalePanel({ tonic }: ScalePanelProps) {
-  const scaleTypes = useMemo(() => listScaleTypes(), [])
+  const scaleTypes      = useMemo(() => listScaleTypes(), [])
+  const modeTypes       = useMemo(() => MODES.filter(t => scaleTypes.includes(t)), [scaleTypes])
+  const pentatonicTypes = useMemo(() => PENTATONICS.filter(t => scaleTypes.includes(t)), [scaleTypes])
+  const otherTypes      = useMemo(
+    () => scaleTypes.filter(t => !MODES.includes(t) && !PENTATONICS.includes(t)),
+    [scaleTypes]
+  )
   const [scaleType, setScaleType] = useState(scaleTypes[0] ?? "Major")
   const [viewMode, setViewMode]   = useState<"tab" | "fretboard">("fretboard")
   const [labelMode, setLabelMode] = useState<"note" | "interval">("interval")
@@ -77,9 +92,23 @@ export function ScalePanel({ tonic }: ScalePanelProps) {
           }}
           className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
         >
-          {scaleTypes.map((t) => (
-            <option key={t} value={t}>{t}</option>
-          ))}
+          <optgroup label="Modes">
+            {modeTypes.map((t) => (
+              <option key={t} value={t}>{scaleLabel(t)}</option>
+            ))}
+          </optgroup>
+          <optgroup label="Pentatonics">
+            {pentatonicTypes.map((t) => (
+              <option key={t} value={t}>{scaleLabel(t)}</option>
+            ))}
+          </optgroup>
+          {otherTypes.length > 0 && (
+            <optgroup label="Other">
+              {otherTypes.map((t) => (
+                <option key={t} value={t}>{scaleLabel(t)}</option>
+              ))}
+            </optgroup>
+          )}
         </select>
       </div>
 
