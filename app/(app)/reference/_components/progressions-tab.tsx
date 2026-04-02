@@ -11,7 +11,7 @@ interface ProgressionsTabProps {
 
 export function ProgressionsTab({ tonic }: ProgressionsTabProps) {
   const [progressionName, setProgressionName] = useState("pop-standard")
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(0)
 
   const progressions = listProgressions()
   const prog = progressions.find((p) => p.name === progressionName)!
@@ -45,9 +45,9 @@ export function ProgressionsTab({ tonic }: ProgressionsTabProps) {
           value={progressionName}
           onChange={(e) => {
             setProgressionName(e.target.value)
-            setSelectedIndex(null)
+            setSelectedIndex(0)
           }}
-          className="flex-1 bg-background border border-border rounded-md px-3 py-1.5 text-sm text-foreground"
+          className="bg-card border border-border rounded px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent w-fit"
         >
           {progressions.map((p) => (
             <option key={p.name} value={p.name}>
@@ -71,7 +71,7 @@ export function ProgressionsTab({ tonic }: ProgressionsTabProps) {
               <ChordQualityBlock
                 roman={chord.roman}
                 chordName={`${chord.tonic}${chord.type}`}
-                type={chord.type}
+                degree={chord.degree}
                 isSelected={selectedIndex === i}
                 onClick={() => handleIndexClick(i)}
               />
@@ -80,24 +80,20 @@ export function ProgressionsTab({ tonic }: ProgressionsTabProps) {
         </div>
       </div>
 
-      {/* Per-chord scale recommendation or placeholder */}
-      {scales && selectedChord ? (
+      {/* Per-chord scale recommendation */}
+      {scales && selectedChord && (
         <SoloScalesPanel
           scales={scales}
           chordName={`${selectedChord.tonic}${selectedChord.type}`}
         />
-      ) : (
-        <p className="text-sm text-muted-foreground italic">
-          Click a chord to see recommended scales for soloing.
-        </p>
       )}
 
       {/* Progression-wide recommendation — always visible */}
-      <div className="rounded-lg border border-green-800 bg-green-950/30 p-3">
+      <div>
         <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
           Over the whole progression
         </p>
-        <p className="text-sm font-semibold text-green-400">
+        <p className="text-sm font-semibold text-foreground">
           {tonic} {prog.recommendedScaleType}
         </p>
       </div>

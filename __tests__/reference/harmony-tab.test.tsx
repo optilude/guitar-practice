@@ -43,9 +43,9 @@ describe("HarmonyTab", () => {
     expect(buttons.length).toBeGreaterThanOrEqual(7)
   })
 
-  it("shows placeholder when no chord is selected", () => {
+  it("shows solo scales panel by default (I chord pre-selected)", () => {
     render(<HarmonyTab tonic="C" />)
-    expect(screen.getByText(/click a chord to see recommended scales/i)).toBeDefined()
+    expect(screen.getByText(/scales to solo over/i)).toBeDefined()
   })
 
   it("shows solo scales panel when a chord is clicked", async () => {
@@ -60,20 +60,19 @@ describe("HarmonyTab", () => {
   it("hides solo scales panel when same chord is clicked again (toggle)", async () => {
     render(<HarmonyTab tonic="C" />)
     const buttons = screen.getAllByRole("button")
-    const g7Button = buttons[4] // degree 5 (G7), same index as the mode-change test
-    await userEvent.click(g7Button)
-    expect(screen.queryByText(/click a chord/i)).toBeNull()
-    await userEvent.click(g7Button)
-    expect(screen.getByText(/click a chord to see recommended scales/i)).toBeDefined()
+    const g7Button = buttons[4] // degree 5 (G7)
+    await userEvent.click(g7Button)   // select G7
+    expect(screen.getByText(/scales to solo over/i)).toBeDefined()
+    await userEvent.click(g7Button)   // deselect
+    expect(screen.queryByText(/scales to solo over/i)).toBeNull()
   })
 
-  it("clears selection when mode changes", async () => {
+  it("resets to I chord when mode changes", async () => {
     render(<HarmonyTab tonic="C" />)
     const buttons = screen.getAllByRole("button")
     await userEvent.click(buttons[4]) // click V chord
-    expect(screen.queryByText(/click a chord/i)).toBeNull()
-    // Change mode
+    // Change mode → resets to degree 1, scales panel still visible
     await userEvent.selectOptions(screen.getByRole("combobox", { name: /mode/i }), "dorian")
-    expect(screen.getByText(/click a chord to see recommended scales/i)).toBeDefined()
+    expect(screen.getByText(/scales to solo over/i)).toBeDefined()
   })
 })

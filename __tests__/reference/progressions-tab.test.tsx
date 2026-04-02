@@ -61,6 +61,11 @@ describe("ProgressionsTab", () => {
     expect(screen.getByText(/major scale/i)).toBeDefined()
   })
 
+  it("shows per-chord scale panel by default (first chord pre-selected)", () => {
+    render(<ProgressionsTab tonic="C" />)
+    expect(screen.getByText(/scales to solo over/i)).toBeDefined()
+  })
+
   it("shows per-chord scale panel with Also works when chord is clicked", async () => {
     render(<ProgressionsTab tonic="C" />)
     const buttons = screen.getAllByRole("button")
@@ -73,21 +78,21 @@ describe("ProgressionsTab", () => {
   it("hides per-chord panel when same chord is clicked again", async () => {
     render(<ProgressionsTab tonic="C" />)
     const buttons = screen.getAllByRole("button")
-    await userEvent.click(buttons[1])
-    expect(screen.queryByText(/click a chord/i)).toBeNull()
-    await userEvent.click(buttons[1])
-    expect(screen.getByText(/click a chord to see recommended scales/i)).toBeDefined()
+    await userEvent.click(buttons[1]) // select second chord
+    expect(screen.getByText(/scales to solo over/i)).toBeDefined()
+    await userEvent.click(buttons[1]) // deselect
+    expect(screen.queryByText(/scales to solo over/i)).toBeNull()
   })
 
-  it("clears selection when progression changes", async () => {
+  it("resets to first chord when progression changes", async () => {
     render(<ProgressionsTab tonic="C" />)
     const buttons = screen.getAllByRole("button")
-    await userEvent.click(buttons[1])
-    expect(screen.queryByText(/click a chord/i)).toBeNull()
+    await userEvent.click(buttons[1]) // select chord at index 1
     await userEvent.selectOptions(
       screen.getByRole("combobox", { name: /progression/i }),
       "jazz-turnaround"
     )
-    expect(screen.getByText(/click a chord to see recommended scales/i)).toBeDefined()
+    // Resets to index 0 of new progression — scales panel still visible
+    expect(screen.getByText(/scales to solo over/i)).toBeDefined()
   })
 })

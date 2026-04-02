@@ -10,10 +10,13 @@ interface NotesViewerProps {
 }
 
 const COLOR_KEY = [
-  { label: "R",            color: "var(--accent)" },
-  { label: "3 / b3",       color: INTERVAL_DEGREE_COLORS.third },
-  { label: "5 / b5 / ♯5", color: INTERVAL_DEGREE_COLORS.fifth },
-  { label: "7 / b7",       color: INTERVAL_DEGREE_COLORS.seventh },
+  { label: "R",       color: "var(--accent)" },
+  { label: "2 / b2",  color: INTERVAL_DEGREE_COLORS.second },
+  { label: "3 / b3",  color: INTERVAL_DEGREE_COLORS.third },
+  { label: "4 / ♯4",  color: INTERVAL_DEGREE_COLORS.fourth },
+  { label: "5 / b5",  color: INTERVAL_DEGREE_COLORS.fifth },
+  { label: "6 / b6",  color: INTERVAL_DEGREE_COLORS.sixth },
+  { label: "7 / b7",  color: INTERVAL_DEGREE_COLORS.seventh },
 ]
 
 // p-2 padding (8px each side) on the card

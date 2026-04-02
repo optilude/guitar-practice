@@ -17,12 +17,12 @@ export function HarmonyStudy({ tonic }: HarmonyStudyProps) {
   const [tab, setTab] = useState<HarmonySubTab>("harmony")
 
   return (
-    <div className="rounded-xl border border-border bg-card p-4">
+    <div>
       {/* Sub-tab bar */}
       <div
         role="tablist"
         aria-label="Harmony study tabs"
-        className="flex border-b border-border mb-4"
+        className="flex border-b border-border"
         onKeyDown={(e) => {
           const current = TABS.indexOf(tab)
           if (e.key === "ArrowRight") setTab(TABS[(current + 1) % TABS.length])
@@ -54,6 +54,7 @@ export function HarmonyStudy({ tonic }: HarmonyStudyProps) {
         id="harmony-study-panel"
         role="tabpanel"
         aria-labelledby={`harmony-study-tab-${tab}`}
+        className="pt-4"
       >
         {tab === "harmony" && <HarmonyTab tonic={tonic} />}
         {tab === "progressions" && <ProgressionsTab tonic={tonic} />}

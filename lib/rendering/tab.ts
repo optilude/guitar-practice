@@ -47,22 +47,43 @@ function fretToVexKey(string: number, fret: number, noteName: string): string {
  * Interval display label → colour category.
  * Root uses the theme accent (resolved at render time); the others are fixed.
  */
+/**
+ * Shared interval→colour palette, used by both stave/tab and fretboard renderers.
+ *
+ * Aligned with music-theory convention and the app's design system:
+ *   Root   → amber   (tonic / home base)
+ *   2nd    → yellow  (whole-step colour, between amber and green)
+ *   3rd    → green   (third quality defines major vs minor)
+ *   4th    → rose    (subdominant, warm contrast)
+ *   5th    → blue    (power / stability)
+ *   6th    → cyan    (between blue and purple on the spectrum)
+ *   7th    → purple  (leading-tone / colour note)
+ */
 export const INTERVAL_DEGREE_COLORS = {
+  second:  "#ca8a04", // yellow-600
   third:   "#16a34a", // green-600
+  fourth:  "#e11d48", // rose-600
   fifth:   "#2563eb", // blue-600
+  sixth:   "#0891b2", // cyan-600
   seventh: "#9333ea", // purple-600
 } as const
 
+const SECOND_INTERVALS  = new Set(["2", "b2"])
 const THIRD_INTERVALS   = new Set(["3", "b3"])
+const FOURTH_INTERVALS  = new Set(["4", "#4"])
 const FIFTH_INTERVALS   = new Set(["5", "b5", "#5"])
+const SIXTH_INTERVALS   = new Set(["6", "b6"])
 const SEVENTH_INTERVALS = new Set(["7", "b7"])
 
-function intervalColor(interval: string, rootColor: string, mutedColor: string): string {
-  if (interval === "R")                return rootColor
+function intervalColor(interval: string, rootColor: string): string {
+  if (interval === "R")                 return rootColor
+  if (SECOND_INTERVALS.has(interval))  return INTERVAL_DEGREE_COLORS.second
   if (THIRD_INTERVALS.has(interval))   return INTERVAL_DEGREE_COLORS.third
+  if (FOURTH_INTERVALS.has(interval))  return INTERVAL_DEGREE_COLORS.fourth
   if (FIFTH_INTERVALS.has(interval))   return INTERVAL_DEGREE_COLORS.fifth
+  if (SIXTH_INTERVALS.has(interval))   return INTERVAL_DEGREE_COLORS.sixth
   if (SEVENTH_INTERVALS.has(interval)) return INTERVAL_DEGREE_COLORS.seventh
-  return mutedColor
+  return rootColor // fallback: unknown interval treated as root
 }
 
 /**
@@ -115,7 +136,6 @@ export function renderNotesView(
   // Resolve theme colours at render time
   const cs          = typeof document !== "undefined" ? getComputedStyle(document.documentElement) : null
   const accentColor = cs?.getPropertyValue("--accent").trim() || "#b45309"
-  const mutedColor  = cs?.getPropertyValue("--muted-foreground").trim() || "#737373"
 
   // Pre-resolve note names (shared between StaveNote building and SVG labels)
   const noteNames = sorted.map((p) => {
@@ -128,7 +148,7 @@ export function renderNotesView(
   const staveNotes = sorted.map((p, i) => {
     const noteName = noteNames[i]
     const vexKey   = noteName ? fretToVexKey(p.string, p.fret, noteName) : "b/4"
-    const color    = intervalColor(p.interval, accentColor, mutedColor)
+    const color    = intervalColor(p.interval, accentColor)
     const sn       = new StaveNote({ clef: "treble", keys: [vexKey], duration: "w" })
     sn.setStyle({ fillStyle: color, strokeStyle: color })
     // noteName is mixed-case ("Bb", "F#"); check original spelling for accidentals
@@ -140,7 +160,7 @@ export function renderNotesView(
   // ── Tab notes (unchanged from original renderTab) ──────────────────────────
   const tabNotes = sorted.map((p) => {
     const note  = new TabNote({ positions: [{ str: p.string, fret: String(p.fret) }], duration: "w" })
-    const color = intervalColor(p.interval, accentColor, mutedColor)
+    const color = intervalColor(p.interval, accentColor)
     note.setStyle({ fillStyle: color, strokeStyle: color })
     return note
   })
@@ -169,7 +189,7 @@ export function renderNotesView(
     for (const [i, note] of tabNotes.entries()) {
       const p        = sorted[i]
       const noteName = noteNames[i]
-      const color    = intervalColor(p.interval, accentColor, mutedColor)
+      const color    = intervalColor(p.interval, accentColor)
       const x        = String(note.getAbsoluteX())
 
       if (noteName) {

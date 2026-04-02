@@ -39,6 +39,7 @@ Run a practice session: timer, metronome, flashcards, notes. Session logs, strea
 * Better account management (at least change + reset password) – consider moving to OAuth
 
 * Harmonic Minor and Melodic Minor mode systems for harmony viewer
+* Enrich the set of "scales to solo over this chord" options
 * Add drop-2 and drop-3 voicings for chords (if not already included)
 
 * Admin UI to manage default links
@@ -68,6 +69,26 @@ Chords:
 
 * Chords: https://github.com/szaza/guitar-chords-db-json - 99k voicings (machine generated)
 * Chord rendering: https://github.com/omnibrain/svguitar - can render interval names
+
+# Prompts
+
+## Modes
+
+Change the name of the "Harmony" tab to "Modes".
+
+When selecting a mode other than Ionian, show the parent major key next to the mode selector, on the same line.
+
+Add a checkbox (default off) called "Relative". If ticked, change the roman numeral position of the relative major key, so e.g. if the key is D and the mode is Dorian, then the first chord, Dm7, would be listed as "ii" (second diatonic chord of C major) instead of "i" (first diatonic chord of D dorian). Add a tooltip (title attribute).
+
+Put this checkbox on the same line as the "Diatonic 7th chords". To make it fit, simplify the title – no need to repeat the scale name since it's already shown on screen via the Circle of Fifths and drop-down.
+
+## Scale selector
+
+Decouple the circle of fifths from the Scale, Arpeggio, Chord, and Triad references.
+
+For each, add a "Root" dropdown to the left of the existing "Scale type", "Chord type", and "Triad type" selectors. This should contain all possible roots notes in alphabetical order. Show enharmonic notes as two separate entities so it goes "Ab, A, A#, Bb, B, C, C#, Db, D" and so on.
+
+Make the rest of the content in each tab use this as its root, rather than the Circle of Fifths data.
 
 ## Start phase 4
 

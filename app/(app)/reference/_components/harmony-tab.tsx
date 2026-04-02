@@ -21,7 +21,7 @@ const MODE_OPTIONS = [
 
 export function HarmonyTab({ tonic }: HarmonyTabProps) {
   const [mode, setMode] = useState("ionian")
-  const [selectedDegree, setSelectedDegree] = useState<number | null>(null)
+  const [selectedDegree, setSelectedDegree] = useState<number | null>(1)
 
   const chords = getDiatonicChords(tonic, mode)
   const selectedChord =
@@ -55,9 +55,9 @@ export function HarmonyTab({ tonic }: HarmonyTabProps) {
           value={mode}
           onChange={(e) => {
             setMode(e.target.value)
-            setSelectedDegree(null)
+            setSelectedDegree(1)
           }}
-          className="flex-1 bg-background border border-border rounded-md px-3 py-1.5 text-sm text-foreground"
+          className="bg-card border border-border rounded px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent w-fit"
         >
           {MODE_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
@@ -78,7 +78,7 @@ export function HarmonyTab({ tonic }: HarmonyTabProps) {
               key={chord.degree}
               roman={chord.roman}
               chordName={`${chord.tonic}${chord.type}`}
-              type={chord.type}
+              degree={chord.degree}
               isSelected={selectedDegree === chord.degree}
               onClick={() => handleChordClick(chord.degree)}
             />
@@ -86,16 +86,12 @@ export function HarmonyTab({ tonic }: HarmonyTabProps) {
         </div>
       </div>
 
-      {/* Scale recommendation or placeholder */}
-      {scales && selectedChord ? (
+      {/* Scale recommendation */}
+      {scales && selectedChord && (
         <SoloScalesPanel
           scales={scales}
           chordName={`${selectedChord.tonic}${selectedChord.type}`}
         />
-      ) : (
-        <p className="text-sm text-muted-foreground italic">
-          Click a chord to see recommended scales for soloing.
-        </p>
       )}
     </div>
   )

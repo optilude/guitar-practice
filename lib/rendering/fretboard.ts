@@ -135,7 +135,6 @@ export function renderFretboard(
   // Use theme-aware hex colors (CSS vars use oklch format which D3/SVG may not parse)
   const isDark = typeof document !== "undefined" && document.documentElement.classList.contains("dark")
   const accentColor = isDark ? "#d97706" : "#b45309"  // amber-600 dark / amber-700 light
-  const mutedColor  = isDark ? "#888888" : "#737373"
 
   // Compute all positions of scale/arpeggio notes across the full fretboard
   const baseDots = getAllFretboardPositions(scale.tonic, scale.notes, scale.intervals)
@@ -257,10 +256,23 @@ export function renderFretboard(
       fontFill: "#ffffff",
     })
     .style({
-      // All other in-box intervals (2, b2, 4, #4, 6, b6, etc.)
-      filter: (d: any) => inBox(d) && !["R","3","b3","5","b5","#5","7","b7"].includes(d.interval),
-      fill: mutedColor,
-      stroke: mutedColor,
+      filter: (d: any) => inBox(d) && (d.interval === "2" || d.interval === "b2"),
+      fill: INTERVAL_DEGREE_COLORS.second,
+      stroke: INTERVAL_DEGREE_COLORS.second,
+      text: dotLabel,
+      fontFill: "#ffffff",
+    })
+    .style({
+      filter: (d: any) => inBox(d) && (d.interval === "4" || d.interval === "#4"),
+      fill: INTERVAL_DEGREE_COLORS.fourth,
+      stroke: INTERVAL_DEGREE_COLORS.fourth,
+      text: dotLabel,
+      fontFill: "#ffffff",
+    })
+    .style({
+      filter: (d: any) => inBox(d) && (d.interval === "6" || d.interval === "b6"),
+      fill: INTERVAL_DEGREE_COLORS.sixth,
+      stroke: INTERVAL_DEGREE_COLORS.sixth,
       text: dotLabel,
       fontFill: "#ffffff",
     })
