@@ -37,15 +37,15 @@ vi.mock("@/lib/theory", () => ({
 import { HarmonyStudy } from "@/app/(app)/reference/_components/harmony-study"
 
 describe("HarmonyStudy", () => {
-  it("renders Harmony and Progressions tab buttons", () => {
+  it("renders Modes and Progressions tab buttons", () => {
     render(<HarmonyStudy tonic="C" />)
-    expect(screen.getByRole("tab", { name: "Harmony" })).toBeDefined()
+    expect(screen.getByRole("tab", { name: "Modes" })).toBeDefined()
     expect(screen.getByRole("tab", { name: "Progressions" })).toBeDefined()
   })
 
-  it("defaults to Harmony tab active", () => {
+  it("defaults to Modes tab active", () => {
     render(<HarmonyStudy tonic="C" />)
-    const harmonyTab = screen.getByRole("tab", { name: "Harmony" })
+    const harmonyTab = screen.getByRole("tab", { name: "Modes" })
     expect(harmonyTab).toHaveAttribute("aria-selected", "true")
   })
 
@@ -63,11 +63,11 @@ describe("HarmonyStudy", () => {
     expect(screen.getByRole("combobox", { name: /progression/i })).toBeDefined()
   })
 
-  it("clicking Harmony tab after Progressions returns to harmony content", async () => {
+  it("clicking Modes tab after Progressions returns to modes content", async () => {
     render(<HarmonyStudy tonic="C" />)
     await userEvent.click(screen.getByRole("tab", { name: "Progressions" }))
-    await userEvent.click(screen.getByRole("tab", { name: "Harmony" }))
-    expect(screen.getByRole("tab", { name: "Harmony" })).toHaveAttribute("aria-selected", "true")
+    await userEvent.click(screen.getByRole("tab", { name: "Modes" }))
+    expect(screen.getByRole("tab", { name: "Modes" })).toHaveAttribute("aria-selected", "true")
     expect(screen.getByRole("combobox", { name: /mode/i })).toBeDefined()
   })
 })

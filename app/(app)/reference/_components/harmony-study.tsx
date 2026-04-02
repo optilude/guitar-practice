@@ -13,6 +13,11 @@ type HarmonySubTab = "harmony" | "progressions"
 
 const TABS: HarmonySubTab[] = ["harmony", "progressions"]
 
+const TAB_LABELS: Record<HarmonySubTab, string> = {
+  harmony: "Modes",
+  progressions: "Progressions",
+}
+
 export function HarmonyStudy({ tonic }: HarmonyStudyProps) {
   const [tab, setTab] = useState<HarmonySubTab>("harmony")
 
@@ -44,7 +49,7 @@ export function HarmonyStudy({ tonic }: HarmonyStudyProps) {
                 : "border-transparent text-muted-foreground hover:text-foreground"
             )}
           >
-            {id.charAt(0).toUpperCase() + id.slice(1)}
+            {TAB_LABELS[id]}
           </button>
         ))}
       </div>

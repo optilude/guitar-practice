@@ -5,6 +5,7 @@ import userEvent from "@testing-library/user-event"
 // Mock tonal (used by SoloScalesPanel)
 vi.mock("tonal", () => ({
   Scale: { get: () => ({ notes: ["G", "A", "B", "C", "D", "E", "F"] }) },
+  Note: { transpose: () => "Bb" },
 }))
 
 // Mock theory engine

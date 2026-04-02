@@ -72,16 +72,6 @@ Chords:
 
 # Prompts
 
-## Modes
-
-Change the name of the "Harmony" tab to "Modes".
-
-When selecting a mode other than Ionian, show the parent major key next to the mode selector, on the same line.
-
-Add a checkbox (default off) called "Relative". If ticked, change the roman numeral position of the relative major key, so e.g. if the key is D and the mode is Dorian, then the first chord, Dm7, would be listed as "ii" (second diatonic chord of C major) instead of "i" (first diatonic chord of D dorian). Add a tooltip (title attribute).
-
-Put this checkbox on the same line as the "Diatonic 7th chords". To make it fit, simplify the title – no need to repeat the scale name since it's already shown on screen via the Circle of Fifths and drop-down.
-
 ## Scale selector
 
 Decouple the circle of fifths from the Scale, Arpeggio, Chord, and Triad references.
@@ -89,6 +79,26 @@ Decouple the circle of fifths from the Scale, Arpeggio, Chord, and Triad referen
 For each, add a "Root" dropdown to the left of the existing "Scale type", "Chord type", and "Triad type" selectors. This should contain all possible roots notes in alphabetical order. Show enharmonic notes as two separate entities so it goes "Ab, A, A#, Bb, B, C, C#, Db, D" and so on.
 
 Make the rest of the content in each tab use this as its root, rather than the Circle of Fifths data.
+
+## Scale linking
+
+When changing the selection in the Circle of Fifths (which also preselects the root in the harmony view), default all root note selectors to match the chosen key.
+
+When clicking on a chord in the Harmony or Progressions list, or when the root is auto-selected because of a change in mode or progression, set the root note and – for chords and triads – chord quality (insfar as possible, i.e. for triads only choose major, minor, diminished, augmented) to match.
+
+Make the "Scales to solo over" clickable. When clicked, select the corresponding scale on the Scales tab and switch to it.
+
+## Dark mode
+
+Dark mode is too difficult to use currently. Please improve contrast and colours:
+
+- On the Library page, the category tiles show up just as text until you hover over them. Restore their outline.
+- On the Reference page, the Circle of Fifths has no visible outlines or shading - only the text is visible. 
+- The Circle of Fifths text is also hard to read for the minor keys and the accidentals view outside the circle. Make these higher contrast.
+- The text in the other panels, outside the tab titles, is also pretty hard to read. Improve contrast.
+- Improve contrast for the fretboard visualisation. The coloured dots are fine, but the fretboard drawing is too faint.
+- The staves for the notes views of scales and arpeggios are "black on black". Show the background box in a pale gray not full white, but leave the stave colour black.
+- The chord fingering diagrams are similarly low-contrast and hard to read.
 
 ## Start phase 4
 
