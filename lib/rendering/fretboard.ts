@@ -276,4 +276,20 @@ export function renderFretboard(
       text: dotLabel,
       fontFill: "#ffffff",
     })
+
+  // In dark mode, colour structural SVG elements (strings, frets, fret-number labels)
+  // so they're visible on the dark bg-card background.
+  // This runs AFTER all fretboard.style() calls, so dot circles and dot text already
+  // have their interval colours set and won't be affected by the fill-attribute check below.
+  if (isDark) {
+    const svgEl = containerEl.querySelector<SVGSVGElement>("svg")
+    if (svgEl) {
+      // Strings and frets are <line> elements; dot markers are <circle> — no overlap
+      svgEl.querySelectorAll("line").forEach(el => el.setAttribute("stroke", "#888"))
+      // Fret-number <text> have no fill attribute yet; dot text already has fill from style()
+      svgEl.querySelectorAll("text").forEach(el => {
+        if (!el.getAttribute("fill")) el.setAttribute("fill", "#888")
+      })
+    }
+  }
 }

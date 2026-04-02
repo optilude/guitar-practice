@@ -109,6 +109,14 @@ export function renderNotesView(
   renderer.resize(staveWidth + 30, 400) // tall initial canvas; auto-crop trims excess
   const context = renderer.getContext()
 
+  // Set stave-line colour for the current theme so lines are visible on bg-card.
+  // Individual notes override this via setStyle() before they draw.
+  const isDark = typeof document !== "undefined" && document.documentElement.classList.contains("dark")
+  const staveColor = isDark ? "#cccccc" : "#000000"
+  context.setFillStyle?.(staveColor)
+  context.setStrokeStyle?.(staveColor)
+  context.setBackgroundFillStyle?.(isDark ? "#111111" : "#ffffff")
+
   // ── Notation stave (treble clef) ───────────────────────────────────────────
   // space_above_staff_ln: 1 (vs default 4) places the first staff line at
   // stave.y + 10 instead of stave.y + 40, eliminating most of the whitespace
@@ -217,6 +225,12 @@ export function renderNotesView(
       degreeEl.textContent = degree
       svgEl.appendChild(degreeEl)
     }
+
+    // Bold tab-note fret numbers for readability (both light and dark mode).
+    // VexFlow-rendered tab note text lacks font-family; our injected labels have it.
+    svgEl.querySelectorAll<SVGTextElement>("text:not([font-family])").forEach(el => {
+      el.setAttribute("font-weight", "600")
+    })
 
     // Auto-crop: resize viewBox to actual rendered content
     try {

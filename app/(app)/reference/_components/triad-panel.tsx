@@ -254,7 +254,9 @@ export function TriadPanel({ root, onRootChange, triadTypeTrigger }: TriadPanelP
                     {voicings.map((pos, i) => (
                       <div key={i} className="flex flex-col items-center gap-1">
                         <span className="text-xs text-muted-foreground">{pos.label}</span>
-                        <Chord chord={pos} instrument={GUITAR_INSTRUMENT} lite={false} />
+                        <div className="dark:invert">
+                          <Chord chord={pos} instrument={GUITAR_INSTRUMENT} lite={false} />
+                        </div>
                       </div>
                     ))}
                   </div>

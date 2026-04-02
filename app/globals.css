@@ -97,15 +97,15 @@
   --popover-foreground: oklch(0.918 0 0);
   --primary: oklch(0.688 0.165 57);           /* amber-600, same as accent */
   --primary-foreground: oklch(0.075 0 0);
-  --secondary: oklch(0.145 0 0);
+  --secondary: oklch(0.35 0 0);               /* ~#484848 — visible raised surface */
   --secondary-foreground: oklch(0.918 0 0);
-  --muted: oklch(0.098 0 0);
-  --muted-foreground: oklch(0.58 0 0);        /* ~#888, sufficient contrast on dark bg */
+  --muted: oklch(0.25 0 0);                  /* ~#333 — clearly lighter than card */
+  --muted-foreground: oklch(0.82 0 0);       /* ~#d0d0d0 — high contrast, close to white */
   --accent: oklch(0.688 0.165 57);            /* #d97706 amber-600 */
   --accent-foreground: oklch(0.075 0 0);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(0.145 0 0);                 /* #1c1c1c */
-  --input: oklch(0.145 0 0);
+  --border: oklch(0.5 0 0);                  /* ~#777 — strongly visible border in dark mode */
+  --input: oklch(0.35 0 0);
   --ring: oklch(0.688 0.165 57);
   --chart-1: oklch(0.688 0.165 57);
   --chart-2: oklch(0.577 0.150 55);

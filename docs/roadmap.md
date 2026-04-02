@@ -36,18 +36,27 @@ Run a practice session: timer, metronome, flashcards, notes. Session logs, strea
 
 # Future ideas
 
-* Better account management (at least change + reset password) – consider moving to OAuth
+* Account management (at least change + reset password) – consider moving to OAuth
+* Admin UI: Remove users, manage library content
+* Allow users to add their own, personal content to the library via UI
 
 * Harmonic Minor and Melodic Minor mode systems for harmony viewer
-* Enrich the set of "scales to solo over this chord" options
-* Add drop-2 and drop-3 voicings for chords (if not already included)
+* Are there other relevant harmony systems?
 
-* Admin UI to manage default links
-* UI to allow users to add their own section to the library (list of links)
+* Enrich the set of "scales to solo over this chord" options
+* Consider having this feature for any chord in the Chords panel, not just the diatonics
+
+* Add drop-2 and drop-3 voicings for chords (if not already included)
+* In general, add more inversions and organise them better
+
+* Add more progressions
+* Specifically, add blues progressions (regular, jazz, minor, etc.) - these may require special consideration for soloing scales
+
+
 
 * More streaks/gamification features
 
-* Audio recorder for practice
+* Audio recorder for practice (note this will really change data storage and storage costs)
 
 # Known issues
 
@@ -57,12 +66,12 @@ UX:
 
 Scales:
 
-* Need to find a way to test that they are in fact being rendered correctly
+* Scales note viewer has standard notation on a stave. Some of the low notes appear really low - are they actually correct? They may be transposed down an octive or two.
+* Look fine now but we need to more formally test their correctness
 
 Chords:
 
 * There are issues with some of the chord voicings (e.g. strange barres)
-* Some chord voicings are missing
 * The triad viewer sometimes renders a dot outside the box when there is a 5-fret spread
 
 # Resources / notes
@@ -72,17 +81,40 @@ Chords:
 
 # Prompts
 
-## Dark mode
+## Progressions
 
-Dark mode is too difficult to use currently. Please improve contrast and colours:
+Expand the list of Progressions and categorise them in the drop-down. The table below lists the categories and relevant progression (Roman numerals).
 
-- On the Library page, the category tiles show up just as text until you hover over them. Restore their outline.
-- On the Reference page, the Circle of Fifths has no visible outlines or shading - only the text is visible. 
-- The Circle of Fifths text is also hard to read for the minor keys and the accidentals view outside the circle. Make these higher contrast.
-- The text in the other panels, outside the tab titles, is also pretty hard to read. Improve contrast.
-- Improve contrast for the fretboard visualisation. The coloured dots are fine, but the fretboard drawing is too faint.
-- The staves for the notes views of scales and arpeggios are "black on black". Show the background box in a pale gray not full white, but leave the stave colour black.
-- The chord fingering diagrams are similarly low-contrast and hard to read.
+There are examples (songs) and notes against each. Add a "Help" or "More" icon next to the progression drop-down box (on the same line if possible). When the user clicks/taps on or hovers over this, show a pop-up window that displays this information, neatly formatted.
+
+| Category | Name | Progression | Examples | Notes |
+|---|---|---|---|---|
+| Pop | Pop Axis | I – V – vi – IV | Let It Be, No Woman No Cry, With or Without You | The most widely used progression in modern pop. |
+| Pop | Relative Minor Loop | vi – IV – I – V | Africa (Toto), Decode (Paramore) | Same chords as the Pop Axis, starting on the minor; darker feel. |
+| Pop | Three-Chord Pop | I – IV – V | La Bamba, Twist and Shout, Johnny B. Goode | The simplest complete progression; backbone of early rock 'n' roll. |
+| Pop | 50s Progression | I – vi – IV – V | Stand By Me, Blue Moon, Heart and Soul | Also called the Doo-Wop progression; ubiquitous in 1950s pop. |
+| Pop | ii–V–I (Pop) | ii – V – I | Common in pop bridges and pre-choruses | Borrowed from jazz; adds harmonic sophistication. Usually played with 7th voicings. |
+| Blues | 12-Bar Blues | I7–I7–I7–I7 / IV7–IV7–I7–I7 / V7–IV7–I7–V7 | Sweet Home Chicago, Pride and Joy, La Grange | The foundation of the blues. All chords are dominant 7ths. |
+| Blues | Quick-Change Blues | I7–IV7–I7–I7 / IV7–IV7–I7–I7 / V7–IV7–I7–V7 | Pride and Joy (SRV), Sweet Little Angel | 12-bar with IV in bar 2 for added early tension. |
+| Blues | 8-Bar Blues | I – V – IV – IV / I – V – I – V | Key to the Highway, Worried Life Blues | Compressed form; feels more urgent and stripped-back. |
+| Blues | Minor Blues | i – i – i – i / iv – iv – i – i / V – iv – i – V | The Thrill Is Gone (BB King), All Your Love | 12-bar in minor; more mournful and tense than the major form. |
+| Jazz | ii–V–I Major | ii7 – V7 – Imaj7 | Autumn Leaves, All The Things You Are | The core jazz cadence. Appears constantly in standards; played with 7th/9th extensions. |
+| Jazz | ii–V–i Minor | iiø7 – V7 – im7 | Autumn Leaves (minor sections), Alone Together | Half-diminished ii chord gives a darker, minor flavour. |
+| Jazz | Jazz Turnaround | Imaj7 – VI7 – II7 – V7 | Rhythm Changes endings, many standard codas | Secondary dominants replace diatonic chords to create harmonic momentum. |
+| Jazz | Rhythm Changes | I–vi–ii–V (A) / III–VI–II–V (B) | I Got Rhythm (Gershwin), Oleo, Anthropology | 32-bar AABA form; a rite of passage for jazz players. |
+| Jazz | Tritone Substitution | ♭II7 – Imaj7 | Bebop standards, Charlie Parker compositions | ♭II7 replaces V7 (a tritone away) for chromatic descending bass motion. |
+| Rock | Three-Chord Rock | I – IV – V | Rock Around the Clock, many punk/rock songs | Same numerals as Three-Chord Pop but played as power chords for a harder sound. |
+| Rock | Mixolydian Vamp | I – ♭VII – IV | Sweet Home Alabama, Knockin' on Heaven's Door, Hey Joe | ♭VII borrowed from the Mixolydian mode; the quintessential rock flavour. |
+| Rock | Aeolian Vamp | i – ♭VII – ♭VI – ♭VII | Stairway to Heaven, All Along the Watchtower | Natural minor rocking between ♭VI and ♭VII; dark and anthemic. |
+| Rock | Minor Rock Loop | i – ♭VI – ♭III – ♭VII | Stairway to Heaven (chorus), many alt-rock anthems | Aeolian loop with a resolving quality; huge in stadium rock. |
+| Folk / Country | Folk Three-Chord | I – IV – V – I | Wagon Wheel, Take Me Home Country Roads, Blowin' in the Wind | Open-position G, C, D shapes — the most natural fit for acoustic guitar. |
+| Folk / Country | Two-Chord Vamp | I – V | Many traditional folk and children's songs | Simplest vehicle for a melody; works well with fingerpicking patterns. |
+| Folk / Country | Bluegrass Loop | I – IV – I – V | Deep River Blues, many bluegrass standards | Common in bluegrass and old-time; pairs well with alternating bass picking. |
+| Folk / Country | Pachelbel Canon | I – V – vi – iii – IV – I – IV – V | Pachelbel's Canon, many folk-inspired songs | Stepwise descending bass sounds especially rich fingerpicked. |
+| Classical / Modal | Andalusian Cadence | i – ♭VII – ♭VI – V | Flamenco tradition, Sultans of Swing, Hit the Road Jack | Descending bass line; V is major for Phrygian tension. Deeply dramatic. |
+| Classical / Modal | Lamento Bass | I – I/VII – I/VI – I/V | Air on G String, many Baroque pieces | Stepwise descending bass in the root position; elegant for fingerstyle. |
+| Classical / Modal | Plagal Cadence | IV – I | Hymns, gospel, many rock outros | The "Amen" cadence; restful and conclusive without the leading-tone pull of V–I. |
+| Classical / Modal | Phrygian Vamp | i – ♭II (repeat) | Flamenco, Middle Eastern-influenced passages | The ♭II (Neapolitan) chord creates an exotic, suspended tension. |
 
 ## Start phase 4
 

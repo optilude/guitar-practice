@@ -112,7 +112,7 @@ export function CircleOfFifths({ selectedKey, onKeySelect }: CircleOfFifthsProps
                   "transition-colors",
                   isSelected
                     ? "fill-accent stroke-background"
-                    : "fill-card stroke-border hover:fill-muted"
+                    : "fill-card dark:fill-[#2d2d2d] stroke-border hover:fill-muted dark:hover:fill-[#393939]"
                 )}
                 strokeWidth={1.5}
               />
@@ -185,8 +185,8 @@ export function CircleOfFifths({ selectedKey, onKeySelect }: CircleOfFifthsProps
                 className={cn(
                   "transition-colors",
                   isSelected
-                    ? "fill-accent/20 stroke-background"
-                    : "fill-muted stroke-border"
+                    ? "fill-accent/20 dark:fill-accent/40 stroke-background"
+                    : "fill-muted dark:fill-[#1e1e1e] stroke-border"
                 )}
                 strokeWidth={1}
               />
@@ -197,7 +197,7 @@ export function CircleOfFifths({ selectedKey, onKeySelect }: CircleOfFifthsProps
                 textAnchor="middle"
                 dominantBaseline="middle"
                 fontSize={10}
-                className="fill-muted-foreground"
+                className="fill-foreground/70 dark:fill-muted-foreground"
               >
                 {RELATIVE_MINORS[i]}
               </text>

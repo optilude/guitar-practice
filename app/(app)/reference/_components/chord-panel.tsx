@@ -300,7 +300,9 @@ export function ChordPanel({ root, onRootChange, chordTypeTrigger }: ChordPanelP
           <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-6">
             {positions.map((pos, i) => (
               <div key={i} className="flex flex-col items-center gap-1">
-                <Chord chord={pos} instrument={GUITAR_INSTRUMENT} lite={false} />
+                <div className="dark:invert">
+                  <Chord chord={pos} instrument={GUITAR_INSTRUMENT} lite={false} />
+                </div>
               </div>
             ))}
           </div>
