@@ -110,7 +110,9 @@ export function ProgressionsTab({ tonic, onChordSelect, onScaleSelect }: Progres
             <optgroup key={category} label={category}>
               {items.map((p) => (
                 <option key={p.name} value={p.name}>
-                  {p.displayName} · {p.romanDisplay}
+                  {p.romanDisplay.length <= 25
+                    ? `${p.displayName} · ${p.romanDisplay}`
+                    : p.displayName}
                 </option>
               ))}
             </optgroup>
@@ -159,7 +161,7 @@ export function ProgressionsTab({ tonic, onChordSelect, onScaleSelect }: Progres
         <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">
           Chords in {tonic} · {prog.romanDisplay}
         </p>
-        <div role="group" aria-label="Progression chords" className="flex items-center gap-1 overflow-x-auto pb-2">
+        <div role="group" aria-label="Progression chords" className="flex flex-wrap items-center gap-1">
           {chords.map((chord, i) => (
             <div key={i} className="flex items-center gap-1 flex-shrink-0">
               {i > 0 && (
