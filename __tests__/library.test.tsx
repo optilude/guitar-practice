@@ -60,6 +60,12 @@ describe("LibraryPage", () => {
       "/library/fretboard-knowledge"
     )
   })
+
+  it("renders a 'Manage my library' link to /library/manage", async () => {
+    render(await LibraryPage())
+    const link = screen.getByRole("link", { name: /manage my library/i })
+    expect(link).toHaveAttribute("href", "/library/manage")
+  })
 })
 
 const mockCategory = {
