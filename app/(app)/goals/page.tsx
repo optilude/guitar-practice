@@ -1,13 +1,13 @@
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { redirect } from "next/navigation"
+import { notFound } from "next/navigation"
 import Link from "next/link"
 import { GoalCard } from "./_components/goal-card"
 import { NewGoalForm } from "./_components/new-goal-form"
 
 export default async function GoalsPage() {
   const session = await auth()
-  if (!session?.user?.id) redirect("/login")
+  if (!session?.user?.id) notFound()
 
   const goals = await db.goal.findMany({
     where: { userId: session.user.id, isArchived: false },

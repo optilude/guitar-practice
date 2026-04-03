@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { redirect, notFound } from "next/navigation"
+import { notFound } from "next/navigation"
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
 import { SectionList } from "./_components/section-list"
@@ -12,7 +12,7 @@ export default async function RoutineDetailPage({
 }) {
   const { goalId, routineId } = await params
   const session = await auth()
-  if (!session?.user?.id) redirect("/login")
+  if (!session?.user?.id) notFound()
 
   const routine = await db.routine.findUnique({
     where: { id: routineId },

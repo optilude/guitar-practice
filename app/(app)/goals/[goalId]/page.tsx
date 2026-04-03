@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { redirect, notFound } from "next/navigation"
+import { notFound } from "next/navigation"
 import { GoalDetailClient } from "./_components/goal-detail-client"
 
 export default async function GoalDetailPage({
@@ -10,7 +10,7 @@ export default async function GoalDetailPage({
 }) {
   const { goalId } = await params
   const session = await auth()
-  if (!session?.user?.id) redirect("/login")
+  if (!session?.user?.id) notFound()
 
   const goal = await db.goal.findUnique({
     where: { id: goalId },

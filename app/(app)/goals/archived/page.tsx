@@ -1,12 +1,12 @@
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { redirect } from "next/navigation"
+import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ArchivedGoalCard } from "./_components/archived-goal-card"
 
 export default async function ArchivedGoalsPage() {
   const session = await auth()
-  if (!session?.user?.id) redirect("/login")
+  if (!session?.user?.id) notFound()
 
   const goals = await db.goal.findMany({
     where: { userId: session.user.id, isArchived: true },
