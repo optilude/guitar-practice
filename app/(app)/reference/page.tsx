@@ -39,6 +39,14 @@ const SOLO_SCALE_TO_PANEL_TYPE: Record<string, string> = {
   "Major Pentatonic":        "Pentatonic Major",
   "Minor Pentatonic":        "Pentatonic Minor",
   "Blues Scale":             "Blues",
+  "Locrian #2":              "Locrian #2",
+  "Altered":                 "Altered",
+  "Lydian Dominant":         "Lydian Dominant",
+  "Lydian Augmented":        "Lydian Augmented",
+  "Phrygian Dominant":       "Phrygian Dominant",
+  "Bebop Dominant":          "Bebop Dominant",
+  "Melodic Minor":           "Melodic Minor",
+  "Diminished Half-Whole":   "Diminished Half-Whole",
 }
 
 export default function ReferencePage() {
