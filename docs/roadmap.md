@@ -16,26 +16,25 @@ Note: per-topic progress tracking (Not Started / In Progress / Done) is deferred
 
 ---
 
-## Phase 3: Music Theory Engine
+## Phase 3: Music Theory Engine ✅ Complete
 Integrate TonalJS to power interactive music theory tools: scales, chords, circle of fifths visualisation. Needs design/brainstorming session before implementation.
 
 ---
 
-## Phase 4: Goals, Routines & Practice Session UI
+## Phase 4: Goals and Routines Management ✅ Complete
 The core practice workflow:
 - Set learning goals
 - Build practice routines (drawing from the library and reference)
 
-
 ---
 
-## Phase 5: Progress Tracking
-Run a practice session: timer, metronome, flashcards, notes. Session logs, streaks, and per-topic completion status (linked to Phase 2 library content).
-
----
-
-## Phase 6: Custom library
+## Phase 5: Custom library
 Allow the user to maintain a custom library of lessons.
+
+---
+
+## Phase 6: Sessions and Progress Tracking
+Run a practice session: timer, metronome, flashcards, notes. Session logs, streaks, and per-topic completion status (linked to Phase 2 library content).
 
 ---
 
@@ -49,12 +48,9 @@ Account management and better authentication support. Admin UI for managing user
 * Change Triads to Inversions. The first category should be the basic triads like now, but this adds many (!) more types.
 * Consider changing to SVGuitar or a different rendering engine
 
-* Should each practice routine element allow for more than one topic? Might be useful to introduce some degree of optionality to the practice routine without having to create lots of different routines.
+* Should each practice routine element allow for more than one topic? Might be useful to introduce some degree of optionality to the practice routine without having to create lots of different routines, e.g. add major and minor triads to a single triad study section.
 
 * Harmonic Minor and Melodic Minor mode systems?
-
-* Enrich the set of "scales to solo over this chord" options
-* Consider having this feature for any chord in the Chords panel, not just the harmony panel, since it's easier to look up a specific chord there.
 
 * Add drop-2 and drop-3 voicings for chords (if not already included)
 * In general, add more inversions and organise them better
@@ -125,7 +121,19 @@ Managing routines
 
 This phase is finished when we have a robust way to manage goals, assign study topics to goals, create routines within a goal, and manage the sections within each routine.  
 
-## Start phase 5
+## Start phase 5
+
+Allow the user to create and maintain their own supplementary set of links to topics/lessons in the Library. This should be in addition to the default library content, and under the same category headings.
+
+On the Library page, add a "Manage my library" link, to a new page for managing a custom library. Here, create a UI for user to manage (CRUD) a personal list of links with titles, descriptions, and source, categorised into any of the existing categories. Support drag-and-drop re-ordering of lessons within this UI (per category). Do not (for now, at least) allow any further management of categories, e.g. creating custom categories.
+
+When rendering the library, show two tabs for each category - Standard and Personal. The latter is the user's own library.
+
+User-managed lessons need to work in the practice routine builder, just like default lessons.
+
+Use the goal and routine builder GUI for inspiration and design patterns.
+
+## Start phase 6
 
 We now need to tackle running and tracking practice sessions.
 
@@ -157,12 +165,3 @@ Allow the user to delete previous practice sessions if saved in error, but put t
 
 Also show recently completed sessions specific to a goal underneath that goal on the Goals page.
 
-## Start phase 6
-
-Allow the user to create and maintain their own supplementary set of links to topics/lessons in the Library. This should be in addition to the default library content, and under the same category headings.
-
-On the Library page, add a "My library" link, to a new page for managing a custom library. Here, create a UI for user to manage (CRUD) a personal list of links with titles, descriptions, and source, categorised into any of the existing categories. Support drag-and-drop re-ordering of lessons within this UI (per category). Do not (for now, at least) allow any further management of categories, e.g. creating custom categories.
-
-When rendering the library, show two tabs for each category - Standard and Personal. The latter is the user's own library.
-
-User-managed lessons need to work in the practice routine builder, just like default lessons.
