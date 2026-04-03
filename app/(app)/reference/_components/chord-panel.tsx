@@ -16,6 +16,8 @@ import {
 import type { BoxSystem } from "@/lib/rendering/fretboard"
 import { cn } from "@/lib/utils"
 import { AddToGoalButton } from "@/components/add-to-goal-button"
+import { defaultModeForChordType, getSoloScales } from "@/lib/theory/solo-scales"
+import { SoloScalesPanel } from "./solo-scales-panel"
 
 const GUITAR_INSTRUMENT = {
   strings: 6,
@@ -67,6 +69,17 @@ const BOX_SYSTEM_LABELS: Record<BoxSystem, string> = {
   windows:    "Position windows",
 }
 
+const SOLO_MODE_OPTIONS = [
+  { value: "ionian",        label: "Ionian" },
+  { value: "dorian",        label: "Dorian" },
+  { value: "phrygian",      label: "Phrygian" },
+  { value: "lydian",        label: "Lydian" },
+  { value: "mixolydian",    label: "Mixolydian" },
+  { value: "aeolian",       label: "Aeolian" },
+  { value: "locrian",       label: "Locrian" },
+  { value: "melodic minor", label: "Melodic Minor" },
+]
+
 interface ChordPanelProps {
   root: string
   onRootChange: (root: string) => void
@@ -89,7 +102,14 @@ export function ChordPanel({ root, onRootChange, chordTypeTrigger, onScaleSelect
   useEffect(() => {
     if (chordTypeTrigger) setChordType(chordTypeTrigger.type)
   }, [chordTypeTrigger]) // eslint-disable-line react-hooks/exhaustive-deps
-  const [viewMode, setViewMode]   = useState<"fretboard" | "fingerings">("fretboard")
+  const [viewMode, setViewMode]
+     = useState<"fretboard" | "fingerings" | "soloing">("fretboard")
+  const [soloingMode, setSoloingMode] = useState(() => defaultModeForChordType(COMMON_TYPES[0]))
+
+  useEffect(() => {
+    setSoloingMode(defaultModeForChordType(chordType))
+  }, [chordType]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const [labelMode, setLabelMode] = useState<"note" | "interval">("interval")
   const [boxSystem, setBoxSystem] = useState<BoxSystem>("none")
   const [boxIndex, setBoxIndex]   = useState(0)
@@ -112,6 +132,11 @@ export function ChordPanel({ root, onRootChange, chordTypeTrigger, onScaleSelect
   const safeBoxIndex = boxIndex < boxCount ? boxIndex : 0
 
   const isShell = (SHELL_CHORD_TYPES as readonly string[]).includes(chordType)
+
+  const soloScales = useMemo(
+    () => getSoloScales({ tonic: root, type: chordType, degree: 1 }, soloingMode),
+    [root, chordType, soloingMode]
+  )
 
   const chord = useMemo(
     () => isShell ? null : getChord(root, chordType),
@@ -226,6 +251,17 @@ export function ChordPanel({ root, onRootChange, chordTypeTrigger, onScaleSelect
         >
           Fingerings
         </button>
+        <button
+          onClick={() => setViewMode("soloing")}
+          className={cn(
+            "px-3 py-1.5 transition-colors border-l border-border",
+            viewMode === "soloing"
+              ? "bg-accent text-accent-foreground"
+              : "bg-card text-muted-foreground hover:bg-muted"
+          )}
+        >
+          Soloing
+        </button>
       </div>
 
       {/* Fretboard controls + viewer */}
@@ -315,6 +351,32 @@ export function ChordPanel({ root, onRootChange, chordTypeTrigger, onScaleSelect
             ))}
           </div>
         )
+      )}
+
+      {/* Soloing */}
+      {viewMode === "soloing" && (
+        <div className="space-y-4">
+          <div className="flex flex-col gap-1">
+            <label className="text-xs text-muted-foreground" htmlFor="chord-solo-mode-select">
+              Modal context
+            </label>
+            <select
+              id="chord-solo-mode-select"
+              value={soloingMode}
+              onChange={(e) => setSoloingMode(e.target.value)}
+              className="bg-card border border-border rounded px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent w-fit"
+            >
+              {SOLO_MODE_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+          </div>
+          <SoloScalesPanel
+            scales={soloScales}
+            chordName={`${root}${chordType}`}
+            onScaleSelect={onScaleSelect}
+          />
+        </div>
       )}
     </div>
   )
