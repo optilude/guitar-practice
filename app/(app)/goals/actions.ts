@@ -137,6 +137,7 @@ export async function addTopicToGoal(
     kind: TopicKind
     subtype?: string
     lessonId?: string
+    userLessonId?: string
     defaultKey?: string
   }
 ): Promise<{ success: true } | { error: string }> {
@@ -152,6 +153,7 @@ export async function addTopicToGoal(
         kind: topicRef.kind,
         subtype: topicRef.subtype ?? null,
         lessonId: topicRef.lessonId ?? null,
+        userLessonId: topicRef.userLessonId ?? null,
         defaultKey: topicRef.defaultKey ?? null,
         refKey,
       },

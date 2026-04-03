@@ -9,6 +9,7 @@ interface AddToGoalButtonProps {
   subtype?: string
   defaultKey?: string
   lessonId?: string
+  userLessonId?: string
   displayName: string
   popupAlign?: "left" | "right"
 }
@@ -18,6 +19,7 @@ export function AddToGoalButton({
   subtype,
   defaultKey,
   lessonId,
+  userLessonId,
   displayName,
   popupAlign = "left",
 }: AddToGoalButtonProps) {
@@ -64,6 +66,7 @@ export function AddToGoalButton({
       kind,
       subtype,
       lessonId,
+      userLessonId,
       defaultKey,
     })
     if ("error" in result) {
