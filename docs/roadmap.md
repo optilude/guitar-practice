@@ -87,9 +87,6 @@ Chords:
 
 # Prompts
 
-## Fixes for goals
-
-
 ## Start phase 4
 
 Phase 3 is done for now! Let's move onto Phase 4: Goals and Routines: 
