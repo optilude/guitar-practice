@@ -17,6 +17,14 @@ describe("computeRefKey", () => {
   it("handles null optional fields", () => {
     expect(computeRefKey({ kind: "chord", subtype: null, defaultKey: null })).toBe("chord::")
   })
+
+  it("returns user_lesson:{id} for personal lessons", () => {
+    expect(computeRefKey({ kind: "lesson", userLessonId: "ul-abc" })).toBe("user_lesson:ul-abc")
+  })
+
+  it("prefers userLessonId over lessonId when both are provided", () => {
+    expect(computeRefKey({ kind: "lesson", userLessonId: "ul-abc", lessonId: "xyz" })).toBe("user_lesson:ul-abc")
+  })
 })
 
 describe("formatTopicName", () => {
@@ -64,5 +72,27 @@ describe("formatTopicName", () => {
   it("formats harmony topics", () => {
     const topic = { kind: "harmony" as const, subtype: "ionian", defaultKey: "C", lesson: null }
     expect(formatTopicName(topic)).toBe("C ionian")
+  })
+
+  it("formats personal lesson topics using the userLesson title", () => {
+    const topic = {
+      kind: "lesson" as const,
+      subtype: null,
+      defaultKey: null,
+      lesson: null,
+      userLesson: { title: "My Custom Lesson", url: null },
+    }
+    expect(formatTopicName(topic)).toBe("My Custom Lesson")
+  })
+
+  it("prefers userLesson title over lesson title when both are present", () => {
+    const topic = {
+      kind: "lesson" as const,
+      subtype: null,
+      defaultKey: null,
+      lesson: { title: "Standard Lesson" },
+      userLesson: { title: "Personal Override", url: null },
+    }
+    expect(formatTopicName(topic)).toBe("Personal Override")
   })
 })

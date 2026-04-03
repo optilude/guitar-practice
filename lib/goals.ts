@@ -5,8 +5,12 @@ export function computeRefKey(topicRef: {
   kind: TopicKind
   subtype?: string | null
   lessonId?: string | null
+  userLessonId?: string | null
   defaultKey?: string | null
 }): string {
+  if (topicRef.kind === "lesson" && topicRef.userLessonId) {
+    return `user_lesson:${topicRef.userLessonId}`
+  }
   if (topicRef.kind === "lesson" && topicRef.lessonId) {
     return `lesson:${topicRef.lessonId}`
   }
@@ -18,12 +22,13 @@ type GoalTopicForDisplay = {
   subtype: string | null
   defaultKey: string | null
   lesson?: { title: string } | null
+  userLesson?: { title: string; url: string | null } | null
 }
 
 export function formatTopicName(topic: GoalTopicForDisplay): string {
   switch (topic.kind) {
     case "lesson":
-      return topic.lesson?.title ?? "Unknown lesson"
+      return topic.userLesson?.title ?? topic.lesson?.title ?? "Unknown lesson"
     case "scale":
       return `${topic.defaultKey ?? ""} ${topic.subtype ?? ""} scale`.trim()
     case "chord":
