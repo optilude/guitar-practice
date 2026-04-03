@@ -28,7 +28,9 @@ type GoalTopicForDisplay = {
 export function formatTopicName(topic: GoalTopicForDisplay): string {
   switch (topic.kind) {
     case "lesson":
-      return topic.userLesson?.title ?? topic.lesson?.title ?? "Unknown lesson"
+      if (topic.userLesson) return topic.userLesson.title
+      if (topic.lesson) return topic.lesson.title
+      return "(lesson removed)"
     case "scale":
       return `${topic.defaultKey ?? ""} ${topic.subtype ?? ""} scale`.trim()
     case "chord":

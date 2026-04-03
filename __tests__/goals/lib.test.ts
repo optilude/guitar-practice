@@ -33,9 +33,15 @@ describe("formatTopicName", () => {
     expect(formatTopicName(topic)).toBe("Let It Be")
   })
 
-  it("returns Unknown lesson when lesson title is missing", () => {
-    const topic = { kind: "lesson" as const, subtype: null, defaultKey: null, lesson: null }
-    expect(formatTopicName(topic)).toBe("Unknown lesson")
+  it("returns '(lesson removed)' when both lesson and userLesson are null", () => {
+    const topic = {
+      kind: "lesson" as const,
+      subtype: null,
+      defaultKey: null,
+      lesson: null,
+      userLesson: null,
+    }
+    expect(formatTopicName(topic)).toBe("(lesson removed)")
   })
 
   it("formats scale topics", () => {
