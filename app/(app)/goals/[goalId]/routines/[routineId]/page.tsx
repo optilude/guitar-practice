@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth"
+import { getUserId } from "@/lib/get-user-id"
 import { db } from "@/lib/db"
 import { notFound } from "next/navigation"
 import Link from "next/link"
@@ -11,8 +11,8 @@ export default async function RoutineDetailPage({
   params: Promise<{ goalId: string; routineId: string }>
 }) {
   const { goalId, routineId } = await params
-  const session = await auth()
-  if (!session?.user?.id) notFound()
+  const userId = await getUserId()
+  if (!userId) notFound()
 
   const routine = await db.routine.findUnique({
     where: { id: routineId },
@@ -38,7 +38,7 @@ export default async function RoutineDetailPage({
     },
   })
 
-  if (!routine || routine.goal.userId !== session.user.id || routine.goalId !== goalId) {
+  if (!routine || routine.goal.userId !== userId || routine.goalId !== goalId) {
     notFound()
   }
 

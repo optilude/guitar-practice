@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth"
+import { getUserId } from "@/lib/get-user-id"
 import { db } from "@/lib/db"
 import { notFound } from "next/navigation"
 import Link from "next/link"
@@ -6,11 +6,11 @@ import { GoalCard } from "./_components/goal-card"
 import { NewGoalForm } from "./_components/new-goal-form"
 
 export default async function GoalsPage() {
-  const session = await auth()
-  if (!session?.user?.id) notFound()
+  const userId = await getUserId()
+  if (!userId) notFound()
 
   const goals = await db.goal.findMany({
-    where: { userId: session.user.id, isArchived: false },
+    where: { userId, isArchived: false },
     orderBy: { createdAt: "desc" },
     include: { _count: { select: { topics: true, routines: true } } },
   })

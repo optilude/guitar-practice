@@ -1,7 +1,7 @@
 import { vi, describe, it, expect, beforeEach } from "vitest"
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }))
-vi.mock("@/lib/auth", () => ({ auth: vi.fn() }))
+vi.mock("@/lib/get-user-id", () => ({ getUserId: vi.fn() }))
 vi.mock("@/lib/db", () => ({
   db: {
     goal: {
@@ -31,7 +31,7 @@ vi.mock("@/lib/db", () => ({
   },
 }))
 
-import { auth } from "@/lib/auth"
+import { getUserId } from "@/lib/get-user-id"
 import { db } from "@/lib/db"
 import {
   getUserGoals,
@@ -46,14 +46,13 @@ import {
   removeTopicFromSection,
 } from "@/app/(app)/goals/actions"
 
-const MOCK_SESSION = { user: { id: "user-1", email: "test@example.com", name: "Test" } }
 const MOCK_GOAL = { id: "goal-1", userId: "user-1" }
 const MOCK_ROUTINE = { id: "routine-1", goalId: "goal-1", goal: MOCK_GOAL }
 const MOCK_SECTION = { id: "section-1", routineId: "routine-1", routine: { ...MOCK_ROUTINE }, order: 0 }
 
 beforeEach(() => {
   vi.clearAllMocks()
-  vi.mocked(auth).mockResolvedValue(MOCK_SESSION as never)
+  vi.mocked(getUserId).mockResolvedValue("user-1")
 })
 
 describe("getUserGoals", () => {
@@ -70,7 +69,7 @@ describe("getUserGoals", () => {
   })
 
   it("returns empty array when not authenticated", async () => {
-    vi.mocked(auth).mockResolvedValue(null as never)
+    vi.mocked(getUserId).mockResolvedValue(null)
     const result = await getUserGoals()
     expect(result).toEqual([])
   })

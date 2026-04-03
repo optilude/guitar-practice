@@ -1,14 +1,13 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { auth } from "@/lib/auth"
+import { getUserId } from "@/lib/get-user-id"
 import { db } from "@/lib/db"
 import { computeRefKey } from "@/lib/goals"
 import type { TopicKind, SectionType, PracticeMode } from "@/lib/generated/prisma/enums"
 
 async function requireUserId(): Promise<string> {
-  const session = await auth()
-  const userId = session?.user?.id
+  const userId = await getUserId()
   if (!userId) throw new Error("Not authenticated")
   return userId
 }

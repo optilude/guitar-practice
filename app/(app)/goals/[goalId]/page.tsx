@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth"
+import { getUserId } from "@/lib/get-user-id"
 import { db } from "@/lib/db"
 import { notFound } from "next/navigation"
 import { GoalDetailClient } from "./_components/goal-detail-client"
@@ -9,8 +9,8 @@ export default async function GoalDetailPage({
   params: Promise<{ goalId: string }>
 }) {
   const { goalId } = await params
-  const session = await auth()
-  if (!session?.user?.id) notFound()
+  const userId = await getUserId()
+  if (!userId) notFound()
 
   const goal = await db.goal.findUnique({
     where: { id: goalId },
@@ -26,7 +26,7 @@ export default async function GoalDetailPage({
     },
   })
 
-  if (!goal || goal.userId !== session.user.id) notFound()
+  if (!goal || goal.userId !== userId) notFound()
 
   return <GoalDetailClient goal={goal} />
 }

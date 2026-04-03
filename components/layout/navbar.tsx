@@ -1,14 +1,14 @@
-import { auth } from "@/lib/auth"
+import { getUserId } from "@/lib/get-user-id"
 import { db } from "@/lib/db"
 import { NavbarClient } from "./navbar-client"
 
 export async function Navbar() {
-  const session = await auth()
+  const userId = await getUserId()
   let activeGoalTitle: string | null = null
 
-  if (session?.user?.id) {
+  if (userId) {
     const goal = await db.goal.findFirst({
-      where: { userId: session.user.id, isActive: true, isArchived: false },
+      where: { userId, isActive: true, isArchived: false },
       select: { title: true },
     })
     activeGoalTitle = goal?.title ?? null

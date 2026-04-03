@@ -21,7 +21,15 @@ export default auth((req) => {
     return NextResponse.redirect(new URL("/", req.nextUrl))
   }
 
-  return NextResponse.next()
+  // Forward user ID as a request header so server components and actions
+  // can read it via `await headers()` (Next.js 16 requires async API).
+  // Strip any client-supplied x-user-id first to prevent spoofing.
+  const requestHeaders = new Headers(req.headers)
+  requestHeaders.delete("x-user-id")
+  if (isLoggedIn && req.auth?.user?.id) {
+    requestHeaders.set("x-user-id", req.auth.user.id)
+  }
+  return NextResponse.next({ request: { headers: requestHeaders } })
 })
 
 export const config = {

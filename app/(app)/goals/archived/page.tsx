@@ -1,15 +1,15 @@
-import { auth } from "@/lib/auth"
+import { getUserId } from "@/lib/get-user-id"
 import { db } from "@/lib/db"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ArchivedGoalCard } from "./_components/archived-goal-card"
 
 export default async function ArchivedGoalsPage() {
-  const session = await auth()
-  if (!session?.user?.id) notFound()
+  const userId = await getUserId()
+  if (!userId) notFound()
 
   const goals = await db.goal.findMany({
-    where: { userId: session.user.id, isArchived: true },
+    where: { userId, isArchived: true },
     orderBy: { updatedAt: "desc" },
     select: { id: true, title: true, description: true },
   })

@@ -2,8 +2,8 @@ import { vi, describe, it, expect, beforeEach } from "vitest"
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }))
 
-vi.mock("@/lib/auth", () => ({
-  auth: vi.fn(),
+vi.mock("@/lib/get-user-id", () => ({
+  getUserId: vi.fn(),
 }))
 
 vi.mock("@/lib/db", () => ({
@@ -25,7 +25,7 @@ vi.mock("@/lib/db", () => ({
   },
 }))
 
-import { auth } from "@/lib/auth"
+import { getUserId } from "@/lib/get-user-id"
 import { db } from "@/lib/db"
 import {
   createGoal,
@@ -38,12 +38,11 @@ import {
   removeTopicFromGoal,
 } from "@/app/(app)/goals/actions"
 
-const MOCK_SESSION = { user: { id: "user-1", email: "test@example.com", name: "Test" } }
 const MOCK_GOAL = { id: "goal-1", userId: "user-1", title: "My Goal", description: "", isActive: false, isArchived: false, createdAt: new Date(), updatedAt: new Date() }
 
 beforeEach(() => {
   vi.clearAllMocks()
-  vi.mocked(auth).mockResolvedValue(MOCK_SESSION as never)
+  vi.mocked(getUserId).mockResolvedValue("user-1")
 })
 
 describe("createGoal", () => {
@@ -57,7 +56,7 @@ describe("createGoal", () => {
   })
 
   it("returns an error when not authenticated", async () => {
-    vi.mocked(auth).mockResolvedValue(null as never)
+    vi.mocked(getUserId).mockResolvedValue(null)
     const result = await createGoal({ title: "My Goal" })
     expect(result).toEqual({ error: "Failed to create goal" })
   })
