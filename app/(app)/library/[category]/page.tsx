@@ -26,11 +26,7 @@ export default async function CategoryPage({
       })
     : []
 
-  // Add empty description for topics that predate this field (TypeScript safety)
-  const standardTopics = data.topics.map((t) => ({
-    ...t,
-    description: (t as any).description ?? "",
-  }))
+  const standardTopics = data.topics
 
   return (
     <div className="pt-6">
