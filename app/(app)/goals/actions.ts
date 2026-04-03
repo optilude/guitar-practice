@@ -233,10 +233,10 @@ export async function createRoutine(
           goalId,
           title: data.title.trim(),
           description: data.description?.trim() ?? "",
-          durationMinutes: data.durationMinutes,
         },
       })
       if (data.useRecommended) {
+        const baseTotal = DEFAULT_SECTIONS.reduce((sum, s) => sum + s.durationMinutes, 0)
         await Promise.all(
           DEFAULT_SECTIONS.map((s, i) =>
             tx.section.create({
@@ -244,7 +244,7 @@ export async function createRoutine(
                 routineId: r.id,
                 type: s.type,
                 title: s.title,
-                durationMinutes: s.durationMinutes,
+                durationMinutes: Math.max(1, Math.round((s.durationMinutes / baseTotal) * data.durationMinutes)),
                 order: i,
               },
             })
@@ -263,7 +263,7 @@ export async function createRoutine(
 
 export async function updateRoutine(
   routineId: string,
-  data: { title?: string; durationMinutes?: number; description?: string }
+  data: { title?: string; description?: string }
 ): Promise<{ success: true } | { error: string }> {
   try {
     const userId = await requireUserId()
@@ -277,7 +277,6 @@ export async function updateRoutine(
       data: {
         ...(data.title !== undefined ? { title: data.title.trim() } : {}),
         ...(data.description !== undefined ? { description: data.description.trim() } : {}),
-        ...(data.durationMinutes !== undefined ? { durationMinutes: data.durationMinutes } : {}),
       },
     })
     revalidatePath(`/goals/${routine.goalId}/routines/${routineId}`)

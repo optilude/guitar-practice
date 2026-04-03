@@ -111,15 +111,14 @@ model GoalTopic {
 }
 
 model Routine {
-  id              String    @id @default(cuid())
-  goalId          String
-  goal            Goal      @relation(fields: [goalId], references: [id], onDelete: Cascade)
-  title           String
-  description     String    @default("")
-  durationMinutes Int
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  sections        Section[]
+  id          String    @id @default(cuid())
+  goalId      String
+  goal        Goal      @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  title       String
+  description String    @default("")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  sections    Section[]
 }
 
 model Section {

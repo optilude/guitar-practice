@@ -19,7 +19,7 @@ export default function NewRoutinePage() {
       title: fd.get("title") as string,
       durationMinutes: Number(fd.get("durationMinutes")),
       description: (fd.get("description") as string) || undefined,
-      useRecommended: fd.get("useRecommended") === "on",
+      useRecommended: true,
     })
     setIsPending(false)
     if ("error" in result) {
@@ -91,19 +91,6 @@ export default function NewRoutinePage() {
             className="w-full rounded border border-border bg-card px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent resize-none"
           />
         </div>
-
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            name="useRecommended"
-            defaultChecked
-            className="rounded border-border"
-          />
-          <span className="text-sm text-foreground">Start with recommended structure</span>
-          <span className="text-xs text-muted-foreground">
-            (Warmup 5 min · Technique 15 min · Muscle Memory 10 min · Songs 20 min · Free Practice 10 min)
-          </span>
-        </label>
 
         {error && <p className="text-xs text-red-500">{error}</p>}
 

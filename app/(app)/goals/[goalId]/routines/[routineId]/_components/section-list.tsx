@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import {
   DndContext,
@@ -67,6 +67,11 @@ export function SectionList({
   )
   const router = useRouter()
 
+  // Sync local state when the server re-fetches data after router.refresh()
+  useEffect(() => {
+    setSections([...initialSections].sort((a, b) => a.order - b.order))
+  }, [initialSections])
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
@@ -89,6 +94,7 @@ export function SectionList({
   return (
     <div className="space-y-2">
       <DndContext
+        id="routine-sections-dnd"
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}

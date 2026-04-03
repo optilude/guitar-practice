@@ -19,8 +19,8 @@ type GoalTopicWithLesson = {
 type RoutineWithCount = {
   id: string
   title: string
-  durationMinutes: number
   _count: { sections: number }
+  sections: { durationMinutes: number }[]
 }
 
 type GoalData = {
@@ -41,6 +41,8 @@ export function GoalDetailClient({ goal }: GoalDetailClientProps) {
   const [editingDesc, setEditingDesc] = useState(false)
   const [titleValue, setTitleValue] = useState(goal.title)
   const [descValue, setDescValue] = useState(goal.description)
+  const [showArchiveModal, setShowArchiveModal] = useState(false)
+  const [isArchiving, setIsArchiving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
@@ -60,13 +62,16 @@ export function GoalDetailClient({ goal }: GoalDetailClientProps) {
     else router.refresh()
   }
 
-  async function handleArchive() {
-    if (goal.isActive) {
-      if (!window.confirm("This is your active goal. Archive it?")) return
-    }
+  async function handleConfirmArchive() {
+    setIsArchiving(true)
     const result = await archiveGoal(goal.id)
-    if ("error" in result) setError(result.error)
-    else router.push("/goals")
+    if ("error" in result) {
+      setError(result.error)
+      setIsArchiving(false)
+      setShowArchiveModal(false)
+    } else {
+      router.push("/goals")
+    }
   }
 
   async function handleRemoveTopic(goalTopicId: string) {
@@ -156,7 +161,7 @@ export function GoalDetailClient({ goal }: GoalDetailClientProps) {
               {goal.topics.map((topic) => (
                 <li key={topic.id} className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-xs uppercase tracking-widest text-muted-foreground w-16 flex-shrink-0">
+                    <span className="text-xs uppercase tracking-widest text-muted-foreground w-28 flex-shrink-0">
                       {topic.kind}
                     </span>
                     <span className="text-sm text-foreground truncate">
@@ -198,7 +203,7 @@ export function GoalDetailClient({ goal }: GoalDetailClientProps) {
                   >
                     <span className="text-sm text-foreground">{routine.title}</span>
                     <span className="text-xs text-muted-foreground">
-                      {routine.durationMinutes} min · {routine._count.sections}{" "}
+                      {routine.sections.reduce((sum, s) => sum + s.durationMinutes, 0)} min · {routine._count.sections}{" "}
                       {routine._count.sections === 1 ? "section" : "sections"}
                     </span>
                   </Link>
@@ -212,12 +217,43 @@ export function GoalDetailClient({ goal }: GoalDetailClientProps) {
       {/* Archive */}
       <div className="mt-10 pt-6 border-t border-border">
         <button
-          onClick={handleArchive}
-          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          onClick={() => setShowArchiveModal(true)}
+          className="text-sm text-red-600 hover:text-red-400 transition-colors"
         >
-          Archive this goal
+          Archive goal…
         </button>
       </div>
+
+      {showArchiveModal && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center px-4 bg-black/40"
+          onClick={(e) => { if (e.target === e.currentTarget) setShowArchiveModal(false) }}
+        >
+          <div className="w-full max-w-sm bg-card border border-border rounded-lg shadow-xl p-6 space-y-4">
+            <h2 className="text-sm font-semibold text-foreground">Archive goal?</h2>
+            <p className="text-sm text-muted-foreground">
+              {goal.isActive
+                ? "This is your active goal. Archiving it will move it to the archived list."
+                : `"${titleValue}" will be moved to the archived goals list.`}
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={handleConfirmArchive}
+                disabled={isArchiving}
+                className="text-xs font-semibold bg-destructive text-white px-4 py-2 rounded-md hover:bg-destructive/90 transition-colors disabled:opacity-50"
+              >
+                {isArchiving ? "Archiving…" : "Confirm"}
+              </button>
+              <button
+                onClick={() => setShowArchiveModal(false)}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

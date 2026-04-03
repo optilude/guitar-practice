@@ -2,8 +2,9 @@ import { getUserId } from "@/lib/get-user-id"
 import { db } from "@/lib/db"
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import ReactMarkdown from "react-markdown"
 import { SectionList } from "./_components/section-list"
+import { RoutineHeader } from "./_components/routine-header"
+import { DeleteRoutineButton } from "./_components/delete-routine-button"
 
 export default async function RoutineDetailPage({
   params,
@@ -51,16 +52,12 @@ export default async function RoutineDetailPage({
         ← Goal
       </Link>
 
-      <h1 className="text-2xl font-semibold text-foreground mb-1">{routine.title}</h1>
-      <p className="text-xs text-muted-foreground mb-4">
-        {routine.durationMinutes} minutes total
-      </p>
-
-      {routine.description && (
-        <div className="prose prose-sm max-w-none text-foreground mb-6">
-          <ReactMarkdown>{routine.description}</ReactMarkdown>
-        </div>
-      )}
+      <RoutineHeader
+        routineId={routineId}
+        title={routine.title}
+        description={routine.description}
+        totalMinutes={routine.sections.reduce((sum, s) => sum + s.durationMinutes, 0)}
+      />
 
       <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">Sections</p>
 
@@ -69,6 +66,12 @@ export default async function RoutineDetailPage({
         routineGoalId={goalId}
         initialSections={routine.sections}
         availableTopics={routine.goal.topics}
+      />
+
+      <DeleteRoutineButton
+        routineId={routineId}
+        goalId={goalId}
+        routineTitle={routine.title}
       />
     </div>
   )

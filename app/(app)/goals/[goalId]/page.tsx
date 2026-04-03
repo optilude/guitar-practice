@@ -21,7 +21,10 @@ export default async function GoalDetailPage({
       },
       routines: {
         orderBy: { createdAt: "asc" },
-        include: { _count: { select: { sections: true } } },
+        include: {
+          _count: { select: { sections: true } },
+          sections: { select: { durationMinutes: true } },
+        },
       },
     },
   })

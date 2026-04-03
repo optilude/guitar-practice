@@ -46,6 +46,8 @@ Account management and better authentication support. Admin UI for managing user
 
 # Future ideas
 
+* Should each practice routine element allow for more than one topic? Might be useful to introduce some degree of optionality to the practice routine without having to create lots of different routines.
+
 * Harmonic Minor and Melodic Minor mode systems?
 
 * Enrich the set of "scales to solo over this chord" options
@@ -82,9 +84,6 @@ Chords:
 # Prompts
 
 ## Fixes for goals
-
-
-
 
 ## Improve scale mapping
 

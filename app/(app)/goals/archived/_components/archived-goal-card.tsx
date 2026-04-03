@@ -50,14 +50,14 @@ export function ArchivedGoalCard({ goal }: ArchivedGoalCardProps) {
             <button
               onClick={handleUnarchive}
               disabled={isPending}
-              className="text-xs font-medium bg-accent/10 text-accent border border-accent/40 px-2.5 py-1 rounded hover:bg-accent/20 transition-colors disabled:opacity-50"
+              className="text-xs font-medium border border-border px-2.5 py-1 rounded text-muted-foreground hover:text-foreground hover:border-foreground/40 transition-colors disabled:opacity-50"
             >
               Unarchive
             </button>
             <button
               onClick={() => setShowDeleteModal(true)}
               disabled={isPending}
-              className="text-xs font-medium border border-border px-2.5 py-1 rounded text-muted-foreground hover:text-red-500 hover:border-red-400 transition-colors disabled:opacity-50"
+              className="text-xs font-medium border border-destructive/40 bg-destructive/10 text-destructive px-2.5 py-1 rounded hover:bg-destructive/20 transition-colors disabled:opacity-50"
             >
               Delete
             </button>

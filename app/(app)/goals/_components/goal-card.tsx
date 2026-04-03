@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import ReactMarkdown from "react-markdown"
-import { setActiveGoal, archiveGoal } from "@/app/(app)/goals/actions"
+import { setActiveGoal } from "@/app/(app)/goals/actions"
 
 interface GoalCardProps {
   goal: { id: string; title: string; description: string; isActive: boolean }
@@ -20,15 +20,6 @@ export function GoalCard({ goal, topicCount, routineCount }: GoalCardProps) {
     e.stopPropagation()
     setIsPending(true)
     const result = await setActiveGoal(goal.id)
-    setIsPending(false)
-    if ("error" in result) setError(result.error)
-    else router.refresh()
-  }
-
-  async function handleArchive(e: React.MouseEvent) {
-    e.stopPropagation()
-    setIsPending(true)
-    const result = await archiveGoal(goal.id)
     setIsPending(false)
     if ("error" in result) setError(result.error)
     else router.refresh()
@@ -73,13 +64,6 @@ export function GoalCard({ goal, topicCount, routineCount }: GoalCardProps) {
               Activate
             </button>
           )}
-          <button
-            onClick={handleArchive}
-            disabled={isPending}
-            className="text-xs font-medium border border-border px-2.5 py-1 rounded text-muted-foreground hover:text-foreground hover:border-foreground/40 transition-colors disabled:opacity-50"
-          >
-            Archive
-          </button>
         </div>
       </div>
       {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
