@@ -4,7 +4,11 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { createGoal } from "@/app/(app)/goals/actions"
 
-export function NewGoalForm({ showOpenByDefault }: { showOpenByDefault: boolean }) {
+interface NewGoalFormProps {
+  showOpenByDefault: boolean
+}
+
+export function NewGoalForm({ showOpenByDefault }: NewGoalFormProps) {
   const [isOpen, setIsOpen] = useState(showOpenByDefault)
   const [error, setError] = useState<string | null>(null)
   const [isPending, setIsPending] = useState(false)
@@ -29,49 +33,58 @@ export function NewGoalForm({ showOpenByDefault }: { showOpenByDefault: boolean 
     }
   }
 
-  if (!isOpen) {
-    return (
-      <button
-        onClick={() => setIsOpen(true)}
-        className="text-xs font-semibold bg-accent text-accent-foreground px-3 py-1.5 rounded-md hover:opacity-90 transition-opacity"
-      >
-        New goal
-      </button>
-    )
-  }
-
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-2 mt-4">
-      <input
-        name="title"
-        placeholder="Goal title"
-        required
-        maxLength={120}
-        className="w-full rounded border border-border bg-card px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent"
-      />
-      <textarea
-        name="description"
-        placeholder="Description (Markdown supported)"
-        rows={3}
-        className="w-full rounded border border-border bg-card px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent resize-none"
-      />
-      {error && <p className="text-xs text-red-500">{error}</p>}
-      <div className="flex gap-2">
-        <button
-          type="submit"
-          disabled={isPending}
-          className="text-xs font-semibold bg-accent text-accent-foreground px-3 py-1.5 rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
-        >
-          {isPending ? "Creating…" : "Create goal"}
-        </button>
-        <button
-          type="button"
-          onClick={() => { setIsOpen(false); setError(null) }}
-          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-        >
-          Cancel
-        </button>
-      </div>
-    </form>
+    <div>
+      {/* Button always visible in the header */}
+      <button
+        onClick={() => { setIsOpen((o) => !o); setError(null) }}
+        className="text-xs font-semibold bg-accent text-accent-foreground px-3 py-1.5 rounded-md hover:opacity-90 transition-opacity whitespace-nowrap"
+      >
+        + New goal
+      </button>
+
+      {/* Form rendered as a separate block below the header — controlled via portal-like sibling */}
+      {isOpen && (
+        <div className="fixed inset-0 z-[60] flex items-start justify-center pt-24 px-4 bg-black/30" onClick={(e) => { if (e.target === e.currentTarget) { setIsOpen(false); setError(null) } }}>
+          <form
+            onSubmit={handleSubmit}
+            className="w-full max-w-md bg-card border border-border rounded-lg shadow-xl p-6 space-y-4"
+          >
+            <h2 className="text-sm font-semibold text-foreground">New goal</h2>
+            <input
+              name="title"
+              placeholder="Goal title"
+              required
+              maxLength={120}
+              autoFocus
+              className="w-full rounded border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent"
+            />
+            <textarea
+              name="description"
+              placeholder="Description (optional — Markdown supported)"
+              rows={3}
+              className="w-full rounded border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent resize-none"
+            />
+            {error && <p className="text-xs text-red-500">{error}</p>}
+            <div className="flex gap-2">
+              <button
+                type="submit"
+                disabled={isPending}
+                className="text-xs font-semibold bg-accent text-accent-foreground px-4 py-2 rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {isPending ? "Creating…" : "Create goal"}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setIsOpen(false); setError(null) }}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+    </div>
   )
 }

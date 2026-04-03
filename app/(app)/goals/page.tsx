@@ -17,7 +17,7 @@ export default async function GoalsPage() {
 
   return (
     <div className="pt-6">
-      <div className="flex items-start justify-between mb-6 gap-4">
+      <div className="flex items-center justify-between mb-6">
         <div>
           <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
             Your goals
@@ -29,8 +29,7 @@ export default async function GoalsPage() {
 
       {goals.length === 0 ? (
         <p className="text-sm text-muted-foreground">
-          You don&apos;t have any goals yet. Goals help you stay focused — create your first one
-          above!
+          No goals yet — click &ldquo;+ New goal&rdquo; above to create your first one.
         </p>
       ) : (
         <ul className="space-y-3">
