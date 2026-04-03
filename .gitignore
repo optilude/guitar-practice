@@ -48,3 +48,6 @@ next-env.d.ts
 
 /lib/generated/prisma
 .worktrees/
+
+# temporary files
+tmp/*
