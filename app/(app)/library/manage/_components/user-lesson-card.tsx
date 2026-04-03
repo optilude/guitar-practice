@@ -116,6 +116,10 @@ export function UserLessonCard({ lesson, sourceOptions, onChanged }: UserLessonC
           </button>
         </div>
 
+        {!isEditing && error && (
+          <p className="px-3 pb-2 text-xs text-red-500">{error}</p>
+        )}
+
         {isEditing && (
           <div className="px-3 pb-3 border-t border-border pt-3 space-y-3">
             <div>

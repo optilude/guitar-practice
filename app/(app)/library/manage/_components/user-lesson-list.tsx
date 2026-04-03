@@ -43,11 +43,11 @@ export function UserLessonList({
   initialLessons,
   sourceOptions,
 }: UserLessonListProps) {
-  const [lessons, setLessons] = useState(initialLessons)
+  const [lessons, setLessons] = useState([...initialLessons].sort((a, b) => a.order - b.order))
   const router = useRouter()
 
   useEffect(() => {
-    setLessons(initialLessons)
+    setLessons([...initialLessons].sort((a, b) => a.order - b.order))
   }, [initialLessons])
 
   const sensors = useSensors(
@@ -62,7 +62,11 @@ export function UserLessonList({
     const newIndex = lessons.findIndex((l) => l.id === over.id)
     const reordered = arrayMove(lessons, oldIndex, newIndex)
     setLessons(reordered)
-    await reorderUserLessons(categoryId, reordered.map((l) => l.id))
+    const result = await reorderUserLessons(categoryId, reordered.map((l) => l.id))
+    if ("error" in result) {
+      // Rollback to previous order
+      setLessons(lessons)
+    }
   }
 
   function handleChanged() {
@@ -72,6 +76,7 @@ export function UserLessonList({
   return (
     <div>
       <DndContext
+        id={`lesson-list-${categoryId}`}
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
