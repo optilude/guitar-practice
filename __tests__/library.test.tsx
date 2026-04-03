@@ -6,6 +6,9 @@ vi.mock("@/lib/db", () => ({
       findMany: vi.fn(),
       findUnique: vi.fn(),
     },
+    userLesson: {
+      findMany: vi.fn(),
+    },
   },
 }))
 
@@ -19,10 +22,15 @@ vi.mock("@/components/add-to-goal-button", () => ({
   AddToGoalButton: () => null,
 }))
 
+vi.mock("@/lib/get-user-id", () => ({
+  getUserId: vi.fn().mockResolvedValue(null),
+}))
+
 import LibraryPage from "@/app/(app)/library/page"
 import CategoryPage from "@/app/(app)/library/[category]/page"
 import { notFound } from "next/navigation"
 import { db } from "@/lib/db"
+import { getUserId } from "@/lib/get-user-id"
 import { render, screen, cleanup } from "@testing-library/react"
 
 const mockCategories = [
@@ -102,6 +110,7 @@ const mockCategory = {
 describe("CategoryPage", () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(db.userLesson.findMany).mockResolvedValue([])
   })
 
   it("renders the category name as a heading", async () => {
@@ -125,5 +134,43 @@ describe("CategoryPage", () => {
       CategoryPage({ params: Promise.resolve({ category: "unknown-slug" }) })
     ).rejects.toThrow("NEXT_NOT_FOUND")
     expect(notFound).toHaveBeenCalled()
+  })
+
+  it("shows no tabs when user has no personal lessons", async () => {
+    vi.mocked(db.category.findUnique).mockResolvedValue(mockCategory as any)
+    vi.mocked(db.userLesson.findMany).mockResolvedValue([])
+    render(await CategoryPage({ params: Promise.resolve({ category: "technique" }) }))
+    expect(screen.queryByText("Standard")).not.toBeInTheDocument()
+    expect(screen.queryByText("Personal")).not.toBeInTheDocument()
+  })
+
+  it("shows Standard and Personal tabs when user has personal lessons", async () => {
+    vi.mocked(getUserId).mockResolvedValueOnce("user-1")
+    vi.mocked(db.category.findUnique).mockResolvedValue(mockCategory as any)
+    vi.mocked(db.userLesson.findMany).mockResolvedValue([
+      {
+        id: "ul1",
+        title: "My Custom Lesson",
+        url: "https://example.com",
+        description: "",
+        source: "YouTube",
+        order: 0,
+        userId: "user-1",
+        categoryId: "1",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ] as any)
+    render(await CategoryPage({ params: Promise.resolve({ category: "technique" }) }))
+    expect(screen.getByText("Standard")).toBeInTheDocument()
+    expect(screen.getByText("Personal")).toBeInTheDocument()
+  })
+
+  it("renders a Manage my library link with correct href", async () => {
+    vi.mocked(db.category.findUnique).mockResolvedValue(mockCategory as any)
+    vi.mocked(db.userLesson.findMany).mockResolvedValue([])
+    render(await CategoryPage({ params: Promise.resolve({ category: "technique" }) }))
+    const link = screen.getByRole("link", { name: /manage my library/i })
+    expect(link).toHaveAttribute("href", "/library/manage#technique")
   })
 })

@@ -1,7 +1,8 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { db } from "@/lib/db"
-import { AddToGoalButton } from "@/components/add-to-goal-button"
+import { getUserId } from "@/lib/get-user-id"
+import { CategoryTabs } from "./_components/category-tabs"
 
 export default async function CategoryPage({
   params,
@@ -17,6 +18,20 @@ export default async function CategoryPage({
 
   if (!data) return notFound()
 
+  const userId = await getUserId()
+  const userLessons = userId
+    ? await db.userLesson.findMany({
+        where: { userId, categoryId: data.id },
+        orderBy: { order: "asc" },
+      })
+    : []
+
+  // Add empty description for topics that predate this field (TypeScript safety)
+  const standardTopics = data.topics.map((t) => ({
+    ...t,
+    description: (t as any).description ?? "",
+  }))
+
   return (
     <div className="pt-6">
       <Link
@@ -25,34 +40,16 @@ export default async function CategoryPage({
       >
         ← Library
       </Link>
-      <h1 className="text-2xl font-semibold text-foreground mb-6">{data.name}</h1>
-      <ul className="space-y-1">
-        {data.topics.map((topic) => (
-          <li key={topic.id}>
-            <div className="flex items-center gap-2 py-2 min-w-0">
-              <a
-                href={topic.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 min-w-0 text-base text-foreground hover:text-muted-foreground transition-colors"
-              >
-                <span className="truncate">{topic.title}</span>
-                <span className="flex items-center gap-2 ml-2 flex-shrink-0">
-                  <span className="text-xs text-muted-foreground border border-border px-1.5 py-0.5 rounded">
-                    {topic.source.name}
-                  </span>
-                  <span className="text-muted-foreground">↗</span>
-                </span>
-              </a>
-              <AddToGoalButton
-                kind="lesson"
-                lessonId={topic.id}
-                displayName={topic.title}
-              />
-            </div>
-          </li>
-        ))}
-      </ul>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-semibold text-foreground">{data.name}</h1>
+        <Link
+          href={`/library/manage#${data.slug}`}
+          className="text-xs text-accent hover:underline"
+        >
+          Manage my library ↗
+        </Link>
+      </div>
+      <CategoryTabs standardTopics={standardTopics} userLessons={userLessons} />
     </div>
   )
 }
