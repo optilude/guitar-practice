@@ -111,7 +111,7 @@ export function defaultModeForChordType(chordType: string): string {
   const t = chordType.toLowerCase()
   if (t.startsWith("mmaj")) return "melodic minor"
   if (t === "m7b5" || t.startsWith("dim")) return "locrian"
-  if (t.startsWith("maj") || t === "major" || t === "6" || t === "6/9" || t === "add9") return "ionian"
+  if (t.startsWith("maj") || t === "6" || t === "6/9" || t === "add9") return "ionian"
   if (/^(7|9|11|13)/.test(t) || t === "7 shell" || t.includes("sus")) return "mixolydian"
   return "dorian"
 }
