@@ -15,11 +15,7 @@ const NAV_ITEMS = [
   { href: "/history", label: "History" },
 ]
 
-interface NavbarClientProps {
-  activeGoalTitle: string | null
-}
-
-export function NavbarClient({ activeGoalTitle }: NavbarClientProps) {
+export function NavbarClient() {
   const pathname = usePathname()
   const router = useRouter()
 
@@ -44,24 +40,18 @@ export function NavbarClient({ activeGoalTitle }: NavbarClientProps) {
               ? pathname === "/"
               : pathname === item.href || pathname.startsWith(item.href + "/")
             return (
-              <div key={item.href} className="flex flex-col items-center justify-center">
-                <Link
-                  href={item.href}
-                  className={cn(
-                    "text-[13px] transition-colors pb-px",
-                    isActive
-                      ? "text-accent border-b-[1.5px] border-accent"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  {item.label}
-                </Link>
-                {item.href === "/goals" && activeGoalTitle && (
-                  <span className="text-[10px] text-muted-foreground truncate max-w-[80px] leading-none">
-                    {activeGoalTitle}
-                  </span>
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "text-[13px] transition-colors pb-px",
+                  isActive
+                    ? "text-accent border-b-[1.5px] border-accent"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
-              </div>
+              >
+                {item.label}
+              </Link>
             )
           })}
         </div>

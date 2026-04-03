@@ -4,12 +4,8 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { createGoal } from "@/app/(app)/goals/actions"
 
-interface NewGoalFormProps {
-  showOpenByDefault: boolean
-}
-
-export function NewGoalForm({ showOpenByDefault }: NewGoalFormProps) {
-  const [isOpen, setIsOpen] = useState(showOpenByDefault)
+export function NewGoalForm() {
+  const [isOpen, setIsOpen] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isPending, setIsPending] = useState(false)
   const router = useRouter()

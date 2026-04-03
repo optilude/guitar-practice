@@ -29,12 +29,12 @@ export default async function CategoryPage({
       <ul className="space-y-1">
         {data.topics.map((topic) => (
           <li key={topic.id}>
-            <div className="flex items-center justify-between py-2">
+            <div className="flex items-center gap-2 py-2 min-w-0">
               <a
                 href={topic.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 flex-1 min-w-0 text-base text-foreground hover:text-muted-foreground transition-colors"
+                className="flex items-center gap-2 min-w-0 text-base text-foreground hover:text-muted-foreground transition-colors"
               >
                 <span className="truncate">{topic.title}</span>
                 <span className="flex items-center gap-2 ml-2 flex-shrink-0">
@@ -44,13 +44,11 @@ export default async function CategoryPage({
                   <span className="text-muted-foreground">↗</span>
                 </span>
               </a>
-              <div className="ml-3 flex-shrink-0">
-                <AddToGoalButton
-                  kind="lesson"
-                  lessonId={topic.id}
-                  displayName={topic.title}
-                />
-              </div>
+              <AddToGoalButton
+                kind="lesson"
+                lessonId={topic.id}
+                displayName={topic.title}
+              />
             </div>
           </li>
         ))}

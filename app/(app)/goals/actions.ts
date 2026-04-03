@@ -18,11 +18,16 @@ export async function createGoal(data: {
 }): Promise<{ success: true; id: string } | { error: string }> {
   try {
     const userId = await requireUserId()
+    const hasActive = await db.goal.findFirst({
+      where: { userId, isActive: true },
+      select: { id: true },
+    })
     const goal = await db.goal.create({
       data: {
         userId,
         title: data.title.trim(),
         description: data.description?.trim() ?? "",
+        isActive: !hasActive,
       },
     })
     revalidatePath("/goals")

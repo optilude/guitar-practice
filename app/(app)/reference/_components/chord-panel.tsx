@@ -176,13 +176,13 @@ export function ChordPanel({ root, onRootChange, chordTypeTrigger }: ChordPanelP
               ))}
             </optgroup>
           </select>
-          <AddToGoalButton
-            kind="chord"
-            subtype={chordType}
-            defaultKey={root}
-            displayName={`${root}${chordType} chord`}
-          />
         </div>
+        <AddToGoalButton
+          kind="chord"
+          subtype={chordType}
+          defaultKey={root}
+          displayName={`${root}${chordType} chord`}
+        />
       </div>
 
       {/* Notes + formula */}

@@ -128,6 +128,7 @@ export function HarmonyTab({ tonic, onChordSelect, onScaleSelect }: HarmonyTabPr
           subtype={mode}
           defaultKey={tonic}
           displayName={`${tonic} ${mode}`}
+          popupAlign="right"
         />
         {parentKey && (
           <span className="text-xs text-muted-foreground">

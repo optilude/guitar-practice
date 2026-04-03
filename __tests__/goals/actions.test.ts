@@ -12,6 +12,7 @@ vi.mock("@/lib/db", () => ({
       create: vi.fn(),
       findUnique: vi.fn(),
       findMany: vi.fn(),
+      findFirst: vi.fn(),
       update: vi.fn(),
       updateMany: vi.fn(),
       delete: vi.fn(),
@@ -46,12 +47,23 @@ beforeEach(() => {
 })
 
 describe("createGoal", () => {
-  it("creates a goal for the current user and returns its id", async () => {
+  it("creates a goal and activates it when no active goal exists", async () => {
+    vi.mocked(db.goal.findFirst).mockResolvedValue(null as never)
     vi.mocked(db.goal.create).mockResolvedValue({ ...MOCK_GOAL, id: "new-goal" } as never)
     const result = await createGoal({ title: "My Goal" })
     expect(result).toEqual({ success: true, id: "new-goal" })
     expect(db.goal.create).toHaveBeenCalledWith({
-      data: { userId: "user-1", title: "My Goal", description: "" },
+      data: { userId: "user-1", title: "My Goal", description: "", isActive: true },
+    })
+  })
+
+  it("creates a goal without activating it when an active goal exists", async () => {
+    vi.mocked(db.goal.findFirst).mockResolvedValue({ id: "existing" } as never)
+    vi.mocked(db.goal.create).mockResolvedValue({ ...MOCK_GOAL, id: "new-goal" } as never)
+    const result = await createGoal({ title: "My Goal" })
+    expect(result).toEqual({ success: true, id: "new-goal" })
+    expect(db.goal.create).toHaveBeenCalledWith({
+      data: { userId: "user-1", title: "My Goal", description: "", isActive: false },
     })
   })
 
@@ -62,10 +74,11 @@ describe("createGoal", () => {
   })
 
   it("trims whitespace from title and description", async () => {
+    vi.mocked(db.goal.findFirst).mockResolvedValue(null as never)
     vi.mocked(db.goal.create).mockResolvedValue({ ...MOCK_GOAL, id: "g2" } as never)
     await createGoal({ title: "  Padded  ", description: "  Notes  " })
     expect(db.goal.create).toHaveBeenCalledWith({
-      data: { userId: "user-1", title: "Padded", description: "Notes" },
+      data: { userId: "user-1", title: "Padded", description: "Notes", isActive: true },
     })
   })
 })

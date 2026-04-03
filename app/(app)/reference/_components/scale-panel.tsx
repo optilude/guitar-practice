@@ -143,13 +143,13 @@ export function ScalePanel({ root, onRootChange, scaleTypeTrigger }: ScalePanelP
             </optgroup>
           )}
         </select>
+        </div>
         <AddToGoalButton
           kind="scale"
           subtype={scaleType}
           defaultKey={root}
           displayName={`${root} ${scaleType} scale`}
         />
-        </div>
       </div>
 
       {/* Notes + formula */}

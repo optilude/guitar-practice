@@ -81,6 +81,11 @@ Chords:
 
 # Prompts
 
+## Fixes for goals
+
+
+
+
 ## Improve scale mapping
 
 I've sourced another reference for scales-to-solo-with logic. I'd like to cross-reference and expand the current mapping of recommended scales for modes and progressions with this and expand our set as required. One thing I've noted is the use of "Tonic" to refer to a scale of the I chord being used to solo over the IV or V chord. I think right now, our scales mapping always the same root note as the selected chord, so we might need to enhance the logic surrounding this.

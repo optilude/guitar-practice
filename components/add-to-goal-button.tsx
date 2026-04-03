@@ -10,6 +10,7 @@ interface AddToGoalButtonProps {
   defaultKey?: string
   lessonId?: string
   displayName: string
+  popupAlign?: "left" | "right"
 }
 
 export function AddToGoalButton({
@@ -18,6 +19,7 @@ export function AddToGoalButton({
   defaultKey,
   lessonId,
   displayName,
+  popupAlign = "left",
 }: AddToGoalButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [goals, setGoals] = useState<{ id: string; title: string; isActive: boolean }[]>([])
@@ -92,7 +94,7 @@ export function AddToGoalButton({
           ref={dialogRef}
           role="dialog"
           aria-label="Add to goal"
-          className="absolute left-0 top-8 z-30 w-72 rounded-lg border border-border bg-card shadow-lg p-4 space-y-3"
+          className={`absolute ${popupAlign === "right" ? "right-0" : "left-0"} top-8 z-30 w-72 rounded-lg border border-border bg-card shadow-lg p-4 space-y-3`}
         >
           <p className="text-xs font-semibold text-foreground truncate">{displayName}</p>
 

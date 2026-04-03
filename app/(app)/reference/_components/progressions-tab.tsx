@@ -124,6 +124,7 @@ export function ProgressionsTab({ tonic, onChordSelect, onScaleSelect }: Progres
           subtype={progressionName}
           defaultKey={tonic}
           displayName={prog.displayName}
+          popupAlign="right"
         />
 
         {/* Info button + popover */}

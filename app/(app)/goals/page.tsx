@@ -11,7 +11,7 @@ export default async function GoalsPage() {
 
   const goals = await db.goal.findMany({
     where: { userId, isArchived: false },
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ isActive: "desc" }, { createdAt: "desc" }],
     include: { _count: { select: { topics: true, routines: true } } },
   })
 
@@ -24,7 +24,7 @@ export default async function GoalsPage() {
           </p>
           <h1 className="text-2xl font-semibold text-foreground">Goals</h1>
         </div>
-        <NewGoalForm showOpenByDefault={goals.length === 0} />
+        <NewGoalForm />
       </div>
 
       {goals.length === 0 ? (

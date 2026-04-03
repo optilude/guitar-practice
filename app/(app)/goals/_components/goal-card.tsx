@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
 import ReactMarkdown from "react-markdown"
 import { setActiveGoal, archiveGoal } from "@/app/(app)/goals/actions"
 
@@ -17,7 +16,8 @@ export function GoalCard({ goal, topicCount, routineCount }: GoalCardProps) {
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
-  async function handleSetActive() {
+  async function handleSetActive(e: React.MouseEvent) {
+    e.stopPropagation()
     setIsPending(true)
     const result = await setActiveGoal(goal.id)
     setIsPending(false)
@@ -25,7 +25,8 @@ export function GoalCard({ goal, topicCount, routineCount }: GoalCardProps) {
     else router.refresh()
   }
 
-  async function handleArchive() {
+  async function handleArchive(e: React.MouseEvent) {
+    e.stopPropagation()
     setIsPending(true)
     const result = await archiveGoal(goal.id)
     setIsPending(false)
@@ -37,19 +38,15 @@ export function GoalCard({ goal, topicCount, routineCount }: GoalCardProps) {
 
   return (
     <li
-      className={`rounded-lg border p-4 ${
+      onClick={() => router.push(`/goals/${goal.id}`)}
+      className={`rounded-lg border p-4 cursor-pointer hover:border-accent/50 transition-colors ${
         goal.isActive ? "border-accent" : "border-border dark:border-neutral-600"
       } bg-card dark:bg-neutral-800`}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <Link
-              href={`/goals/${goal.id}`}
-              className="text-sm font-semibold text-foreground hover:text-accent transition-colors"
-            >
-              {goal.title}
-            </Link>
+            <span className="text-sm font-semibold text-foreground">{goal.title}</span>
             {goal.isActive && (
               <span className="text-xs text-accent border border-accent px-1.5 py-0.5 rounded">
                 Active
@@ -66,29 +63,23 @@ export function GoalCard({ goal, topicCount, routineCount }: GoalCardProps) {
             {routineCount === 1 ? "routine" : "routines"}
           </p>
         </div>
-        <div className="flex items-center gap-3 flex-shrink-0">
+        <div className="flex items-center gap-2 flex-shrink-0">
           {!goal.isActive && (
             <button
               onClick={handleSetActive}
               disabled={isPending}
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+              className="text-xs font-medium bg-accent/10 text-accent border border-accent/40 px-2.5 py-1 rounded hover:bg-accent/20 transition-colors disabled:opacity-50"
             >
-              Make active
+              Activate
             </button>
           )}
           <button
             onClick={handleArchive}
             disabled={isPending}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+            className="text-xs font-medium border border-border px-2.5 py-1 rounded text-muted-foreground hover:text-foreground hover:border-foreground/40 transition-colors disabled:opacity-50"
           >
             Archive
           </button>
-          <Link
-            href={`/goals/${goal.id}`}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            View →
-          </Link>
         </div>
       </div>
       {error && <p className="text-xs text-red-500 mt-1">{error}</p>}

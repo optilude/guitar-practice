@@ -132,13 +132,13 @@ export function ArpeggioPanel({ root, onRootChange, chordTypeTrigger }: Arpeggio
               ))}
             </optgroup>
           </select>
-          <AddToGoalButton
-            kind="arpeggio"
-            subtype={chordType}
-            defaultKey={root}
-            displayName={`${root} ${chordType} arpeggio`}
-          />
         </div>
+        <AddToGoalButton
+          kind="arpeggio"
+          subtype={chordType}
+          defaultKey={root}
+          displayName={`${root} ${chordType} arpeggio`}
+        />
       </div>
 
       {/* Notes + formula */}
