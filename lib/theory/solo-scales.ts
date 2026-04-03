@@ -38,22 +38,30 @@ const MODE_DISPLAY: Record<string, string> = {
 // ---------------------------------------------------------------------------
 const ADDITIONAL_BY_TYPE: Record<string, SoloScaleEntry[]> = {
   maj7: [
-    { scaleName: "Lydian",           hint: "lifted feel" },
-    { scaleName: "Major Pentatonic", hint: "safe choice" },
+    { scaleName: "Major Pentatonic",  hint: "safe choice" },
+    { scaleName: "Lydian",            hint: "lifted feel" },
+    { scaleName: "Lydian Augmented",  hint: "IV chord colour" },
   ],
   "7": [
-    { scaleName: "Minor Pentatonic", hint: "bluesy" },
-    { scaleName: "Blues Scale",      hint: "adds ♭5 colour" },
+    { scaleName: "Major Pentatonic",  hint: "safe choice" },
+    { scaleName: "Bebop Dominant",    hint: "passing tone" },
+    { scaleName: "Minor Pentatonic",  hint: "bluesy" },
+    { scaleName: "Blues Scale",       hint: "adds ♭5 colour" },
+    { scaleName: "Altered",           hint: "jazz tension" },
+    { scaleName: "Lydian Dominant",   hint: "bright tension" },
   ],
   m7: [
     { scaleName: "Minor Pentatonic" },
-    { scaleName: "Dorian",           hint: "brighter" },
+    { scaleName: "Dorian",            hint: "brighter" },
+    { scaleName: "Phrygian Dominant", hint: "exotic" },
+    { scaleName: "Melodic Minor",     hint: "jazz bright" },
   ],
   m7b5: [
-    { scaleName: "Locrian #2", hint: "less dissonant" },
+    { scaleName: "Locrian #2",        hint: "less dissonant" },
   ],
   dim7: [
-    { scaleName: "Locrian #2", hint: "less dissonant" },
+    { scaleName: "Locrian #2",            hint: "less dissonant" },
+    { scaleName: "Diminished Half-Whole", hint: "symmetrical" },
   ],
 }
 
@@ -72,6 +80,13 @@ export const SCALE_TONAL_NAMES: Record<string, string> = {
   "Minor Pentatonic":        "minor pentatonic",
   "Blues Scale":             "blues",
   "Locrian #2":              "locrian #2",
+  "Altered":                 "altered",
+  "Lydian Dominant":         "lydian dominant",
+  "Lydian Augmented":        "lydian augmented",
+  "Phrygian Dominant":       "phrygian dominant",
+  "Bebop Dominant":          "bebop",
+  "Melodic Minor":           "melodic minor",
+  "Diminished Half-Whole":   "half-whole diminished",
 }
 
 // ---------------------------------------------------------------------------
