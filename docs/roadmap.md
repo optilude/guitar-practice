@@ -45,15 +45,14 @@ Account management and better authentication support. Admin UI for managing user
 
 # Future ideas
 
+* Add a footer with some basic information / links. Apart from being informative, this will help ensure the content doesn't end right at the bottom of the window, which can be harder to read.
+
 * Change Triads to Inversions. The first category should be the basic triads like now, but this adds many (!) more types.
-* Consider changing to SVGuitar or a different rendering engine
+* Consider changing to SVGuitar or a different rendering engine (for this and chords)
 
 * Should each practice routine element allow for more than one topic? Might be useful to introduce some degree of optionality to the practice routine without having to create lots of different routines, e.g. add major and minor triads to a single triad study section.
 
 * Harmonic Minor and Melodic Minor mode systems?
-
-* Add drop-2 and drop-3 voicings for chords (if not already included)
-* In general, add more inversions and organise them better
 
 * More streaks/gamification features
 * Practice notifications/reminders
@@ -82,44 +81,6 @@ Chords:
 * Guitar lessons: https://hubguitar.com
 
 # Prompts
-
-## Start phase 4
-
-Phase 3 is done for now! Let's move onto Phase 4: Goals and Routines: 
-- Set learning goals
-- Add topics of study to goals
-- Build practice routines, drawing from the library and reference
-- Manage goals and routines (CRUD)
-
-Managing goals:
-
-- Let the user define **Goals**, eg “Follow the changes on a jazz blues progression”. 
-- Goals should have a title and a short description. Description should be simple Markdown formatted.
-- It should also be possible to rename, archive, unarchive, and delete goals
-- At any one time, a single goal is active, and this should be persisted across browser sessions and logins.
-- There may be no goal active (active goal was deleted or archived or no goals set up yet). Handle this gracefully.
-- It should be easy to switch between un-archived goals.
-- Archived goals should be hidden behind a secondary page/UI, from which they can be unarchived or deleted permanently.
-
-Assigning topics to goals:
-
-- Against any lesson or reference item in the Library or Reference sections, the user can click "Add to goal" (maybe a suitable icon instead of text) to add this as a **Topic** of study against a goal.
-- This should default to the currently active goal, but also easily allow any other un-archived goal to be used, probably in an overlay dialogue box.
-- We will need an unobtrusive but obvious way to do this at various points in the UI, e.g. next to a lesson in the topic list, for a given scale, arpeggio type, chord type, triad, harmony, or progression. In the reference viewer, this will probably be next to the top level selector for "Triad type", "Chord type", "Scale type", etc.
-- For each topic of study linked to a goal, we need to store what it is (lesson, triad, arpeggio, progression, etc.), and the type of thing per the primary selector (e.g. "maj7 arpeggio" or "diminished triad"), and the _default_ key (i.e. the one currently selected), though later we will have more options for modulating the key.
-
-Managing routines
-
-- Against each goal, we need a way to create/manage (CRUD) one or more **Routines**
-- A routine has a fixed duration in minutes, a title, and a Markdown-formatted description.
-- A routine consists of multiple, separately timed **Sections** of different **Section Types**: warmup, technique, muscle memory, theory, lessons, songs, free practice. It can include 0, 1, or multiple sections of each type.
-- Research recommended guitar practice routines to suggest a default structure (sequence of types + their duration), but allow it to be modified.
-- This means we need a simple UI to add, remove, and re-order sections in a routine.
-- Each section should have a title, description (Markdown formatted again) and zero or more relevant topics
-- The topics are selected from the list of Topics previously added to the Goal.
-- When adding a reference topic that is relevant to a key (i.e. anything from the reference section), default to the key that was saved when the topic was added, but also allow selecting all or a set of keys from a list, and then choosing a practice mode: chromatic ascending, chromatic descending, circle of fifths ascending, circle of fourths descending, or random. This will be used in the practice session later.
-
-This phase is finished when we have a robust way to manage goals, assign study topics to goals, create routines within a goal, and manage the sections within each routine.  
 
 ## Start phase 5
 
