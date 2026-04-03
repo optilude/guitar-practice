@@ -46,6 +46,9 @@ Account management and better authentication support. Admin UI for managing user
 
 # Future ideas
 
+* Change Triads to Inversions. The first category should be the basic triads like now, but this adds many (!) more types.
+* Consider changing to SVGuitar or a different rendering engine
+
 * Should each practice routine element allow for more than one topic? Might be useful to introduce some degree of optionality to the practice routine without having to create lots of different routines.
 
 * Harmonic Minor and Melodic Minor mode systems?
@@ -86,122 +89,6 @@ Chords:
 
 ## Fixes for goals
 
-## Improve scale mapping
-
-I've sourced another reference for scales-to-solo-with logic. I'd like to cross-reference and expand the current mapping of recommended scales for modes and progressions with this and expand our set as required. Note that it is not certain this new set is "right" and the old set is "wrong", so consider the suggested scales carefully.
-
-One thing I've noted is the use of "Tonic" to refer to a scale of the I chord being used to solo over the IV or V chord. I think right now, our scales mapping always the same root note as the selected chord, so we might need to enhance the logic surrounding this.
-
-```
-{
-  "frameworks": {
-    "diatonic_major": [
-      {
-        "function": "I",
-        "chord_type": "Maj7",
-        "primary": ["Ionian"],
-        "alternatives": ["Major Pentatonic"],
-        "esoteric": ["Lydian"],
-        "arpeggio": "1-3-5-7"
-      },
-      {
-        "function": "ii",
-        "chord_type": "m7",
-        "primary": ["Dorian"],
-        "alternatives": ["Minor Pentatonic"],
-        "esoteric": ["Melodic Minor"],
-        "arpeggio": "1-b3-5-b7"
-      },
-      {
-        "function": "iii",
-        "chord_type": "m7",
-        "primary": ["Phrygian"],
-        "alternatives": ["Minor Pentatonic"],
-        "esoteric": ["Phrygian Dominant"],
-        "arpeggio": "1-b3-5-b7"
-      },
-      {
-        "function": "IV",
-        "chord_type": "Maj7",
-        "primary": ["Lydian"],
-        "alternatives": ["Major Pentatonic"],
-        "esoteric": ["Lydian Augmented"],
-        "arpeggio": "1-3-5-7"
-      },
-      {
-        "function": "V",
-        "chord_type": "7",
-        "primary": ["Mixolydian"],
-        "alternatives": ["Major Pentatonic", "Bebop Dominant"],
-        "esoteric": ["Altered", "Lydian Dominant"],
-        "arpeggio": "1-3-5-b7"
-      },
-      {
-        "function": "vi",
-        "chord_type": "m7",
-        "primary": ["Aeolian"],
-        "alternatives": ["Minor Pentatonic"],
-        "esoteric": ["Dorian"],
-        "arpeggio": "1-b3-5-b7"
-      },
-      {
-        "function": "vii",
-        "chord_type": "m7b5",
-        "primary": ["Locrian"],
-        "alternatives": ["Locrian #2"],
-        "esoteric": ["None"],
-        "arpeggio": "1-b3-b5-b7"
-      }
-    ],
-    "dominant_blues": [
-      {
-        "chord": "I",
-        "primary": ["Mixolydian", "Minor Pentatonic", "Blues"],
-        "alternatives": ["Major Pentatonic", "Dorian"],
-        "target_notes": ["Major 3rd"],
-        "logic": "The classic 'Major vs Minor' tension."
-      },
-      {
-        "chord": "IV",
-        "primary": ["Mixolydian", "Major Pentatonic", "Tonic Minor Pentatonic"],
-        "alternatives": ["Blues", "Dorian"],
-        "target_notes": ["b7 of IV (b3 of I)"],
-        "logic": "I-chord Minor Pentatonic aligns perfectly with IV-chord tones."
-      },
-      {
-        "chord": "V",
-        "primary": ["Mixolydian", "Major Pentatonic", "Tonic Minor Pentatonic"],
-        "alternatives": ["Blues", "Altered"],
-        "target_notes": ["Major 3rd of V"],
-        "logic": "The 3rd of the V chord is the leading tone back to the Tonic."
-      }
-    ],
-    "minor_blues": [
-      {
-        "chord": "i",
-        "primary": ["Natural Minor", "Minor Pentatonic", "Blues"],
-        "alternatives": ["Dorian", "Melodic Minor"],
-        "arpeggio": "1-b3-5-b7",
-        "logic": "Dorian adds a 'bright' jazz-blues feel (m6 sound)."
-      },
-      {
-        "chord": "iv",
-        "primary": ["Dorian", "iv Chord Minor Pentatonic", "Tonic Minor Pentatonic"],
-        "alternatives": ["Blues", "Phrygian"],
-        "arpeggio": "1-b3-5-b7",
-        "logic": "Tonic minor pentatonic remains the 'safety net'."
-      },
-      {
-        "chord": "V",
-        "primary": ["Harmonic Minor (of tonic)", "Phrygian Dominant"],
-        "alternatives": ["Altered", "Half-Whole Diminished"],
-        "arpeggio": "1-3-5-b7",
-        "logic": "Harmonic minor provides the essential #7 leading tone."
-      }
-    ],
-  }
-}
-```
 
 ## Start phase 4
 
