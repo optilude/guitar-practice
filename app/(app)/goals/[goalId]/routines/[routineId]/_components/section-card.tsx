@@ -60,6 +60,7 @@ type GoalTopicForDisplay = {
   subtype: string | null
   defaultKey: string | null
   lesson?: { title: string } | null
+  userLesson?: { title: string; url: string | null } | null
 }
 
 type SectionTopicWithGoalTopic = {

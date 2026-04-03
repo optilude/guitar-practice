@@ -21,7 +21,10 @@ export default async function RoutineDetailPage({
       goal: {
         include: {
           topics: {
-            include: { lesson: { select: { title: true } } },
+            include: {
+              lesson: { select: { title: true } },
+              userLesson: { select: { title: true, url: true } },
+            },
             orderBy: { createdAt: "asc" },
           },
         },
@@ -31,7 +34,12 @@ export default async function RoutineDetailPage({
         include: {
           sectionTopics: {
             include: {
-              goalTopic: { include: { lesson: { select: { title: true } } } },
+              goalTopic: {
+                include: {
+                  lesson: { select: { title: true } },
+                  userLesson: { select: { title: true, url: true } },
+                },
+              },
             },
           },
         },
