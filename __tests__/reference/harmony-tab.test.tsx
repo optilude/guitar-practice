@@ -2,6 +2,11 @@ import { describe, it, expect, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 
+// Mock AddToGoalButton to avoid next-auth import chain
+vi.mock("@/components/add-to-goal-button", () => ({
+  AddToGoalButton: () => null,
+}))
+
 // Mock tonal (used by SoloScalesPanel)
 vi.mock("tonal", () => ({
   Scale: { get: () => ({ notes: ["G", "A", "B", "C", "D", "E", "F"] }) },

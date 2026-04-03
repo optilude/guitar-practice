@@ -5,6 +5,7 @@ import { Note } from "tonal"
 import { getDiatonicChords, getSoloScales } from "@/lib/theory"
 import { ChordQualityBlock } from "./chord-quality-block"
 import { SoloScalesPanel } from "./solo-scales-panel"
+import { AddToGoalButton } from "@/components/add-to-goal-button"
 
 interface HarmonyTabProps {
   tonic: string
@@ -122,6 +123,12 @@ export function HarmonyTab({ tonic, onChordSelect, onScaleSelect }: HarmonyTabPr
             </option>
           ))}
         </select>
+        <AddToGoalButton
+          kind="harmony"
+          subtype={mode}
+          defaultKey={tonic}
+          displayName={`${tonic} ${mode}`}
+        />
         {parentKey && (
           <span className="text-xs text-muted-foreground">
             parent: <span className="font-medium text-foreground">{parentKey} major</span>

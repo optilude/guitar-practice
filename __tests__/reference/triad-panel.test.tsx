@@ -5,6 +5,11 @@ vi.mock("@tombatossals/react-chords/lib/Chord", () => ({
   default: () => <svg data-testid="chord-diagram" />,
 }))
 
+// Mock AddToGoalButton to avoid next-auth import chain
+vi.mock("@/components/add-to-goal-button", () => ({
+  AddToGoalButton: () => null,
+}))
+
 vi.mock("@/lib/theory", () => ({
   TRIAD_TYPES: ["major", "minor", "diminished", "augmented"],
   TRIAD_STRING_SETS: [

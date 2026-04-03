@@ -6,6 +6,11 @@ vi.mock("@tombatossals/react-chords/lib/Chord", () => ({
   default: () => <svg data-testid="chord-diagram" />,
 }))
 
+// Mock AddToGoalButton to avoid next-auth import chain
+vi.mock("@/components/add-to-goal-button", () => ({
+  AddToGoalButton: () => null,
+}))
+
 // Mock theory engine
 vi.mock("@/lib/theory", () => ({
   listChordTypes: () => ["maj", "m", "7", "maj7"],

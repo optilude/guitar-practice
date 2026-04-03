@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { listProgressions, getProgression, getSoloScales } from "@/lib/theory"
 import { ChordQualityBlock } from "./chord-quality-block"
 import { SoloScalesPanel } from "./solo-scales-panel"
+import { AddToGoalButton } from "@/components/add-to-goal-button"
 
 const CATEGORY_ORDER = ["Pop", "Blues", "Jazz", "Rock", "Folk / Country", "Classical / Modal"]
 
@@ -118,6 +119,12 @@ export function ProgressionsTab({ tonic, onChordSelect, onScaleSelect }: Progres
             </optgroup>
           ))}
         </select>
+        <AddToGoalButton
+          kind="progression"
+          subtype={progressionName}
+          defaultKey={tonic}
+          displayName={prog.displayName}
+        />
 
         {/* Info button + popover */}
         <div ref={infoRef} className="relative">

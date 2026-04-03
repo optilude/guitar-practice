@@ -7,6 +7,38 @@ datasource db {
   provider = "postgresql"
 }
 
+// ── Enums ─────────────────────────────────────────────────────────────────────
+
+enum TopicKind {
+  lesson
+  scale
+  chord
+  triad
+  arpeggio
+  progression
+  harmony
+}
+
+enum SectionType {
+  warmup
+  technique
+  muscle_memory
+  theory
+  lessons
+  songs
+  free_practice
+}
+
+enum PracticeMode {
+  chromatic_asc
+  chromatic_desc
+  circle_fifths_asc
+  circle_fourths_desc
+  random
+}
+
+// ── Phase 1–2 models (unchanged) ──────────────────────────────────────────────
+
 model User {
   id           String   @id @default(cuid())
   name         String?
@@ -14,6 +46,7 @@ model User {
   passwordHash String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  goals        Goal[]
 }
 
 model Source {
@@ -32,14 +65,85 @@ model Category {
 }
 
 model Topic {
-  id         String   @id @default(cuid())
-  title      String
-  url        String   @unique
-  slug       String
-  order      Int      @default(0)
-  category   Category @relation(fields: [categoryId], references: [id])
-  categoryId String
-  source     Source   @relation(fields: [sourceId], references: [id])
-  sourceId   String
-  createdAt  DateTime @default(now())
+  id          String      @id @default(cuid())
+  title       String
+  url         String      @unique
+  slug        String
+  order       Int         @default(0)
+  category    Category    @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  source      Source      @relation(fields: [sourceId], references: [id])
+  sourceId    String
+  createdAt   DateTime    @default(now())
+  goalTopics  GoalTopic[]
+}
+
+// ── Phase 4 models ────────────────────────────────────────────────────────────
+
+model Goal {
+  id          String      @id @default(cuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  title       String
+  description String      @default("")
+  isActive    Boolean     @default(false)
+  isArchived  Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  topics      GoalTopic[]
+  routines    Routine[]
+}
+
+model GoalTopic {
+  id            String        @id @default(cuid())
+  goalId        String
+  goal          Goal          @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  kind          TopicKind
+  subtype       String?
+  lessonId      String?
+  lesson        Topic?        @relation(fields: [lessonId], references: [id])
+  defaultKey    String?
+  refKey        String
+  createdAt     DateTime      @default(now())
+  sectionTopics SectionTopic[]
+
+  @@unique([goalId, refKey])
+}
+
+model Routine {
+  id              String    @id @default(cuid())
+  goalId          String
+  goal            Goal      @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  title           String
+  description     String    @default("")
+  durationMinutes Int
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  sections        Section[]
+}
+
+model Section {
+  id              String        @id @default(cuid())
+  routineId       String
+  routine         Routine       @relation(fields: [routineId], references: [id], onDelete: Cascade)
+  type            SectionType
+  title           String
+  description     String        @default("")
+  durationMinutes Int
+  order           Int
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  sectionTopics   SectionTopic[]
+}
+
+model SectionTopic {
+  id           String        @id @default(cuid())
+  sectionId    String
+  section      Section       @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  goalTopicId  String
+  goalTopic    GoalTopic     @relation(fields: [goalTopicId], references: [id], onDelete: Cascade)
+  keys         String[]      @default([])
+  practiceMode PracticeMode?
+
+  @@unique([sectionId, goalTopicId])
 }

@@ -11,6 +11,7 @@ import {
 } from "@/lib/rendering/fretboard"
 import type { BoxSystem } from "@/lib/rendering/fretboard"
 import { cn } from "@/lib/utils"
+import { AddToGoalButton } from "@/components/add-to-goal-button"
 
 const TONAL_TO_DEGREE: Record<string, string> = {
   "1P": "1",
@@ -131,6 +132,12 @@ export function ArpeggioPanel({ root, onRootChange, chordTypeTrigger }: Arpeggio
               ))}
             </optgroup>
           </select>
+          <AddToGoalButton
+            kind="arpeggio"
+            subtype={chordType}
+            defaultKey={root}
+            displayName={`${root} ${chordType} arpeggio`}
+          />
         </div>
       </div>
 

@@ -1,0 +1,44 @@
+import type { TopicKind } from "@/lib/generated/prisma/client"
+import { listProgressions } from "@/lib/theory/progressions"
+
+export function computeRefKey(topicRef: {
+  kind: TopicKind
+  subtype?: string | null
+  lessonId?: string | null
+  defaultKey?: string | null
+}): string {
+  if (topicRef.kind === "lesson" && topicRef.lessonId) {
+    return `lesson:${topicRef.lessonId}`
+  }
+  return `${topicRef.kind}:${topicRef.subtype ?? ""}:${topicRef.defaultKey ?? ""}`
+}
+
+type GoalTopicForDisplay = {
+  kind: TopicKind
+  subtype: string | null
+  defaultKey: string | null
+  lesson?: { title: string } | null
+}
+
+export function formatTopicName(topic: GoalTopicForDisplay): string {
+  switch (topic.kind) {
+    case "lesson":
+      return topic.lesson?.title ?? "Unknown lesson"
+    case "scale":
+      return `${topic.defaultKey ?? ""} ${topic.subtype ?? ""} scale`.trim()
+    case "chord":
+      return `${topic.defaultKey ?? ""}${topic.subtype ?? ""} chord`
+    case "triad":
+      return `${topic.defaultKey ?? ""} ${topic.subtype ?? ""} triad`.trim()
+    case "arpeggio":
+      return `${topic.defaultKey ?? ""} ${topic.subtype ?? ""} arpeggio`.trim()
+    case "progression": {
+      const prog = listProgressions().find((p) => p.name === topic.subtype)
+      return prog?.displayName ?? topic.subtype ?? "Unknown progression"
+    }
+    case "harmony":
+      return `${topic.defaultKey ?? ""} ${topic.subtype ?? ""}`.trim()
+    default:
+      return "Unknown topic"
+  }
+}

@@ -11,6 +11,7 @@ import {
 import Chord from "@tombatossals/react-chords/lib/Chord"
 import { FretboardViewer } from "./fretboard-viewer"
 import { cn } from "@/lib/utils"
+import { AddToGoalButton } from "@/components/add-to-goal-button"
 
 const GUITAR_INSTRUMENT = {
   strings: 6,
@@ -127,6 +128,12 @@ export function TriadPanel({ root, onRootChange, triadTypeTrigger }: TriadPanelP
               <option key={t} value={t}>{t}</option>
             ))}
           </select>
+          <AddToGoalButton
+            kind="triad"
+            subtype={triadType}
+            defaultKey={root}
+            displayName={`${root} ${triadType} triad`}
+          />
         </div>
       </div>
 

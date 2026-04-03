@@ -7,6 +7,7 @@ import { FretboardViewer } from "./fretboard-viewer"
 import { getScaleBoxSystems, CAGED_BOX_LABELS } from "@/lib/rendering/fretboard"
 import type { BoxSystem } from "@/lib/rendering/fretboard"
 import { cn } from "@/lib/utils"
+import { AddToGoalButton } from "@/components/add-to-goal-button"
 
 const TONAL_TO_DEGREE: Record<string, string> = {
   "1P": "1",
@@ -142,6 +143,12 @@ export function ScalePanel({ root, onRootChange, scaleTypeTrigger }: ScalePanelP
             </optgroup>
           )}
         </select>
+        <AddToGoalButton
+          kind="scale"
+          subtype={scaleType}
+          defaultKey={root}
+          displayName={`${root} ${scaleType} scale`}
+        />
         </div>
       </div>
 

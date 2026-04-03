@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { db } from "@/lib/db"
+import { AddToGoalButton } from "@/components/add-to-goal-button"
 
 export default async function CategoryPage({
   params,
@@ -28,20 +29,29 @@ export default async function CategoryPage({
       <ul className="space-y-1">
         {data.topics.map((topic) => (
           <li key={topic.id}>
-            <a
-              href={topic.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-between py-2 text-base text-foreground hover:text-muted-foreground transition-colors"
-            >
-              <span>{topic.title}</span>
-              <span className="flex items-center gap-2 ml-4 flex-shrink-0">
-                <span className="text-xs text-muted-foreground border border-border px-1.5 py-0.5 rounded">
-                  {topic.source.name}
+            <div className="flex items-center justify-between py-2">
+              <a
+                href={topic.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 flex-1 min-w-0 text-base text-foreground hover:text-muted-foreground transition-colors"
+              >
+                <span className="truncate">{topic.title}</span>
+                <span className="flex items-center gap-2 ml-2 flex-shrink-0">
+                  <span className="text-xs text-muted-foreground border border-border px-1.5 py-0.5 rounded">
+                    {topic.source.name}
+                  </span>
+                  <span className="text-muted-foreground">↗</span>
                 </span>
-                <span className="text-muted-foreground">↗</span>
-              </span>
-            </a>
+              </a>
+              <div className="ml-3 flex-shrink-0">
+                <AddToGoalButton
+                  kind="lesson"
+                  lessonId={topic.id}
+                  displayName={topic.title}
+                />
+              </div>
+            </div>
           </li>
         ))}
       </ul>

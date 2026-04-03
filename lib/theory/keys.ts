@@ -171,7 +171,7 @@ export function getKey(tonic: string, mode: string): Key {
     return {
       tonic,
       mode: "major",
-      notes: k.scale,
+      notes: [...k.scale],
       signature: signatureFor(tonic, "major"),
       diatonicChords: chords,
       relativeKey: relativeKey(tonic, "major"),
@@ -184,7 +184,7 @@ export function getKey(tonic: string, mode: string): Key {
     return {
       tonic,
       mode: "minor",
-      notes: k.natural.scale,
+      notes: [...k.natural.scale],
       signature: signatureFor(tonic, "minor"),
       diatonicChords: chords,
       relativeKey: relativeKey(tonic, "minor"),

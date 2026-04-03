@@ -15,6 +15,10 @@ vi.mock("next/navigation", () => ({
   }),
 }))
 
+vi.mock("@/components/add-to-goal-button", () => ({
+  AddToGoalButton: () => null,
+}))
+
 import LibraryPage from "@/app/(app)/library/page"
 import CategoryPage from "@/app/(app)/library/[category]/page"
 import { notFound } from "next/navigation"

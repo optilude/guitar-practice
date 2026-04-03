@@ -15,6 +15,7 @@ import {
 } from "@/lib/rendering/fretboard"
 import type { BoxSystem } from "@/lib/rendering/fretboard"
 import { cn } from "@/lib/utils"
+import { AddToGoalButton } from "@/components/add-to-goal-button"
 
 const GUITAR_INSTRUMENT = {
   strings: 6,
@@ -175,6 +176,12 @@ export function ChordPanel({ root, onRootChange, chordTypeTrigger }: ChordPanelP
               ))}
             </optgroup>
           </select>
+          <AddToGoalButton
+            kind="chord"
+            subtype={chordType}
+            defaultKey={root}
+            displayName={`${root}${chordType} chord`}
+          />
         </div>
       </div>
 
