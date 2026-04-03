@@ -107,10 +107,16 @@ export async function reorderUserLessons(
 ): Promise<{ success: true } | { error: string }> {
   try {
     const userId = await requireUserId()
+    const lessons = await db.userLesson.findMany({
+      where: { userId, categoryId, id: { in: orderedIds } },
+    })
+    if (lessons.length !== orderedIds.length) {
+      return { error: "Invalid lessons provided" }
+    }
     await db.$transaction(
       orderedIds.map((id, index) =>
         db.userLesson.update({
-          where: { id, userId },
+          where: { id },
           data: { order: index },
         })
       )
