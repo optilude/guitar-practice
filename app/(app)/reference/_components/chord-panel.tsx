@@ -71,9 +71,10 @@ interface ChordPanelProps {
   root: string
   onRootChange: (root: string) => void
   chordTypeTrigger?: { type: string } | null
+  onScaleSelect?: (tonic: string, scaleName: string) => void
 }
 
-export function ChordPanel({ root, onRootChange, chordTypeTrigger }: ChordPanelProps) {
+export function ChordPanel({ root, onRootChange, chordTypeTrigger, onScaleSelect }: ChordPanelProps) {
   const dbSuffixes = useMemo(() => listChordDbSuffixes(), [])
   const commonSuffixes = useMemo(
     () => COMMON_TYPES.filter((t) => dbSuffixes.includes(t)),
