@@ -47,6 +47,7 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   goals        Goal[]
+  userLessons  UserLesson[]
 }
 
 model Source {
@@ -62,6 +63,7 @@ model Category {
   name   String
   order  Int     @unique
   topics Topic[]
+  userLessons  UserLesson[]
 }
 
 model Topic {
@@ -75,6 +77,7 @@ model Topic {
   source      Source      @relation(fields: [sourceId], references: [id])
   sourceId    String
   createdAt   DateTime    @default(now())
+  description  String      @default("")
   goalTopics  GoalTopic[]
 }
 
@@ -102,6 +105,8 @@ model GoalTopic {
   subtype       String?
   lessonId      String?
   lesson        Topic?        @relation(fields: [lessonId], references: [id])
+  userLessonId  String?
+  userLesson    UserLesson? @relation(fields: [userLessonId], references: [id], onDelete: SetNull)
   defaultKey    String?
   refKey        String
   createdAt     DateTime      @default(now())
@@ -145,4 +150,22 @@ model SectionTopic {
   practiceMode PracticeMode?
 
   @@unique([sectionId, goalTopicId])
+}
+
+model UserLesson {
+  id          String      @id @default(cuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId  String
+  category    Category    @relation(fields: [categoryId], references: [id])
+  title       String
+  url         String?
+  description String      @default("")
+  source      String      @default("")
+  order       Int
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  goalTopics  GoalTopic[]
+
+  @@index([userId, categoryId])
 }
