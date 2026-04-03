@@ -68,6 +68,7 @@ Scales:
 * When switching between light and dark mode, the stave view is corrupted until the view is changed (e.g. click a different tab in the UI)
 * Scales note viewer has standard notation on a stave. Some of the low notes appear really low - are they actually correct? They may be transposed down an octive or two.
 * Find a way to test scale patterns and tabs for accuracy
+* Review/refine the chord-to-scale mapping. It might be somewhat naive.
 
 Chords:
 
@@ -87,7 +88,9 @@ Chords:
 
 ## Improve scale mapping
 
-I've sourced another reference for scales-to-solo-with logic. I'd like to cross-reference and expand the current mapping of recommended scales for modes and progressions with this and expand our set as required. One thing I've noted is the use of "Tonic" to refer to a scale of the I chord being used to solo over the IV or V chord. I think right now, our scales mapping always the same root note as the selected chord, so we might need to enhance the logic surrounding this.
+I've sourced another reference for scales-to-solo-with logic. I'd like to cross-reference and expand the current mapping of recommended scales for modes and progressions with this and expand our set as required. Note that it is not certain this new set is "right" and the old set is "wrong", so consider the suggested scales carefully.
+
+One thing I've noted is the use of "Tonic" to refer to a scale of the I chord being used to solo over the IV or V chord. I think right now, our scales mapping always the same root note as the selected chord, so we might need to enhance the logic surrounding this.
 
 ```
 {
@@ -199,10 +202,6 @@ I've sourced another reference for scales-to-solo-with logic. I'd like to cross-
   }
 }
 ```
-
-## Add scale mapping to chords view
-
-Add a new tab to the Chords panel called "Soloing". In this panel list scales that may be used to solo over the currently selected chord. Base this on the same logic that is used in the Modes and Progressions panels. Confirm if this is based on a common set of reference data / logic (preferred), or hardcoded per chord type (more brittle, but may be necessary).
 
 ## Start phase 4
 
