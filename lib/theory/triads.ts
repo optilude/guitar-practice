@@ -1,7 +1,15 @@
 import type { ChordPosition } from "./chords"
 import type { GuitarScale } from "@/lib/theory/types"
 import { getArpeggio } from "@/lib/theory/arpeggios"
+import { Chord as TonalChord, Note } from "tonal"
 import rawTriads from "@/data/triads.json"
+
+// Open-string chroma values (C=0 … B=11), index 0 = string 6 (low E), index 5 = string 1 (high e)
+const OPEN_CHROMA = [4, 9, 2, 7, 11, 4] as const
+
+const TONAL_TYPE: Record<string, string> = {
+  major: "maj", minor: "m", diminished: "dim", augmented: "aug",
+}
 
 // ---------------------------------------------------------------------------
 // Triad voicing database
@@ -37,11 +45,17 @@ const INVERSION_LABEL: Record<string, string> = {
   second: "2nd inversion",
 }
 
+export type NoteRole = "root" | "third" | "fifth"
+
 export interface TriadVoicing extends ChordPosition {
   stringSet: string
   voicingType: "close" | "open"
   inversion: "root" | "first" | "second"
   minFret: number // lowest non-open fret (0 if all open), for ordering
+  /** Interval role of each string (index 0 = str6). null = string not played. */
+  noteRoles: Array<NoteRole | null>
+  /** Note name for each string (e.g. "C", "Eb"). null = string not played. */
+  noteNames: Array<string | null>
 }
 
 // ---------------------------------------------------------------------------
@@ -67,6 +81,30 @@ interface RawEntry {
 // Build the filtered + sorted database at module load time
 // ---------------------------------------------------------------------------
 
+function computeRolesAndNames(entry: RawEntry): {
+  noteRoles: Array<NoteRole | null>
+  noteNames: Array<string | null>
+} {
+  const symbol = `${entry.root}${TONAL_TYPE[entry.type] ?? entry.type}`
+  const chordNotes = TonalChord.get(symbol).notes // ["C", "E", "G"]
+  const chordChromas = chordNotes.map((n) => Note.get(n).chroma ?? 0)
+  const roleOrder: NoteRole[] = ["root", "third", "fifth"]
+
+  const noteRoles: Array<NoteRole | null> = [null, null, null, null, null, null]
+  const noteNames: Array<string | null>   = [null, null, null, null, null, null]
+
+  for (const s of entry.strings) {
+    const idx    = 6 - s.guitar_string
+    const chroma = (OPEN_CHROMA[idx] + s.fret) % 12
+    const match  = chordChromas.indexOf(chroma)
+    if (match >= 0) {
+      noteRoles[idx] = roleOrder[match]
+      noteNames[idx] = chordNotes[match]
+    }
+  }
+  return { noteRoles, noteNames }
+}
+
 function convertEntry(entry: RawEntry): TriadVoicing {
   // Build 6-element fret array (index 0 = str6, index 5 = str1)
   const absFrets: number[] = [-1, -1, -1, -1, -1, -1]
@@ -89,6 +127,8 @@ function convertEntry(entry: RawEntry): TriadVoicing {
   const minFret = closedFrets.length > 0 ? Math.min(...closedFrets) : 0
   const label = INVERSION_LABEL[entry.inversion] ?? entry.inversion
 
+  const { noteRoles, noteNames } = computeRolesAndNames(entry)
+
   return {
     frets,
     fingers: [0, 0, 0, 0, 0, 0],
@@ -100,6 +140,8 @@ function convertEntry(entry: RawEntry): TriadVoicing {
     voicingType: entry.voicing_type as "close" | "open",
     inversion: entry.inversion as "root" | "first" | "second",
     minFret,
+    noteRoles,
+    noteNames,
   }
 }
 

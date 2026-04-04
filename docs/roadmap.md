@@ -45,10 +45,10 @@ Account management and better authentication support. Admin UI for managing user
 
 # Future ideas
 
-* Add a footer with some basic information / links. Apart from being informative, this will help ensure the content doesn't end right at the bottom of the window, which can be harder to read.
-
 * Change Triads to Inversions. The first category should be the basic triads like now, but this adds many (!) more types.
 * Consider changing to SVGuitar or a different rendering engine (for this and chords)
+
+* Add a footer with some basic information / links. Apart from being informative, this will help ensure the content doesn't end right at the bottom of the window, which can be harder to read.
 
 * Should each practice routine element allow for more than one topic? Might be useful to introduce some degree of optionality to the practice routine without having to create lots of different routines, e.g. add major and minor triads to a single triad study section.
 
@@ -57,7 +57,8 @@ Account management and better authentication support. Admin UI for managing user
 * More streaks/gamification features
 * Practice notifications/reminders
 
-* Audio recorder for practice (note this will really change data storage and storage costs)
+* Midi playback for scales, arpeggios, and progressions?
+* Audio recorder for practice (note this will significantly change data storage requirements)
 
 # Known issues
 

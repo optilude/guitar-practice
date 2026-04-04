@@ -8,17 +8,64 @@ import {
   getTriadAsScale,
   type TriadVoicing,
 } from "@/lib/theory"
-import Chord from "@tombatossals/react-chords/lib/Chord"
+import { type Chord as SVGChord, OPEN, SILENT, type Finger, type FingerOptions } from "svguitar"
+import { INTERVAL_DEGREE_COLORS } from "@/lib/rendering/tab"
+import { ChordDiagram } from "./chord-diagram"
 import { FretboardViewer } from "./fretboard-viewer"
 import { cn } from "@/lib/utils"
 import { AddToGoalButton } from "@/components/add-to-goal-button"
+import type { NoteRole } from "@/lib/theory/triads"
 
-const GUITAR_INSTRUMENT = {
-  strings: 6,
-  fretsOnChord: 5,
-  name: "guitar",
-  keys: [] as string[],
-  tunings: { standard: ["E", "A", "D", "G", "B", "E"] },
+type ShowMode = "fingers" | "notes" | "intervals"
+
+// Root uses amber-600, matching the fretboard's dark-mode accent colour
+const ROLE_COLORS: Record<NoteRole, string> = {
+  root:  "#d97706",
+  third: INTERVAL_DEGREE_COLORS.third,
+  fifth: INTERVAL_DEGREE_COLORS.fifth,
+}
+
+const INTERVAL_LABELS: Record<string, Record<NoteRole, string>> = {
+  major:      { root: "R", third: "3",  fifth: "5"  },
+  minor:      { root: "R", third: "b3", fifth: "5"  },
+  diminished: { root: "R", third: "b3", fifth: "b5" },
+  augmented:  { root: "R", third: "3",  fifth: "#5" },
+}
+
+function toSVGChord(
+  voicing: TriadVoicing,
+  showMode: ShowMode,
+  triadType: string,
+  isDark: boolean,
+): SVGChord {
+  const intervalLabels = INTERVAL_LABELS[triadType] ?? INTERVAL_LABELS.major
+  const fingers: Finger[] = []
+
+  voicing.frets.forEach((fret, i) => {
+    const str  = 6 - i // index 0 (str6/low E) → SVGuitar string 6
+    const role = voicing.noteRoles[i]
+
+    const text = !role ? undefined
+      : showMode === "notes"     ? (voicing.noteNames[i] ?? undefined)
+      : showMode === "intervals" ? intervalLabels[role]
+      : undefined
+
+    const options: FingerOptions | undefined = role
+      ? {
+          color: ROLE_COLORS[role],
+          // The 'O' indicator is an outline, not a filled dot, so its interior matches the
+          // page background. Use a contrasting text colour for legibility in both modes.
+          textColor: fret === 0 ? (isDark ? "#f9fafb" : "#1f2937") : "#ffffff",
+          text,
+        }
+      : undefined
+
+    if (fret === -1)     fingers.push([str, SILENT])
+    else if (fret === 0) fingers.push([str, OPEN, options])
+    else                 fingers.push([str, fret, options])
+  })
+
+  return { fingers, barres: [], position: voicing.baseFret }
 }
 
 const ROOT_NOTES = [
@@ -53,6 +100,16 @@ interface TriadPanelProps {
 
 export function TriadPanel({ root, onRootChange, triadTypeTrigger }: TriadPanelProps) {
   const [triadType, setTriadType]           = useState<string>("major")
+  const [isDark, setIsDark]                 = useState(false)
+
+  useEffect(() => {
+    setIsDark(document.documentElement.classList.contains("dark"))
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains("dark"))
+    })
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] })
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     if (triadTypeTrigger) setTriadType(triadTypeTrigger.type)
@@ -61,6 +118,7 @@ export function TriadPanel({ root, onRootChange, triadTypeTrigger }: TriadPanelP
   const [voicingFilter, setVoicingFilter]   = useState<string>("all")
   const [inversionFilter, setInvFilter]     = useState<string>("all")
   const [stringSetFilter, setStringSetFilter] = useState<string>("all")
+  const [showMode, setShowMode]             = useState<ShowMode>("fingers")
   const [labelMode, setLabelMode]           = useState<"note" | "interval">("interval")
 
   const triadScale = useMemo(
@@ -246,6 +304,22 @@ export function TriadPanel({ root, onRootChange, triadTypeTrigger }: TriadPanelP
                 ))}
               </select>
             </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-muted-foreground" htmlFor="triad-show-select">
+                Show
+              </label>
+              <select
+                id="triad-show-select"
+                value={showMode}
+                onChange={(e) => setShowMode(e.target.value as ShowMode)}
+                className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
+              >
+                <option value="fingers">Fingers</option>
+                <option value="notes">Notes</option>
+                <option value="intervals">Intervals</option>
+              </select>
+            </div>
           </div>
 
           {grouped.length === 0 ? (
@@ -257,13 +331,11 @@ export function TriadPanel({ root, onRootChange, triadTypeTrigger }: TriadPanelP
                   <h3 className="text-xs font-medium tracking-widest text-muted-foreground mb-4">
                     {STRING_SET_LABEL[stringSet] ?? stringSet}
                   </h3>
-                  <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     {voicings.map((pos, i) => (
-                      <div key={i} className="flex flex-col items-center gap-1">
-                        <span className="text-xs text-muted-foreground">{pos.label}</span>
-                        <div className="dark:invert">
-                          <Chord chord={pos} instrument={GUITAR_INSTRUMENT} lite={false} />
-                        </div>
+                      <div key={i} className="flex flex-col gap-1">
+                        <span className="text-xs text-muted-foreground text-center">{pos.label}</span>
+                        <ChordDiagram chord={toSVGChord(pos, showMode, triadType, isDark)} />
                       </div>
                     ))}
                   </div>
