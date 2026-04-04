@@ -49,10 +49,7 @@ export function ChordDiagram({ chord, numFrets = 5 }: ChordDiagramProps) {
 
     const svg = container.querySelector("svg")
     if (svg) {
-      // viewBox preserves SVGuitar's natural coordinate space so nothing distorts.
-      // Explicit width at 90 % of natural compresses the horizontal spacing;
-      // height is omitted so the browser derives it from the viewBox aspect ratio,
-      // keeping circles perfectly round and text proportional.
+      svg.classList.add("chord-diagram-svg")
       svg.setAttribute("viewBox", `0 0 ${width} ${height}`)
       svg.setAttribute("width", String(Math.round(width * 0.8)))
       svg.removeAttribute("height")

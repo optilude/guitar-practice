@@ -155,3 +155,10 @@
   margin-top: 0.25em;
   margin-bottom: 0.25em;
 }
+
+/* Pull SVGuitar chord diagrams up to reduce the blank indicator zone above the nut */
+@layer utilities {
+  .chord-diagram-svg {
+    margin-top: -1em;
+  }
+}
