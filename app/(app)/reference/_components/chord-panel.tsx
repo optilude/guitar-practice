@@ -82,8 +82,10 @@ function toSVGChord(
       const iv      = chordIntervals[matchIdx]
       const degree  = INTERVAL_TO_DEGREE[iv] ?? iv
       const color   = degreeToColor(degree)
+      const fingerNum = pos.fingers[idx] ?? 0
       const text    = showMode === "notes"     ? chordNotes[matchIdx]
                     : showMode === "intervals" ? degree
+                    : fingerNum > 0            ? String(fingerNum)
                     : undefined
       const textColor = relativeFret === 0 ? (isDark ? "#f9fafb" : "#1f2937") : "#ffffff"
       // Open strings render as a hollow ring (stroke-only); set strokeColor so the
