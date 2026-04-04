@@ -61,9 +61,7 @@ Account management and better authentication support. Admin UI for managing user
 
 # Known issues
 
-* When adding something to a goal, it is possible to add the same thing twice. Need to indicate visually whether something is already added to the active goal, and also indicate it when adding to a different goal inside the popover.
-
-* The edit UI for practice routine sections and personal library entries looks similar but uses inconsistent patterns. Make them the same.
+* The edit UI for practice routine sections and personal library entries looks similar but uses inconsistent patterns. Make them consistent (but decide how).
 
 Fretboard visualiser
 

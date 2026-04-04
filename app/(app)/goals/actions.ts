@@ -201,6 +201,45 @@ export async function getUserGoals(): Promise<
   }
 }
 
+export async function getActiveGoalTopicKeys(): Promise<string[]> {
+  try {
+    const userId = await requireUserId()
+    const activeGoal = await db.goal.findFirst({
+      where: { userId, isActive: true, isArchived: false },
+      include: { topics: { select: { refKey: true } } },
+    })
+    return activeGoal?.topics.map((t) => t.refKey) ?? []
+  } catch {
+    return []
+  }
+}
+
+export async function getUserGoalsWithStatus(
+  refKey: string
+): Promise<{ id: string; title: string; isActive: boolean; alreadyAdded: boolean }[]> {
+  try {
+    const userId = await requireUserId()
+    const goals = await db.goal.findMany({
+      where: { userId, isArchived: false },
+      select: {
+        id: true,
+        title: true,
+        isActive: true,
+        topics: { where: { refKey }, select: { id: true } },
+      },
+      orderBy: { createdAt: "desc" },
+    })
+    return goals.map((g) => ({
+      id: g.id,
+      title: g.title,
+      isActive: g.isActive,
+      alreadyAdded: g.topics.length > 0,
+    }))
+  } catch {
+    return []
+  }
+}
+
 // ── Routine actions ───────────────────────────────────────────────────────────
 
 const DEFAULT_SECTIONS: {

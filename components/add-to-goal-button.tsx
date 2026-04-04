@@ -1,7 +1,9 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { getUserGoals, addTopicToGoal } from "@/app/(app)/goals/actions"
+import { getUserGoalsWithStatus, addTopicToGoal } from "@/app/(app)/goals/actions"
+import { computeRefKey } from "@/lib/goals"
+import { useActiveGoal } from "@/components/active-goal-context"
 import type { TopicKind } from "@/lib/generated/prisma/enums"
 
 interface AddToGoalButtonProps {
@@ -23,8 +25,14 @@ export function AddToGoalButton({
   displayName,
   popupAlign = "left",
 }: AddToGoalButtonProps) {
+  const refKey = computeRefKey({ kind, subtype, lessonId, userLessonId, defaultKey })
+  const { activeGoalKeys, markAdded } = useActiveGoal()
+  const isAddedToActive = activeGoalKeys.has(refKey)
+
   const [isOpen, setIsOpen] = useState(false)
-  const [goals, setGoals] = useState<{ id: string; title: string; isActive: boolean }[]>([])
+  const [goals, setGoals] = useState<
+    { id: string; title: string; isActive: boolean; alreadyAdded: boolean }[]
+  >([])
   const [selectedGoalId, setSelectedGoalId] = useState<string>("")
   const [status, setStatus] = useState<"idle" | "loading" | "added" | "error">("idle")
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
@@ -52,7 +60,7 @@ export function AddToGoalButton({
     setIsOpen(true)
     setStatus("loading")
     setErrorMsg(null)
-    const fetched = await getUserGoals()
+    const fetched = await getUserGoalsWithStatus(refKey)
     setGoals(fetched)
     const active = fetched.find((g) => g.isActive)
     setSelectedGoalId(active?.id ?? fetched[0]?.id ?? "")
@@ -73,6 +81,8 @@ export function AddToGoalButton({
       setStatus("error")
       setErrorMsg(result.error)
     } else {
+      const selectedGoal = goals.find((g) => g.id === selectedGoalId)
+      if (selectedGoal?.isActive) markAdded(refKey)
       setStatus("added")
       setTimeout(() => {
         setIsOpen(false)
@@ -81,15 +91,22 @@ export function AddToGoalButton({
     }
   }
 
+  const selectedGoal = goals.find((g) => g.id === selectedGoalId)
+  const selectedAlreadyAdded = selectedGoal?.alreadyAdded ?? false
+
   return (
     <div className="relative inline-flex">
       <button
         type="button"
         aria-label="Add to goal"
         onClick={handleOpen}
-        className="flex items-center justify-center w-6 h-6 rounded-full border border-border text-muted-foreground hover:text-accent hover:border-accent transition-colors text-sm font-semibold select-none"
+        className={
+          isAddedToActive
+            ? "flex items-center justify-center w-6 h-6 rounded-full border transition-colors text-sm font-semibold select-none border-muted-foreground/40 text-muted-foreground/60 hover:text-accent hover:border-accent"
+            : "flex items-center justify-center w-6 h-6 rounded-full border border-muted-foreground/50 text-muted-foreground hover:text-accent hover:border-accent transition-colors text-sm font-semibold select-none"
+        }
       >
-        +
+        <span className="relative -top-px">+</span>
       </button>
 
       {isOpen && (
@@ -138,12 +155,16 @@ export function AddToGoalButton({
                 <p className="text-xs text-muted-foreground">Default key: {defaultKey}</p>
               )}
 
-              {errorMsg && <p className="text-xs text-red-500">{errorMsg}</p>}
+              {selectedAlreadyAdded ? (
+                <p className="text-xs text-muted-foreground italic">Already in this goal</p>
+              ) : errorMsg ? (
+                <p className="text-xs text-red-500">{errorMsg}</p>
+              ) : null}
 
               <button
                 type="button"
                 onClick={handleAdd}
-                disabled={!selectedGoalId || status === "loading"}
+                disabled={selectedAlreadyAdded || !selectedGoalId || status === "loading"}
                 className="w-full text-xs font-semibold bg-accent text-accent-foreground px-3 py-1.5 rounded hover:opacity-90 transition-opacity disabled:opacity-50"
               >
                 {status === "loading" ? "Adding…" : "Add to goal"}
