@@ -34,13 +34,13 @@ const SECTION_TYPE_COLORS: Record<SectionType, string> = {
   free_practice: "text-muted-foreground border-border",
 }
 
-const TOPIC_KIND_ORDER = ["lesson", "scale", "chord", "triad", "arpeggio", "progression", "harmony"]
+const TOPIC_KIND_ORDER = ["lesson", "scale", "chord", "inversion", "arpeggio", "progression", "harmony"]
 
 const TOPIC_KIND_LABELS: Record<string, string> = {
   lesson: "Lessons",
   scale: "Scales",
   chord: "Chords",
-  triad: "Triads",
+  inversion: "Inversions",
   arpeggio: "Arpeggios",
   progression: "Progressions",
   harmony: "Harmony",

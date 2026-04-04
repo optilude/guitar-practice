@@ -1,28 +1,28 @@
 import { describe, it, expect } from "vitest"
-import { getTriadAsScale } from "@/lib/theory/triads"
+import { getInversionAsScale } from "@/lib/theory/inversions"
 
-describe("getTriadAsScale", () => {
+describe("getInversionAsScale", () => {
   it("C major returns notes C E G and type 'maj'", () => {
-    const scale = getTriadAsScale("C", "major")
+    const scale = getInversionAsScale("C", "major")
     expect(scale.notes).toEqual(["C", "E", "G"])
     expect(scale.type).toBe("maj")
     expect(scale.tonic).toBe("C")
   })
 
   it("C minor returns notes C Eb G and type 'm'", () => {
-    const scale = getTriadAsScale("C", "minor")
+    const scale = getInversionAsScale("C", "minor")
     expect(scale.notes).toEqual(["C", "Eb", "G"])
     expect(scale.type).toBe("m")
   })
 
   it("C diminished returns notes C Eb Gb and type 'dim'", () => {
-    const scale = getTriadAsScale("C", "diminished")
+    const scale = getInversionAsScale("C", "diminished")
     expect(scale.notes).toEqual(["C", "Eb", "Gb"])
     expect(scale.type).toBe("dim")
   })
 
   it("C augmented returns 3 notes starting with C E and type 'aug'", () => {
-    const scale = getTriadAsScale("C", "augmented")
+    const scale = getInversionAsScale("C", "augmented")
     expect(scale.type).toBe("aug")
     expect(scale.notes).toHaveLength(3)
     expect(scale.notes[0]).toBe("C")
@@ -32,12 +32,12 @@ describe("getTriadAsScale", () => {
   })
 
   it("returns a non-empty positions array", () => {
-    const scale = getTriadAsScale("C", "major")
+    const scale = getInversionAsScale("C", "major")
     expect(scale.positions.length).toBeGreaterThan(0)
   })
 
   it("works for a non-C tonic", () => {
-    const scale = getTriadAsScale("A", "minor")
+    const scale = getInversionAsScale("A", "minor")
     expect(scale.tonic).toBe("A")
     expect(scale.notes).toEqual(["A", "C", "E"])
     expect(scale.type).toBe("m")

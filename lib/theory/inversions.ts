@@ -2,7 +2,7 @@ import type { ChordPosition } from "./chords"
 import type { GuitarScale } from "@/lib/theory/types"
 import { getArpeggio } from "@/lib/theory/arpeggios"
 import { Chord as TonalChord, Note } from "tonal"
-import rawTriads from "@/data/triads.json"
+import rawInversions from "@/data/inversions.json"
 
 // Open-string chroma values (C=0 … B=11), index 0 = string 6 (low E), index 5 = string 1 (high e)
 const OPEN_CHROMA = [4, 9, 2, 7, 11, 4] as const
@@ -12,16 +12,16 @@ const TONAL_TYPE: Record<string, string> = {
 }
 
 // ---------------------------------------------------------------------------
-// Triad voicing database
+// Inversion voicing database
 //
-// Source: data/triads.json (LLM-generated, standard tuning, frets 0–12)
+// Source: data/inversions.json (LLM-generated, standard tuning, frets 0–12)
 // Filtering: only voicings with fret span ≤ 5 are kept
 // Sorting: all close string sets first (root 6→3), then all open sets (root 6→4),
 //          within each string set by lowest fret
 // ---------------------------------------------------------------------------
 
-export const TRIAD_TYPES = ["major", "minor", "diminished", "augmented"] as const
-export type TriadType = (typeof TRIAD_TYPES)[number]
+export const INVERSION_TYPES = ["major", "minor", "diminished", "augmented"] as const
+export type InversionType = (typeof INVERSION_TYPES)[number]
 
 // Canonical string-set order: root string descending (6→3), close before open
 const STRING_SET_ORDER: readonly string[] = [
@@ -47,7 +47,7 @@ const INVERSION_LABEL: Record<string, string> = {
 
 export type NoteRole = "root" | "third" | "fifth"
 
-export interface TriadVoicing extends ChordPosition {
+export interface InversionVoicing extends ChordPosition {
   stringSet: string
   voicingType: "close" | "open"
   inversion: "root" | "first" | "second"
@@ -105,7 +105,7 @@ function computeRolesAndNames(entry: RawEntry): {
   return { noteRoles, noteNames }
 }
 
-function convertEntry(entry: RawEntry): TriadVoicing {
+function convertEntry(entry: RawEntry): InversionVoicing {
   // Build 6-element fret array (index 0 = str6, index 5 = str1)
   const absFrets: number[] = [-1, -1, -1, -1, -1, -1]
   for (const s of entry.strings) {
@@ -145,14 +145,14 @@ function convertEntry(entry: RawEntry): TriadVoicing {
   }
 }
 
-// Index by "root::type" → TriadVoicing[]
-const DB = new Map<string, TriadVoicing[]>()
+// Index by "root::type" → InversionVoicing[]
+const DB = new Map<string, InversionVoicing[]>()
 
 ;(function buildDB() {
   const setOrder = new Map(STRING_SET_ORDER.map((s, i) => [s, i]))
 
-  // rawTriads[0] is the schema object — skip entries without a "root" field
-  const entries = (rawTriads as unknown[]).filter(
+  // rawInversions[0] is the schema object — skip entries without a "root" field
+  const entries = (rawInversions as unknown[]).filter(
     (e): e is RawEntry =>
       typeof e === "object" &&
       e !== null &&
@@ -185,23 +185,23 @@ const DB = new Map<string, TriadVoicing[]>()
 // ---------------------------------------------------------------------------
 
 /**
- * Returns all spread-filtered triad voicings for a given tonic and type,
+ * Returns all spread-filtered inversion voicings for a given tonic and type,
  * pre-sorted (lower root string first, close before open, lower fret first).
  * Returns [] for unknown tonic or type.
  */
-export function getTriadVoicings(tonic: string, type: string): TriadVoicing[] {
+export function getInversionVoicings(tonic: string, type: string): InversionVoicing[] {
   return DB.get(`${tonic}::${type}`) ?? []
 }
 
 /**
  * All string sets in canonical display order.
  */
-export const TRIAD_STRING_SETS: readonly string[] = STRING_SET_ORDER
+export const INVERSION_STRING_SETS: readonly string[] = STRING_SET_ORDER
 
 // ---------------------------------------------------------------------------
-// Mapping from triad type display strings to tonal.js chord symbols.
+// Mapping from inversion type display strings to tonal.js chord symbols.
 // ---------------------------------------------------------------------------
-const TRIAD_TO_TONAL: Record<string, string> = {
+const INVERSION_TO_TONAL: Record<string, string> = {
   major:      "maj",
   minor:      "m",
   diminished: "dim",
@@ -209,11 +209,11 @@ const TRIAD_TO_TONAL: Record<string, string> = {
 }
 
 /**
- * Returns a GuitarScale containing all positions of a triad's tones across
- * the full fretboard. Accepts the same type strings as TRIAD_TYPES
+ * Returns a GuitarScale containing all positions of an inversion's tones across
+ * the full fretboard. Accepts the same type strings as INVERSION_TYPES
  * ("major", "minor", "diminished", "augmented").
  */
-export function getTriadAsScale(tonic: string, type: string): GuitarScale {
-  const tonalSym = TRIAD_TO_TONAL[type] ?? type
+export function getInversionAsScale(tonic: string, type: string): GuitarScale {
+  const tonalSym = INVERSION_TO_TONAL[type] ?? type
   return getArpeggio(tonic, tonalSym)
 }

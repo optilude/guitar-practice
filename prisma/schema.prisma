@@ -13,7 +13,7 @@ enum TopicKind {
   lesson
   scale
   chord
-  triad
+  inversion
   arpeggio
   progression
   harmony

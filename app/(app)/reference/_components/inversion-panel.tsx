@@ -2,11 +2,11 @@
 
 import { useState, useMemo, useEffect } from "react"
 import {
-  TRIAD_TYPES,
-  TRIAD_STRING_SETS,
-  getTriadVoicings,
-  getTriadAsScale,
-  type TriadVoicing,
+  INVERSION_TYPES,
+  INVERSION_STRING_SETS,
+  getInversionVoicings,
+  getInversionAsScale,
+  type InversionVoicing,
 } from "@/lib/theory"
 import { type Chord as SVGChord, OPEN, SILENT, type Finger, type FingerOptions } from "svguitar"
 import { INTERVAL_DEGREE_COLORS } from "@/lib/rendering/tab"
@@ -14,7 +14,7 @@ import { ChordDiagram } from "./chord-diagram"
 import { FretboardViewer } from "./fretboard-viewer"
 import { cn } from "@/lib/utils"
 import { AddToGoalButton } from "@/components/add-to-goal-button"
-import type { NoteRole } from "@/lib/theory/triads"
+import type { NoteRole } from "@/lib/theory/inversions"
 
 type ShowMode = "fingers" | "notes" | "intervals"
 
@@ -33,12 +33,12 @@ const INTERVAL_LABELS: Record<string, Record<NoteRole, string>> = {
 }
 
 function toSVGChord(
-  voicing: TriadVoicing,
+  voicing: InversionVoicing,
   showMode: ShowMode,
-  triadType: string,
+  inversionType: string,
   isDark: boolean,
 ): SVGChord {
-  const intervalLabels = INTERVAL_LABELS[triadType] ?? INTERVAL_LABELS.major
+  const intervalLabels = INTERVAL_LABELS[inversionType] ?? INTERVAL_LABELS.major
   const fingers: Finger[] = []
 
   voicing.frets.forEach((fret, i) => {
@@ -72,7 +72,7 @@ const ROOT_NOTES = [
   "Ab", "A", "A#", "Bb", "B", "C", "C#", "Db", "D", "D#", "Eb", "E", "F", "F#", "Gb", "G", "G#",
 ]
 
-const TRIAD_FORMULA: Record<string, string> = {
+const INVERSION_FORMULA: Record<string, string> = {
   major:      "1 – 3 – 5",
   minor:      "1 – b3 – 5",
   diminished: "1 – b3 – b5",
@@ -92,15 +92,15 @@ const STRING_SET_LABEL: Record<string, string> = {
   "3-2-1": "3-2-1  (close)",
 }
 
-interface TriadPanelProps {
+interface InversionPanelProps {
   root: string
   onRootChange: (root: string) => void
-  triadTypeTrigger?: { type: string } | null
+  inversionTypeTrigger?: { type: string } | null
 }
 
-export function TriadPanel({ root, onRootChange, triadTypeTrigger }: TriadPanelProps) {
-  const [triadType, setTriadType]           = useState<string>("major")
-  const [isDark, setIsDark]                 = useState(false)
+export function InversionPanel({ root, onRootChange, inversionTypeTrigger }: InversionPanelProps) {
+  const [inversionType, setInversionType]     = useState<string>("major")
+  const [isDark, setIsDark]                   = useState(false)
 
   useEffect(() => {
     setIsDark(document.documentElement.classList.contains("dark"))
@@ -112,23 +112,23 @@ export function TriadPanel({ root, onRootChange, triadTypeTrigger }: TriadPanelP
   }, [])
 
   useEffect(() => {
-    if (triadTypeTrigger) setTriadType(triadTypeTrigger.type)
-  }, [triadTypeTrigger]) // eslint-disable-line react-hooks/exhaustive-deps
-  const [viewMode, setViewMode]             = useState<"fretboard" | "fingerings">("fretboard")
-  const [voicingFilter, setVoicingFilter]   = useState<string>("all")
-  const [inversionFilter, setInvFilter]     = useState<string>("all")
+    if (inversionTypeTrigger) setInversionType(inversionTypeTrigger.type)
+  }, [inversionTypeTrigger]) // eslint-disable-line react-hooks/exhaustive-deps
+  const [viewMode, setViewMode]               = useState<"fretboard" | "fingerings">("fretboard")
+  const [voicingFilter, setVoicingFilter]     = useState<string>("all")
+  const [inversionFilter, setInvFilter]       = useState<string>("all")
   const [stringSetFilter, setStringSetFilter] = useState<string>("all")
-  const [showMode, setShowMode]             = useState<ShowMode>("fingers")
-  const [labelMode, setLabelMode]           = useState<"note" | "interval">("interval")
+  const [showMode, setShowMode]               = useState<ShowMode>("fingers")
+  const [labelMode, setLabelMode]             = useState<"note" | "interval">("interval")
 
-  const triadScale = useMemo(
-    () => getTriadAsScale(root, triadType),
-    [root, triadType],
+  const inversionScale = useMemo(
+    () => getInversionAsScale(root, inversionType),
+    [root, inversionType],
   )
 
   const allVoicings = useMemo(
-    () => getTriadVoicings(root, triadType),
-    [root, triadType],
+    () => getInversionVoicings(root, inversionType),
+    [root, inversionType],
   )
 
   const filtered = useMemo(() => {
@@ -141,27 +141,27 @@ export function TriadPanel({ root, onRootChange, triadTypeTrigger }: TriadPanelP
 
   // Group by string set in canonical order
   const grouped = useMemo(() => {
-    const map = new Map<string, TriadVoicing[]>()
+    const map = new Map<string, InversionVoicing[]>()
     for (const v of filtered) {
       if (!map.has(v.stringSet)) map.set(v.stringSet, [])
       map.get(v.stringSet)!.push(v)
     }
     // Return in canonical order
-    return TRIAD_STRING_SETS
+    return INVERSION_STRING_SETS
       .filter((s) => map.has(s))
       .map((s) => ({ stringSet: s, voicings: map.get(s)! }))
   }, [filtered])
 
   return (
     <div className="space-y-4">
-      {/* Root + Triad type selectors */}
+      {/* Root + Inversion type selectors */}
       <div className="flex flex-wrap gap-4 items-end">
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-muted-foreground" htmlFor="triad-root-select">
+          <label className="text-xs text-muted-foreground" htmlFor="inversion-root-select">
             Root
           </label>
           <select
-            id="triad-root-select"
+            id="inversion-root-select"
             aria-label="Root"
             value={root}
             onChange={(e) => onRootChange(e.target.value)}
@@ -173,32 +173,32 @@ export function TriadPanel({ root, onRootChange, triadTypeTrigger }: TriadPanelP
           </select>
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-muted-foreground" htmlFor="triad-type-select">
-            Triad type
+          <label className="text-xs text-muted-foreground" htmlFor="inversion-type-select">
+            Inversion type
           </label>
           <select
-            id="triad-type-select"
-            value={triadType}
-            onChange={(e) => setTriadType(e.target.value)}
+            id="inversion-type-select"
+            value={inversionType}
+            onChange={(e) => setInversionType(e.target.value)}
             className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
           >
-            {TRIAD_TYPES.map((t) => (
+            {INVERSION_TYPES.map((t) => (
               <option key={t} value={t}>{t}</option>
             ))}
           </select>
         </div>
         <AddToGoalButton
-          kind="triad"
-          subtype={triadType}
+          kind="inversion"
+          subtype={inversionType}
           defaultKey={root}
-          displayName={`${root} ${triadType} triad`}
+          displayName={`${root} ${inversionType} inversion`}
         />
       </div>
 
       {/* Notes + formula */}
       <div className="text-xs text-muted-foreground space-y-0.5">
-        <p>Notes: {triadScale.notes.join(" – ")}</p>
-        <p>Formula: {TRIAD_FORMULA[triadType]}</p>
+        <p>Notes: {inversionScale.notes.join(" – ")}</p>
+        <p>Formula: {INVERSION_FORMULA[inversionType]}</p>
       </div>
 
       {/* View mode toggle */}
@@ -243,7 +243,7 @@ export function TriadPanel({ root, onRootChange, triadTypeTrigger }: TriadPanelP
           </div>
 
           <FretboardViewer
-            scale={triadScale}
+            scale={inversionScale}
             boxSystem="none"
             boxIndex={0}
             labelMode={labelMode}
@@ -256,11 +256,11 @@ export function TriadPanel({ root, onRootChange, triadTypeTrigger }: TriadPanelP
         <>
           <div className="flex flex-wrap gap-4 items-end">
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-muted-foreground" htmlFor="triad-voicing-select">
+              <label className="text-xs text-muted-foreground" htmlFor="inversion-voicing-select">
                 Voicing
               </label>
               <select
-                id="triad-voicing-select"
+                id="inversion-voicing-select"
                 value={voicingFilter}
                 onChange={(e) => setVoicingFilter(e.target.value)}
                 className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
@@ -272,11 +272,11 @@ export function TriadPanel({ root, onRootChange, triadTypeTrigger }: TriadPanelP
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-muted-foreground" htmlFor="triad-inversion-select">
+              <label className="text-xs text-muted-foreground" htmlFor="inversion-inversion-select">
                 Inversion
               </label>
               <select
-                id="triad-inversion-select"
+                id="inversion-inversion-select"
                 value={inversionFilter}
                 onChange={(e) => setInvFilter(e.target.value)}
                 className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
@@ -289,28 +289,28 @@ export function TriadPanel({ root, onRootChange, triadTypeTrigger }: TriadPanelP
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-muted-foreground" htmlFor="triad-stringset-select">
+              <label className="text-xs text-muted-foreground" htmlFor="inversion-stringset-select">
                 String set
               </label>
               <select
-                id="triad-stringset-select"
+                id="inversion-stringset-select"
                 value={stringSetFilter}
                 onChange={(e) => setStringSetFilter(e.target.value)}
                 className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
               >
                 <option value="all">All</option>
-                {TRIAD_STRING_SETS.map((s) => (
+                {INVERSION_STRING_SETS.map((s) => (
                   <option key={s} value={s}>{s}</option>
                 ))}
               </select>
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-muted-foreground" htmlFor="triad-show-select">
+              <label className="text-xs text-muted-foreground" htmlFor="inversion-show-select">
                 Show
               </label>
               <select
-                id="triad-show-select"
+                id="inversion-show-select"
                 value={showMode}
                 onChange={(e) => setShowMode(e.target.value as ShowMode)}
                 className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
@@ -335,7 +335,7 @@ export function TriadPanel({ root, onRootChange, triadTypeTrigger }: TriadPanelP
                     {voicings.map((pos, i) => (
                       <div key={i} className="flex flex-col gap-0.5">
                         <span className="text-xs text-muted-foreground text-center">{pos.label}</span>
-                        <ChordDiagram chord={toSVGChord(pos, showMode, triadType, isDark)} />
+                        <ChordDiagram chord={toSVGChord(pos, showMode, inversionType, isDark)} />
                       </div>
                     ))}
                   </div>

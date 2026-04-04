@@ -120,12 +120,12 @@ describe("ReferencePage", () => {
     expect(screen.getByRole("tab", { name: "Progressions" })).toBeDefined()
   })
 
-  it("renders Study Tools tab buttons: Scales, Arpeggios, Chords, Triads", () => {
+  it("renders Study Tools tab buttons: Scales, Arpeggios, Chords, Inversions", () => {
     render(<ReferencePage />)
     expect(screen.getByRole("tab", { name: "Scales" })).toBeDefined()
     expect(screen.getByRole("tab", { name: "Arpeggios" })).toBeDefined()
     expect(screen.getByRole("tab", { name: "Chords" })).toBeDefined()
-    expect(screen.getByRole("tab", { name: "Triads" })).toBeDefined()
+    expect(screen.getByRole("tab", { name: "Inversions" })).toBeDefined()
   })
 
   it("defaults to the Scales tab", () => {

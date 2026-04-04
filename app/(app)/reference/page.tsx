@@ -6,20 +6,20 @@ import { HarmonyStudy } from "./_components/harmony-study"
 import { ScalePanel } from "./_components/scale-panel"
 import { ArpeggioPanel } from "./_components/arpeggio-panel"
 import { ChordPanel } from "./_components/chord-panel"
-import { TriadPanel } from "./_components/triad-panel"
+import { InversionPanel } from "./_components/inversion-panel"
 import { cn } from "@/lib/utils"
 
-type PanelTab = "scales" | "arpeggios" | "chords" | "triads"
+type PanelTab = "scales" | "arpeggios" | "chords" | "inversions"
 
 const TABS: { id: PanelTab; label: string }[] = [
-  { id: "scales",    label: "Scales" },
-  { id: "arpeggios", label: "Arpeggios" },
-  { id: "chords",    label: "Chords" },
-  { id: "triads",    label: "Triads" },
+  { id: "scales",     label: "Scales" },
+  { id: "arpeggios",  label: "Arpeggios" },
+  { id: "chords",     label: "Chords" },
+  { id: "inversions", label: "Inversions" },
 ]
 
-// Diatonic chord quality → TriadPanel triad type
-const QUALITY_TO_TRIAD_TYPE: Record<string, string> = {
+// Diatonic chord quality → InversionPanel inversion type
+const QUALITY_TO_INVERSION_TYPE: Record<string, string> = {
   major:      "major",
   minor:      "minor",
   dominant:   "major",   // dominant 7th has a major triad on top
@@ -58,7 +58,7 @@ export default function ReferencePage() {
   const [panelScaleTypeTrigger, setPanelScaleTypeTrigger] = useState<{ type: string } | null>(null)
   const [panelChordTypeTrigger, setPanelChordTypeTrigger] = useState<{ type: string } | null>(null)
   const [panelArpeggioTypeTrigger, setPanelArpeggioTypeTrigger] = useState<{ type: string } | null>(null)
-  const [panelTriadTypeTrigger, setPanelTriadTypeTrigger] = useState<{ type: string } | null>(null)
+  const [panelInversionTypeTrigger, setPanelInversionTypeTrigger] = useState<{ type: string } | null>(null)
 
   function handleKeySelect(key: string) {
     setSelectedKey(key)
@@ -69,8 +69,8 @@ export default function ReferencePage() {
     setPanelRoot(chordTonic)
     setPanelChordTypeTrigger({ type })
     setPanelArpeggioTypeTrigger({ type })
-    const triadType = QUALITY_TO_TRIAD_TYPE[quality]
-    if (triadType) setPanelTriadTypeTrigger({ type: triadType })
+    const inversionType = QUALITY_TO_INVERSION_TYPE[quality]
+    if (inversionType) setPanelInversionTypeTrigger({ type: inversionType })
     const panelScaleType = SOLO_SCALE_TO_PANEL_TYPE[primaryScaleName]
     if (panelScaleType) setPanelScaleTypeTrigger({ type: panelScaleType })
   }
@@ -149,7 +149,7 @@ export default function ReferencePage() {
           {activeTab === "scales"    && <ScalePanel    root={panelRoot} onRootChange={setPanelRoot} scaleTypeTrigger={panelScaleTypeTrigger} />}
           {activeTab === "arpeggios" && <ArpeggioPanel root={panelRoot} onRootChange={setPanelRoot} chordTypeTrigger={panelArpeggioTypeTrigger} />}
           {activeTab === "chords"    && <ChordPanel    root={panelRoot} onRootChange={setPanelRoot} chordTypeTrigger={panelChordTypeTrigger} onScaleSelect={handleScaleSelect} />}
-          {activeTab === "triads"    && <TriadPanel    root={panelRoot} onRootChange={setPanelRoot} triadTypeTrigger={panelTriadTypeTrigger} />}
+          {activeTab === "inversions" && <InversionPanel root={panelRoot} onRootChange={setPanelRoot} inversionTypeTrigger={panelInversionTypeTrigger} />}
         </div>
       </section>
     </div>

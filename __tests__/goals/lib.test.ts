@@ -54,9 +54,9 @@ describe("formatTopicName", () => {
     expect(formatTopicName(topic)).toBe("Am7 chord")
   })
 
-  it("formats triad topics", () => {
-    const topic = { kind: "triad" as const, subtype: "minor", defaultKey: "E", lesson: null }
-    expect(formatTopicName(topic)).toBe("E minor triad")
+  it("formats inversion topics", () => {
+    const topic = { kind: "inversion" as const, subtype: "minor", defaultKey: "E", lesson: null }
+    expect(formatTopicName(topic)).toBe("E minor inversion")
   })
 
   it("formats arpeggio topics", () => {

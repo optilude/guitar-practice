@@ -62,10 +62,6 @@ Account management and better authentication support. Admin UI for managing user
 
 # Known issues
 
-* Understand what happens with `chords-db` data with `capo` set.
-
-* Rename "Triads" to "Inversions" (and the singular form, accordingly) throughout the UI and code. It is acceptable for this to be a breaking change against an existing database, but please indicate if so and provide a migration script.
-
 Scales:
 
 * When switching between light and dark mode, the stave view is corrupted until the view is changed (e.g. click a different tab in the UI)
@@ -76,7 +72,7 @@ Scales:
 Chords:
 
 * There are issues with some of the chord voicings (e.g. strange barres)
-* The triad viewer sometimes renders a dot outside the box when there is a 5-fret spread
+* The `capo` key in the `chords-db` dataset may be causing confusion, but we cannot filter it out since we lose all the barre chords
 
 # Resources / notes
 

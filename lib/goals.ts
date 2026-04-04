@@ -35,8 +35,8 @@ export function formatTopicName(topic: GoalTopicForDisplay): string {
       return `${topic.defaultKey ?? ""} ${topic.subtype ?? ""} scale`.trim()
     case "chord":
       return `${topic.defaultKey ?? ""}${topic.subtype ?? ""} chord`
-    case "triad":
-      return `${topic.defaultKey ?? ""} ${topic.subtype ?? ""} triad`.trim()
+    case "inversion":
+      return `${topic.defaultKey ?? ""} ${topic.subtype ?? ""} inversion`.trim()
     case "arpeggio":
       return `${topic.defaultKey ?? ""} ${topic.subtype ?? ""} arpeggio`.trim()
     case "progression": {
