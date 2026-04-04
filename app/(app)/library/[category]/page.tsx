@@ -42,7 +42,7 @@ export default async function CategoryPage({
           href={`/library/manage#${data.slug}`}
           className="text-xs text-accent hover:underline"
         >
-          Manage my library ↗
+          Manage my library →
         </Link>
       </div>
       <CategoryTabs standardTopics={standardTopics} userLessons={userLessons} />

@@ -61,6 +61,15 @@ Account management and better authentication support. Admin UI for managing user
 
 # Known issues
 
+* When adding something to a goal, it is possible to add the same thing twice. Need to indicate visually whether something is already added to the active goal, and also indicate it when adding to a different goal inside the popover.
+
+* The edit UI for practice routine sections and personal library entries looks similar but uses inconsistent patterns. Make them the same.
+
+Fretboard visualiser
+
+* When viewing an "uncommon" chord or arpeggio (e.g. dim7) the "Position window" highlight fails to wrap back to the low frets, and so falls off the end of the fretboard (e.g. Cdim7, position 4, position 5)
+* Simlarly, highlights with an uncommon scale (e.g. Altered, Lydian #2, etc) do not appear to work correctly - they highlight only a subset of notes, or no notes at all.
+
 Scales:
 
 * When switching between light and dark mode, the stave view is corrupted until the view is changed (e.g. click a different tab in the UI)
