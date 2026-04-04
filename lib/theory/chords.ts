@@ -245,7 +245,7 @@ export function getChordPositions(tonic: string, type: string): ChordPosition[] 
   if (!chordEntry) return []
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (chordEntry.positions ?? []).filter((pos: any) => !pos.capo).map((pos: any) => {
+  return (chordEntry.positions ?? []).map((pos: any) => {
     const barres: number[] = pos.barres ?? []
     const isOpen = pos.baseFret === 1 && barres.length === 0
     const label = isOpen ? "Open" : `Barre – ${pos.baseFret}fr`
