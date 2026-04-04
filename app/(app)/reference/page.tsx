@@ -149,7 +149,7 @@ export default function ReferencePage() {
           {activeTab === "scales"    && <ScalePanel    root={panelRoot} onRootChange={setPanelRoot} scaleTypeTrigger={panelScaleTypeTrigger} />}
           {activeTab === "arpeggios" && <ArpeggioPanel root={panelRoot} onRootChange={setPanelRoot} chordTypeTrigger={panelArpeggioTypeTrigger} />}
           {activeTab === "chords"    && <ChordPanel    root={panelRoot} onRootChange={setPanelRoot} chordTypeTrigger={panelChordTypeTrigger} onScaleSelect={handleScaleSelect} />}
-          {activeTab === "inversions" && <InversionPanel root={panelRoot} onRootChange={setPanelRoot} inversionTypeTrigger={panelInversionTypeTrigger} />}
+          {activeTab === "inversions" && <InversionPanel root={panelRoot} onRootChange={setPanelRoot} inversionTypeTrigger={panelInversionTypeTrigger} onScaleSelect={handleScaleSelect} />}
         </div>
       </section>
     </div>

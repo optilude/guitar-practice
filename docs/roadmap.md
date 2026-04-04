@@ -54,6 +54,12 @@ Account management and better authentication support. Admin UI for managing user
 
 * Harmonic Minor and Melodic Minor mode systems?
 
+* Create a "tools" section with...
+  - A chord calculator (fingerings -> chord name)
+  - A standalone metronome
+  - A key finder (chords -> progression key)
+  - Transposition tools?
+
 * More streaks/gamification features
 * Practice notifications/reminders
 

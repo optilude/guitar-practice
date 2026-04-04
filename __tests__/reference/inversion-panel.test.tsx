@@ -6,6 +6,27 @@ vi.mock("@/app/(app)/reference/_components/chord-diagram", () => ({
   ChordDiagram: () => <div data-testid="chord-diagram" />,
 }))
 
+// Mock SoloScalesPanel to keep inversion-panel tests focused
+vi.mock("@/app/(app)/reference/_components/solo-scales-panel", () => ({
+  SoloScalesPanel: ({ chordName }: { chordName: string }) => (
+    <div data-testid="solo-scales-panel">{chordName}</div>
+  ),
+}))
+
+// Mock solo-scales to avoid tonal dependency in unit tests
+vi.mock("@/lib/theory/solo-scales", () => ({
+  defaultModeForChordType: () => "ionian",
+  getSoloScales: (_chord: unknown, _mode: string) => ({
+    chordTonic: "C",
+    primary: { scaleName: "Ionian (major)" },
+    additional: [],
+  }),
+  SOLO_MODE_OPTIONS: [
+    { value: "ionian", label: "Ionian" },
+    { value: "dorian", label: "Dorian" },
+  ],
+}))
+
 // Mock AddToGoalButton to avoid next-auth import chain
 vi.mock("@/components/add-to-goal-button", () => ({
   AddToGoalButton: () => null,

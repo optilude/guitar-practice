@@ -90,6 +90,21 @@ export const SCALE_TONAL_NAMES: Record<string, string> = {
 }
 
 // ---------------------------------------------------------------------------
+// UI option list for the Modal context selector — shared between ChordPanel
+// and InversionPanel so both render the same set of modes.
+// ---------------------------------------------------------------------------
+export const SOLO_MODE_OPTIONS = [
+  { value: "ionian",        label: "Ionian" },
+  { value: "dorian",        label: "Dorian" },
+  { value: "phrygian",      label: "Phrygian" },
+  { value: "lydian",        label: "Lydian" },
+  { value: "mixolydian",    label: "Mixolydian" },
+  { value: "aeolian",       label: "Aeolian" },
+  { value: "locrian",       label: "Locrian" },
+  { value: "melodic minor", label: "Melodic Minor" },
+]
+
+// ---------------------------------------------------------------------------
 // Internal helpers
 // ---------------------------------------------------------------------------
 function primaryScaleType(mode: string, degree: number): string {

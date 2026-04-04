@@ -12,9 +12,11 @@ import { type Chord as SVGChord, OPEN, SILENT, type Finger, type FingerOptions }
 import { INTERVAL_DEGREE_COLORS } from "@/lib/rendering/tab"
 import { ChordDiagram } from "./chord-diagram"
 import { FretboardViewer } from "./fretboard-viewer"
+import { SoloScalesPanel } from "./solo-scales-panel"
 import { cn } from "@/lib/utils"
 import { AddToGoalButton } from "@/components/add-to-goal-button"
 import type { NoteRole } from "@/lib/theory/inversions"
+import { defaultModeForChordType, getSoloScales, SOLO_MODE_OPTIONS } from "@/lib/theory/solo-scales"
 
 type ShowMode = "fingers" | "notes" | "intervals"
 
@@ -96,9 +98,10 @@ interface InversionPanelProps {
   root: string
   onRootChange: (root: string) => void
   inversionTypeTrigger?: { type: string } | null
+  onScaleSelect?: (tonic: string, scaleName: string) => void
 }
 
-export function InversionPanel({ root, onRootChange, inversionTypeTrigger }: InversionPanelProps) {
+export function InversionPanel({ root, onRootChange, inversionTypeTrigger, onScaleSelect }: InversionPanelProps) {
   const [inversionType, setInversionType]     = useState<string>("major")
   const [isDark, setIsDark]                   = useState(false)
 
@@ -114,7 +117,13 @@ export function InversionPanel({ root, onRootChange, inversionTypeTrigger }: Inv
   useEffect(() => {
     if (inversionTypeTrigger) setInversionType(inversionTypeTrigger.type)
   }, [inversionTypeTrigger]) // eslint-disable-line react-hooks/exhaustive-deps
-  const [viewMode, setViewMode]               = useState<"fretboard" | "fingerings">("fretboard")
+
+  useEffect(() => {
+    setSoloingMode(defaultModeForChordType(inversionType))
+  }, [inversionType]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const [viewMode, setViewMode]               = useState<"fretboard" | "fingerings" | "soloing">("fretboard")
+  const [soloingMode, setSoloingMode]         = useState(() => defaultModeForChordType(inversionType))
   const [voicingFilter, setVoicingFilter]     = useState<string>("all")
   const [inversionFilter, setInvFilter]       = useState<string>("all")
   const [stringSetFilter, setStringSetFilter] = useState<string>("all")
@@ -129,6 +138,11 @@ export function InversionPanel({ root, onRootChange, inversionTypeTrigger }: Inv
   const allVoicings = useMemo(
     () => getInversionVoicings(root, inversionType),
     [root, inversionType],
+  )
+
+  const soloScales = useMemo(
+    () => getSoloScales({ tonic: root, type: inversionType, degree: 1 }, soloingMode),
+    [root, inversionType, soloingMode],
   )
 
   const filtered = useMemo(() => {
@@ -225,6 +239,17 @@ export function InversionPanel({ root, onRootChange, inversionTypeTrigger }: Inv
         >
           Fingerings
         </button>
+        <button
+          onClick={() => setViewMode("soloing")}
+          className={cn(
+            "px-3 py-1.5 transition-colors border-l border-border",
+            viewMode === "soloing"
+              ? "bg-accent text-accent-foreground"
+              : "bg-card text-muted-foreground hover:bg-muted"
+          )}
+        >
+          Soloing
+        </button>
       </div>
 
       {/* Fretboard view */}
@@ -249,6 +274,32 @@ export function InversionPanel({ root, onRootChange, inversionTypeTrigger }: Inv
             labelMode={labelMode}
           />
         </>
+      )}
+
+      {/* Soloing view */}
+      {viewMode === "soloing" && (
+        <div className="space-y-4">
+          <div className="flex flex-col gap-1">
+            <label className="text-xs text-muted-foreground" htmlFor="inversion-solo-mode-select">
+              Modal context
+            </label>
+            <select
+              id="inversion-solo-mode-select"
+              value={soloingMode}
+              onChange={(e) => setSoloingMode(e.target.value)}
+              className="bg-card border border-border rounded px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent w-fit"
+            >
+              {SOLO_MODE_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+          </div>
+          <SoloScalesPanel
+            scales={soloScales}
+            chordName={`${root} ${inversionType}`}
+            onScaleSelect={onScaleSelect}
+          />
+        </div>
       )}
 
       {/* Fingerings view */}

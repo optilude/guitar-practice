@@ -19,7 +19,7 @@ import {
 import type { BoxSystem } from "@/lib/rendering/fretboard"
 import { cn } from "@/lib/utils"
 import { AddToGoalButton } from "@/components/add-to-goal-button"
-import { defaultModeForChordType, getSoloScales } from "@/lib/theory/solo-scales"
+import { defaultModeForChordType, getSoloScales, SOLO_MODE_OPTIONS } from "@/lib/theory/solo-scales"
 import { SoloScalesPanel } from "./solo-scales-panel"
 import type { ChordPosition } from "@/lib/theory/chords"
 
@@ -166,17 +166,6 @@ const BOX_SYSTEM_LABELS: Record<BoxSystem, string> = {
   pentatonic: "Pentatonic boxes",
   windows:    "Position windows",
 }
-
-const SOLO_MODE_OPTIONS = [
-  { value: "ionian",        label: "Ionian" },
-  { value: "dorian",        label: "Dorian" },
-  { value: "phrygian",      label: "Phrygian" },
-  { value: "lydian",        label: "Lydian" },
-  { value: "mixolydian",    label: "Mixolydian" },
-  { value: "aeolian",       label: "Aeolian" },
-  { value: "locrian",       label: "Locrian" },
-  { value: "melodic minor", label: "Melodic Minor" },
-]
 
 // ---------------------------------------------------------------------------
 // Component
