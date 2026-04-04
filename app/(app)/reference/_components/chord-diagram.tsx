@@ -39,6 +39,7 @@ export function ChordDiagram({ chord, numFrets = 5 }: ChordDiagramProps) {
         color: structureColor,
         fretLabelFontSize: 28,
         fingerSize: 0.8,
+        emptyStringIndicatorSize: 0.8,
         fingerTextSize: 22,
         // fretSize: 0.95,
         strokeWidth: 1.5,

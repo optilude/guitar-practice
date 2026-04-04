@@ -46,7 +46,6 @@ Account management and better authentication support. Admin UI for managing user
 # Future ideas
 
 * Change Triads to Inversions. The first category should be the basic triads like now, but this adds many (!) more types.
-* Add the Soloing tab to Inversions
 
 * Add a footer with some basic information / links. Apart from being informative, this will help ensure the content doesn't end right at the bottom of the window, which can be harder to read.
 
@@ -67,6 +66,8 @@ Account management and better authentication support. Admin UI for managing user
 * Audio recorder for practice (note this will significantly change data storage requirements)
 
 # Known issues
+
+* The headings for chord types (e.g. "Barre - 6fr") are both superfluous and sometimes wrong (not all such chords have an actual barre). It would be better to reference CAGED shapes or inversions, or perhaps just remove them.
 
 Scales:
 
