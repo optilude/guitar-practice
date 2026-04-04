@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from "vitest"
 import { render, screen, fireEvent } from "@testing-library/react"
 
-// Mock react-chords Chord component (pure SVG, no DOM deps)
-vi.mock("@tombatossals/react-chords/lib/Chord", () => ({
-  default: () => <svg data-testid="chord-diagram" />,
+// Mock ChordDiagram (SVGuitar, imperative DOM — not renderable in jsdom)
+vi.mock("@/app/(app)/reference/_components/chord-diagram", () => ({
+  ChordDiagram: () => <div data-testid="chord-diagram" />,
 }))
 
 // Mock AddToGoalButton to avoid next-auth import chain
@@ -144,5 +144,16 @@ describe("ChordPanel", () => {
     expect(select.value).toBe("G")
     fireEvent.change(select, { target: { value: "D" } })
     expect(onRootChange).toHaveBeenCalledWith("D")
+  })
+
+  it("renders a Show dropdown with Fingers/Notes/Intervals options in fingerings view", () => {
+    render(<ChordPanel root="C" onRootChange={vi.fn()} />)
+    fireEvent.click(screen.getByRole("button", { name: /fingerings/i }))
+    const showSelect = screen.getByLabelText(/^show$/i) as HTMLSelectElement
+    expect(showSelect).toBeDefined()
+    expect(screen.getByRole("option", { name: "Fingers" })).toBeDefined()
+    expect(screen.getByRole("option", { name: "Notes" })).toBeDefined()
+    expect(screen.getByRole("option", { name: "Intervals" })).toBeDefined()
+    expect(showSelect.value).toBe("fingers")
   })
 })
