@@ -62,7 +62,9 @@ Account management and better authentication support. Admin UI for managing user
 
 # Known issues
 
-* It should be possible to show finger numbers on the dots when choosing "Fingers" in the "Show" drop-down on the Chords tab. The `chords-db` module does, I believe, include that information, but it is not shown. Please investigate and fix.
+* It should be possible to show finger numbers on the dots when choosing "Fingers" in the "Show" drop-down on the Chords tab. The `chords-db` database, I believe, include that information, but it is not shown. Please investigate and fix. We don't yet have this data for the triads view, but we will work on that later.
+
+* Rename "Triads" to "Inversions" (and the singular form, accordingly) throughout the UI and code. It is acceptable for this to be a breaking change against an existing database, but please indicate if so and provide a migration script.
 
 Scales:
 

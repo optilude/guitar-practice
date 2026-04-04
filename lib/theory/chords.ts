@@ -1,5 +1,5 @@
 import { Chord, Note } from "tonal"
-import guitarDb from "@/data/guitar.json"
+import guitarDb from "@/data/chords-db.json"
 import type { ChordVoicing, GuitarChord, GuitarScale } from "@/lib/theory/types"
 import { getArpeggio } from "@/lib/theory/arpeggios"
 
@@ -321,6 +321,12 @@ const CHORD_DB_TO_TONAL: Record<string, string> = {
   // Better than showing only the root note.
   maj11:     "maj9",
   mmaj11:    "mM9",
+  // Approximations for chord types added in the GitHub version of chords-db
+  // (not present in the npm 0.5.1 release).
+  sus:       "sus4",    // bare "sus" = sus4 in standard notation
+  sus2sus4:  "sus4",    // both suspended 2nd and 4th; sus4 is the closer approximation
+  maj7sus2:  "maj7",    // maj7 with suspended 2nd; approximate as plain maj7
+  "5":       "5",       // power chord (root + 5th); TonalJS supports this natively
   // All other suffixes (maj7, m7, 7, dim7, dim, aug, 9, sus2, sus4, 7sus4,
   // m7b5, 6, m6, add9, madd9, etc.) are already valid tonal symbols and
   // fall through to the passthrough default below.

@@ -77,6 +77,17 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ---
 
+## Vendored data files
+
+Static music theory datasets are committed to the repo under `data/` rather than fetched at runtime.
+
+| File | Source | Notes |
+|------|--------|-------|
+| `data/chords-db.json` | [`tombatossals/chords-db`](https://github.com/tombatossals/chords-db) `lib/guitar.json` | Guitar chord voicing database. Vendored from GitHub master (Oct 2024) rather than the stale npm release (v0.5.1, Nov 2019). To update: download `https://raw.githubusercontent.com/tombatossals/chords-db/master/lib/guitar.json` and replace this file, then re-apply any local custom voicings. |
+| `data/triads.json` | Custom | Triad voicings across all string sets and inversions, generated for this project. |
+
+---
+
 ## Refreshing lesson content
 
 Hub Guitar lessons are seeded from a local snapshot of their sitemap. To pull in new or reordered lessons:
