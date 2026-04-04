@@ -1,8 +1,9 @@
 import { describe, it, expect, vi } from "vitest"
 import { render, screen, fireEvent } from "@testing-library/react"
 
-vi.mock("@tombatossals/react-chords/lib/Chord", () => ({
-  default: () => <svg data-testid="chord-diagram" />,
+// Mock ChordDiagram (SVGuitar, imperative DOM — not renderable in jsdom)
+vi.mock("@/app/(app)/reference/_components/chord-diagram", () => ({
+  ChordDiagram: () => <div data-testid="chord-diagram" />,
 }))
 
 // Mock AddToGoalButton to avoid next-auth import chain
@@ -39,6 +40,8 @@ vi.mock("@/lib/theory", () => ({
         voicingType: "close",
         inversion: "root",
         minFret: 7,
+        noteRoles: ["root", "fifth", "third", null, null, null],
+        noteNames: ["C", "G", "E", null, null, null],
       },
       {
         frets: [-1, 2, 1, 2, -1, -1],
@@ -51,6 +54,8 @@ vi.mock("@/lib/theory", () => ({
         voicingType: "close",
         inversion: "first",
         minFret: 5,
+        noteRoles: [null, "third", "root", "fifth", null, null],
+        noteNames: [null, "E", "C", "G", null, null],
       },
       {
         frets: [-1, -1, 2, 1, 2, -1],
@@ -63,6 +68,8 @@ vi.mock("@/lib/theory", () => ({
         voicingType: "close",
         inversion: "second",
         minFret: 9,
+        noteRoles: [null, null, "fifth", "third", "root", null],
+        noteNames: [null, null, "G", "E", "C", null],
       },
     ]
   },
