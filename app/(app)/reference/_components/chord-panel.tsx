@@ -86,7 +86,11 @@ function toSVGChord(
                     : showMode === "intervals" ? degree
                     : undefined
       const textColor = relativeFret === 0 ? (isDark ? "#f9fafb" : "#1f2937") : "#ffffff"
-      options = { color, textColor, text }
+      // Open strings render as a hollow ring (stroke-only); set strokeColor so the
+      // ring picks up the interval colour in Notes/Intervals mode.
+      options = relativeFret === 0
+        ? { color, strokeColor: color, textColor, text }
+        : { color, textColor, text }
     }
 
     if (relativeFret === 0) fingers.push([str, OPEN, options])
