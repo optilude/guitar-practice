@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import ReactMarkdown from "react-markdown"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { updateUserLesson, deleteUserLesson } from "@/app/(app)/library/actions"
@@ -13,6 +14,7 @@ interface UserLessonCardProps {
 }
 
 export function UserLessonCard({ lesson, sourceOptions, onChanged }: UserLessonCardProps) {
+  const [isExpanded, setIsExpanded] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -60,9 +62,12 @@ export function UserLessonCard({ lesson, sourceOptions, onChanged }: UserLessonC
     }
   }
 
+  const hasDetails = !!(lesson.url || lesson.description)
+
   return (
     <>
       <div ref={setNodeRef} style={style} className="rounded-lg border border-border bg-card overflow-hidden">
+        {/* Header bar */}
         <div className="flex items-center gap-2 p-3">
           <button
             type="button"
@@ -73,41 +78,56 @@ export function UserLessonCard({ lesson, sourceOptions, onChanged }: UserLessonC
           >
             ⠿
           </button>
-          <div className="flex flex-1 items-center gap-2 min-w-0">
-            {lesson.url ? (
-              <a
-                href={lesson.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-accent font-medium truncate"
-              >
-                {lesson.title}
-              </a>
-            ) : (
-              <span className="text-sm text-foreground font-medium truncate">{lesson.title}</span>
-            )}
+
+          {/* Clickable area — toggles expand/collapse */}
+          <div
+            className="flex flex-1 items-center gap-2 min-w-0 cursor-pointer"
+            onClick={() => setIsExpanded((v) => !v)}
+          >
+            <span className="text-sm text-foreground font-medium truncate">{lesson.title}</span>
             {lesson.source && (
               <span className="text-xs text-muted-foreground border border-border px-1.5 py-0.5 rounded flex-shrink-0">
                 {lesson.source}
               </span>
             )}
+            <span className="flex-1" />
           </div>
+
+          {/* Edit / Done button */}
           {isEditing ? (
-            <button
-              onClick={handleSave}
-              disabled={isSaving}
-              className="text-xs text-accent border border-accent px-2 py-1 rounded flex-shrink-0 disabled:opacity-50"
-            >
-              {isSaving ? "Saving…" : "Done"}
-            </button>
+            <>
+              <button
+                onClick={handleSave}
+                disabled={isSaving}
+                className="text-xs text-accent border border-accent px-2 py-1 rounded flex-shrink-0 disabled:opacity-50"
+              >
+                {isSaving ? "Saving…" : "Save"}
+              </button>
+              <button
+                onClick={() => {
+                  setTitle(lesson.title)
+                  setUrl(lesson.url ?? "")
+                  setSource(lesson.source)
+                  setDescription(lesson.description)
+                  setIsEditing(false)
+                  setError(null)
+                }}
+                disabled={isSaving}
+                className="text-xs text-muted-foreground border border-border px-2 py-1 rounded flex-shrink-0 hover:text-foreground transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+            </>
           ) : (
             <button
-              onClick={() => setIsEditing(true)}
+              onClick={() => { setIsExpanded(true); setIsEditing(true) }}
               className="text-xs text-muted-foreground border border-border px-2 py-1 rounded flex-shrink-0 hover:text-foreground transition-colors"
             >
               Edit
             </button>
           )}
+
+          {/* Delete button */}
           <button
             onClick={() => setShowDeleteModal(true)}
             className="text-xs text-muted-foreground border border-border px-2 py-1 rounded flex-shrink-0 hover:text-foreground transition-colors"
@@ -116,53 +136,78 @@ export function UserLessonCard({ lesson, sourceOptions, onChanged }: UserLessonC
           </button>
         </div>
 
-        {!isEditing && error && (
-          <p className="px-3 pb-2 text-xs text-red-500">{error}</p>
-        )}
-
-        {isEditing && (
+        {/* Expanded panel */}
+        {isExpanded && (
           <div className="px-3 pb-3 border-t border-border pt-3 space-y-3">
-            <div>
-              <label className="block text-xs text-muted-foreground mb-1">Title</label>
-              <input
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full rounded border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs text-muted-foreground mb-1">URL (optional)</label>
-                <input
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  placeholder="https://..."
-                  className="w-full rounded border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
-                />
-              </div>
-              <div>
-                <label className="block text-xs text-muted-foreground mb-1">Source</label>
-                <input
-                  value={source}
-                  onChange={(e) => setSource(e.target.value)}
-                  list={`sources-${lesson.id}`}
-                  className="w-full rounded border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
-                />
-                <datalist id={`sources-${lesson.id}`}>
-                  {sourceOptions.map((s) => <option key={s} value={s} />)}
-                </datalist>
-              </div>
-            </div>
-            <div>
-              <label className="block text-xs text-muted-foreground mb-1">Description (Markdown)</label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={3}
-                className="w-full rounded border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent resize-y"
-              />
-            </div>
-            {error && <p className="text-xs text-red-500">{error}</p>}
+            {isEditing ? (
+              <>
+                <div>
+                  <label className="block text-xs text-muted-foreground mb-1">Title</label>
+                  <input
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="w-full rounded border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs text-muted-foreground mb-1">URL (optional)</label>
+                    <input
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      placeholder="https://..."
+                      className="w-full rounded border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-muted-foreground mb-1">Source</label>
+                    <input
+                      value={source}
+                      onChange={(e) => setSource(e.target.value)}
+                      list={`sources-${lesson.id}`}
+                      className="w-full rounded border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
+                    />
+                    <datalist id={`sources-${lesson.id}`}>
+                      {sourceOptions.map((s) => <option key={s} value={s} />)}
+                    </datalist>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs text-muted-foreground mb-1">Description (Markdown)</label>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    rows={3}
+                    className="w-full rounded border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent resize-y"
+                  />
+                </div>
+                {error && <p className="text-xs text-red-500">{error}</p>}
+              </>
+            ) : (
+              <>
+                {/* View mode: relevant details */}
+                {lesson.url && (
+                  <p className="text-sm">
+                    <a
+                      href={lesson.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-accent hover:underline"
+                    >
+                      {lesson.url}
+                    </a>
+                  </p>
+                )}
+                {lesson.description && (
+                  <div className="prose prose-sm max-w-none text-foreground text-sm">
+                    <ReactMarkdown>{lesson.description}</ReactMarkdown>
+                  </div>
+                )}
+                {!hasDetails && (
+                  <p className="text-xs text-muted-foreground italic">No details added.</p>
+                )}
+              </>
+            )}
           </div>
         )}
       </div>

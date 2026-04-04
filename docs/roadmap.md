@@ -28,7 +28,7 @@ The core practice workflow:
 
 ---
 
-## Phase 5: Custom library
+## Phase 5: Custom library ✅ Complete
 Allow the user to maintain a custom library of lessons.
 
 ---
@@ -61,13 +61,6 @@ Account management and better authentication support. Admin UI for managing user
 
 # Known issues
 
-* The edit UI for practice routine sections and personal library entries looks similar but uses inconsistent patterns. Make them consistent (but decide how).
-
-Fretboard visualiser
-
-* When viewing an "uncommon" chord or arpeggio (e.g. dim7) the "Position window" highlight fails to wrap back to the low frets, and so falls off the end of the fretboard (e.g. Cdim7, position 4, position 5)
-* Simlarly, highlights with an uncommon scale (e.g. Altered, Lydian #2, etc) do not appear to work correctly - they highlight only a subset of notes, or no notes at all.
-
 Scales:
 
 * When switching between light and dark mode, the stave view is corrupted until the view is changed (e.g. click a different tab in the UI)
@@ -88,18 +81,6 @@ Chords:
 * Guitar lessons: https://hubguitar.com
 
 # Prompts
-
-## Start phase 5
-
-Allow the user to create and maintain their own supplementary set of links to topics/lessons in the Library. This should be in addition to the default library content, and under the same category headings.
-
-On the Library page, add a "Manage my library" link, to a new page for managing a custom library. Here, create a UI for user to manage (CRUD) a personal list of links with titles, descriptions, and source, categorised into any of the existing categories. Support drag-and-drop re-ordering of lessons within this UI (per category). Do not (for now, at least) allow any further management of categories, e.g. creating custom categories.
-
-When rendering the library, show two tabs for each category - Standard and Personal. The latter is the user's own library.
-
-User-managed lessons need to work in the practice routine builder, just like default lessons.
-
-Use the goal and routine builder GUI for inspiration and design patterns.
 
 ## Start phase 6
 

@@ -81,15 +81,21 @@ function buildPositions(
   scaleIntervals: string[]
 ): ScalePosition[] {
   return POSITION_WINDOWS.map(({ label, start, end }) => {
-    const minFret = Math.max(0, rootFret + start)
-    const maxFret = rootFret + end
+    let minFret = Math.max(0, rootFret + start)
+    let maxFret = rootFret + end
+    // If the window falls entirely above the 15-fret display, shift down one octave.
+    if (minFret >= 15) {
+      minFret = Math.max(0, minFret - 12)
+      maxFret = maxFret - 12
+    }
+    const searchMax = Math.min(maxFret, 15)
     const fretPositions: FretPosition[] = []
 
     for (let guitarString = 6; guitarString >= 1; guitarString--) {
       const stringIndex = 6 - guitarString // 0=str6, 5=str1
       const openChroma = OPEN_CHROMA[stringIndex]
 
-      for (let fret = minFret; fret <= maxFret; fret++) {
+      for (let fret = minFret; fret <= searchMax; fret++) {
         const noteChroma = (openChroma + fret) % 12
         const noteIndex = scaleNotes.findIndex(
           (n) => Note.chroma(n) === noteChroma

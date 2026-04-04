@@ -91,19 +91,24 @@ interface SectionCardProps {
 
 export function SectionCard({ section, availableTopics, onChanged }: SectionCardProps) {
   const [isExpanded, setIsExpanded] = useState(false)
-  const [editingTitle, setEditingTitle] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
   const [titleValue, setTitleValue] = useState(section.title)
-  const [editingDesc, setEditingDesc] = useState(false)
+  const [typeValue, setTypeValue] = useState(section.type)
   const [descValue, setDescValue] = useState(section.description)
-  const [editingDuration, setEditingDuration] = useState(false)
   const [durationValue, setDurationValue] = useState(section.durationMinutes)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!editingDuration) setDurationValue(section.durationMinutes)
-  }, [section.durationMinutes, editingDuration])
+    if (!isEditing) {
+      setTitleValue(section.title)
+      setTypeValue(section.type)
+      setDescValue(section.description)
+      setDurationValue(section.durationMinutes)
+    }
+  }, [section.title, section.type, section.description, section.durationMinutes, isEditing])
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: section.id,
@@ -115,22 +120,41 @@ export function SectionCard({ section, availableTopics, onChanged }: SectionCard
     opacity: isDragging ? 0.5 : 1,
   }
 
-  async function saveTitle() {
-    setEditingTitle(false)
-    const trimmed = titleValue.trim()
-    if (!trimmed) { setTitleValue(section.title); return }
-    if (trimmed === section.title) return
-    const result = await updateSection(section.id, { title: trimmed })
-    if ("error" in result) setError(result.error)
-    else onChanged()
-  }
+  const currentSectionTopic = section.sectionTopics[0] ?? null
 
-  async function saveDesc() {
-    setEditingDesc(false)
-    if (descValue.trim() === section.description) return
-    const result = await updateSection(section.id, { description: descValue })
-    if ("error" in result) setError(result.error)
-    else onChanged()
+  async function handleDone() {
+    setIsSaving(true)
+    setError(null)
+
+    const trimmed = titleValue.trim() || section.title
+    const dur = Math.max(1, Math.round(durationValue))
+
+    let changed = false
+
+    if (trimmed !== section.title) {
+      const r = await updateSection(section.id, { title: trimmed })
+      if ("error" in r) { setError(r.error); setIsSaving(false); return }
+      changed = true
+    }
+    if (dur !== section.durationMinutes) {
+      const r = await updateSection(section.id, { durationMinutes: dur })
+      if ("error" in r) { setError(r.error); setIsSaving(false); return }
+      changed = true
+    }
+    if (typeValue !== section.type) {
+      const r = await updateSection(section.id, { type: typeValue })
+      if ("error" in r) { setError(r.error); setIsSaving(false); return }
+      changed = true
+    }
+    if (descValue !== section.description) {
+      const r = await updateSection(section.id, { description: descValue })
+      if ("error" in r) { setError(r.error); setIsSaving(false); return }
+      changed = true
+    }
+
+    setIsSaving(false)
+    setIsEditing(false)
+    if (changed) onChanged()
   }
 
   async function handleDelete() {
@@ -144,18 +168,6 @@ export function SectionCard({ section, availableTopics, onChanged }: SectionCard
       onChanged()
     }
   }
-
-  async function saveDuration() {
-    setEditingDuration(false)
-    const val = Math.max(1, Math.round(durationValue))
-    if (val === section.durationMinutes) return
-    const result = await updateSection(section.id, { durationMinutes: val })
-    if ("error" in result) setError(result.error)
-    else onChanged()
-  }
-
-  // Single topic: use first sectionTopic only
-  const currentSectionTopic = section.sectionTopics[0] ?? null
 
   async function handleTopicChange(newGoalTopicId: string) {
     if (newGoalTopicId === (currentSectionTopic?.goalTopicId ?? "")) return
@@ -172,7 +184,6 @@ export function SectionCard({ section, availableTopics, onChanged }: SectionCard
 
   async function handleKeyChange(sectionTopicId: string, keys: string[]) {
     const data: { keys: string[]; practiceMode?: PracticeMode } = { keys }
-    // Auto-set a default practice mode when enabling multiple keys with none set
     if (keys.length > 0 && !currentSectionTopic?.practiceMode) {
       data.practiceMode = "chromatic_asc"
     }
@@ -193,12 +204,16 @@ export function SectionCard({ section, availableTopics, onChanged }: SectionCard
       (currentSectionTopic.keys.includes("*") || currentSectionTopic.keys.length > 1)
     : false
 
+  const topicDisplayName = currentSectionTopic
+    ? formatTopicName(currentSectionTopic.goalTopic as Parameters<typeof formatTopicName>[0])
+    : null
+
   return (
     <>
       <div ref={setNodeRef} style={style} className="rounded-lg border border-border bg-card">
-        {/* Header */}
+        {/* Header bar */}
         <div className="flex items-center gap-2 p-3">
-          {/* Drag handle — not a click-to-expand target */}
+          {/* Drag handle */}
           <button
             type="button"
             className="text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing touch-none flex-shrink-0"
@@ -209,193 +224,222 @@ export function SectionCard({ section, availableTopics, onChanged }: SectionCard
             ⠿
           </button>
 
-          {/* Clickable row — toggles expand/collapse */}
+          {/* Clickable area — toggles expand/collapse */}
           <div
             className="flex flex-1 items-center gap-2 min-w-0 cursor-pointer"
             onClick={() => setIsExpanded((v) => !v)}
           >
-            {/* Title — only the text is a click target for editing */}
-            {editingTitle ? (
-              <input
-                autoFocus
-                value={titleValue}
-                onChange={(e) => setTitleValue(e.target.value)}
-                onBlur={saveTitle}
-                onKeyDown={(e) => { if (e.key === "Enter") saveTitle() }}
-                onClick={(e) => e.stopPropagation()}
-                className="text-sm text-foreground shrink min-w-0 bg-transparent border-b border-border focus:outline-none"
-              />
-            ) : (
-              <span
-                className="text-sm text-foreground shrink min-w-0 truncate cursor-text"
-                onClick={(e) => { e.stopPropagation(); setEditingTitle(true) }}
-                title="Click to edit title"
-              >
-                {titleValue}
-              </span>
-            )}
-
-            {/* Type badge — immediately after title, not right-aligned */}
+            <span className="text-sm text-foreground shrink min-w-0 truncate">
+              {section.title}
+            </span>
             <span className={`text-xs border rounded px-1.5 py-0.5 flex-shrink-0 ${colorClass}`}>
               {SECTION_TYPE_LABELS[section.type]}
             </span>
-
-            {/* Spacer — fills remaining space; clicking it also triggers expand */}
             <span className="flex-1" />
-
-            {editingDuration ? (
-              <span className="flex items-center gap-0.5 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
-                <input
-                  autoFocus
-                  type="number"
-                  min={1}
-                  max={480}
-                  value={durationValue}
-                  onChange={(e) => setDurationValue(Number(e.target.value))}
-                  onBlur={saveDuration}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") saveDuration()
-                    if (e.key === "Escape") { setEditingDuration(false); setDurationValue(section.durationMinutes) }
-                  }}
-                  className="w-14 text-xs text-foreground bg-transparent border-b border-border focus:outline-none"
-                />
-                <span className="text-xs text-muted-foreground">min</span>
-              </span>
-            ) : (
-              <span
-                className="text-xs text-muted-foreground flex-shrink-0 cursor-text"
-                onClick={(e) => { e.stopPropagation(); setEditingDuration(true) }}
-                title="Click to edit duration"
-              >
-                {durationValue} min
-              </span>
-            )}
-
-            <span className="text-muted-foreground text-xs flex-shrink-0">
-              {isExpanded ? "▲" : "▼"}
+            <span className="text-xs text-muted-foreground flex-shrink-0">
+              {section.durationMinutes} min
             </span>
           </div>
+
+          {/* Edit / Save / Cancel buttons */}
+          {isEditing ? (
+            <>
+              <button
+                type="button"
+                onClick={handleDone}
+                disabled={isSaving}
+                className="text-xs text-accent border border-accent px-2 py-1 rounded flex-shrink-0 disabled:opacity-50"
+              >
+                {isSaving ? "Saving…" : "Save"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setTitleValue(section.title)
+                  setTypeValue(section.type)
+                  setDurationValue(section.durationMinutes)
+                  setDescValue(section.description)
+                  setIsEditing(false)
+                  setError(null)
+                }}
+                disabled={isSaving}
+                className="text-xs text-muted-foreground border border-border px-2 py-1 rounded flex-shrink-0 hover:text-foreground transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={() => { setIsExpanded(true); setIsEditing(true) }}
+              className="text-xs text-muted-foreground border border-border px-2 py-1 rounded flex-shrink-0 hover:text-foreground transition-colors"
+            >
+              Edit
+            </button>
+          )}
+
+          {/* Delete button */}
+          <button
+            type="button"
+            onClick={() => setShowDeleteModal(true)}
+            className="text-xs text-muted-foreground border border-border px-2 py-1 rounded flex-shrink-0 hover:text-foreground transition-colors"
+          >
+            Delete
+          </button>
         </div>
 
-        {/* Expanded content */}
+        {/* Expanded panel */}
         {isExpanded && (
           <div className="px-3 pb-3 space-y-3 border-t border-border pt-3">
-            {/* Topic selector — before notes */}
-            <div>
-              <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Topic</p>
-              <select
-                value={currentSectionTopic?.goalTopicId ?? ""}
-                onChange={(e) => handleTopicChange(e.target.value)}
-                className="rounded border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent w-full"
-              >
-                <option value="">No topic</option>
-                {TOPIC_KIND_ORDER
-                  .map((kind) => ({
-                    kind,
-                    topics: availableTopics.filter((t) => t.kind === kind),
-                  }))
-                  .filter(({ topics }) => topics.length > 0)
-                  .map(({ kind, topics }) => (
-                    <optgroup key={kind} label={TOPIC_KIND_LABELS[kind] ?? kind}>
-                      {topics.map((t) => (
-                        <option key={t.id} value={t.id}>
-                          {formatTopicName(t as Parameters<typeof formatTopicName>[0])}
-                        </option>
-                      ))}
-                    </optgroup>
-                  ))}
-              </select>
+            {isEditing ? (
+              <>
+                {/* Title */}
+                <div>
+                  <label className="block text-xs text-muted-foreground mb-1">Title</label>
+                  <input
+                    value={titleValue}
+                    onChange={(e) => setTitleValue(e.target.value)}
+                    className="w-full rounded border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
+                  />
+                </div>
 
-              {/* Key / practice mode for selected topic */}
-              {currentSectionTopic && currentSectionTopic.goalTopic.kind !== "lesson" && (
-                <div className="flex items-center gap-2 flex-wrap mt-2">
-                  <select
-                    value={
-                      currentSectionTopic.keys.length === 0
-                        ? "default"
-                        : currentSectionTopic.keys.includes("*")
-                        ? "multi"
-                        : "custom"
-                    }
-                    onChange={(e) => {
-                      const val = e.target.value
-                      if (val === "default") handleKeyChange(currentSectionTopic.id, [])
-                      else if (val === "multi") handleKeyChange(currentSectionTopic.id, ["*"])
-                    }}
-                    className="rounded border border-border bg-background px-1.5 py-0.5 text-xs text-foreground focus:outline-none"
-                  >
-                    <option value="default">
-                      Default key ({currentSectionTopic.goalTopic.defaultKey ?? "—"})
-                    </option>
-                    <option value="multi">Multiple keys</option>
-                  </select>
-                  {isMultiKey && (
+                {/* Type + Duration on same row */}
+                <div className="flex gap-3 items-start">
+                  <div>
+                    <label className="block text-xs text-muted-foreground mb-1">Type</label>
                     <select
-                      value={currentSectionTopic.practiceMode ?? "chromatic_asc"}
-                      onChange={(e) =>
-                        handlePracticeModeChange(
-                          currentSectionTopic.id,
-                          e.target.value as PracticeMode,
-                        )
-                      }
-                      className="rounded border border-border bg-background px-1.5 py-0.5 text-xs text-foreground focus:outline-none"
+                      value={typeValue}
+                      onChange={(e) => setTypeValue(e.target.value as SectionType)}
+                      className="h-9 rounded border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
                     >
-                      {(Object.keys(PRACTICE_MODE_LABELS) as PracticeMode[]).map((m) => (
-                        <option key={m} value={m}>{PRACTICE_MODE_LABELS[m]}</option>
+                      {(Object.keys(SECTION_TYPE_LABELS) as SectionType[]).map((t) => (
+                        <option key={t} value={t}>{SECTION_TYPE_LABELS[t]}</option>
                       ))}
                     </select>
+                  </div>
+                  <div className="w-24 flex-shrink-0">
+                    <label className="block text-xs text-muted-foreground mb-1">Duration (min)</label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={480}
+                      value={durationValue}
+                      onChange={(e) => setDurationValue(Number(e.target.value))}
+                      className="h-9 w-full rounded border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
+                    />
+                  </div>
+                </div>
+
+                {/* Topic selector */}
+                <div>
+                  <label className="block text-xs text-muted-foreground mb-1">Topic</label>
+                  <select
+                    value={currentSectionTopic?.goalTopicId ?? ""}
+                    onChange={(e) => handleTopicChange(e.target.value)}
+                    className="h-9 rounded border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent w-full"
+                  >
+                    <option value="">No topic</option>
+                    {TOPIC_KIND_ORDER
+                      .map((kind) => ({
+                        kind,
+                        topics: availableTopics.filter((t) => t.kind === kind),
+                      }))
+                      .filter(({ topics }) => topics.length > 0)
+                      .map(({ kind, topics }) => (
+                        <optgroup key={kind} label={TOPIC_KIND_LABELS[kind] ?? kind}>
+                          {topics.map((t) => (
+                            <option key={t.id} value={t.id}>
+                              {formatTopicName(t as Parameters<typeof formatTopicName>[0])}
+                            </option>
+                          ))}
+                        </optgroup>
+                      ))}
+                  </select>
+
+                  {/* Key / practice mode for selected topic */}
+                  {currentSectionTopic && currentSectionTopic.goalTopic.kind !== "lesson" && (
+                    <div className="flex items-center gap-2 flex-wrap mt-2">
+                      <select
+                        value={
+                          currentSectionTopic.keys.length === 0
+                            ? "default"
+                            : currentSectionTopic.keys.includes("*")
+                            ? "multi"
+                            : "custom"
+                        }
+                        onChange={(e) => {
+                          const val = e.target.value
+                          if (val === "default") handleKeyChange(currentSectionTopic.id, [])
+                          else if (val === "multi") handleKeyChange(currentSectionTopic.id, ["*"])
+                        }}
+                        className="rounded border border-border bg-background px-1.5 py-0.5 text-xs text-foreground focus:outline-none"
+                      >
+                        <option value="default">
+                          Default key ({currentSectionTopic.goalTopic.defaultKey ?? "—"})
+                        </option>
+                        <option value="multi">Multiple keys</option>
+                      </select>
+                      {isMultiKey && (
+                        <select
+                          value={currentSectionTopic.practiceMode ?? "chromatic_asc"}
+                          onChange={(e) =>
+                            handlePracticeModeChange(
+                              currentSectionTopic.id,
+                              e.target.value as PracticeMode,
+                            )
+                          }
+                          className="rounded border border-border bg-background px-1.5 py-0.5 text-xs text-foreground focus:outline-none"
+                        >
+                          {(Object.keys(PRACTICE_MODE_LABELS) as PracticeMode[]).map((m) => (
+                            <option key={m} value={m}>{PRACTICE_MODE_LABELS[m]}</option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
                   )}
                 </div>
-              )}
-            </div>
 
-            {/* Notes / Description */}
-            <div>
-            <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Notes</p>
-            {editingDesc ? (
-              <textarea
-                autoFocus
-                value={descValue}
-                onChange={(e) => setDescValue(e.target.value)}
-                onBlur={saveDesc}
-                rows={4}
-                placeholder="Section notes (Markdown supported)"
-                className="w-full rounded border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent resize-none"
-              />
-            ) : descValue ? (
-              <div
-                className="prose prose-sm max-w-none text-foreground text-sm cursor-pointer"
-                onClick={() => setEditingDesc(true)}
-                title="Click to edit"
-              >
-                <ReactMarkdown>{descValue}</ReactMarkdown>
-              </div>
+                {/* Notes */}
+                <div>
+                  <label className="block text-xs text-muted-foreground mb-1">Notes</label>
+                  <textarea
+                    value={descValue}
+                    onChange={(e) => setDescValue(e.target.value)}
+                    rows={4}
+                    placeholder="Section notes (Markdown supported)"
+                    className="w-full rounded border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent resize-none"
+                  />
+                </div>
+
+                {error && <p className="text-xs text-red-500">{error}</p>}
+              </>
             ) : (
-              <button
-                onClick={() => setEditingDesc(true)}
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Add notes…
-              </button>
+              <>
+                {/* View mode: topic and notes */}
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">Topic</p>
+                  {topicDisplayName ? (
+                    <p className="text-sm text-foreground">{topicDisplayName}</p>
+                  ) : (
+                    <p className="text-sm text-muted-foreground italic">No topic</p>
+                  )}
+                </div>
+
+                {descValue && (
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Notes</p>
+                    <div className="prose prose-sm max-w-none text-foreground text-sm">
+                      <ReactMarkdown>{descValue}</ReactMarkdown>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
-            </div>
-
-            {error && <p className="text-xs text-red-500">{error}</p>}
-
-            {/* Remove section */}
-            <div className="pt-1">
-              <button
-                onClick={() => setShowDeleteModal(true)}
-                className="text-xs text-red-600 hover:text-red-400 transition-colors"
-              >
-                Remove section…
-              </button>
-            </div>
           </div>
         )}
       </div>
 
-      {/* Remove section modal */}
+      {/* Delete modal */}
       {showDeleteModal && (
         <div
           className="fixed inset-0 z-[60] flex items-center justify-center px-4 bg-black/40"

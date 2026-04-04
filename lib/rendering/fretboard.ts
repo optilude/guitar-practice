@@ -42,6 +42,12 @@ export type FretboardDot = {
 const PENTATONIC_SCALE_TYPES = new Set(["Pentatonic Major", "Pentatonic Minor", "Blues"])
 const NO_BOX_SCALE_TYPES     = new Set(["Whole Tone", "Diminished Whole-Half", "Diminished Half-Whole", "Chromatic"])
 
+// Fretboard.js FretboardSystem.getScale() uses TonalJS Mode.get() internally to map
+// a scale type to a mode number for box positioning. Only the 7 diatonic modes have
+// valid mode numbers; all other scale types fall back to Ionian (mode 0), producing
+// incorrect CAGED/3NPS box highlights. Restrict CAGED/3NPS to these 7 modes only.
+const CAGED_TNPS_SCALE_TYPES = new Set(["Major", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrian"])
+
 const PENTATONIC_TYPE_MAP: Record<string, string> = {
   "Pentatonic Minor": "minor pentatonic",
   "Pentatonic Major": "major pentatonic",
@@ -80,7 +86,8 @@ export const CHORD_TYPE_TO_SCALE: Record<string, string> = {
 export function getScaleBoxSystems(scaleType: string): BoxSystem[] {
   if (NO_BOX_SCALE_TYPES.has(scaleType))     return ["none"]
   if (PENTATONIC_SCALE_TYPES.has(scaleType)) return ["none", "pentatonic"]
-  return ["none", "caged", "3nps"]
+  if (CAGED_TNPS_SCALE_TYPES.has(scaleType)) return ["none", "caged", "3nps"]
+  return ["none", "windows"]
 }
 
 export function getArpeggioBoxSystems(chordType: string): BoxSystem[] {

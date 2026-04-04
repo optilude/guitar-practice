@@ -80,8 +80,9 @@ export function ScalePanel({ root, onRootChange, scaleTypeTrigger }: ScalePanelP
     if (boxSystem === "caged")      return CAGED_BOX_LABELS.length  // always 5
     if (boxSystem === "3nps")       return 7
     if (boxSystem === "pentatonic") return 5
+    if (boxSystem === "windows")    return scale.positions.length
     return 0
-  }, [boxSystem])
+  }, [boxSystem, scale.positions.length])
 
   const safeBoxIndex    = boxIndex < boxCount ? boxIndex : 0
   const positionCount   = scale.positions.length
@@ -245,6 +246,8 @@ export function ScalePanel({ root, onRootChange, scaleTypeTrigger }: ScalePanelP
                         <option key={i} value={i}>
                           {boxSystem === "caged"
                             ? `${CAGED_BOX_LABELS[i]} shape`
+                            : boxSystem === "windows"
+                            ? (scale.positions[i]?.label ?? `Position ${i + 1}`)
                             : `Position ${i + 1}`}
                         </option>
                       ))}
