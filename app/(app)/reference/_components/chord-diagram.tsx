@@ -38,8 +38,9 @@ export function ChordDiagram({ chord, numFrets = 5 }: ChordDiagramProps) {
         tuning: [],
         color: structureColor,
         fretLabelFontSize: 28,
-        fingerSize: 0.65,
+        fingerSize: 0.8,
         fingerTextSize: 22,
+        // fretSize: 0.95,
         strokeWidth: 1.5,
       })
       .chord(chord)
@@ -47,8 +48,12 @@ export function ChordDiagram({ chord, numFrets = 5 }: ChordDiagramProps) {
 
     const svg = container.querySelector("svg")
     if (svg) {
+      // viewBox preserves SVGuitar's natural coordinate space so nothing distorts.
+      // Explicit width at 90 % of natural compresses the horizontal spacing;
+      // height is omitted so the browser derives it from the viewBox aspect ratio,
+      // keeping circles perfectly round and text proportional.
       svg.setAttribute("viewBox", `0 0 ${width} ${height}`)
-      svg.setAttribute("width", "100%")
+      svg.setAttribute("width", String(Math.round(width * 0.8)))
       svg.removeAttribute("height")
     }
 
@@ -57,5 +62,5 @@ export function ChordDiagram({ chord, numFrets = 5 }: ChordDiagramProps) {
     }
   }, [chord, numFrets, isDark])
 
-  return <div ref={containerRef} className="w-full" />
+  return <div ref={containerRef} className="w-full flex justify-center" />
 }
