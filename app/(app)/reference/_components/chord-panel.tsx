@@ -6,7 +6,10 @@ import {
   SHELL_CHORD_TYPES, getShellChordPositions,
   getChordAsScale,
 } from "@/lib/theory"
-import Chord from "@tombatossals/react-chords/lib/Chord"
+import { Note } from "tonal"
+import { type Chord as SVGChord, OPEN, SILENT, type Finger, type FingerOptions, type Barre } from "svguitar"
+import { INTERVAL_DEGREE_COLORS } from "@/lib/rendering/tab"
+import { ChordDiagram } from "./chord-diagram"
 import { FretboardViewer } from "./fretboard-viewer"
 import {
   getArpeggioBoxSystems,
@@ -18,21 +21,107 @@ import { cn } from "@/lib/utils"
 import { AddToGoalButton } from "@/components/add-to-goal-button"
 import { defaultModeForChordType, getSoloScales } from "@/lib/theory/solo-scales"
 import { SoloScalesPanel } from "./solo-scales-panel"
+import type { ChordPosition } from "@/lib/theory/chords"
 
-const GUITAR_INSTRUMENT = {
-  strings: 6,
-  fretsOnChord: 4,
-  name: "guitar",
-  keys: [] as string[],
-  tunings: {
-    standard: ["E", "A", "D", "G", "B", "E"],
-  },
+// ---------------------------------------------------------------------------
+// SVGuitar conversion helpers
+// ---------------------------------------------------------------------------
+
+// Open-string chroma values (C=0 … B=11), index 0 = str6 (low E), index 5 = str1 (high e)
+const OPEN_CHROMA = [4, 9, 2, 7, 11, 4] as const
+
+const ROOT_COLOR = "#d97706" // amber-600
+
+// Maps shell chord display types → base Tonal symbol for note/interval lookup
+const SHELL_TONAL_TYPE: Record<string, string> = {
+  "maj7 shell": "maj7",
+  "m7 shell":   "m7",
+  "7 shell":    "7",
+  "maj6 shell": "6",
+  "dim7/m6 shell": "m6",
 }
+
+type ShowMode = "fingers" | "notes" | "intervals"
+
+function degreeToColor(degree: string): string {
+  if (degree === "R" || degree === "1") return ROOT_COLOR
+  if (degree === "3"  || degree === "b3" || degree === "#3")  return INTERVAL_DEGREE_COLORS.third
+  if (degree === "5"  || degree === "b5" || degree === "#5")  return INTERVAL_DEGREE_COLORS.fifth
+  if (degree === "7"  || degree === "b7")                     return INTERVAL_DEGREE_COLORS.seventh
+  if (degree === "6"  || degree === "b6")                     return INTERVAL_DEGREE_COLORS.sixth
+  if (degree === "9"  || degree === "b9" || degree === "#9")  return INTERVAL_DEGREE_COLORS.second
+  if (degree === "11" || degree === "#11")                    return INTERVAL_DEGREE_COLORS.fourth
+  if (degree === "13" || degree === "b13")                    return INTERVAL_DEGREE_COLORS.sixth
+  return ROOT_COLOR
+}
+
+function toSVGChord(
+  pos: ChordPosition,
+  showMode: ShowMode,
+  isDark: boolean,
+  chordNotes: string[],
+  chordIntervals: string[],
+): SVGChord {
+  const chordChromas = chordNotes.map((n) => Note.get(n).chroma ?? -1)
+  const fingers: Finger[] = []
+
+  pos.frets.forEach((relativeFret, idx) => {
+    const str = 6 - idx
+
+    if (relativeFret === -1) {
+      fingers.push([str, SILENT])
+      return
+    }
+
+    const absFret = relativeFret === 0 ? 0 : relativeFret + pos.baseFret - 1
+    const chroma  = (OPEN_CHROMA[idx] + absFret) % 12
+    const matchIdx = chordChromas.indexOf(chroma)
+
+    let options: FingerOptions | undefined
+    if (matchIdx >= 0) {
+      const iv      = chordIntervals[matchIdx]
+      const degree  = INTERVAL_TO_DEGREE[iv] ?? iv
+      const color   = degreeToColor(degree)
+      const text    = showMode === "notes"     ? chordNotes[matchIdx]
+                    : showMode === "intervals" ? degree
+                    : undefined
+      const textColor = relativeFret === 0 ? (isDark ? "#f9fafb" : "#1f2937") : "#ffffff"
+      options = { color, textColor, text }
+    }
+
+    if (relativeFret === 0) fingers.push([str, OPEN, options])
+    else                    fingers.push([str, relativeFret, options])
+  })
+
+  // Barre arcs
+  const svgBarres: Barre[] = []
+  for (const barreFret of pos.barres) {
+    const participatingIdxs = pos.frets
+      .map((f, i) => ({ f, i }))
+      .filter(({ f }) => f === barreFret)
+      .map(({ i }) => i)
+    if (participatingIdxs.length > 1) {
+      const minIdx = Math.min(...participatingIdxs)
+      const maxIdx = Math.max(...participatingIdxs)
+      svgBarres.push({ fret: barreFret, fromString: 6 - maxIdx, toString: 6 - minIdx })
+    }
+  }
+
+  return {
+    fingers,
+    barres: svgBarres,
+    position: pos.baseFret > 1 ? pos.baseFret : undefined,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
 
 const COMMON_TYPES = ["major", "maj7", "minor", "m7", "7", "9", "dim", "dim7", "m7b5"]
 
 const INTERVAL_TO_DEGREE: Record<string, string> = {
-  "1P": "1",
+  "1P": "R",
   "2m": "b9", "2M": "9",  "2A": "#9",
   "3m": "b3", "3M": "3",
   "4P": "4",  "4A": "#4",
@@ -80,6 +169,10 @@ const SOLO_MODE_OPTIONS = [
   { value: "melodic minor", label: "Melodic Minor" },
 ]
 
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+
 interface ChordPanelProps {
   root: string
   onRootChange: (root: string) => void
@@ -102,6 +195,7 @@ export function ChordPanel({ root, onRootChange, chordTypeTrigger, onScaleSelect
   useEffect(() => {
     if (chordTypeTrigger) setChordType(chordTypeTrigger.type)
   }, [chordTypeTrigger]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const [viewMode, setViewMode]
      = useState<"fretboard" | "fingerings" | "soloing">("fretboard")
   const [soloingMode, setSoloingMode] = useState(() => defaultModeForChordType(COMMON_TYPES[0]))
@@ -113,6 +207,18 @@ export function ChordPanel({ root, onRootChange, chordTypeTrigger, onScaleSelect
   const [labelMode, setLabelMode] = useState<"note" | "interval">("interval")
   const [boxSystem, setBoxSystem] = useState<BoxSystem>("none")
   const [boxIndex, setBoxIndex]   = useState(0)
+  const [showMode, setShowMode]   = useState<ShowMode>("fingers")
+  const [isDark, setIsDark]       = useState(false)
+
+  // Track dark-mode class on <html> so diagrams re-render when theme changes.
+  useEffect(() => {
+    setIsDark(document.documentElement.classList.contains("dark"))
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains("dark"))
+    })
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] })
+    return () => observer.disconnect()
+  }, [])
 
   const chordScale = useMemo(
     () => getChordAsScale(root, chordType),
@@ -124,7 +230,7 @@ export function ChordPanel({ root, onRootChange, chordTypeTrigger, onScaleSelect
   )
   const parentScaleType = CHORD_TYPE_TO_SCALE[chordScale.type]
   const boxCount = useMemo(() => {
-    if (boxSystem === "caged")   return CAGED_BOX_LABELS.length  // 5
+    if (boxSystem === "caged")   return CAGED_BOX_LABELS.length
     if (boxSystem === "3nps")    return 7
     if (boxSystem === "windows") return chordScale.positions.length
     return 0
@@ -148,6 +254,18 @@ export function ChordPanel({ root, onRootChange, chordTypeTrigger, onScaleSelect
       : getChordPositions(root, chordType),
     [root, chordType, isShell]
   )
+
+  // Chord tones for the Show dropdown (Notes/Intervals modes).
+  // For shell types: look up the base chord via SHELL_TONAL_TYPE to get notes/intervals.
+  const { chordNotes, chordIntervals } = useMemo(() => {
+    if (isShell) {
+      const baseType = SHELL_TONAL_TYPE[chordType]
+      if (!baseType) return { chordNotes: [], chordIntervals: [] }
+      const info = getChord(root, baseType)
+      return { chordNotes: info.notes, chordIntervals: info.intervals }
+    }
+    return { chordNotes: chord?.notes ?? [], chordIntervals: chord?.intervals ?? [] }
+  }, [root, chordType, isShell, chord])
 
   return (
     <div className="space-y-4">
@@ -341,15 +459,36 @@ export function ChordPanel({ root, onRootChange, chordTypeTrigger, onScaleSelect
         positions.length === 0 ? (
           <p className="text-xs text-muted-foreground">No voicings available for this chord type.</p>
         ) : (
-          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-6">
-            {positions.map((pos, i) => (
-              <div key={i} className="flex flex-col items-center gap-1">
-                <div className="dark:invert">
-                  <Chord chord={pos} instrument={GUITAR_INSTRUMENT} lite={false} />
+          <>
+            {/* Show dropdown */}
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-muted-foreground" htmlFor="chord-show-select">
+                Show
+              </label>
+              <select
+                id="chord-show-select"
+                value={showMode}
+                onChange={(e) => setShowMode(e.target.value as ShowMode)}
+                className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
+              >
+                <option value="fingers">Fingers</option>
+                <option value="notes">Notes</option>
+                <option value="intervals">Intervals</option>
+              </select>
+            </div>
+
+            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-6">
+              {positions.map((pos, i) => (
+                <div key={i} className="flex flex-col gap-1">
+                  <span className="text-xs text-muted-foreground text-center">{pos.label}</span>
+                  <ChordDiagram
+                    numFrets={4}
+                    chord={toSVGChord(pos, showMode, isDark, chordNotes, chordIntervals)}
+                  />
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </>
         )
       )}
 
