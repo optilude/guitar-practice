@@ -95,7 +95,7 @@ describe("InversionPanel", () => {
     render(<InversionPanel root="C" onRootChange={vi.fn()} />)
     fireEvent.click(screen.getByRole("button", { name: /fingerings/i }))
     expect(screen.getByLabelText(/voicing/i)).toBeDefined()
-    expect(screen.getByLabelText(/inversion/i)).toBeDefined()
+    expect(screen.getByLabelText(/^inversion$/i)).toBeDefined()
     expect(screen.getByLabelText(/string set/i)).toBeDefined()
   })
 
@@ -149,7 +149,7 @@ describe("InversionPanel", () => {
   it("changes inversion filter", () => {
     render(<InversionPanel root="C" onRootChange={vi.fn()} />)
     fireEvent.click(screen.getByRole("button", { name: /fingerings/i }))
-    const select = screen.getByLabelText(/inversion/i) as HTMLSelectElement
+    const select = screen.getByLabelText(/^inversion$/i) as HTMLSelectElement
     fireEvent.change(select, { target: { value: "root" } })
     expect(select.value).toBe("root")
   })
