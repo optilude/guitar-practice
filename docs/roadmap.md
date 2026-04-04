@@ -46,7 +46,6 @@ Account management and better authentication support. Admin UI for managing user
 # Future ideas
 
 * Change Triads to Inversions. The first category should be the basic triads like now, but this adds many (!) more types.
-* Consider changing to SVGuitar or a different rendering engine (for this and chords)
 
 * Add a footer with some basic information / links. Apart from being informative, this will help ensure the content doesn't end right at the bottom of the window, which can be harder to read.
 
@@ -61,6 +60,8 @@ Account management and better authentication support. Admin UI for managing user
 * Audio recorder for practice (note this will significantly change data storage requirements)
 
 # Known issues
+
+* Reviewing github, there appears to not have been a release of @tombatossals/chords-db for six years, but several updates in the Git repository. Consider whether to move to a submodule approach.
 
 Scales:
 

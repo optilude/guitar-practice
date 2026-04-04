@@ -21,9 +21,6 @@ vi.mock("svguitar", () => ({
     draw = vi.fn()
   },
 }))
-vi.mock("@tombatossals/react-chords/lib/Chord", () => ({
-  default: () => <svg data-testid="chord-diagram" />,
-}))
 vi.mock("tonal", () => ({
   Scale: { get: () => ({ notes: ["C", "D", "E", "F", "G", "A", "B"] }) },
 }))
