@@ -7,7 +7,7 @@ import {
   getChordAsScale,
 } from "@/lib/theory"
 import { Note } from "tonal"
-import { type Chord as SVGChord, OPEN, SILENT, type Finger, type FingerOptions, type Barre } from "svguitar"
+import { type Chord as SVGChord, OPEN, SILENT, type Finger, type FingerOptions, type Barre, BarreChordStyle } from "svguitar"
 import { INTERVAL_DEGREE_COLORS } from "@/lib/rendering/tab"
 import { ChordDiagram } from "./chord-diagram"
 import { FretboardViewer } from "./fretboard-viewer"
@@ -107,7 +107,10 @@ function toSVGChord(
     if (participatingIdxs.length > 1) {
       const minIdx = Math.min(...participatingIdxs)
       const maxIdx = Math.max(...participatingIdxs)
-      svgBarres.push({ fret: barreFret, fromString: 6 - maxIdx, toString: 6 - minIdx })
+      // Rectangle style ignores `color` (SVGuitar bug); ARC respects it.
+      // gray-400 (#9ca3af) reads clearly on both light and dark backgrounds.
+      const barreColor = isDark ? "#d1d5db" : "#9ca3af"
+      svgBarres.push({ fret: barreFret, fromString: 6 - minIdx, toString: 6 - maxIdx, style: BarreChordStyle.ARC, color: barreColor, strokeColor: barreColor })
     }
   }
 
