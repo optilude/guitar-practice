@@ -331,7 +331,7 @@ export function TriadPanel({ root, onRootChange, triadTypeTrigger }: TriadPanelP
                   <h3 className="text-xs font-medium tracking-widest text-muted-foreground mb-4">
                     {STRING_SET_LABEL[stringSet] ?? stringSet}
                   </h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
                     {voicings.map((pos, i) => (
                       <div key={i} className="flex flex-col gap-1">
                         <span className="text-xs text-muted-foreground text-center">{pos.label}</span>

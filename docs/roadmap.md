@@ -46,6 +46,7 @@ Account management and better authentication support. Admin UI for managing user
 # Future ideas
 
 * Change Triads to Inversions. The first category should be the basic triads like now, but this adds many (!) more types.
+* Add the Soloing tab to Inversions
 
 * Add a footer with some basic information / links. Apart from being informative, this will help ensure the content doesn't end right at the bottom of the window, which can be harder to read.
 
@@ -61,7 +62,9 @@ Account management and better authentication support. Admin UI for managing user
 
 # Known issues
 
-* Reviewing github, there appears to not have been a release of @tombatossals/chords-db for six years, but several updates in the Git repository. Consider whether to move to a submodule approach.
+* There appears to not have been a release of @tombatossals/chords-db for six years, but several updates in the GitHub repository at https://github.com/tombatossals/chords-db. Pull in the code from GitHub as a submodule or other appropriate mechanism, instead of installing with `npm`, and confirm if this will automatically update the chords, or if some further processing is needed, noting that we also added some additional chords.
+
+* It should be possible to show finger numbers on the dots when choosing "Fingers" in the "Show" drop-down on the Chords tab. The `chords-db` module does, I believe, include that information, but it is not shown. Please investigate and fix.
 
 Scales:
 

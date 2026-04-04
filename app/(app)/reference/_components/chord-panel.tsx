@@ -484,7 +484,7 @@ export function ChordPanel({ root, onRootChange, chordTypeTrigger, onScaleSelect
               </select>
             </div>
 
-            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-6">
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
               {positions.map((pos, i) => (
                 <div key={i} className="flex flex-col gap-1">
                   <span className="text-xs text-muted-foreground text-center">{pos.label}</span>

@@ -42,6 +42,7 @@ export function ChordDiagram({ chord, numFrets = 5 }: ChordDiagramProps) {
         fingerTextSize: 22,
         // fretSize: 0.95,
         strokeWidth: 1.5,
+        fixedDiagramPosition: true,
       })
       .chord(chord)
       .draw()
