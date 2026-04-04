@@ -1,5 +1,5 @@
 import { Chord, Note } from "tonal"
-import guitarDb from "@tombatossals/chords-db/lib/guitar.json"
+import guitarDb from "@/data/guitar.json"
 import type { ChordVoicing, GuitarChord, GuitarScale } from "@/lib/theory/types"
 import { getArpeggio } from "@/lib/theory/arpeggios"
 
@@ -54,7 +54,7 @@ const DB_SUFFIXES: string[] = (() => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (Object.values(db.chords["C"]) as any[])
     .map((c) => c.suffix as string)
-    .filter((s) => intersection.has(s) && !s.startsWith("/"))
+    .filter((s) => intersection.has(s) && !s.includes("/"))
 })()
 
 export function listChordDbSuffixes(): string[] {

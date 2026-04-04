@@ -62,8 +62,6 @@ Account management and better authentication support. Admin UI for managing user
 
 # Known issues
 
-* There appears to not have been a release of @tombatossals/chords-db for six years, but several updates in the GitHub repository at https://github.com/tombatossals/chords-db. Pull in the code from GitHub as a submodule or other appropriate mechanism, instead of installing with `npm`, and confirm if this will automatically update the chords, or if some further processing is needed, noting that we also added some additional chords.
-
 * It should be possible to show finger numbers on the dots when choosing "Fingers" in the "Show" drop-down on the Chords tab. The `chords-db` module does, I believe, include that information, but it is not shown. Please investigate and fix.
 
 Scales:
