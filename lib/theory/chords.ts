@@ -117,11 +117,23 @@ const DB_SUFFIX_TO_TONAL: Record<string, string> = {
   "mmaj9":   "mM9",
 }
 
-// Chord types TonalJS has no equivalent for — provide intervals directly.
+// Chord types where TonalJS returns empty or an incomplete note set.
+// When an entry exists here it takes priority over TonalJS so that every
+// note in the chords-db positions gets a colour / label in the Fingerings view.
 // Notes are computed at call time via Note.transpose.
 const DB_SUFFIX_HARDCODED_INTERVALS: Record<string, string[]> = {
-  "maj11":  ["1P", "3M", "5P", "7M", "9M", "11P"],
-  "mmaj11": ["1P", "3m", "5P", "7M", "9M", "11P"],
+  // TonalJS has no symbol for these at all:
+  "maj11":    ["1P", "3M", "5P", "7M", "9M", "11P"],
+  "mmaj11":   ["1P", "3m", "5P", "7M", "9M", "11P"],
+  "add11":    ["1P", "3M", "5P", "11P"],
+  "maj7sus2": ["1P", "2M", "5P", "7M"],
+  // TonalJS omits the M3 from C11:
+  "11":       ["1P", "3M", "5P", "7m", "9M", "11P"],
+  // TonalJS omits the 11th from these extended chords:
+  "13":       ["1P", "3M", "5P", "7m", "9M", "11P", "13M"],
+  "maj13":    ["1P", "3M", "5P", "7M", "9M", "11P", "13M"],
+  // TonalJS's 7alt only covers #5/b9/#9 — chord-db positions also use b5 and b9:
+  "alt":      ["1P", "3M", "5d", "5A", "7m", "9m", "9A"],
 }
 
 // ---------------------------------------------------------------------------
@@ -196,21 +208,24 @@ function getVoicingsFromDb(tonic: string, type: string): ChordVoicing[] {
 // Public API
 // ---------------------------------------------------------------------------
 export function getChord(tonic: string, type: string): GuitarChord {
-  const tonalSymbol = DB_SUFFIX_TO_TONAL[type] ?? type
-  const chord = Chord.get(`${tonic}${tonalSymbol}`)
-
   let notes: string[]
   let intervals: string[]
 
-  if (chord.notes.length > 0) {
-    notes = chord.notes
-    intervals = chord.intervals
-  } else if (DB_SUFFIX_HARDCODED_INTERVALS[type]) {
+  if (DB_SUFFIX_HARDCODED_INTERVALS[type]) {
+    // Hardcoded takes priority: covers types where TonalJS is empty or returns
+    // an incomplete note set (e.g. omits M3 from 11, omits b5/b9 from alt).
     intervals = DB_SUFFIX_HARDCODED_INTERVALS[type]
     notes = intervals.map((iv) => Note.transpose(tonic, iv)).filter(Boolean) as string[]
   } else {
-    notes = [tonic]
-    intervals = ["1P"]
+    const tonalSymbol = DB_SUFFIX_TO_TONAL[type] ?? type
+    const chord = Chord.get(`${tonic}${tonalSymbol}`)
+    if (chord.notes.length > 0) {
+      notes = chord.notes
+      intervals = chord.intervals
+    } else {
+      notes = [tonic]
+      intervals = ["1P"]
+    }
   }
 
   const voicings = getVoicingsFromDb(tonic, type)
