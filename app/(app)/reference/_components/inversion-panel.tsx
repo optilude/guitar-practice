@@ -92,10 +92,11 @@ function toSVGChord(
     const str  = 6 - i // index 0 (str6/low E) → SVGuitar string 6
     const role = voicing.noteRoles[i]
 
+    const fingerNum = voicing.fingers[i]
     const text = !role ? undefined
       : showMode === "notes"     ? (voicing.noteNames[i] ?? undefined)
       : showMode === "intervals" ? (voicing.noteIntervals[i] ?? undefined)
-      : undefined
+      : (fingerNum && fingerNum > 0) ? String(fingerNum) : undefined // fingers mode
 
     const options: FingerOptions | undefined = role
       ? {
