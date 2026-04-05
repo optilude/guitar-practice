@@ -80,11 +80,47 @@ const SHAPES: Record<string, { str6: Shape; str5: Shape; str4: Shape }> = {
 }
 
 // ---------------------------------------------------------------------------
+// Finger assignments for each shape: index 0 = str6 … index 5 = str1.
+// 0 = open/muted (no finger), 1–4 = finger number.
+// ---------------------------------------------------------------------------
+type FingerNum = 0 | 1 | 2 | 3 | 4
+type FingerShape = [FingerNum, FingerNum, FingerNum, FingerNum, FingerNum, FingerNum]
+
+const FINGERS: Record<string, { str6: FingerShape; str5: FingerShape; str4: FingerShape }> = {
+  "maj7 shell": {
+    str6: [1, 0, 2, 3, 0, 0],
+    str5: [0, 1, 0, 2, 3, 0],
+    str4: [0, 0, 1, 0, 3, 4],
+  },
+  "m7 shell": {
+    str6: [1, 0, 2, 3, 0, 0],
+    str5: [0, 1, 0, 2, 3, 0],
+    str4: [0, 0, 1, 0, 3, 4],
+  },
+  "7 shell": {
+    str6: [1, 0, 2, 3, 0, 0],
+    str5: [0, 1, 0, 2, 4, 0],
+    str4: [0, 0, 1, 0, 2, 4],
+  },
+  "maj6 shell": {
+    str6: [2, 0, 1, 4, 0, 0],
+    str5: [0, 2, 0, 1, 4, 0],
+    str4: [0, 0, 1, 0, 2, 4],
+  },
+  "dim7/m6 shell": {
+    str6: [2, 0, 1, 3, 0, 0],
+    str5: [0, 2, 0, 1, 4, 0],
+    str4: [0, 0, 1, 0, 2, 3],
+  },
+}
+
+// ---------------------------------------------------------------------------
 
 function buildVoicing(
   tonicChroma: number,
   rootStrIdx: number, // 0 = str6, 1 = str5, 2 = str4
   shape: Shape,
+  fingers: FingerShape,
   label: string,
 ): ChordPosition {
   const openChroma = OPEN_CHROMAS[rootStrIdx]
@@ -109,7 +145,7 @@ function buildVoicing(
 
   return {
     frets,
-    fingers: [0, 0, 0, 0, 0, 0],
+    fingers: Array.from(fingers) as number[],
     baseFret,
     barres: [],
     capo: false,
@@ -130,12 +166,13 @@ export function getShellChordPositions(tonic: string, shellType: string): ChordP
   const tonicChroma = TONIC_CHROMA[tonic]
   if (tonicChroma === undefined) return []
 
-  const shapes = SHAPES[shellType]
-  if (!shapes) return []
+  const shapes  = SHAPES[shellType]
+  const fingers = FINGERS[shellType]
+  if (!shapes || !fingers) return []
 
   return [
-    buildVoicing(tonicChroma, 0, shapes.str6, "6th string root"),
-    buildVoicing(tonicChroma, 1, shapes.str5, "5th string root"),
-    buildVoicing(tonicChroma, 2, shapes.str4, "4th string root"),
+    buildVoicing(tonicChroma, 0, shapes.str6, fingers.str6, "6th string root"),
+    buildVoicing(tonicChroma, 1, shapes.str5, fingers.str5, "5th string root"),
+    buildVoicing(tonicChroma, 2, shapes.str4, fingers.str4, "4th string root"),
   ]
 }

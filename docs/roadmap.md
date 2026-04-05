@@ -54,9 +54,10 @@ Account management and better authentication support. Admin UI for managing user
 * Harmonic Minor and Melodic Minor mode systems?
 
 * Create a "tools" section with...
-  - A chord calculator (fingerings -> chord name)
-  - A standalone metronome
-  - A key finder (chords -> progression key)
+  - A chord calculator (fingerings -> chord name - use fretboard visualisation)? 
+  - A key finder (chords -> progression key)?
+  - A scale finder (put notes on fretboard, calculate possible keys)?
+  - A standalone metronome?
   - Transposition tools?
 
 * More streaks/gamification features
@@ -89,6 +90,18 @@ Chords:
 * Guitar lessons: https://hubguitar.com
 
 # Prompts
+
+## Move to new inversions database
+
+I have placed a new inversions database in `data/inversions-db.json`. This broadly follows the `chords-db.json` format but is nested a bit differently and also includes and `inversion` field per shape (0 = root position, 1 = 1st inversion, etc.). It also includes many more inversion types (suffixes), matching and even extending beyond what's in the Chords tab.
+
+Replace the data source for the inversions list with this new dataset. Try to share as much code (DRY) as possible with the Chords view.
+
+Retain the drop-down selectors for open/close, string set, and inversion number. The first two will need to be calculated from the data.
+
+I am in control of the format of the dataset. It can be transposed or modified if it makes the code easier or more performant.
+
+Try to one-shot this. We are on a branch that's safe to experiment with. I need to leave this session unsupervised for a time.
 
 ## Start phase 6
 
