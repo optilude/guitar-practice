@@ -45,8 +45,6 @@ Account management and better authentication support. Admin UI for managing user
 
 # Future ideas
 
-* Change Triads to Inversions. The first category should be the basic triads like now, but this adds many (!) more types.
-
 * Should each practice routine element allow for more than one topic? Might be useful to introduce some degree of optionality to the practice routine without having to create lots of different routines, e.g. add major and minor triads to a single triad study section.
 
 * Harmonic Minor and Melodic Minor mode systems?
