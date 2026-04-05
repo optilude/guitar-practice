@@ -1,4 +1,5 @@
 import { Navbar } from "@/components/layout/navbar"
+import { Footer } from "@/components/layout/footer"
 import { FullscreenProvider } from "@/lib/fullscreen-context"
 import { ActiveGoalProvider } from "@/components/active-goal-context"
 
@@ -11,6 +12,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <main className="flex-1 px-5 py-8 w-full max-w-2xl lg:max-w-5xl mx-auto">
             {children}
           </main>
+          <Footer />
         </div>
       </ActiveGoalProvider>
     </FullscreenProvider>
