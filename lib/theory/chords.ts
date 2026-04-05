@@ -247,6 +247,37 @@ export interface ChordPosition {
   label: string
 }
 
+// Open-string chromas for str6…str1 (low E → high e)
+const OPEN_CHROMA_BY_IDX = [4, 9, 2, 7, 11, 4]
+// String ordinal names corresponding to each index (str6 = low E, str1 = high e)
+const STRING_ORDINAL = ["6th string", "5th string", "4th string", "3rd string", "2nd string", "1st string"]
+
+/**
+ * Derive a human-readable voicing label from the root string.
+ * Searches from the lowest-pitched (highest-number) string upward for the
+ * first string whose fretted note matches the tonic chroma.
+ * Falls back to the fret position when the root isn't present (e.g. inversions).
+ */
+function labelPosition(
+  frets: number[],
+  baseFret: number,
+  barres: number[],
+  tonicChroma: number,
+): string {
+  const isOpen = baseFret === 1 && barres.length === 0
+  for (let idx = 0; idx < frets.length; idx++) {
+    const f = frets[idx]
+    if (f === -1) continue
+    const absFret = f === 0 ? 0 : f + baseFret - 1
+    if ((OPEN_CHROMA_BY_IDX[idx] + absFret) % 12 === tonicChroma) {
+      return isOpen
+        ? `${STRING_ORDINAL[idx]} root (open)`
+        : `${STRING_ORDINAL[idx]} root`
+    }
+  }
+  return isOpen ? "Open" : `${baseFret}fr`
+}
+
 export function getChordPositions(tonic: string, type: string): ChordPosition[] {
   const dbKey = TONIC_TO_DB_KEY[tonic]
   if (!dbKey) return []
@@ -259,18 +290,19 @@ export function getChordPositions(tonic: string, type: string): ChordPosition[] 
   const chordEntry = Object.values(chordsArr).find((c: any) => c.suffix === dbSuffix) as any
   if (!chordEntry) return []
 
+  const tonicChroma = Note.get(tonic).chroma ?? -1
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (chordEntry.positions ?? []).map((pos: any) => {
     const barres: number[] = pos.barres ?? []
-    const isOpen = pos.baseFret === 1 && barres.length === 0
-    const label = isOpen ? "Open" : `Barre – ${pos.baseFret}fr`
+    const baseFret: number = pos.baseFret ?? 1
     return {
       frets: pos.frets,
       fingers: pos.fingers,
-      baseFret: pos.baseFret ?? 1,
+      baseFret,
       barres,
       capo: pos.capo ?? false,
-      label,
+      label: labelPosition(pos.frets, baseFret, barres, tonicChroma),
     }
   })
 }
