@@ -69,14 +69,13 @@ Account management and better authentication support. Admin UI for managing user
 Scales:
 
 * When switching between light and dark mode, the stave view is corrupted until the view is changed (e.g. click a different tab in the UI)
-* Scales note viewer has standard notation on a stave. Some of the low notes appear really low - are they actually correct? They may be transposed down an octive or two.
+
 * Find a way to test scale patterns and tabs for accuracy
 * Review/refine the chord-to-scale mapping. It might be somewhat naive.
 
 Chords:
 
-* There are issues with some of the chord voicings (e.g. strange barres)
-* The `capo` key in the `chords-db` dataset may be causing confusion, but we cannot filter it out since we lose all the barre chords
+* There are issues with some of the chord voicings (e.g. strange barres) - consider finding a better source than `chords-db`.
 
 # Resources / notes
 

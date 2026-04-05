@@ -22,9 +22,12 @@ const { Renderer, Stave, StaveNote, Accidental, TabStave, TabNote, Formatter, Vo
 // Chroma values for open strings (index 0 = string 6 low E, index 5 = string 1 high e)
 const OPEN_STRING_CHROMA = [4, 9, 2, 7, 11, 4]
 
-// MIDI pitches for open strings (index 0 = string 6 low E, index 5 = string 1 high e)
-// E2=40, A2=45, D3=50, G3=55, B3=59, E4=64
-const OPEN_STRING_MIDI = [40, 45, 50, 55, 59, 64]
+// Written MIDI pitches for open strings in standard guitar notation.
+// Guitar is a C8 transposing instrument: sounds an octave lower than written,
+// so notation uses pitches one octave above concert pitch.
+// E3=52, A3=57, D4=62, G4=67, B4=71, E5=76
+// (index 0 = string 6 low E, index 5 = string 1 high e)
+const OPEN_STRING_MIDI = [52, 57, 62, 67, 71, 76]
 
 // Note name → chroma for looking up which scale note is at a given fret
 const NOTE_CHROMA: Record<string, number> = {
