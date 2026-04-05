@@ -6,6 +6,7 @@ import {
   SHELL_CHORD_TYPES, getShellChordPositions,
   getChordAsScale,
 } from "@/lib/theory"
+import { groupChordTypes } from "@/lib/theory/chord-categories"
 import { Note } from "tonal"
 import { type Chord as SVGChord, OPEN, SILENT, type Finger, type FingerOptions, type Barre, BarreChordStyle } from "svguitar"
 import { INTERVAL_DEGREE_COLORS } from "@/lib/rendering/tab"
@@ -180,12 +181,8 @@ interface ChordPanelProps {
 
 export function ChordPanel({ root, onRootChange, chordTypeTrigger, onScaleSelect }: ChordPanelProps) {
   const dbSuffixes = useMemo(() => listChordDbSuffixes(), [])
-  const commonSuffixes = useMemo(
-    () => COMMON_TYPES.filter((t) => dbSuffixes.includes(t)),
-    [dbSuffixes],
-  )
-  const otherSuffixes = useMemo(
-    () => dbSuffixes.filter((t) => !COMMON_TYPES.includes(t)),
+  const chordGroups = useMemo(
+    () => groupChordTypes([...dbSuffixes, ...(SHELL_CHORD_TYPES as readonly string[])]),
     [dbSuffixes],
   )
   const [chordType, setChordType] = useState(COMMON_TYPES[0])
@@ -302,21 +299,13 @@ export function ChordPanel({ root, onRootChange, chordTypeTrigger, onScaleSelect
             }}
             className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
           >
-            <optgroup label="Common">
-              {commonSuffixes.map((t) => (
-                <option key={t} value={t}>{t}</option>
-              ))}
-            </optgroup>
-            <optgroup label="Shell Voicings">
-              {SHELL_CHORD_TYPES.map((t) => (
-                <option key={t} value={t}>{t}</option>
-              ))}
-            </optgroup>
-            <optgroup label="Other">
-              {otherSuffixes.map((t) => (
-                <option key={t} value={t}>{t}</option>
-              ))}
-            </optgroup>
+            {chordGroups.map(({ category, label, types }) => (
+              <optgroup key={category} label={label}>
+                {types.map((t) => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </optgroup>
+            ))}
           </select>
         </div>
         <AddToGoalButton

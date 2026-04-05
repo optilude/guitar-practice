@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils"
 import { AddToGoalButton } from "@/components/add-to-goal-button"
 import type { NoteRole } from "@/lib/theory/inversions"
 import { defaultModeForChordType, getSoloScales, SOLO_MODE_OPTIONS } from "@/lib/theory/solo-scales"
+import { groupChordTypes } from "@/lib/theory/chord-categories"
 
 type ShowMode = "fingers" | "notes" | "intervals"
 
@@ -167,6 +168,11 @@ export function InversionPanel({ root, onRootChange, inversionTypeTrigger, onSca
     [root, inversionType],
   )
 
+  const inversionGroups = useMemo(
+    () => groupChordTypes(INVERSION_TYPES as string[]),
+    [],
+  )
+
   // Formula derived from tonal.js intervals
   const formula = useMemo(
     () => inversionScale.intervals.map((iv) => INTERVAL_LABEL[iv] ?? iv).join(" – "),
@@ -233,8 +239,12 @@ export function InversionPanel({ root, onRootChange, inversionTypeTrigger, onSca
             onChange={(e) => setInversionType(e.target.value)}
             className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
           >
-            {INVERSION_TYPES.map((t) => (
-              <option key={t} value={t}>{SUFFIX_DISPLAY[t] ?? t}</option>
+            {inversionGroups.map(({ category, label, types }) => (
+              <optgroup key={category} label={label}>
+                {types.map((t) => (
+                  <option key={t} value={t}>{SUFFIX_DISPLAY[t] ?? t}</option>
+                ))}
+              </optgroup>
             ))}
           </select>
         </div>
