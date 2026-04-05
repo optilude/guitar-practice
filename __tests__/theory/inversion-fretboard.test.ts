@@ -15,20 +15,32 @@ describe("getInversionAsScale", () => {
     expect(scale.type).toBe("m")
   })
 
-  it("C diminished returns notes C Eb Gb and type 'dim'", () => {
-    const scale = getInversionAsScale("C", "diminished")
+  it("C dim (diminished triad) returns notes C Eb Gb and type 'dim'", () => {
+    const scale = getInversionAsScale("C", "dim")
     expect(scale.notes).toEqual(["C", "Eb", "Gb"])
     expect(scale.type).toBe("dim")
   })
 
-  it("C augmented returns 3 notes starting with C E and type 'aug'", () => {
-    const scale = getInversionAsScale("C", "augmented")
+  it("C aug (augmented triad) returns 3 notes starting with C E and type 'aug'", () => {
+    const scale = getInversionAsScale("C", "aug")
     expect(scale.type).toBe("aug")
     expect(scale.notes).toHaveLength(3)
     expect(scale.notes[0]).toBe("C")
     expect(scale.notes[1]).toBe("E")
     // tonal returns G# (not Ab) for Caug
     expect(scale.notes[2]).toBe("G#")
+  })
+
+  it("C maj7 returns 4 notes C E G B", () => {
+    const scale = getInversionAsScale("C", "maj7")
+    expect(scale.notes).toEqual(["C", "E", "G", "B"])
+    expect(scale.type).toBe("maj7")
+  })
+
+  it("C m7 returns 4 notes C Eb G Bb", () => {
+    const scale = getInversionAsScale("C", "m7")
+    expect(scale.notes).toEqual(["C", "Eb", "G", "Bb"])
+    expect(scale.type).toBe("m7")
   })
 
   it("returns a non-empty positions array", () => {

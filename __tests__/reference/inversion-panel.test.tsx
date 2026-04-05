@@ -33,20 +33,31 @@ vi.mock("@/components/add-to-goal-button", () => ({
 }))
 
 vi.mock("@/lib/theory", () => ({
-  INVERSION_TYPES: ["major", "minor", "diminished", "augmented"],
+  INVERSION_TYPES: ["major", "minor", "dim", "aug"],
   INVERSION_STRING_SETS: [
-    "6-5-4", "6-5-3", "6-4-3",
-    "5-4-3", "5-4-2", "5-3-2",
-    "4-3-2", "4-3-1", "4-2-1",
-    "3-2-1",
+    "6-5-4-3", "5-4-3-2", "4-3-2-1",
+    "6-5-4", "5-4-3", "4-3-2", "3-2-1",
+    "6-5-3", "6-4-3",
+    "5-4-2", "5-3-2",
+    "4-3-1", "4-2-1",
   ],
-  getInversionAsScale: (_tonic: string, _type: string) => ({
-    tonic: "C",
-    type: "maj",
-    notes: ["C", "E", "G"],
-    intervals: ["1P", "3M", "5P"],
-    positions: [{ label: "Position 1", positions: [{ string: 6, fret: 8, interval: "R" }] }],
-  }),
+  getInversionAsScale: (_tonic: string, type: string) => {
+    if (type === "minor") {
+      return {
+        tonic: "C", type: "m",
+        notes: ["C", "Eb", "G"],
+        intervals: ["1P", "3m", "5P"],
+        positions: [{ label: "Position 1", positions: [{ string: 6, fret: 8, interval: "R" }] }],
+      }
+    }
+    return {
+      tonic: "C",
+      type: "maj",
+      notes: ["C", "E", "G"],
+      intervals: ["1P", "3M", "5P"],
+      positions: [{ label: "Position 1", positions: [{ string: 6, fret: 8, interval: "R" }] }],
+    }
+  },
   getInversionVoicings: (tonic: string, type: string) => {
     if (tonic !== "C" || type !== "major") return []
     return [
@@ -63,6 +74,7 @@ vi.mock("@/lib/theory", () => ({
         minFret: 7,
         noteRoles: ["root", "fifth", "third", null, null, null],
         noteNames: ["C", "G", "E", null, null, null],
+        noteIntervals: ["R", "5", "3", null, null, null],
       },
       {
         frets: [-1, 2, 1, 2, -1, -1],
@@ -77,6 +89,7 @@ vi.mock("@/lib/theory", () => ({
         minFret: 5,
         noteRoles: [null, "third", "root", "fifth", null, null],
         noteNames: [null, "E", "C", "G", null, null],
+        noteIntervals: [null, "3", "R", "5", null, null],
       },
       {
         frets: [-1, -1, 2, 1, 2, -1],
@@ -91,6 +104,7 @@ vi.mock("@/lib/theory", () => ({
         minFret: 9,
         noteRoles: [null, null, "fifth", "third", "root", null],
         noteNames: [null, null, "G", "E", "C", null],
+        noteIntervals: [null, null, "5", "3", "R", null],
       },
     ]
   },
@@ -99,17 +113,17 @@ vi.mock("@/lib/theory", () => ({
 import { InversionPanel } from "@/app/(app)/reference/_components/inversion-panel"
 
 describe("InversionPanel", () => {
-  it("renders the inversion type selector", () => {
+  it("renders the chord type selector", () => {
     render(<InversionPanel root="C" onRootChange={vi.fn()} />)
-    expect(screen.getByLabelText(/inversion type/i)).toBeDefined()
+    expect(screen.getByLabelText(/chord type/i)).toBeDefined()
   })
 
-  it("renders all four inversion type options", () => {
+  it("renders inversion type options with human-readable labels", () => {
     render(<InversionPanel root="C" onRootChange={vi.fn()} />)
-    expect(screen.getByRole("option", { name: "major" })).toBeDefined()
-    expect(screen.getByRole("option", { name: "minor" })).toBeDefined()
-    expect(screen.getByRole("option", { name: "diminished" })).toBeDefined()
-    expect(screen.getByRole("option", { name: "augmented" })).toBeDefined()
+    expect(screen.getByRole("option", { name: "Major" })).toBeDefined()
+    expect(screen.getByRole("option", { name: "Minor" })).toBeDefined()
+    expect(screen.getByRole("option", { name: "Diminished" })).toBeDefined()
+    expect(screen.getByRole("option", { name: "Augmented" })).toBeDefined()
   })
 
   it("renders the voicing, inversion, and string set filter selectors", () => {
@@ -158,12 +172,12 @@ describe("InversionPanel", () => {
     expect(screen.getByText(/no voicings match/i)).toBeDefined()
   })
 
-  it("changes inversion type and updates formula", () => {
+  it("changes chord type and updates formula", () => {
     render(<InversionPanel root="C" onRootChange={vi.fn()} />)
-    const select = screen.getByLabelText(/inversion type/i) as HTMLSelectElement
+    const select = screen.getByLabelText(/chord type/i) as HTMLSelectElement
     fireEvent.change(select, { target: { value: "minor" } })
     expect(select.value).toBe("minor")
-    // Formula updates (minor not mocked to return voicings, but formula should update)
+    // Formula derives from tonal.js intervals; mock returns ["1P", "3m", "5P"] for minor
     expect(screen.getByText(/Formula: 1 – b3 – 5/)).toBeDefined()
   })
 

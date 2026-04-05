@@ -148,9 +148,10 @@ describe("getChordPositions", () => {
     }
   })
 
-  it("first position label is 'Open' for C major", () => {
+  it("first position label identifies the root string for C major", () => {
     const positions = getChordPositions("C", "maj")
-    expect(positions[0].label).toBe("Open")
+    // First voicing (x32010) has C on the 5th string (A string, fret 3 = C)
+    expect(positions[0].label).toBe("5th string root (open)")
   })
 
   it("returns empty array for unknown tonic", () => {

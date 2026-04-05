@@ -18,13 +18,13 @@ const TABS: { id: PanelTab; label: string }[] = [
   { id: "inversions", label: "Inversions" },
 ]
 
-// Diatonic chord quality → InversionPanel inversion type
+// Diatonic chord quality → InversionPanel inversion type (must match inversions-db.json suffixes)
 const QUALITY_TO_INVERSION_TYPE: Record<string, string> = {
   major:      "major",
   minor:      "minor",
   dominant:   "major",   // dominant 7th has a major triad on top
-  diminished: "diminished",
-  augmented:  "augmented",
+  diminished: "dim",
+  augmented:  "aug",
 }
 
 // Solo scale display name → ScalePanel scale type value
