@@ -9,6 +9,7 @@ import { AddToGoalButton } from "@/components/add-to-goal-button"
 
 interface HarmonyTabProps {
   tonic: string
+  defaultMode?: string
   onChordSelect?: (tonic: string, type: string, quality: string, primaryScaleName: string) => void
   onScaleSelect?: (tonic: string, scaleName: string) => void
 }
@@ -55,8 +56,8 @@ const MAJOR_ROMAN: Record<number, string> = {
   1: "I", 2: "ii", 3: "iii", 4: "IV", 5: "V", 6: "vi", 7: "vii°",
 }
 
-export function HarmonyTab({ tonic, onChordSelect, onScaleSelect }: HarmonyTabProps) {
-  const [mode, setMode] = useState("ionian")
+export function HarmonyTab({ tonic, defaultMode, onChordSelect, onScaleSelect }: HarmonyTabProps) {
+  const [mode, setMode] = useState(defaultMode ?? "ionian")
   const [selectedDegree, setSelectedDegree] = useState<number | null>(1)
   const [relative, setRelative] = useState(false)
 
@@ -75,7 +76,7 @@ export function HarmonyTab({ tonic, onChordSelect, onScaleSelect }: HarmonyTabPr
   useEffect(() => {
     const chord = chords.find((c) => c.degree === 1)
     if (chord) {
-      const soloScales = getSoloScales({ tonic: chord.tonic, type: chord.type, degree: chord.degree }, "ionian")
+      const soloScales = getSoloScales({ tonic: chord.tonic, type: chord.type, degree: chord.degree }, mode)
       onChordSelect?.(chord.tonic, chord.type, chord.quality, soloScales.primary.scaleName)
     }
   }, []) // intentionally empty: only on mount

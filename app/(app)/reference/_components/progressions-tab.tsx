@@ -10,12 +10,13 @@ const CATEGORY_ORDER = ["Pop", "Blues", "Jazz", "Rock", "Folk / Country", "Class
 
 interface ProgressionsTabProps {
   tonic: string
+  defaultProgressionName?: string
   onChordSelect?: (tonic: string, type: string, quality: string, primaryScaleName: string) => void
   onScaleSelect?: (tonic: string, scaleName: string) => void
 }
 
-export function ProgressionsTab({ tonic, onChordSelect, onScaleSelect }: ProgressionsTabProps) {
-  const [progressionName, setProgressionName] = useState("pop-standard")
+export function ProgressionsTab({ tonic, defaultProgressionName, onChordSelect, onScaleSelect }: ProgressionsTabProps) {
+  const [progressionName, setProgressionName] = useState(defaultProgressionName ?? "pop-standard")
   const [selectedIndex, setSelectedIndex] = useState<number | null>(0)
   const [infoOpen, setInfoOpen] = useState(false)
   const infoRef = useRef<HTMLDivElement>(null)

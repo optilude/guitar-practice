@@ -10,9 +10,9 @@ import { MobileMenu } from "@/components/layout/mobile-menu"
 const NAV_ITEMS = [
   { href: "/", label: "Home" },
   { href: "/goals", label: "Goals" },
+  { href: "/history", label: "History" },
   { href: "/library", label: "Library" },
   { href: "/reference", label: "Reference" },
-  { href: "/history", label: "History" },
 ]
 
 export function NavbarClient() {
@@ -32,7 +32,9 @@ export function NavbarClient() {
           <MobileMenu items={NAV_ITEMS} />
         </div>
 
-        <span className="text-sm font-medium text-foreground/85 md:mr-3">Guitar Practice</span>
+        <Link href="/" className="text-sm font-medium text-foreground/85 md:mr-3 hover:text-foreground transition-colors">
+          Guitar Practice
+        </Link>
 
         <div className="hidden md:flex items-center gap-5">
           {NAV_ITEMS.map((item) => {

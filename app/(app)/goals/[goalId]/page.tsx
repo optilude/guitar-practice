@@ -31,5 +31,12 @@ export default async function GoalDetailPage({
 
   if (!goal || goal.userId !== userId) notFound()
 
-  return <GoalDetailClient goal={goal} />
+  const recentSessions = await db.practiceSession.findMany({
+    where: { userId, goalId },
+    orderBy: { startedAtLocal: "desc" },
+    take: 5,
+    select: { id: true, routineTitle: true, startedAtLocal: true, endedAtLocal: true },
+  })
+
+  return <GoalDetailClient goal={goal} recentSessions={recentSessions} />
 }

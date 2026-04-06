@@ -40,14 +40,15 @@ enum PracticeMode {
 // ── Phase 1–2 models (unchanged) ──────────────────────────────────────────────
 
 model User {
-  id           String   @id @default(cuid())
-  name         String?
-  email        String   @unique
-  passwordHash String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  goals        Goal[]
-  userLessons  UserLesson[]
+  id               String            @id @default(cuid())
+  name             String?
+  email            String            @unique
+  passwordHash     String
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  goals            Goal[]
+  userLessons      UserLesson[]
+  practiceSessions PracticeSession[]
 }
 
 model Source {
@@ -168,4 +169,47 @@ model UserLesson {
   goalTopics  GoalTopic[]
 
   @@index([userId, categoryId])
+}
+
+// ── Phase 6 models ────────────────────────────────────────────────────────────
+
+model PracticeSession {
+  id             String            @id @default(cuid())
+  userId         String
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goalId         String?
+  goalTitle      String
+  routineTitle   String
+  startedAtLocal String
+  endedAtLocal   String
+  localDate      String
+  notes          String            @default("")
+  sections       SnapshotSection[]
+
+  @@index([userId, localDate])
+  @@index([userId, goalId])
+}
+
+model SnapshotSection {
+  id              String                 @id @default(cuid())
+  sessionId       String
+  session         PracticeSession        @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  title           String
+  type            SectionType
+  description     String                 @default("")
+  durationMinutes Int
+  order           Int
+  topics          SnapshotSectionTopic[]
+}
+
+model SnapshotSectionTopic {
+  id           String          @id @default(cuid())
+  sectionId    String
+  section      SnapshotSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  kind         TopicKind
+  subtype      String?
+  displayName  String
+  keys         String[]      @default([])
+  practiceMode PracticeMode?
+  lessonUrl    String?
 }
