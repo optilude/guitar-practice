@@ -28,8 +28,25 @@ const BOX_SYSTEM_LABELS: Record<BoxSystem, string> = {
   windows:    "Position windows",
 }
 
-const MODES = ["Major", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrian"]
+const MAJOR_SCALE_MODES = [
+  "Major", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrian",
+]
+const MELODIC_MINOR_MODES = [
+  "Melodic Minor", "Dorian b2", "Lydian Augmented", "Lydian Dominant",
+  "Mixolydian b6", "Locrian #2", "Altered",
+]
+const HARMONIC_MINOR_MODES = [
+  "Harmonic Minor", "Locrian #6", "Ionian #5", "Dorian #4",
+  "Phrygian Dominant", "Lydian #2", "Altered Diminished",
+]
 const PENTATONICS = ["Pentatonic Major", "Pentatonic Minor", "Blues"]
+
+const ALL_GROUPED = new Set([
+  ...MAJOR_SCALE_MODES,
+  ...MELODIC_MINOR_MODES,
+  ...HARMONIC_MINOR_MODES,
+  ...PENTATONICS,
+])
 
 const ROOT_NOTES = [
   "Ab", "A", "A#", "Bb", "B", "C", "C#", "Db", "D", "D#", "Eb", "E", "F", "F#", "Gb", "G", "G#",
@@ -50,13 +67,12 @@ interface ScalePanelProps {
 }
 
 export function ScalePanel({ root, onRootChange, scaleTypeTrigger }: ScalePanelProps) {
-  const scaleTypes      = useMemo(() => listScaleTypes(), [])
-  const modeTypes       = useMemo(() => MODES.filter(t => scaleTypes.includes(t)), [scaleTypes])
-  const pentatonicTypes = useMemo(() => PENTATONICS.filter(t => scaleTypes.includes(t)), [scaleTypes])
-  const otherTypes      = useMemo(
-    () => scaleTypes.filter(t => !MODES.includes(t) && !PENTATONICS.includes(t)),
-    [scaleTypes]
-  )
+  const scaleTypes         = useMemo(() => listScaleTypes(), [])
+  const majorModeTypes     = useMemo(() => MAJOR_SCALE_MODES.filter(t => scaleTypes.includes(t)),    [scaleTypes])
+  const melodicMinorTypes  = useMemo(() => MELODIC_MINOR_MODES.filter(t => scaleTypes.includes(t)),  [scaleTypes])
+  const harmonicMinorTypes = useMemo(() => HARMONIC_MINOR_MODES.filter(t => scaleTypes.includes(t)), [scaleTypes])
+  const pentatonicTypes    = useMemo(() => PENTATONICS.filter(t => scaleTypes.includes(t)),          [scaleTypes])
+  const otherTypes         = useMemo(() => scaleTypes.filter(t => !ALL_GROUPED.has(t)),              [scaleTypes])
   const [scaleType, setScaleType] = useState(scaleTypes[0] ?? "Major")
 
   useEffect(() => {
@@ -126,8 +142,18 @@ export function ScalePanel({ root, onRootChange, scaleTypeTrigger }: ScalePanelP
           }}
           className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
         >
-          <optgroup label="Modes">
-            {modeTypes.map((t) => (
+          <optgroup label="Modes of the Major scale">
+            {majorModeTypes.map((t) => (
+              <option key={t} value={t}>{scaleLabel(t)}</option>
+            ))}
+          </optgroup>
+          <optgroup label="Modes of the Melodic Minor scale">
+            {melodicMinorTypes.map((t) => (
+              <option key={t} value={t}>{scaleLabel(t)}</option>
+            ))}
+          </optgroup>
+          <optgroup label="Modes of the Harmonic Minor scale">
+            {harmonicMinorTypes.map((t) => (
               <option key={t} value={t}>{scaleLabel(t)}</option>
             ))}
           </optgroup>
