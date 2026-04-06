@@ -194,12 +194,12 @@ function resolveKeySequence(topic: SessionTopic): string[]
 ```
 
 - `keys = []` or `keys = [defaultKey]`: returns `[defaultKey ?? "C"]` — single key, no rotation.
-- `keys = ["*"]`: returns all 12 chromatic keys in a fixed standard order determined by `practiceMode` (always starts from C — `defaultKey` is not used here):
-  - `chromatic_asc`: C, C#, D, D#, E, F, F#, G, G#, A, A#, B
-  - `chromatic_desc`: reverse of above
-  - `circle_fifths_asc`: C, G, D, A, E, B, F#, C#, Ab, Eb, Bb, F
-  - `circle_fourths_desc`: reverse of above
-  - `random`: Fisher-Yates shuffle, seeded fresh each session start
+- `keys = ["*"]`: returns all 12 keys in the order determined by `practiceMode`, **starting from `defaultKey`** (or C if `defaultKey` is null) and rotating through the full sequence from that point, wrapping around:
+  - `chromatic_asc`: start at `defaultKey`, ascending chromatically, wrap — e.g. G → G#, A, A#, B, C, C#, D, D#, E, F, F#
+  - `chromatic_desc`: start at `defaultKey`, descending chromatically, wrap
+  - `circle_fifths_asc`: standard circle-of-fifths order (C G D A E B F# C# Ab Eb Bb F), rotated to begin at `defaultKey`
+  - `circle_fourths_desc`: reverse of circle_fifths_asc, rotated to begin at `defaultKey`
+  - `random`: Fisher-Yates shuffle of all 12 keys, seeded fresh each session start (starting key not relevant for random)
 - `keys = ["C", "F", "G"]` (explicit list): returns those keys in that order (practiceMode ignored).
 
 For `lesson` topics: always returns `[""]` — no key concept applies, key strip is hidden.
@@ -581,7 +581,7 @@ app/(app)/_components/nav.tsx      ← reorder tabs, add History, logo → /
 - **No DB write until save.** The session runner is purely in-memory. Closing the tab before saving loses the session — this is acceptable (same as most practice apps).
 - **Timezone-naive storage.** `startedAtLocal` and `endedAtLocal` are plain strings from the user's device. No UTC conversion. The `localDate` field enables efficient calendar and streak queries.
 - **Full routine snapshot on save.** All sections are written, not just sections the user reached. This preserves the intended structure for history review.
-- **Keys array semantics**: `[]` = single default key; `["*"]` = all 12; explicit array = those specific keys. `resolveKeySequence()` is the single source of truth for expanding these.
+- **Keys array semantics**: `[]` = single default key; `["*"]` = all 12 starting from `defaultKey` (falling back to C) in practiceMode order; explicit array = those specific keys in that order. `resolveKeySequence()` is the single source of truth for expanding these.
 - **react-day-picker styling.** Use the `classNames` prop to apply Tailwind classes matching the app's design system. No CSS modules.
 - **Metronome via Web Audio API.** No external audio library. AudioContext created lazily on first start (avoids browser autoplay block).
 - **Streak definition.** A day "counts" if there is at least one saved `PracticeSession` with that `localDate`. Streak = consecutive days ending today (or yesterday, if today has no session yet — streak not yet broken).
