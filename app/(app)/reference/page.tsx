@@ -46,7 +46,15 @@ const SOLO_SCALE_TO_PANEL_TYPE: Record<string, string> = {
   "Phrygian Dominant":       "Phrygian Dominant",
   "Bebop Dominant":          "Bebop Dominant",
   "Melodic Minor":           "Melodic Minor",
+  "Harmonic Minor":          "Harmonic Minor",
   "Diminished Half-Whole":   "Diminished Half-Whole",
+  "Dorian b2":               "Dorian b2",
+  "Mixolydian b6":           "Mixolydian b6",
+  "Locrian #6":              "Locrian #6",
+  "Ionian #5":               "Ionian #5",
+  "Dorian #4":               "Dorian #4",
+  "Lydian #2":               "Lydian #2",
+  "Altered Diminished":      "Altered Diminished",
 }
 
 export default function ReferencePage() {
