@@ -52,7 +52,7 @@ export function ChordDiagram({ chord, numFrets = 5 }: ChordDiagramProps) {
     if (svg) {
       svg.classList.add("chord-diagram-svg")
       svg.setAttribute("viewBox", `0 0 ${width} ${height}`)
-      svg.setAttribute("width", String(Math.round(width * 0.8)))
+      svg.setAttribute("width", String(Math.round(width * 0.65)))
       svg.removeAttribute("height")
     }
 
