@@ -9,6 +9,7 @@ import { AddToGoalButton } from "@/components/add-to-goal-button"
 
 interface HarmonyTabProps {
   tonic: string
+  defaultMode?: string
   onChordSelect?: (tonic: string, type: string, quality: string, primaryScaleName: string) => void
   onScaleSelect?: (tonic: string, scaleName: string) => void
 }
@@ -55,8 +56,8 @@ const MAJOR_ROMAN: Record<number, string> = {
   1: "I", 2: "ii", 3: "iii", 4: "IV", 5: "V", 6: "vi", 7: "vii°",
 }
 
-export function HarmonyTab({ tonic, onChordSelect, onScaleSelect }: HarmonyTabProps) {
-  const [mode, setMode] = useState("ionian")
+export function HarmonyTab({ tonic, defaultMode, onChordSelect, onScaleSelect }: HarmonyTabProps) {
+  const [mode, setMode] = useState(defaultMode ?? "ionian")
   const [selectedDegree, setSelectedDegree] = useState<number | null>(1)
   const [relative, setRelative] = useState(false)
 
