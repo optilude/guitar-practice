@@ -12,6 +12,17 @@ vi.mock("tonal", () => ({
 }))
 
 vi.mock("@/lib/theory", () => ({
+  SOLO_MODE_OPTION_GROUPS: [
+    { label: "Major Scale Modes", options: [
+      { value: "ionian",     label: "Ionian (major)" },
+      { value: "dorian",     label: "Dorian" },
+      { value: "phrygian",   label: "Phrygian" },
+      { value: "lydian",     label: "Lydian" },
+      { value: "mixolydian", label: "Mixolydian" },
+      { value: "aeolian",    label: "Aeolian (natural minor)" },
+      { value: "locrian",    label: "Locrian" },
+    ]},
+  ],
   getDiatonicChords: () => [
     { degree: 1, roman: "I",  tonic: "C", type: "maj7", quality: "major",    nashville: "1" },
     { degree: 5, roman: "V",  tonic: "G", type: "7",    quality: "dominant", nashville: "5" },

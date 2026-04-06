@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Note } from "tonal"
-import { getDiatonicChords, getSoloScales } from "@/lib/theory"
+import { getDiatonicChords, getSoloScales, SOLO_MODE_OPTION_GROUPS } from "@/lib/theory"
 import { ChordQualityBlock } from "./chord-quality-block"
 import { SoloScalesPanel } from "./solo-scales-panel"
 import { AddToGoalButton } from "@/components/add-to-goal-button"
@@ -13,24 +13,36 @@ interface HarmonyTabProps {
   onScaleSelect?: (tonic: string, scaleName: string) => void
 }
 
-const MODE_OPTIONS = [
-  { value: "ionian",     label: "Ionian (major)" },
-  { value: "dorian",     label: "Dorian" },
-  { value: "phrygian",   label: "Phrygian" },
-  { value: "lydian",     label: "Lydian" },
-  { value: "mixolydian", label: "Mixolydian" },
-  { value: "aeolian",    label: "Aeolian (natural minor)" },
-  { value: "locrian",    label: "Locrian" },
-]
+const MAJOR_MODE_SET = new Set([
+  "ionian", "dorian", "phrygian", "lydian", "mixolydian", "aeolian", "locrian",
+])
 
-// Descending interval from each mode's tonic to its parent major key tonic
-const MODE_PARENT_INTERVAL: Record<string, string> = {
-  dorian:     "-2M",
-  phrygian:   "-3M",
-  lydian:     "-4P",
-  mixolydian: "-5P",
-  aeolian:    "-6M",
-  locrian:    "-7M",
+type ModeParentInfo = { interval: string; family: "major" | "melodic minor" | "harmonic minor" }
+
+const MODE_PARENT_INFO: Record<string, ModeParentInfo> = {
+  // Major scale modes (interval to parent major root)
+  dorian:            { interval: "-2M", family: "major" },
+  phrygian:          { interval: "-3M", family: "major" },
+  lydian:            { interval: "-4P", family: "major" },
+  mixolydian:        { interval: "-5P", family: "major" },
+  aeolian:           { interval: "-6M", family: "major" },
+  locrian:           { interval: "-7M", family: "major" },
+  // Melodic minor modes (interval to parent melodic minor root)
+  "melodic minor":    { interval: "",    family: "melodic minor" },
+  "dorian b2":        { interval: "-2M", family: "melodic minor" },
+  "lydian augmented": { interval: "-3m", family: "melodic minor" },
+  "lydian dominant":  { interval: "-4P", family: "melodic minor" },
+  "mixolydian b6":    { interval: "-5P", family: "melodic minor" },
+  "locrian #2":       { interval: "-6M", family: "melodic minor" },
+  "altered":          { interval: "-7M", family: "melodic minor" },
+  // Harmonic minor modes (interval to parent harmonic minor root)
+  "harmonic minor":     { interval: "",    family: "harmonic minor" },
+  "locrian #6":         { interval: "-2M", family: "harmonic minor" },
+  "ionian #5":          { interval: "-3m", family: "harmonic minor" },
+  "dorian #4":          { interval: "-4P", family: "harmonic minor" },
+  "phrygian dominant":  { interval: "-5P", family: "harmonic minor" },
+  "lydian #2":          { interval: "-6m", family: "harmonic minor" },
+  "altered diminished": { interval: "-7M", family: "harmonic minor" },
 }
 
 // How many diatonic steps above the parent major root each mode starts (0-indexed)
@@ -68,9 +80,13 @@ export function HarmonyTab({ tonic, onChordSelect, onScaleSelect }: HarmonyTabPr
     }
   }, []) // intentionally empty: only on mount
 
-  const parentKey = mode !== "ionian"
-    ? Note.transpose(tonic, MODE_PARENT_INTERVAL[mode])
-    : null
+  const parentInfo = mode !== "ionian" ? MODE_PARENT_INFO[mode] : null
+  const parentKey = parentInfo && parentInfo.interval
+    ? Note.transpose(tonic, parentInfo.interval)
+    : parentInfo && parentInfo.interval === ""
+      ? tonic
+      : null
+  const parentLabel = parentInfo?.family ?? "major"
 
   const modeOffset = MODE_DEGREE_OFFSET[mode] ?? 0
 
@@ -117,10 +133,12 @@ export function HarmonyTab({ tonic, onChordSelect, onScaleSelect }: HarmonyTabPr
           }}
           className="bg-card border border-border rounded px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent w-fit"
         >
-          {MODE_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
+          {SOLO_MODE_OPTION_GROUPS.map((group) => (
+            <optgroup key={group.label} label={group.label}>
+              {group.options.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </optgroup>
           ))}
         </select>
         <AddToGoalButton
@@ -132,7 +150,7 @@ export function HarmonyTab({ tonic, onChordSelect, onScaleSelect }: HarmonyTabPr
         />
         {parentKey && (
           <span className="text-xs text-muted-foreground">
-            parent: <span className="font-medium text-foreground">{parentKey} major</span>
+            parent: <span className="font-medium text-foreground">{parentKey} {parentLabel}</span>
           </span>
         )}
       </div>
@@ -143,7 +161,7 @@ export function HarmonyTab({ tonic, onChordSelect, onScaleSelect }: HarmonyTabPr
           <p className="text-xs uppercase tracking-widest text-muted-foreground">
             Diatonic 7th chords
           </p>
-          {mode !== "ionian" && (
+          {MAJOR_MODE_SET.has(mode) && mode !== "ionian" && (
             <label
               className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-pointer select-none"
               title="Show each chord's scale degree in the parent major key"
