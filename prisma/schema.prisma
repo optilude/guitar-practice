@@ -209,7 +209,7 @@ model SnapshotSectionTopic {
   kind         TopicKind
   subtype      String?
   displayName  String
-  keys         String[]
+  keys         String[]      @default([])
   practiceMode PracticeMode?
   lessonUrl    String?
 }
