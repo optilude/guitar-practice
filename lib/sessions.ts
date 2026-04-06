@@ -26,7 +26,7 @@ export type SessionSection = {
 export type SessionRoutine = {
   id: string
   title: string
-  goalId: string
+  goalId: string | null
   goalTitle: string
   sections: SessionSection[]
 }

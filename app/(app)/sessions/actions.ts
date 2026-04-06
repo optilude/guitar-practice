@@ -74,7 +74,9 @@ export async function deleteSession(sessionId: string): Promise<void> {
     where: { id: sessionId },
     select: { userId: true },
   })
-  if (!session || session.userId !== userId) return
+  if (!session || session.userId !== userId) {
+    throw new Error("Not authorized")
+  }
 
   await db.practiceSession.delete({ where: { id: sessionId } })
   revalidatePath("/history")
