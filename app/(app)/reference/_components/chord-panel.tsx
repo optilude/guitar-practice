@@ -20,7 +20,7 @@ import {
 import type { BoxSystem } from "@/lib/rendering/fretboard"
 import { cn } from "@/lib/utils"
 import { AddToGoalButton } from "@/components/add-to-goal-button"
-import { defaultModeForChordType, getSoloScales, SOLO_MODE_OPTIONS } from "@/lib/theory/solo-scales"
+import { defaultModeForChordType, getSoloScales, SOLO_MODE_OPTION_GROUPS } from "@/lib/theory/solo-scales"
 import { SoloScalesPanel } from "./solo-scales-panel"
 import type { ChordPosition } from "@/lib/theory/chords"
 
@@ -492,8 +492,12 @@ export function ChordPanel({ root, onRootChange, chordTypeTrigger, onScaleSelect
               onChange={(e) => setSoloingMode(e.target.value)}
               className="bg-card border border-border rounded px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent w-fit"
             >
-              {SOLO_MODE_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              {SOLO_MODE_OPTION_GROUPS.map((group) => (
+                <optgroup key={group.label} label={group.label}>
+                  {group.options.map((opt) => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </optgroup>
               ))}
             </select>
           </div>

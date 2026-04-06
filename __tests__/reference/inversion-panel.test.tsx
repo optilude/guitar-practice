@@ -25,6 +25,15 @@ vi.mock("@/lib/theory/solo-scales", () => ({
     { value: "ionian", label: "Ionian" },
     { value: "dorian", label: "Dorian" },
   ],
+  SOLO_MODE_OPTION_GROUPS: [
+    {
+      label: "Major scale modes",
+      options: [
+        { value: "ionian", label: "Ionian (major)" },
+        { value: "dorian", label: "Dorian" },
+      ],
+    },
+  ],
 }))
 
 // Mock AddToGoalButton to avoid next-auth import chain
