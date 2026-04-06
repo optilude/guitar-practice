@@ -72,3 +72,88 @@ describe("getSoloScales", () => {
     expect(names).toContain("Diminished Half-Whole")
   })
 })
+
+describe("getSoloScales — melodic minor modal family", () => {
+  it("degree 1 in melodic minor context returns Melodic Minor", () => {
+    const result = getSoloScales({ tonic: "C", type: "m7", degree: 1 }, "melodic minor")
+    expect(result.primary.scaleName).toBe("Melodic Minor")
+  })
+
+  it("degree 2 in melodic minor context returns Dorian b2", () => {
+    const result = getSoloScales({ tonic: "D", type: "m7b5", degree: 2 }, "melodic minor")
+    expect(result.primary.scaleName).toBe("Dorian b2")
+  })
+
+  it("degree 3 in melodic minor context returns Lydian Augmented", () => {
+    const result = getSoloScales({ tonic: "Eb", type: "maj7", degree: 3 }, "melodic minor")
+    expect(result.primary.scaleName).toBe("Lydian Augmented")
+  })
+
+  it("degree 4 in melodic minor context returns Lydian Dominant", () => {
+    const result = getSoloScales({ tonic: "F", type: "7", degree: 4 }, "melodic minor")
+    expect(result.primary.scaleName).toBe("Lydian Dominant")
+  })
+
+  it("degree 5 in melodic minor context returns Mixolydian b6", () => {
+    const result = getSoloScales({ tonic: "G", type: "7", degree: 5 }, "melodic minor")
+    expect(result.primary.scaleName).toBe("Mixolydian b6")
+  })
+
+  it("degree 6 in melodic minor context returns Locrian #2", () => {
+    const result = getSoloScales({ tonic: "A", type: "m7b5", degree: 6 }, "melodic minor")
+    expect(result.primary.scaleName).toBe("Locrian #2")
+  })
+
+  it("degree 7 in melodic minor context returns Altered", () => {
+    const result = getSoloScales({ tonic: "B", type: "7", degree: 7 }, "melodic minor")
+    expect(result.primary.scaleName).toBe("Altered")
+  })
+
+  it("degree 1 in 'dorian b2' context returns Dorian b2", () => {
+    const result = getSoloScales({ tonic: "D", type: "m7", degree: 1 }, "dorian b2")
+    expect(result.primary.scaleName).toBe("Dorian b2")
+  })
+
+  it("degree 3 in 'dorian b2' context returns Lydian Dominant", () => {
+    // dorian b2 = offset 1, degree 3 → (1+3-1) % 7 = 3 → MELODIC_MINOR_MODES[3] = "lydian dominant" → "Lydian Dominant"
+    const result = getSoloScales({ tonic: "F", type: "7", degree: 3 }, "dorian b2")
+    expect(result.primary.scaleName).toBe("Lydian Dominant")
+  })
+})
+
+describe("getSoloScales — harmonic minor modal family", () => {
+  it("degree 1 in harmonic minor context returns Harmonic Minor", () => {
+    const result = getSoloScales({ tonic: "A", type: "m7", degree: 1 }, "harmonic minor")
+    expect(result.primary.scaleName).toBe("Harmonic Minor")
+  })
+
+  it("degree 2 in harmonic minor context returns Locrian #6", () => {
+    const result = getSoloScales({ tonic: "B", type: "m7b5", degree: 2 }, "harmonic minor")
+    expect(result.primary.scaleName).toBe("Locrian #6")
+  })
+
+  it("degree 3 in harmonic minor context returns Ionian #5", () => {
+    const result = getSoloScales({ tonic: "C", type: "maj7", degree: 3 }, "harmonic minor")
+    expect(result.primary.scaleName).toBe("Ionian #5")
+  })
+
+  it("degree 4 in harmonic minor context returns Dorian #4", () => {
+    const result = getSoloScales({ tonic: "D", type: "m7", degree: 4 }, "harmonic minor")
+    expect(result.primary.scaleName).toBe("Dorian #4")
+  })
+
+  it("degree 5 in harmonic minor context returns Phrygian Dominant", () => {
+    const result = getSoloScales({ tonic: "E", type: "7", degree: 5 }, "harmonic minor")
+    expect(result.primary.scaleName).toBe("Phrygian Dominant")
+  })
+
+  it("degree 6 in harmonic minor context returns Lydian #2", () => {
+    const result = getSoloScales({ tonic: "F", type: "maj7", degree: 6 }, "harmonic minor")
+    expect(result.primary.scaleName).toBe("Lydian #2")
+  })
+
+  it("degree 7 in harmonic minor context returns Altered Diminished", () => {
+    const result = getSoloScales({ tonic: "G#", type: "dim7", degree: 7 }, "harmonic minor")
+    expect(result.primary.scaleName).toBe("Altered Diminished")
+  })
+})
