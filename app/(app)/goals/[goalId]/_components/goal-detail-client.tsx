@@ -32,11 +32,19 @@ type GoalData = {
   routines: RoutineWithCount[]
 }
 
-interface GoalDetailClientProps {
-  goal: GoalData
+type RecentSession = {
+  id: string
+  routineTitle: string
+  startedAtLocal: string
+  endedAtLocal: string
 }
 
-export function GoalDetailClient({ goal }: GoalDetailClientProps) {
+interface GoalDetailClientProps {
+  goal: GoalData
+  recentSessions: RecentSession[]
+}
+
+export function GoalDetailClient({ goal, recentSessions }: GoalDetailClientProps) {
   const [editingTitle, setEditingTitle] = useState(false)
   const [editingDesc, setEditingDesc] = useState(false)
   const [titleValue, setTitleValue] = useState(goal.title)
@@ -196,10 +204,10 @@ export function GoalDetailClient({ goal }: GoalDetailClientProps) {
           ) : (
             <ul className="space-y-2">
               {goal.routines.map((routine) => (
-                <li key={routine.id}>
+                <li key={routine.id} className="flex items-center gap-2">
                   <Link
                     href={`/goals/${goal.id}/routines/${routine.id}`}
-                    className="flex items-center justify-between py-2 hover:bg-card rounded px-2 -mx-2 transition-colors"
+                    className="flex flex-1 items-center justify-between py-2 hover:bg-card rounded px-2 -mx-2 transition-colors min-w-0"
                   >
                     <span className="text-sm text-foreground">{routine.title}</span>
                     <span className="text-xs text-muted-foreground">
@@ -207,11 +215,50 @@ export function GoalDetailClient({ goal }: GoalDetailClientProps) {
                       {routine._count.sections === 1 ? "section" : "sections"}
                     </span>
                   </Link>
+                  <Link
+                    href={`/sessions/run?routineId=${routine.id}`}
+                    className="shrink-0 px-3 py-1 text-xs rounded-md bg-accent text-accent-foreground hover:opacity-90 transition-opacity"
+                  >
+                    ▶ Start
+                  </Link>
                 </li>
               ))}
             </ul>
           )}
         </div>
+      </div>
+
+      {/* Recent sessions */}
+      <div className="mt-8">
+        <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">Recent sessions</p>
+        {recentSessions.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No sessions yet — start one above.</p>
+        ) : (
+          <div className="space-y-1">
+            {recentSessions.map((s) => (
+              <Link
+                key={s.id}
+                href={`/history/${s.id}`}
+                className="flex items-center justify-between gap-4 px-4 py-2.5 rounded-lg border border-border bg-card hover:bg-muted transition-colors text-sm"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="font-medium truncate">{s.routineTitle}</span>
+                  <span className="text-muted-foreground shrink-0">{s.startedAtLocal.slice(0, 10)}</span>
+                  <span className="text-muted-foreground shrink-0">
+                    {s.startedAtLocal.slice(11, 16)} – {s.endedAtLocal.slice(11, 16)}
+                  </span>
+                </div>
+                <span className="text-muted-foreground shrink-0">→</span>
+              </Link>
+            ))}
+            <Link
+              href={`/history?goalId=${goal.id}`}
+              className="inline-block text-xs text-muted-foreground hover:text-foreground transition-colors pt-1"
+            >
+              View all sessions for this goal →
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* Archive */}

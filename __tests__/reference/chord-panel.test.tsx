@@ -154,6 +154,6 @@ describe("ChordPanel", () => {
     expect(screen.getByRole("option", { name: "Fingers" })).toBeDefined()
     expect(screen.getByRole("option", { name: "Notes" })).toBeDefined()
     expect(screen.getByRole("option", { name: "Intervals" })).toBeDefined()
-    expect(showSelect.value).toBe("fingers")
+    expect(showSelect.value).toBe("intervals")
   })
 })
