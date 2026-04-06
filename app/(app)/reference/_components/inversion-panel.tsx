@@ -160,7 +160,7 @@ export function InversionPanel({ root, onRootChange, inversionTypeTrigger, onSca
   const [voicingFilter, setVoicingFilter]     = useState<string>("all")
   const [inversionFilter, setInvFilter]       = useState<string>("all")
   const [stringSetFilter, setStringSetFilter] = useState<string>("all")
-  const [showMode, setShowMode]               = useState<ShowMode>("fingers")
+  const [showMode, setShowMode]               = useState<ShowMode>("intervals")
   const [labelMode, setLabelMode]             = useState<"note" | "interval">("interval")
 
   const inversionScale = useMemo(

@@ -202,7 +202,7 @@ export function ChordPanel({ root, onRootChange, chordTypeTrigger, onScaleSelect
   const [labelMode, setLabelMode] = useState<"note" | "interval">("interval")
   const [boxSystem, setBoxSystem] = useState<BoxSystem>("none")
   const [boxIndex, setBoxIndex]   = useState(0)
-  const [showMode, setShowMode]   = useState<ShowMode>("fingers")
+  const [showMode, setShowMode]   = useState<ShowMode>("intervals")
   const [isDark, setIsDark]       = useState(false)
 
   // Track dark-mode class on <html> so diagrams re-render when theme changes.

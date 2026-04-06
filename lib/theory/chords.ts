@@ -7,21 +7,23 @@ import { getArpeggio } from "@/lib/theory/arpeggios"
 const db = guitarDb as any
 
 // ---------------------------------------------------------------------------
-// Chord type list — sourced from TonalJS chord types for arpeggio panel
+// Chord type list for the arpeggio panel — TonalJS chord quality names.
+// Mirrors the chord-db type set, excluding shell voicings and cluster types
+// (which are voicing-specific constructs rather than chord qualities).
 // ---------------------------------------------------------------------------
 const CHORD_TYPES = [
-  // Major
-  "maj", "6", "maj7", "maj9", "add9",
-  // Minor
-  "m", "m6", "m7", "m9", "madd9",
+  // Major (triad first, then extensions)
+  "maj", "6", "69", "maj7", "maj9", "maj11", "maj13", "add9", "maj7b5", "maj7sus2",
+  // Minor (triad first, then extensions)
+  "m", "m6", "m7", "m9", "m11", "m13", "m69", "mmaj7", "mmaj9", "mmaj11", "mmaj7b5", "madd9",
   // Dominant
-  "7", "9", "11", "13",
-  // Diminished
-  "dim", "dim7", "m7b5",
-  // Augmented
-  "aug",
-  // Sus
+  "7", "9", "11", "13", "7b9", "7#9", "7#5", "7#11", "7alt", "alt",
+  // Suspended
   "sus2", "sus4", "7sus4",
+  // Diminished
+  "dim", "dim7", "m7b5", "hdim7",
+  // Augmented (triad first)
+  "aug", "aug7", "aug9",
 ]
 
 export function listChordTypes(): string[] {

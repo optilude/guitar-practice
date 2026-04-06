@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react"
 import { getArpeggio, listChordTypes } from "@/lib/theory"
+import { groupChordTypes } from "@/lib/theory/chord-categories"
 import { NotesViewer } from "./notes-viewer"
 import { FretboardViewer } from "./fretboard-viewer"
 import {
@@ -24,10 +25,7 @@ const TONAL_TO_DEGREE: Record<string, string> = {
 }
 const tonalToDegree = (interval: string) => TONAL_TO_DEGREE[interval] ?? interval
 
-// Tonal.js equivalents of the chord panel's COMMON_TYPES, in the same order
-const ARPEGGIO_COMMON_TYPES = ["maj", "maj7", "m", "m7", "7", "9", "dim", "dim7", "m7b5"]
-
-// Display labels to align with chord panel naming
+// Display labels: tonal short names → human-readable
 const CHORD_TYPE_DISPLAY: Record<string, string> = { maj: "major", m: "minor" }
 const displayLabel = (t: string) => CHORD_TYPE_DISPLAY[t] ?? t
 
@@ -51,9 +49,8 @@ interface ArpeggioPanelProps {
 
 export function ArpeggioPanel({ root, onRootChange, chordTypeTrigger }: ArpeggioPanelProps) {
   const chordTypes   = useMemo(() => listChordTypes(), [])
-  const commonTypes  = useMemo(() => ARPEGGIO_COMMON_TYPES.filter(t => chordTypes.includes(t)), [chordTypes])
-  const otherTypes   = useMemo(() => chordTypes.filter(t => !ARPEGGIO_COMMON_TYPES.includes(t)), [chordTypes])
-  const [chordType, setChordType] = useState(chordTypes[0] ?? "maj7")
+  const chordGroups  = useMemo(() => groupChordTypes(chordTypes), [chordTypes])
+  const [chordType, setChordType] = useState(chordTypes[0] ?? "maj")
 
   useEffect(() => {
     if (chordTypeTrigger && chordTypes.includes(chordTypeTrigger.type)) {
@@ -121,16 +118,13 @@ export function ArpeggioPanel({ root, onRootChange, chordTypeTrigger }: Arpeggio
             }}
             className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
           >
-            <optgroup label="Common">
-              {commonTypes.map((t) => (
-                <option key={t} value={t}>{displayLabel(t)}</option>
-              ))}
-            </optgroup>
-            <optgroup label="Other">
-              {otherTypes.map((t) => (
-                <option key={t} value={t}>{displayLabel(t)}</option>
-              ))}
-            </optgroup>
+            {chordGroups.map(({ category, label, types }) => (
+              <optgroup key={category} label={label}>
+                {types.map((t) => (
+                  <option key={t} value={t}>{displayLabel(t)}</option>
+                ))}
+              </optgroup>
+            ))}
           </select>
         </div>
         <AddToGoalButton

@@ -1,106 +1,114 @@
 // ---------------------------------------------------------------------------
-// Shared chord type grouping for ChordPanel and InversionPanel selects.
-// Both panels use the same category structure applied to their own type lists.
+// Shared chord type grouping for ChordPanel, InversionPanel, and ArpeggioPanel selects.
+// All three panels use the same category structure applied to their own type lists.
 // ---------------------------------------------------------------------------
 
 export type ChordCategory =
-  | "triads"
-  | "common"
-  | "shell"
-  | "otherMajor"
-  | "otherMinor"
-  | "otherDominant"
-  | "otherDiminished"
-  | "otherAugmented"
+  | "major"
+  | "minor"
+  | "dominant"
+  | "suspended"
+  | "diminished"
+  | "augmented"
 
 export const CATEGORY_LABELS: Record<ChordCategory, string> = {
-  triads:          "Triads",
-  common:          "Common",
-  shell:           "Shell Voicings",
-  otherMajor:      "Other Major",
-  otherMinor:      "Other Minor",
-  otherDominant:   "Other Dominant",
-  otherDiminished: "Other Diminished",
-  otherAugmented:  "Other Augmented",
+  major:      "Major",
+  minor:      "Minor",
+  dominant:   "Dominant",
+  suspended:  "Suspended",
+  diminished: "Diminished",
+  augmented:  "Augmented",
 }
 
 export const CATEGORY_ORDER: ChordCategory[] = [
-  "triads", "common", "shell",
-  "otherMajor", "otherMinor", "otherDominant", "otherDiminished", "otherAugmented",
+  "major", "minor", "dominant", "suspended", "diminished", "augmented",
 ]
 
 // Explicit type → category assignments.
-// Both naming conventions for shell voicings are handled here:
-//   chords panel uses spaces ("maj7 shell"), inversions panel uses underscores ("maj7_shell").
+// Covers chord-db suffixes (chord/inversion panels) and TonalJS names (arpeggio panel).
+// Shell voicings are distributed into their parent family rather than a separate group.
 const CATEGORY_MAP: Record<string, ChordCategory> = {
-  // Triads
-  major:   "triads",
-  minor:   "triads",
-  aug:     "triads",
+  // --- Major ---
+  // Triads first (chord-db suffix and TonalJS alias)
+  major:   "major",
+  maj:     "major",
+  // Extensions
+  "6":         "major",
+  "69":        "major",
+  maj7:        "major",
+  maj9:        "major",
+  maj11:       "major",
+  maj13:       "major",
+  add9:        "major",
+  maj7b5:      "major",
+  maj_cluster: "major",
+  maj7sus2:    "major",
+  // Shell voicings — chord panel (space-separated)
+  "maj7 shell":    "major",
+  "maj6 shell":    "major",
+  // Shell voicings — inversion panel (underscore)
+  maj7_shell:      "major",
+  "6_shell":       "major",
 
-  // Common
-  maj7:    "common",
-  "7":     "common",
-  "9":     "common",
-  m7:      "common",
-  dim:     "common",
-  dim7:    "common",
-  m7b5:    "common",
-  hdim7:   "common",
+  // --- Minor ---
+  // Triads first
+  minor:   "minor",
+  m:       "minor",
+  // Extensions
+  m6:        "minor",
+  m7:        "minor",
+  m9:        "minor",
+  m11:       "minor",
+  m13:       "minor",
+  m69:       "minor",
+  mmaj7:     "minor",
+  mmaj9:     "minor",
+  mmaj11:    "minor",
+  mmaj7b5:   "minor",
+  madd9:     "minor",
+  m_cluster: "minor",
+  // Shell voicings — chord panel
+  "m7 shell":  "minor",
+  // Shell voicings — inversion panel
+  m7_shell:    "minor",
+  m6_shell:    "minor",
 
-  // Shell voicings — chords panel (space-separated)
-  "maj7 shell":    "shell",
-  "m7 shell":      "shell",
-  "7 shell":       "shell",
-  "maj6 shell":    "shell",
-  "dim7/m6 shell": "shell",
-  // Shell voicings — inversions panel (underscore)
-  maj7_shell:  "shell",
-  "6_shell":   "shell",
-  m7_shell:    "shell",
-  m6_shell:    "shell",
-  "7_shell":   "shell",
-  dim7_shell:  "shell",
+  // --- Dominant ---
+  "7":         "dominant",
+  "9":         "dominant",
+  "11":        "dominant",
+  "13":        "dominant",
+  "7b9":       "dominant",
+  "7#9":       "dominant",
+  "7#5":       "dominant",
+  "7#11":      "dominant",
+  "7alt":      "dominant",
+  alt:         "dominant",
+  dom_cluster: "dominant",
+  // Shell voicings — chord panel
+  "7 shell":   "dominant",
+  // Shell voicings — inversion panel
+  "7_shell":   "dominant",
 
-  // Other Major
-  "6":         "otherMajor",
-  "69":        "otherMajor",
-  maj9:        "otherMajor",
-  maj11:       "otherMajor",
-  maj13:       "otherMajor",
-  add9:        "otherMajor",
-  maj7b5:      "otherMajor",
-  maj_cluster: "otherMajor",
-  maj7sus2:    "otherMajor",
+  // --- Suspended ---
+  sus2:    "suspended",
+  sus4:    "suspended",
+  "7sus4": "suspended",
 
-  // Other Minor
-  m6:        "otherMinor",
-  m9:        "otherMinor",
-  m11:       "otherMinor",
-  m13:       "otherMinor",
-  m69:       "otherMinor",
-  mmaj7:     "otherMinor",
-  mmaj9:     "otherMinor",
-  mmaj11:    "otherMinor",
-  mmaj7b5:   "otherMinor",
-  madd9:     "otherMinor",
-  m_cluster: "otherMinor",
+  // --- Diminished ---
+  dim:     "diminished",
+  dim7:    "diminished",
+  m7b5:    "diminished",
+  hdim7:   "diminished",
+  // Shell voicings — chord panel
+  "dim7/m6 shell": "diminished",
+  // Shell voicings — inversion panel
+  dim7_shell:      "diminished",
 
-  // Other Dominant
-  "11":        "otherDominant",
-  "13":        "otherDominant",
-  aug7:        "otherDominant",
-  aug9:        "otherDominant",
-  "7b9":       "otherDominant",
-  "7#9":       "otherDominant",
-  "7#5":       "otherDominant",
-  "7#11":      "otherDominant",
-  "7alt":      "otherDominant",
-  alt:         "otherDominant",
-  sus2:        "otherDominant",
-  sus4:        "otherDominant",
-  "7sus4":     "otherDominant",
-  dom_cluster: "otherDominant",
+  // --- Augmented ---
+  aug:     "augmented",
+  aug7:    "augmented",
+  aug9:    "augmented",
 }
 
 export interface ChordGroup {
@@ -112,7 +120,7 @@ export interface ChordGroup {
 /**
  * Groups an ordered array of chord type strings into display categories,
  * preserving the source order within each category.
- * Types not found in CATEGORY_MAP are placed in the most appropriate "Other" bucket
+ * Types not found in CATEGORY_MAP are placed in the most appropriate bucket
  * based on name-pattern heuristics.
  * Empty categories are omitted from the result.
  */
@@ -126,11 +134,12 @@ export function groupChordTypes(types: string[]): ChordGroup[] {
       groups.get(cat)!.push(type)
     } else {
       // Heuristic fallback for uncategorised types
-      let fallback: ChordCategory = "otherDominant"
-      if (type.includes("dim"))                          fallback = "otherDiminished"
-      else if (type.includes("aug"))                     fallback = "otherAugmented"
-      else if (type.startsWith("maj") || type === "add9") fallback = "otherMajor"
-      else if (type.startsWith("m") && !type.startsWith("maj")) fallback = "otherMinor"
+      let fallback: ChordCategory = "dominant"
+      if (type.includes("dim"))                                   fallback = "diminished"
+      else if (type.includes("aug"))                              fallback = "augmented"
+      else if (type.includes("sus"))                              fallback = "suspended"
+      else if (type.startsWith("maj") || type === "add9")         fallback = "major"
+      else if (type.startsWith("m") && !type.startsWith("maj"))  fallback = "minor"
       groups.get(fallback)!.push(type)
     }
   }
