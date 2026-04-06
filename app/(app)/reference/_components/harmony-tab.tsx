@@ -176,7 +176,7 @@ export function HarmonyTab({ tonic, onChordSelect, onScaleSelect }: HarmonyTabPr
             </label>
           )}
         </div>
-        <div role="group" aria-label="Diatonic chords" className="flex gap-2 overflow-x-auto pb-2">
+        <div role="group" aria-label="Diatonic chords" className="flex flex-wrap gap-2">
           {chords.map((chord) => (
             <ChordQualityBlock
               key={chord.degree}

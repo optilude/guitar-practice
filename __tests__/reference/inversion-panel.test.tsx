@@ -27,7 +27,7 @@ vi.mock("@/lib/theory/solo-scales", () => ({
   ],
   SOLO_MODE_OPTION_GROUPS: [
     {
-      label: "Major scale modes",
+      label: "Modes of the Major scale",
       options: [
         { value: "ionian", label: "Ionian (major)" },
         { value: "dorian", label: "Dorian" },

@@ -144,7 +144,7 @@ export interface SoloModeOptionGroup {
 
 export const SOLO_MODE_OPTION_GROUPS: SoloModeOptionGroup[] = [
   {
-    label: "Major scale modes",
+    label: "Modes of the Major scale",
     options: [
       { value: "ionian",        label: "Ionian (major)" },
       { value: "dorian",        label: "Dorian" },
@@ -158,25 +158,25 @@ export const SOLO_MODE_OPTION_GROUPS: SoloModeOptionGroup[] = [
   {
     label: "Modes of the Melodic Minor scale",
     options: [
-      { value: "melodic minor",    label: "Melodic Minor (mode 1)" },
-      { value: "dorian b2",        label: "Dorian b2 (mode 2)" },
-      { value: "lydian augmented", label: "Lydian Augmented (mode 3)" },
-      { value: "lydian dominant",  label: "Lydian Dominant (mode 4)" },
-      { value: "mixolydian b6",    label: "Mixolydian b6 (mode 5)" },
-      { value: "locrian #2",       label: "Locrian #2 (mode 6)" },
-      { value: "altered",          label: "Altered (mode 7)" },
+      { value: "melodic minor",    label: "Melodic Minor" },
+      { value: "dorian b2",        label: "Dorian b2" },
+      { value: "lydian augmented", label: "Lydian Augmented" },
+      { value: "lydian dominant",  label: "Lydian Dominant" },
+      { value: "mixolydian b6",    label: "Mixolydian b6" },
+      { value: "locrian #2",       label: "Locrian #2" },
+      { value: "altered",          label: "Altered" },
     ],
   },
   {
     label: "Modes of the Harmonic Minor scale",
     options: [
-      { value: "harmonic minor",     label: "Harmonic Minor (mode 1)" },
-      { value: "locrian #6",         label: "Locrian #6 (mode 2)" },
-      { value: "ionian #5",          label: "Ionian #5 (mode 3)" },
-      { value: "dorian #4",          label: "Dorian #4 (mode 4)" },
-      { value: "phrygian dominant",  label: "Phrygian Dominant (mode 5)" },
-      { value: "lydian #2",          label: "Lydian #2 (mode 6)" },
-      { value: "altered diminished", label: "Altered Diminished (mode 7)" },
+      { value: "harmonic minor",     label: "Harmonic Minor" },
+      { value: "locrian #6",         label: "Locrian #6" },
+      { value: "ionian #5",          label: "Ionian #5" },
+      { value: "dorian #4",          label: "Dorian #4" },
+      { value: "phrygian dominant",  label: "Phrygian Dominant" },
+      { value: "lydian #2",          label: "Lydian #2" },
+      { value: "altered diminished", label: "Altered Diminished" },
     ],
   },
 ]
