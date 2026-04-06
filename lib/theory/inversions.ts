@@ -1,7 +1,8 @@
 import type { ChordPosition } from "./chords"
 import type { GuitarScale } from "@/lib/theory/types"
 import { getArpeggio } from "@/lib/theory/arpeggios"
-import { Chord as TonalChord, Note } from "tonal"
+import { resolveChordNotes } from "@/lib/theory/chord-resolution"
+import { Note } from "tonal"
 import inversionsDb from "@/data/inversions-db.json"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -143,10 +144,8 @@ function computeNoteInfo(
   noteNames:     Array<string | null>
   noteIntervals: Array<string | null>
 } {
-  const chord          = TonalChord.get(`${tonic}${tonalSymbol}`)
-  const chordNotes     = chord.notes
-  const chordIntervals = chord.intervals
-  const chordChromas   = chordNotes.map((n) => Note.get(n).chroma ?? -1)
+  const { notes: chordNotes, intervals: chordIntervals } = resolveChordNotes(tonic, tonalSymbol)
+  const chordChromas = chordNotes.map((n) => Note.get(n).chroma ?? -1)
 
   const noteRoles:     Array<NoteRole | null> = Array(6).fill(null)
   const noteNames:     Array<string | null>   = Array(6).fill(null)
@@ -303,7 +302,17 @@ const TONIC_NORMALIZE: Record<string, string> = {
  */
 export function getInversionVoicings(tonic: string, type: string): InversionVoicing[] {
   const normalized = TONIC_NORMALIZE[tonic] ?? tonic
-  return DB.get(`${normalized}::${type}`) ?? []
+  const rawVoicings = DB.get(`${normalized}::${type}`) ?? []
+
+  // When the tonic was normalized (e.g. C# → Db) the pre-built note names use the
+  // flat spelling. Re-derive them from the actual requested tonic so that the
+  // correct enharmonic spelling is shown (C# E# G# rather than Db F Ab).
+  if (normalized === tonic) return rawVoicings
+  const tonalSymbol = SUFFIX_TO_TONAL[type] ?? type
+  return rawVoicings.map((v) => {
+    const { noteRoles, noteNames, noteIntervals } = computeNoteInfo(v.frets, v.baseFret, tonalSymbol, tonic)
+    return { ...v, noteRoles, noteNames, noteIntervals }
+  })
 }
 
 /**

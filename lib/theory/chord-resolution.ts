@@ -58,7 +58,11 @@ export function resolveChordNotes(
   const tonalSym = TONAL_SYMBOL_MAP[chordType] ?? chordType
   const chord = Chord.get(`${tonic}${tonalSym}`)
   if (chord.notes.length > 0) {
-    return { notes: chord.notes, intervals: chord.intervals }
+    // Derive note names from interval transposition rather than chord.notes so that
+    // the tonic's accidental type is preserved (e.g. C# major → C#, E#, G# not Db, F, Ab).
+    const intervals = chord.intervals
+    const notes = intervals.map((iv) => Note.transpose(tonic, iv)).filter(Boolean) as string[]
+    return { notes, intervals }
   }
 
   return { notes: [tonic], intervals: ["1P"] }

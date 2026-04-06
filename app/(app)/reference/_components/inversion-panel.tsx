@@ -418,9 +418,9 @@ export function InversionPanel({ root, onRootChange, inversionTypeTrigger, onSca
                 onChange={(e) => setShowMode(e.target.value as ShowMode)}
                 className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
               >
-                <option value="fingers">Fingers</option>
-                <option value="notes">Notes</option>
                 <option value="intervals">Intervals</option>
+                <option value="notes">Notes</option>
+                <option value="fingers">Fingers</option>
               </select>
             </div>
           </div>
