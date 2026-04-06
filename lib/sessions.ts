@@ -1,5 +1,5 @@
 import { format } from "date-fns"
-import type { TopicKind, PracticeMode } from "@/lib/generated/prisma/enums"
+import type { TopicKind, PracticeMode, SectionType } from "@/lib/generated/prisma/enums"
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -16,7 +16,7 @@ export type SessionTopic = {
 export type SessionSection = {
   id: string
   title: string
-  type: import("@/lib/generated/prisma/enums").SectionType
+  type: SectionType
   description: string
   durationMinutes: number
   order: number
@@ -38,7 +38,9 @@ export function computeStreak(localDates: string[]): number {
 
   const unique = [...new Set(localDates)].sort((a, b) => b.localeCompare(a))
   const today = format(new Date(), "yyyy-MM-dd")
-  const yesterday = format(new Date(Date.now() - 86400000), "yyyy-MM-dd")
+  const yd = new Date()
+  yd.setDate(yd.getDate() - 1)
+  const yesterday = format(yd, "yyyy-MM-dd")
 
   let start = today
   if (unique[0] !== today) {

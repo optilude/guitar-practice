@@ -118,6 +118,14 @@ describe("resolveKeySequence", () => {
     expect(result[1]).toBe("C") // G -> C -> F -> Bb -> Eb -> Ab -> Db -> F# -> B -> E -> A -> D
   })
 
+  it("defaults to chromatic_asc when practiceMode is null and keys is ['*']", () => {
+    const t = topic({ keys: ["*"], defaultKey: "G", practiceMode: null })
+    const result = resolveKeySequence(t)
+    expect(result).toHaveLength(12)
+    expect(result[0]).toBe("G")
+    expect(result[1]).toBe("Ab")
+  })
+
   it("random: returns 12 unique chromatic keys", () => {
     const t = topic({ keys: ["*"], defaultKey: "C", practiceMode: "random" })
     const result = resolveKeySequence(t)
