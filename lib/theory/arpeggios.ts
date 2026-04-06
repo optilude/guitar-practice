@@ -1,4 +1,5 @@
-import { Chord, Note } from "tonal"
+import { Note } from "tonal"
+import { resolveChordNotes } from "@/lib/theory/chord-resolution"
 import type { GuitarScale, ScalePosition, FretPosition } from "@/lib/theory/types"
 
 // Open-string chroma (index 0 = string 6 low E, 5 = string 1 high e)
@@ -95,9 +96,7 @@ export function getArpeggio(
   chordType: string,
   positionIndex?: number
 ): GuitarScale {
-  const chord = Chord.get(`${tonic}${chordType}`)
-  const notes     = chord.notes.length > 0 ? chord.notes : [tonic]
-  const intervals = chord.intervals.length > 0 ? chord.intervals : ["1P"]
+  const { notes, intervals } = resolveChordNotes(tonic, chordType)
 
   const positions = buildArpeggioPositions(tonic, notes, intervals, positionIndex)
 
