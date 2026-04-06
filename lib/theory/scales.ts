@@ -56,6 +56,15 @@ const PATTERN_TO_TONAL: Record<string, string> = {
   Locrian:                 "locrian",
   "Harmonic Minor":        "harmonic minor",
   "Melodic Minor":         "melodic minor",
+  // Melodic Minor modes
+  "Dorian b2":             "dorian b2",
+  "Ionian #5":             "ionian augmented",
+  "Dorian #4":             "dorian #4",
+  "Mixolydian b6":         "mixolydian b6",
+  "Locrian #6":            "locrian 6",
+  "Altered Diminished":    "ultralocrian",
+  // Harmonic Minor modes
+  "Lydian #2":             "lydian #9",
   Altered:                 "altered",
   "Lydian Dominant":       "lydian dominant",
   "Lydian Augmented":      "lydian augmented",

@@ -135,3 +135,28 @@ describe("getScale - G Major fret positions sanity", () => {
     expect(rootFret?.fret).toBe(3)
   })
 })
+
+describe("New melodic/harmonic minor mode scale types", () => {
+  const newTypes = [
+    "Dorian b2",
+    "Mixolydian b6",
+    "Locrian #6",
+    "Ionian #5",
+    "Dorian #4",
+    "Lydian #2",
+    "Altered Diminished",
+  ]
+
+  for (const type of newTypes) {
+    it(`listScaleTypes() includes "${type}"`, () => {
+      expect(listScaleTypes()).toContain(type)
+    })
+
+    it(`getScale("C", "${type}") returns notes and intervals`, () => {
+      const scale = getScale("C", type)
+      expect(scale.notes.length).toBeGreaterThan(0)
+      expect(scale.intervals.length).toBeGreaterThan(0)
+      expect(scale.intervals[0]).toBe("1P")
+    })
+  }
+})
