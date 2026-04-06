@@ -76,7 +76,7 @@ export function HarmonyTab({ tonic, defaultMode, onChordSelect, onScaleSelect }:
   useEffect(() => {
     const chord = chords.find((c) => c.degree === 1)
     if (chord) {
-      const soloScales = getSoloScales({ tonic: chord.tonic, type: chord.type, degree: chord.degree }, "ionian")
+      const soloScales = getSoloScales({ tonic: chord.tonic, type: chord.type, degree: chord.degree }, mode)
       onChordSelect?.(chord.tonic, chord.type, chord.quality, soloScales.primary.scaleName)
     }
   }, []) // intentionally empty: only on mount
