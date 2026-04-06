@@ -18,7 +18,12 @@ export function DeleteSessionButton({ sessionId }: DeleteSessionButtonProps) {
         <button
           onClick={async () => {
             setIsDeleting(true)
-            await deleteSession(sessionId)
+            try {
+              await deleteSession(sessionId)
+            } catch {
+              setIsDeleting(false)
+              setConfirming(false)
+            }
           }}
           disabled={isDeleting}
           className="text-sm text-destructive hover:underline disabled:opacity-50"
