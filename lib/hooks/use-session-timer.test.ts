@@ -1,9 +1,4 @@
-// @vitest-environment node
-import { describe, it, expect, vi, beforeEach, afterEach, beforeAll } from "vitest"
-import { setupMinimalDOM } from "./test-dom-setup"
-
-beforeAll(() => { setupMinimalDOM() })
-
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
 import { renderHook, act } from "@testing-library/react"
 import { useSessionTimer } from "./use-session-timer"
 

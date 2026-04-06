@@ -1,9 +1,4 @@
-// @vitest-environment node
-import { describe, it, expect, beforeAll } from "vitest"
-import { setupMinimalDOM } from "./test-dom-setup"
-
-beforeAll(() => { setupMinimalDOM() })
-
+import { describe, it, expect } from "vitest"
 import { renderHook, act } from "@testing-library/react"
 import { useSessionNav } from "./use-session-nav"
 import type { SessionSection } from "@/lib/sessions"
