@@ -110,6 +110,14 @@ describe("resolveKeySequence", () => {
     expect(result[1]).toBe("D")
   })
 
+  it("circle_fourths_desc: 12 keys descending circle of fourths from defaultKey", () => {
+    const t = topic({ keys: ["*"], defaultKey: "G", practiceMode: "circle_fourths_desc" })
+    const result = resolveKeySequence(t)
+    expect(result).toHaveLength(12)
+    expect(result[0]).toBe("G")
+    expect(result[1]).toBe("C") // G -> C -> F -> Bb -> Eb -> Ab -> Db -> F# -> B -> E -> A -> D
+  })
+
   it("random: returns 12 unique chromatic keys", () => {
     const t = topic({ keys: ["*"], defaultKey: "C", practiceMode: "random" })
     const result = resolveKeySequence(t)
