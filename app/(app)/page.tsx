@@ -1,4 +1,5 @@
 import Link from "next/link"
+import ReactMarkdown from "react-markdown"
 import { getUserId } from "@/lib/get-user-id"
 import { db } from "@/lib/db"
 import { computeStreak } from "@/lib/sessions"
@@ -84,7 +85,9 @@ export default async function HomePage() {
             <p className="text-xs uppercase tracking-[0.1em] text-muted-foreground mb-1">Active goal</p>
             <h2 className="text-lg font-semibold">{activeGoal.title}</h2>
             {activeGoal.description && (
-              <p className="text-sm text-muted-foreground mt-0.5">{activeGoal.description}</p>
+              <div className="prose prose-sm max-w-none text-muted-foreground mt-0.5">
+                <ReactMarkdown>{activeGoal.description}</ReactMarkdown>
+              </div>
             )}
           </div>
 
@@ -120,12 +123,6 @@ export default async function HomePage() {
                 )
               })
             )}
-            <Link
-              href={`/goals/${activeGoal.id}`}
-              className="inline-block text-xs text-muted-foreground hover:text-foreground transition-colors pt-1"
-            >
-              + New routine →
-            </Link>
           </div>
         </div>
       ) : (

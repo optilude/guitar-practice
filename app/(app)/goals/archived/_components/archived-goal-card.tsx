@@ -77,19 +77,19 @@ export function ArchivedGoalCard({ goal }: ArchivedGoalCardProps) {
               This will permanently delete &ldquo;{goal.title}&rdquo; and all its topics and
               routines. This cannot be undone.
             </p>
-            <div className="flex gap-2">
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Cancel
+              </button>
               <button
                 onClick={handleDelete}
                 disabled={isPending}
-                className="text-xs font-semibold bg-destructive text-white px-4 py-2 rounded-md hover:bg-destructive/90 transition-colors disabled:opacity-50"
+                className="px-4 py-2 rounded-md bg-destructive text-white text-sm font-medium hover:bg-destructive/90 transition-colors disabled:opacity-50"
               >
-                {isPending ? "Deleting…" : "Confirm"}
-              </button>
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Cancel
+                {isPending ? "Deleting…" : "Delete goal"}
               </button>
             </div>
           </div>

@@ -190,19 +190,11 @@ export function GoalDetailClient({ goal, recentSessions }: GoalDetailClientProps
 
         {/* Routines */}
         <div>
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">Routines</p>
-            <Link
-              href={`/goals/${goal.id}/routines/new`}
-              className="text-xs font-semibold bg-accent text-accent-foreground px-2.5 py-1 rounded hover:opacity-90 transition-opacity"
-            >
-              Add routine
-            </Link>
-          </div>
+          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">Routines</p>
           {goal.routines.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No routines yet.</p>
+            <p className="text-sm text-muted-foreground mb-3">No routines yet.</p>
           ) : (
-            <ul className="space-y-2">
+            <ul className="space-y-2 mb-3">
               {goal.routines.map((routine) => (
                 <li key={routine.id} className="flex items-center gap-2">
                   <Link
@@ -225,6 +217,12 @@ export function GoalDetailClient({ goal, recentSessions }: GoalDetailClientProps
               ))}
             </ul>
           )}
+          <Link
+            href={`/goals/${goal.id}/routines/new`}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            + Add routine
+          </Link>
         </div>
       </div>
 
@@ -283,19 +281,19 @@ export function GoalDetailClient({ goal, recentSessions }: GoalDetailClientProps
                 ? "This is your active goal. Archiving it will move it to the archived list."
                 : `"${titleValue}" will be moved to the archived goals list.`}
             </p>
-            <div className="flex gap-2">
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowArchiveModal(false)}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Cancel
+              </button>
               <button
                 onClick={handleConfirmArchive}
                 disabled={isArchiving}
-                className="text-xs font-semibold bg-destructive text-white px-4 py-2 rounded-md hover:bg-destructive/90 transition-colors disabled:opacity-50"
+                className="px-4 py-2 rounded-md bg-destructive text-white text-sm font-medium hover:bg-destructive/90 transition-colors disabled:opacity-50"
               >
-                {isArchiving ? "Archiving…" : "Confirm"}
-              </button>
-              <button
-                onClick={() => setShowArchiveModal(false)}
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Cancel
+                {isArchiving ? "Archiving…" : "Archive goal"}
               </button>
             </div>
           </div>

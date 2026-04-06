@@ -16,6 +16,12 @@ export function DeleteSessionButton({ sessionId }: DeleteSessionButtonProps) {
       <div className="flex items-center gap-3 mt-4">
         <p className="text-sm text-muted-foreground">Are you sure? This cannot be undone.</p>
         <button
+          onClick={() => setConfirming(false)}
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          Cancel
+        </button>
+        <button
           onClick={async () => {
             setIsDeleting(true)
             try {
@@ -28,13 +34,7 @@ export function DeleteSessionButton({ sessionId }: DeleteSessionButtonProps) {
           disabled={isDeleting}
           className="text-sm text-destructive hover:underline disabled:opacity-50"
         >
-          {isDeleting ? "Deleting…" : "Confirm delete"}
-        </button>
-        <button
-          onClick={() => setConfirming(false)}
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          Cancel
+          {isDeleting ? "Deleting…" : "Delete session"}
         </button>
       </div>
     )

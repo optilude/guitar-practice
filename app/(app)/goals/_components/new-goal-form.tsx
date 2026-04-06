@@ -62,20 +62,20 @@ export function NewGoalForm() {
               className="w-full rounded border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent resize-none"
             />
             {error && <p className="text-xs text-red-500">{error}</p>}
-            <div className="flex gap-2">
-              <button
-                type="submit"
-                disabled={isPending}
-                className="text-xs font-semibold bg-accent text-accent-foreground px-4 py-2 rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
-              >
-                {isPending ? "Creating…" : "Create goal"}
-              </button>
+            <div className="flex gap-3 justify-end">
               <button
                 type="button"
                 onClick={() => { setIsOpen(false); setError(null) }}
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isPending}
+                className="px-4 py-2 rounded-md bg-accent text-accent-foreground text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {isPending ? "Creating…" : "Create goal"}
               </button>
             </div>
           </form>

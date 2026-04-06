@@ -451,19 +451,19 @@ export function SectionCard({ section, availableTopics, onChanged }: SectionCard
               This will permanently remove &ldquo;{titleValue}&rdquo; from this routine. This cannot
               be undone.
             </p>
-            <div className="flex gap-2">
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Cancel
+              </button>
               <button
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="text-xs font-semibold bg-destructive text-white px-4 py-2 rounded-md hover:bg-destructive/90 transition-colors disabled:opacity-50"
+                className="px-4 py-2 rounded-md bg-destructive text-white text-sm font-medium hover:bg-destructive/90 transition-colors disabled:opacity-50"
               >
-                {isDeleting ? "Removing…" : "Confirm"}
-              </button>
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Cancel
+                {isDeleting ? "Removing…" : "Remove section"}
               </button>
             </div>
           </div>

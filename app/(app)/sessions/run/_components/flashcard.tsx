@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { cn } from "@/lib/utils"
 import type { SessionSection, SessionTopic } from "@/lib/sessions"
 import { KeyStrip } from "./key-strip"
@@ -31,6 +31,27 @@ const SECTION_TYPE_COLORS: Record<string, string> = {
   free_practice: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
 }
 
+const KIND_LABELS: Record<string, string> = {
+  scale: "Scale",
+  arpeggio: "Arpeggio",
+  chord: "Chord",
+  inversion: "Inversion",
+  progression: "Progression",
+  harmony: "Mode",
+  lesson: "Lesson",
+}
+
+/** When practicing multiple keys, show a key-agnostic title (e.g. "Ionian Mode" not "C Ionian") */
+function topicTitle(topic: SessionTopic, multipleKeys: boolean): string {
+  if (!multipleKeys) return topic.displayName
+  const kindLabel = KIND_LABELS[topic.kind] ?? topic.kind
+  if (topic.subtype) {
+    const subtypeLabel = topic.subtype.charAt(0).toUpperCase() + topic.subtype.slice(1).replace(/_/g, " ")
+    return `${subtypeLabel} ${kindLabel}`
+  }
+  return kindLabel
+}
+
 interface FlashCardProps {
   section: SessionSection
   currentKeyIndex: number
@@ -42,7 +63,6 @@ interface FlashCardProps {
 
 function ReferencePanel({ topic, currentKey }: { topic: SessionTopic; currentKey: string }) {
   const [root, setRoot] = useState(currentKey)
-  // Sync if key changes externally
   if (root !== currentKey) setRoot(currentKey)
 
   switch (topic.kind) {
@@ -82,13 +102,20 @@ function ReferencePanel({ topic, currentKey }: { topic: SessionTopic; currentKey
 }
 
 export function FlashCard({ section, currentKeyIndex, currentKeySequence, onSelectKey, onPrevKey, onNextKey }: FlashCardProps) {
-  const [flipped, setFlipped] = useState(false)
+  const [showBack, setShowBack] = useState(false)
+  const [scaling, setScaling] = useState(false)
   const currentKey = currentKeySequence[currentKeyIndex] ?? ""
   const hasTopic = section.topic !== null
   const showKeys = hasTopic && section.topic!.kind !== "lesson" && currentKeySequence[0] !== ""
+  const multipleKeys = showKeys && currentKeySequence.length > 1
 
-  // Reset flip when section changes
-  // (handled by parent re-mounting or key prop)
+  const flipTo = useCallback((toBack: boolean) => {
+    setScaling(true)
+    setTimeout(() => {
+      setShowBack(toBack)
+      setScaling(false)
+    }, 150)
+  }, [])
 
   const badge = (
     <span className={cn("text-xs font-medium px-2 py-0.5 rounded", SECTION_TYPE_COLORS[section.type])}>
@@ -98,8 +125,8 @@ export function FlashCard({ section, currentKeyIndex, currentKeySequence, onSele
 
   if (!hasTopic) {
     return (
-      <div className="flex flex-col items-center justify-center h-72 rounded-xl border border-border bg-card p-6 text-center space-y-3">
-        {badge}
+      <div className="flex flex-col items-center justify-center min-h-full rounded-xl border border-border bg-card p-6 text-center space-y-3">
+        <span>{badge}</span>
         <h2 className="text-2xl font-semibold">{section.title}</h2>
         {section.description && <p className="text-sm text-muted-foreground">{section.description}</p>}
       </div>
@@ -107,57 +134,18 @@ export function FlashCard({ section, currentKeyIndex, currentKeySequence, onSele
   }
 
   return (
-    <div className="relative" style={{ perspective: "1000px" }}>
-      <div
-        style={{
-          transformStyle: "preserve-3d",
-          transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
-          transition: "transform 0.4s ease",
-          position: "relative",
-          minHeight: flipped ? "auto" : "18rem",
-        }}
-      >
-        {/* Front */}
-        <div
-          className={cn(
-            "rounded-xl border border-border bg-card p-6",
-            flipped ? "invisible" : "visible",
-          )}
-          style={{ backfaceVisibility: "hidden" }}
-        >
-          <div className="flex flex-col items-center gap-4">
-            {badge}
-            <h2 className="text-2xl font-semibold text-center">{section.topic!.displayName}</h2>
-            {showKeys && (
-              <div className="w-full">
-                <KeyStrip
-                  keys={currentKeySequence}
-                  currentIndex={currentKeyIndex}
-                  onSelect={onSelectKey}
-                  onPrev={onPrevKey}
-                  onNext={onNextKey}
-                />
-              </div>
-            )}
-            <button
-              onClick={() => setFlipped(true)}
-              className="mt-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Turn card ↩
-            </button>
-          </div>
-        </div>
-
-        {/* Back */}
-        <div
-          className={cn(
-            "rounded-xl border border-border bg-card p-4 overflow-y-auto max-h-[80vh]",
-            flipped ? "visible" : "invisible absolute inset-0",
-          )}
-          style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
-        >
-          <div className="space-y-4">
-            {showKeys && (
+    <div
+      className="flex flex-col min-h-full rounded-xl border border-border bg-card"
+      style={{
+        transform: scaling ? "scaleX(0)" : "scaleX(1)",
+        transition: "transform 150ms ease-in-out",
+        transformOrigin: "center",
+      }}
+    >
+      {showBack ? (
+        <div className="flex flex-col flex-1 p-4">
+          {showKeys && (
+            <div className="mb-4 shrink-0">
               <KeyStrip
                 keys={currentKeySequence}
                 currentIndex={currentKeyIndex}
@@ -165,19 +153,43 @@ export function FlashCard({ section, currentKeyIndex, currentKeySequence, onSele
                 onPrev={onPrevKey}
                 onNext={onNextKey}
               />
-            )}
-            <div className="border-t border-border pt-4">
-              <ReferencePanel topic={section.topic!} currentKey={currentKey || "C"} />
             </div>
-            <button
-              onClick={() => setFlipped(false)}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Turn card ↩
-            </button>
+          )}
+          <div className="border-t border-border pt-4 flex-1">
+            <ReferencePanel topic={section.topic!} currentKey={currentKey || "C"} />
           </div>
+          <button
+            onClick={() => flipTo(false)}
+            className="mt-4 text-sm text-muted-foreground hover:text-foreground transition-colors shrink-0"
+          >
+            Turn card ↩
+          </button>
         </div>
-      </div>
+      ) : (
+        <div className="flex flex-col items-center gap-4 p-6">
+          {badge}
+          <h2 className="text-2xl font-semibold text-center">
+            {topicTitle(section.topic!, multipleKeys)}
+          </h2>
+          {showKeys && (
+            <div className="w-full">
+              <KeyStrip
+                keys={currentKeySequence}
+                currentIndex={currentKeyIndex}
+                onSelect={onSelectKey}
+                onPrev={onPrevKey}
+                onNext={onNextKey}
+              />
+            </div>
+          )}
+          <button
+            onClick={() => flipTo(true)}
+            className="mt-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Turn card ↩
+          </button>
+        </div>
+      )}
     </div>
   )
 }

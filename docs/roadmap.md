@@ -45,12 +45,15 @@ Account management and better authentication support. Admin UI for managing user
 
 # Future ideas
 
+* When rendering an inversion on a low string, so that the highest used fret is fret 5 or 5 or lower, adjust the chord diagram so that it is always shown at the nut, even if that means the lowest visible fret (fret 1) is unused. An example would be Bb major, 2nd inversion, strings 4-3-2. It's currently rendered as three notes on the first visible fret with the box fixed 3fr. It would be more logical to show this box anchored at the nut, with the three notes on the third fret.
+* For inversions that are omitting one or more chord tones, call these out ("No root", etc.)
+
 * Align the selector values in Inversions and Chords? They currently use different conventions (descriptive vs. common suffixes). The argument against is that `chords-db` uses the suffix style, so we'd need a translation, and these are more the chord symbols you'd see in a song sheet. The Inversions tab is more about studying and memorising inversions for use in improvisation or comping, where the theoretical function of each chord is more relevant.
 
 * Should each practice routine element allow for more than one topic? Might be useful to introduce some degree of optionality to the practice routine without having to create lots of different routines, e.g. add major and minor triads to a single triad study section.
 
 * Create a "tools" section with...
-  - A chord calculator (fingerings -> chord name - use fretboard visualisation)? 
+  - A chord calculator (fingerings/notes -> chord name - use fretboard visualisation)? 
   - A key finder (chords -> progression key)?
   - A scale finder (put notes on fretboard, calculate possible keys)?
   - A standalone metronome?
@@ -63,6 +66,17 @@ Account management and better authentication support. Admin UI for managing user
 * Audio recorder for practice (note this will significantly change data storage requirements)
 
 # Known issues
+
+
+* When adding a section to a practice routine, it should open a form similar to the "edit" form with all fields, rather than have the limited form with just title, duration, and type.
+
+* When editing the BPM, the browser "numeric" control is used, which is correct, but unfortunately means there are two sets of up/down controls - one built into the app (- and + buttons) and the other from the browser. Ideally, hide the browser based one so we only see the + and -.
+* The prev/start/next control bar scrolls off the bottom of the page still. 
+* "Back" or other navigate away on practice routine needs a warning if ending the session prematurely
+
+* The various fretboard visualisations use a right-aligned tickbox for "show intervals". Instead, put a drop-down on the left after the "Highlight" drop-down, and allow selecting between "Notes" (default) and "Inversions". Also add this to the Intervals view, which currently doesn't have a Higlight mode.
+
+
 
 Scales:
 
@@ -77,42 +91,7 @@ Chords:
 
 # Resources / notes
 
-* Chords: https://github.com/szaza/guitar-chords-db-json - 99k voicings (machine generated)
-* Chord rendering: https://github.com/omnibrain/svguitar - can render interval names
 * Music theory: https://www.simplifyingtheory.com
-* Guitar lessons: https://hubguitar.com
 
 # Prompts
-
-## Start phase 6
-
-We now need to tackle running and tracking practice sessions.
-
-On the front page, show the current goal and all available practice routines for that goal in a nice, easy-to-access list.
-
-When the user clicks a practice routine, go to a "Practice Session" page configured for that routine.
-
-This page shows the elements of that routine in order, a countdown timer with start/pause/restart options, an "end session" option, and an always-visible Markdown formatted text area for keeping track of notes related to the session.
-
-Also include the option of starting a simple metronome, with a bpm entry box, start, and stop buttons. Play a simple click sound when the metronome runs.
-
-Design a "flash card" UI that will be used to present each practice session element. The idea is that when a practice session runs, the user is shown the topic of study – either the name of a lesson in the library, or a particular item from the reference section, which may have a key, and that key may modulate based on the rules of the practice routine element – on the flash card related to each practice session element.
-
-The user can on a flash card see relevant details as the card "turns". For lessons, that's just a link that opens in a new window. For reference elements, it should be the appropriate card/panel from the reference section, rendered inline on the "back" of the flashcard, so the user can review the information without having to leave the practice UI.
-
-Move the user between the practice rotine elements in accordance with the routine timings and the practice countdown clock (which may be paused).
-
-Add buttons to let the user move backwards or forwards through the practice routine elements. Also let them jump straight to one by clicking on it. When manually moving between elements, the practice timer should adjust accodingly, showing the time remaining for that section and the whole routine, as if just arriving at the start of the section.
-
-When the timer is completed, or the user manually ends the session, show a modal dialogue to allow the user to save or discard the session. On this, show the practice notes, which the user will have been able to add to during the session. Let the user amend the notes as needed.
-
-All completed (non-discarded) sessions should be shown on the History view. Show a simple calendar that indicates days of practice and, when clicking a day, show any practice sessions on that day. Allow this to be filtered by goal.
-
-Let the user click a practice routine and then see the start and end date and time (i.e. real time, in the timezone they were in when they ran the session, if if that timezone has now changed) of the practice session, the structure they followed, the topics they studied, and any notes.
-
-It is possible that a practice routine is deleted or modified after the session has been completed. Therefore, we need to store the full details of what was studied in the history, not just a reference to a practice routine element.
-
-Allow the user to delete previous practice sessions if saved in error, but put this behind a confirmation dialogue.
-
-Also show recently completed sessions specific to a goal underneath that goal on the Goals page.
 
