@@ -36,14 +36,16 @@ export function stepCircle(tonic: string, steps: number): string {
 // Quality helpers
 // ---------------------------------------------------------------------------
 const QUALITY_MAP: Record<string, string> = {
-  maj7:  "major",
-  "":    "major",
-  m7:    "minor",
-  m:     "minor",
-  "7":   "major",
-  m7b5:  "diminished",
-  dim7:  "diminished",
-  aug:   "augmented",
+  maj7:      "major",
+  "":        "major",
+  m7:        "minor",
+  m:         "minor",
+  "7":       "major",
+  m7b5:      "diminished",
+  dim7:      "diminished",
+  aug:       "augmented",
+  mmaj7:     "minor",
+  "maj7#5":  "augmented",
 }
 
 function chordQuality(type: string): string {
@@ -100,6 +102,20 @@ function buildMajorDiatonicChords(
 }
 
 // ---------------------------------------------------------------------------
+// TonalJS name aliases — our internal mode names don't always match TonalJS
+// ---------------------------------------------------------------------------
+const TONAL_MODE_ALIAS: Record<string, string> = {
+  "locrian #6":         "locrian 6",
+  "ionian #5":          "ionian augmented",
+  "lydian #2":          "lydian #9",
+  "altered diminished": "ultralocrian",
+}
+
+function tonalModeName(mode: string): string {
+  return TONAL_MODE_ALIAS[mode] ?? mode
+}
+
+// ---------------------------------------------------------------------------
 // Modal scale diatonic chords — computed from scale notes + quality pattern
 // ---------------------------------------------------------------------------
 const MODE_CHORD_TYPES: Record<string, string[]> = {
@@ -108,6 +124,22 @@ const MODE_CHORD_TYPES: Record<string, string[]> = {
   lydian:      ["maj7",  "7",     "m7",     "m7b5",  "maj7",  "m7",    "m7"],
   mixolydian:  ["7",     "m7",    "m7b5",   "maj7",  "m7",    "m7",    "maj7"],
   locrian:     ["m7b5",  "maj7",  "m7",     "m7",    "maj7",  "7",     "m7"],
+  // Melodic minor modes (rotations of the melodic minor chord sequence)
+  "melodic minor":    ["mmaj7",   "m7",      "maj7#5", "7",      "7",      "m7b5",   "m7b5"],
+  "dorian b2":        ["m7",      "maj7#5",  "7",      "7",      "m7b5",   "m7b5",   "mmaj7"],
+  "lydian augmented": ["maj7#5",  "7",       "7",      "m7b5",   "m7b5",   "mmaj7",  "m7"],
+  "lydian dominant":  ["7",       "7",       "m7b5",   "m7b5",   "mmaj7",  "m7",     "maj7#5"],
+  "mixolydian b6":    ["7",       "m7b5",    "m7b5",   "mmaj7",  "m7",     "maj7#5", "7"],
+  "locrian #2":       ["m7b5",    "m7b5",    "mmaj7",  "m7",     "maj7#5", "7",      "7"],
+  "altered":          ["m7b5",    "mmaj7",   "m7",     "maj7#5", "7",      "7",      "m7b5"],
+  // Harmonic minor modes (rotations of the harmonic minor chord sequence)
+  "harmonic minor":     ["mmaj7",   "m7b5",    "maj7#5", "m7",     "7",      "maj7",   "dim7"],
+  "locrian #6":         ["m7b5",    "maj7#5",  "m7",     "7",      "maj7",   "dim7",   "mmaj7"],
+  "ionian #5":          ["maj7#5",  "m7",      "7",      "maj7",   "dim7",   "mmaj7",  "m7b5"],
+  "dorian #4":          ["m7",      "7",       "maj7",   "dim7",   "mmaj7",  "m7b5",   "maj7#5"],
+  "phrygian dominant":  ["7",       "maj7",    "dim7",   "mmaj7",  "m7b5",   "maj7#5", "m7"],
+  "lydian #2":          ["maj7",    "dim7",    "mmaj7",  "m7b5",   "maj7#5", "m7",     "7"],
+  "altered diminished": ["dim7",    "mmaj7",   "m7b5",   "maj7#5", "m7",     "7",      "maj7"],
 }
 
 const MODE_ROMANS: Record<string, string[]> = {
@@ -116,10 +148,26 @@ const MODE_ROMANS: Record<string, string[]> = {
   lydian:      ["I",   "II",  "iii", "iv°", "V",   "vi",   "vii"],
   mixolydian:  ["I",   "ii",  "iii°","IV",  "v",   "vi",   "VII"],
   locrian:     ["i°",  "II",  "iii", "iv",  "V",   "VI",   "vii"],
+  // Melodic minor modes
+  "melodic minor":    ["i",   "ii",    "♭III+",  "IV",    "V",     "vi°",   "vii°"],
+  "dorian b2":        ["i",   "♭II+",  "♭III",   "IV",    "v°",    "vi°",   "♭VII"],
+  "lydian augmented": ["I+",  "II",    "III",    "♯iv°",  "♯v°",   "VI",    "vii"],
+  "lydian dominant":  ["I",   "II",    "iii°",   "♯iv°",  "V",     "vi",    "♭VII+"],
+  "mixolydian b6":    ["I",   "ii°",   "iii°",   "IV",    "v",     "♭VI+",  "♭VII"],
+  "locrian #2":       ["i°",  "ii°",   "♭III",   "iv",    "♭V+",   "♭VI",   "♭VII"],
+  "altered":          ["i°",  "♭II",   "♭iii",   "♭IV+",  "♭V",    "♭VI",   "♭vii°"],
+  // Harmonic minor modes
+  "harmonic minor":     ["i",    "ii°",    "♭III+",  "iv",    "V",     "♭VI",    "vii°7"],
+  "locrian #6":         ["i°",   "♭II+",   "♭III",   "IV",    "♭V",    "VI°7",   "♭VII"],
+  "ionian #5":          ["I+",   "ii",     "III",    "IV",    "♯V°7",  "VI",     "vii°"],
+  "dorian #4":          ["i",    "II",     "♭III",   "♯IV°7", "V",     "vi°",    "♭VII+"],
+  "phrygian dominant":  ["I",    "♭II",    "iii°7",  "IV",    "v°",    "♭VI+",   "♭vii"],
+  "lydian #2":          ["I",    "♯II°7",  "III",    "♯iv°",  "V+",    "vi",     "VII"],
+  "altered diminished": ["i°7",  "♭II",    "♭iii°",  "♭IV+",  "♭v",    "♭VI",    "VI"],
 }
 
 function buildModalDiatonicChords(tonic: string, mode: string): DiatonicChord[] {
-  const scale = Scale.get(`${tonic} ${mode}`)
+  const scale = Scale.get(`${tonic} ${tonalModeName(mode)}`)
   const types  = MODE_CHORD_TYPES[mode] ?? MODE_CHORD_TYPES.dorian
   const romans = MODE_ROMANS[mode]     ?? MAJOR_ROMANS
   return scale.notes.map((note, i) => ({
@@ -192,7 +240,7 @@ export function getKey(tonic: string, mode: string): Key {
   }
 
   // Modal keys
-  const scale = Scale.get(`${tonic} ${normalMode}`)
+  const scale = Scale.get(`${tonic} ${tonalModeName(normalMode)}`)
   const chords = buildModalDiatonicChords(tonic, normalMode)
   return {
     tonic,

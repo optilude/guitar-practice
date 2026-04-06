@@ -100,3 +100,68 @@ describe("getKey", () => {
     expect(key.notes).toEqual(["C", "D", "Eb", "F", "G", "A", "Bb"])
   })
 })
+
+import { getDiatonicChords } from "@/lib/theory/harmony"
+
+describe("getDiatonicChords — melodic minor modes", () => {
+  it("Melodic Minor degree 1 is mmaj7", () => {
+    const chords = getDiatonicChords("C", "melodic minor")
+    expect(chords).toHaveLength(7)
+    expect(chords[0].type).toBe("mmaj7")
+    expect(chords[0].tonic).toBe("C")
+  })
+
+  it("Melodic Minor degree 3 is maj7#5", () => {
+    const chords = getDiatonicChords("C", "melodic minor")
+    expect(chords[2].type).toBe("maj7#5")
+  })
+
+  it("Dorian b2 degree 1 is m7", () => {
+    const chords = getDiatonicChords("C", "dorian b2")
+    expect(chords).toHaveLength(7)
+    expect(chords[0].type).toBe("m7")
+  })
+
+  it("Lydian Dominant degree 1 is 7", () => {
+    const chords = getDiatonicChords("C", "lydian dominant")
+    expect(chords[0].type).toBe("7")
+  })
+
+  it("Altered degree 1 is m7b5", () => {
+    const chords = getDiatonicChords("C", "altered")
+    expect(chords[0].type).toBe("m7b5")
+  })
+})
+
+describe("getDiatonicChords — harmonic minor modes", () => {
+  it("Harmonic Minor degree 1 is mmaj7", () => {
+    const chords = getDiatonicChords("A", "harmonic minor")
+    expect(chords).toHaveLength(7)
+    expect(chords[0].type).toBe("mmaj7")
+  })
+
+  it("Harmonic Minor degree 5 is 7 (the dominant)", () => {
+    const chords = getDiatonicChords("A", "harmonic minor")
+    expect(chords[4].type).toBe("7")
+  })
+
+  it("Harmonic Minor degree 7 is dim7", () => {
+    const chords = getDiatonicChords("A", "harmonic minor")
+    expect(chords[6].type).toBe("dim7")
+  })
+
+  it("Phrygian Dominant degree 1 is 7", () => {
+    const chords = getDiatonicChords("C", "phrygian dominant")
+    expect(chords[0].type).toBe("7")
+  })
+
+  it("Ionian #5 degree 1 is maj7#5", () => {
+    const chords = getDiatonicChords("C", "ionian #5")
+    expect(chords[0].type).toBe("maj7#5")
+  })
+
+  it("Altered Diminished degree 1 is dim7", () => {
+    const chords = getDiatonicChords("C", "altered diminished")
+    expect(chords[0].type).toBe("dim7")
+  })
+})
