@@ -66,13 +66,6 @@ export function NavbarClient() {
           >
             Sign out
           </button>
-          <Link
-            href="/"
-            className="bg-accent text-accent-foreground text-xs font-semibold px-3 py-1.5 rounded-md hover:opacity-90 transition-opacity whitespace-nowrap"
-          >
-            <span className="hidden md:inline">Start Practice</span>
-            <span className="md:hidden">▶</span>
-          </Link>
         </div>
       </div>
     </nav>

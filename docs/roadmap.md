@@ -45,9 +45,6 @@ Account management and better authentication support. Admin UI for managing user
 
 # Future ideas
 
-* When rendering an inversion on a low string, so that the highest used fret is fret 5 or 5 or lower, adjust the chord diagram so that it is always shown at the nut, even if that means the lowest visible fret (fret 1) is unused. An example would be Bb major, 2nd inversion, strings 4-3-2. It's currently rendered as three notes on the first visible fret with the box fixed 3fr. It would be more logical to show this box anchored at the nut, with the three notes on the third fret.
-* For inversions that are omitting one or more chord tones, call these out ("No root", etc.)
-
 * Align the selector values in Inversions and Chords? They currently use different conventions (descriptive vs. common suffixes). The argument against is that `chords-db` uses the suffix style, so we'd need a translation, and these are more the chord symbols you'd see in a song sheet. The Inversions tab is more about studying and memorising inversions for use in improvisation or comping, where the theoretical function of each chord is more relevant.
 
 * Should each practice routine element allow for more than one topic? Might be useful to introduce some degree of optionality to the practice routine without having to create lots of different routines, e.g. add major and minor triads to a single triad study section.
@@ -67,16 +64,20 @@ Account management and better authentication support. Admin UI for managing user
 
 # Known issues
 
+Practice session UI:
 
-* When adding a section to a practice routine, it should open a form similar to the "edit" form with all fields, rather than have the limited form with just title, duration, and type.
+* If a practice session has been started (even if currently paused), and the user navigates away (either by browser action or clicking a link in the app), use a modal to give them the option to stay on the session to not lose progress
 
-* When editing the BPM, the browser "numeric" control is used, which is correct, but unfortunately means there are two sets of up/down controls - one built into the app (- and + buttons) and the other from the browser. Ideally, hide the browser based one so we only see the + and -.
-* The prev/start/next control bar scrolls off the bottom of the page still. 
-* "Back" or other navigate away on practice routine needs a warning if ending the session prematurely
+Inversions:
 
-* The various fretboard visualisations use a right-aligned tickbox for "show intervals". Instead, put a drop-down on the left after the "Highlight" drop-down, and allow selecting between "Notes" (default) and "Inversions". Also add this to the Intervals view, which currently doesn't have a Higlight mode.
+* When rendering an inversion on a low string, so that the highest used fret is fret 5 or 5 or lower, adjust the chord diagram so that it is always shown at the nut, even if that means the lowest visible fret (fret 1) is unused. An example would be Bb major, 2nd inversion, strings 4-3-2. It's currently rendered as three notes on the first visible fret with the box fixed 3fr. It would be more logical to show this box anchored at the nut, with the three notes on the third fret.
+* For inversions that are omitting one or more chord tones, call these out ("No root", etc.)
 
+General/UX:
 
+* More comprehensive testing for dark mode
+* More comprehensive testing on mobile/iPad
+* Review button, action link, and modal dialogue styles for consistency
 
 Scales:
 

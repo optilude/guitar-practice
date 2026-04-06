@@ -36,105 +36,138 @@ export default async function HomePage() {
       })
     : null
 
-  const allLocalDates = userId
-    ? (
-        await db.practiceSession.findMany({
-          where: { userId },
-          select: { localDate: true },
-        })
-      ).map((r) => r.localDate)
+  // Single sessions query covers both total and per-goal streak calculation
+  const allSessions = userId
+    ? await db.practiceSession.findMany({
+        where: { userId },
+        select: { localDate: true, goalId: true },
+      })
     : []
 
-  const goalLocalDates =
-    userId && activeGoal
-      ? (
-          await db.practiceSession.findMany({
-            where: { userId, goalId: activeGoal.id },
-            select: { localDate: true },
-          })
-        ).map((r) => r.localDate)
-      : []
+  const sessionsByGoal = new Map<string, string[]>()
+  for (const s of allSessions) {
+    if (s.goalId) {
+      if (!sessionsByGoal.has(s.goalId)) sessionsByGoal.set(s.goalId, [])
+      sessionsByGoal.get(s.goalId)!.push(s.localDate)
+    }
+  }
 
-  const totalStreak = computeStreak(allLocalDates)
-  const goalStreak = computeStreak(goalLocalDates)
+  const activeGoalStreak = activeGoal
+    ? computeStreak(sessionsByGoal.get(activeGoal.id) ?? [])
+    : 0
+
+  // Non-active unarchived goals, alphabetical
+  const otherGoals = userId
+    ? await db.goal.findMany({
+        where: { userId, isArchived: false, isActive: false },
+        orderBy: { title: "asc" },
+        select: { id: true, title: true },
+      })
+    : []
 
   return (
-    <div className="pt-6 max-w-2xl">
-      <div className="flex justify-between items-baseline mb-8">
-        <div>
-          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
-            {greeting()}
-          </p>
-          <h1 className="text-2xl font-semibold text-foreground">Get started</h1>
-        </div>
-        {(totalStreak > 0 || goalStreak > 0) && (
-          <div className="text-right">
-            {totalStreak > 0 && (
-              <div className="text-[13px] font-medium text-accent">🔥 {totalStreak}-day streak</div>
-            )}
-            {goalStreak > 0 && (
-              <div className="text-[10px] text-muted-foreground">{goalStreak} days on this goal</div>
+    <div className="pt-6 max-w-4xl">
+      {/* Header */}
+      <div className={activeGoal ? "mb-3" : "mb-8"}>
+        {activeGoal ? (
+          <div className="flex items-start gap-3">
+            <h1 className="text-2xl font-semibold text-foreground">{activeGoal.title}</h1>
+            {activeGoalStreak > 0 && (
+              <span className="text-lg text-muted-foreground leading-tight">🔥 {activeGoalStreak}</span>
             )}
           </div>
+        ) : (
+          <>
+            <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
+              {greeting()}
+            </p>
+            <h1 className="text-2xl font-semibold text-foreground">Get started</h1>
+          </>
         )}
       </div>
 
-      {activeGoal ? (
-        <div className="space-y-4">
-          <div>
-            <p className="text-xs uppercase tracking-[0.1em] text-muted-foreground mb-1">Active goal</p>
-            <h2 className="text-lg font-semibold">{activeGoal.title}</h2>
-            {activeGoal.description && (
-              <div className="prose prose-sm max-w-none text-muted-foreground mt-0.5">
-                <ReactMarkdown>{activeGoal.description}</ReactMarkdown>
-              </div>
-            )}
-          </div>
+      {/* Two-column layout */}
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Main content */}
+        <div className="flex-1 min-w-0">
+          {activeGoal ? (
+            <div className="space-y-4">
+              {activeGoal.description && (
+                <div className="prose prose-sm max-w-none text-muted-foreground">
+                  <ReactMarkdown>{activeGoal.description}</ReactMarkdown>
+                </div>
+              )}
 
-          <div className="space-y-2">
-            <p className="text-xs uppercase tracking-[0.1em] text-muted-foreground">Practice routines</p>
-            {activeGoal.routines.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                <Link href={`/goals/${activeGoal.id}`} className="underline underline-offset-2 hover:text-foreground transition-colors">
-                  Add a routine to get started →
-                </Link>
-              </p>
-            ) : (
-              activeGoal.routines.map((routine) => {
-                const totalMin = routine.sections.reduce((s, r) => s + r.durationMinutes, 0)
-                return (
-                  <div
-                    key={routine.id}
-                    className="flex items-center justify-between gap-4 rounded-lg border border-border bg-card px-4 py-3"
-                  >
-                    <div className="flex items-center gap-3 text-sm min-w-0">
-                      <span className="font-medium truncate">{routine.title}</span>
-                      <span className="text-muted-foreground shrink-0">
-                        {routine._count.sections} sections · {formatDuration(totalMin)}
-                      </span>
-                    </div>
-                    <Link
-                      href={`/sessions/run?routineId=${routine.id}`}
-                      className="shrink-0 px-3 py-1 text-xs rounded-md bg-accent text-accent-foreground hover:opacity-90 transition-opacity"
-                    >
-                      ▶ Start
+              <div className="space-y-2">
+                <p className="text-xs uppercase tracking-[0.1em] text-muted-foreground">Practice routines</p>
+                {activeGoal.routines.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">
+                    <Link href={`/goals/${activeGoal.id}`} className="underline underline-offset-2 hover:text-foreground transition-colors">
+                      Add a routine to get started →
                     </Link>
-                  </div>
-                )
-              })
-            )}
-          </div>
+                  </p>
+                ) : (
+                  activeGoal.routines.map((routine) => {
+                    const totalMin = routine.sections.reduce((s, r) => s + r.durationMinutes, 0)
+                    return (
+                      <div
+                        key={routine.id}
+                        className="flex items-center justify-between gap-4 rounded-lg border border-border bg-card px-4 py-3"
+                      >
+                        <div className="flex items-center gap-3 text-sm min-w-0">
+                          <span className="font-medium truncate">{routine.title}</span>
+                          <span className="text-muted-foreground shrink-0">
+                            {routine._count.sections} sections · {formatDuration(totalMin)}
+                          </span>
+                        </div>
+                        <Link
+                          href={`/sessions/run?routineId=${routine.id}`}
+                          className="shrink-0 px-3 py-1 text-xs rounded-md bg-accent text-accent-foreground hover:opacity-90 transition-opacity"
+                        >
+                          ▶ Start
+                        </Link>
+                      </div>
+                    )
+                  })
+                )}
+              </div>
+            </div>
+          ) : (
+            <p className="text-base text-muted-foreground">
+              <Link
+                href="/goals"
+                className="text-foreground underline underline-offset-2 decoration-border hover:decoration-foreground transition-colors"
+              >
+                Set your first goal to get started →
+              </Link>
+            </p>
+          )}
         </div>
-      ) : (
-        <p className="text-base text-muted-foreground">
-          <Link
-            href="/goals"
-            className="text-foreground underline underline-offset-2 decoration-border hover:decoration-foreground transition-colors"
-          >
-            Set your first goal to get started →
-          </Link>
-        </p>
-      )}
+
+        {/* Other goals sidebar */}
+        {otherGoals.length > 0 && (
+          <div className="lg:w-1/3 shrink-0">
+            <p className="text-xs uppercase tracking-[0.1em] text-muted-foreground mb-2">Other goals</p>
+            <div className="space-y-0.5">
+              {otherGoals.map((goal) => {
+                const streak = computeStreak(sessionsByGoal.get(goal.id) ?? [])
+                return (
+                  <Link
+                    key={goal.id}
+                    href={`/goals/${goal.id}`}
+                    className="flex w-full items-center justify-between gap-3 rounded-md px-2 py-2 hover:bg-muted transition-colors"
+                  >
+                    <span className="text-sm truncate text-muted-foreground">{goal.title}</span>
+                    {streak > 0 && (
+                      <span className="text-[11px] text-muted-foreground shrink-0">🔥 {streak}</span>
+                    )}
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

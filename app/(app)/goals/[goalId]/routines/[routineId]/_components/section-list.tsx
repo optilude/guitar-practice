@@ -121,7 +121,7 @@ export function SectionList({
         </p>
       )}
 
-      <AddSectionForm routineId={routineId} onAdded={handleChanged} />
+      <AddSectionForm routineId={routineId} availableTopics={availableTopics} onAdded={handleChanged} />
     </div>
   )
 }

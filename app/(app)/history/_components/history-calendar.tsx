@@ -19,7 +19,7 @@ interface HistoryCalendarProps {
 }
 
 export function HistoryCalendar({ sessions }: HistoryCalendarProps) {
-  const [selectedDate, setSelectedDate] = useState<string | null>(null)
+  const [selectedDate, setSelectedDate] = useState<string | null>(() => format(new Date(), "yyyy-MM-dd"))
   const [month, setMonth] = useState<Date>(new Date())
 
   const sessionDates = new Set(sessions.map((s) => s.localDate))
@@ -34,7 +34,7 @@ export function HistoryCalendar({ sessions }: HistoryCalendarProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       <DayPicker
         month={month}
         onMonthChange={setMonth}
@@ -44,7 +44,7 @@ export function HistoryCalendar({ sessions }: HistoryCalendarProps) {
           selected: (day) => format(day, "yyyy-MM-dd") === selectedDate,
         }}
         modifiersClassNames={{
-          hasSession: "font-bold text-accent",
+          hasSession: "font-bold text-accent bg-accent/20 rounded-full",
           selected: "bg-accent text-accent-foreground rounded-full",
         }}
         classNames={{

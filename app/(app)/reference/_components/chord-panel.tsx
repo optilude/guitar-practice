@@ -199,7 +199,7 @@ export function ChordPanel({ root, onRootChange, chordTypeTrigger, onScaleSelect
     setSoloingMode(defaultModeForChordType(chordType))
   }, [chordType]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const [labelMode, setLabelMode] = useState<"note" | "interval">("interval")
+  const [labelMode, setLabelMode] = useState<"note" | "interval">("note")
   const [boxSystem, setBoxSystem] = useState<BoxSystem>("none")
   const [boxIndex, setBoxIndex]   = useState(0)
   const [showMode, setShowMode]   = useState<ShowMode>("intervals")
@@ -372,63 +372,65 @@ export function ChordPanel({ root, onRootChange, chordTypeTrigger, onScaleSelect
       {/* Fretboard controls + viewer */}
       {viewMode === "fretboard" && (
         <>
-          <div className="flex items-end justify-between gap-4">
-            <div className="flex flex-wrap gap-3 items-end">
-              {availableBoxSystems.length > 1 && (
-                <>
+          <div className="flex flex-wrap gap-3 items-end">
+            {availableBoxSystems.length > 1 && (
+              <>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs text-muted-foreground" htmlFor="chord-box-system-select">
+                    Highlight
+                  </label>
+                  <select
+                    id="chord-box-system-select"
+                    value={boxSystem}
+                    onChange={(e) => {
+                      setBoxSystem(e.target.value as BoxSystem)
+                      setBoxIndex(0)
+                    }}
+                    className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
+                  >
+                    {availableBoxSystems.map((s) => (
+                      <option key={s} value={s}>{BOX_SYSTEM_LABELS[s]}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {boxSystem !== "none" && boxCount > 0 && (
                   <div className="flex flex-col gap-1">
-                    <label className="text-xs text-muted-foreground" htmlFor="chord-box-system-select">
-                      Highlight
+                    <label className="text-xs text-muted-foreground" htmlFor="chord-box-index-select">
+                      Box
                     </label>
                     <select
-                      id="chord-box-system-select"
-                      value={boxSystem}
-                      onChange={(e) => {
-                        setBoxSystem(e.target.value as BoxSystem)
-                        setBoxIndex(0)
-                      }}
+                      id="chord-box-index-select"
+                      value={safeBoxIndex}
+                      onChange={(e) => setBoxIndex(Number(e.target.value))}
                       className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
                     >
-                      {availableBoxSystems.map((s) => (
-                        <option key={s} value={s}>{BOX_SYSTEM_LABELS[s]}</option>
+                      {Array.from({ length: boxCount }, (_, i) => (
+                        <option key={i} value={i}>
+                          {boxSystem === "caged"
+                            ? `${CAGED_BOX_LABELS[i]} shape`
+                            : `Position ${i + 1}`}
+                        </option>
                       ))}
                     </select>
                   </div>
-
-                  {boxSystem !== "none" && boxCount > 0 && (
-                    <div className="flex flex-col gap-1">
-                      <label className="text-xs text-muted-foreground" htmlFor="chord-box-index-select">
-                        Box
-                      </label>
-                      <select
-                        id="chord-box-index-select"
-                        value={safeBoxIndex}
-                        onChange={(e) => setBoxIndex(Number(e.target.value))}
-                        className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
-                      >
-                        {Array.from({ length: boxCount }, (_, i) => (
-                          <option key={i} value={i}>
-                            {boxSystem === "caged"
-                              ? `${CAGED_BOX_LABELS[i]} shape`
-                              : `Position ${i + 1}`}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-                </>
-              )}
+                )}
+              </>
+            )}
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-muted-foreground" htmlFor="chord-show-select">
+                Show
+              </label>
+              <select
+                id="chord-show-select"
+                value={labelMode}
+                onChange={(e) => setLabelMode(e.target.value as "note" | "interval")}
+                className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
+              >
+                <option value="note">Notes</option>
+                <option value="interval">Intervals</option>
+              </select>
             </div>
-
-            <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={labelMode === "interval"}
-                onChange={(e) => setLabelMode(e.target.checked ? "interval" : "note")}
-                className="accent-accent"
-              />
-              Show intervals
-            </label>
           </div>
 
           <FretboardViewer

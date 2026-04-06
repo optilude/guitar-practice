@@ -467,18 +467,18 @@ export async function reorderSections(
 export async function addTopicToSection(
   sectionId: string,
   goalTopicId: string
-): Promise<{ success: true } | { error: string }> {
+): Promise<{ success: true; sectionTopicId: string } | { error: string }> {
   try {
     const userId = await requireUserId()
     const section = await requireSectionOwner(sectionId, userId)
     if (!section) return { error: "Not found" }
-    await db.sectionTopic.create({
+    const sectionTopic = await db.sectionTopic.create({
       data: { sectionId, goalTopicId },
     })
     revalidatePath(
       `/goals/${section.routine.goalId}/routines/${section.routineId}`
     )
-    return { success: true }
+    return { success: true, sectionTopicId: sectionTopic.id }
   } catch {
     return { error: "Failed to add topic to section" }
   }

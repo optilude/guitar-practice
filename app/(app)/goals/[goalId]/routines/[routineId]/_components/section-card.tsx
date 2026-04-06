@@ -293,16 +293,6 @@ export function SectionCard({ section, availableTopics, onChanged }: SectionCard
           <div className="px-3 pb-3 space-y-3 border-t border-border pt-3">
             {isEditing ? (
               <>
-                {/* Title */}
-                <div>
-                  <label className="block text-xs text-muted-foreground mb-1">Title</label>
-                  <input
-                    value={titleValue}
-                    onChange={(e) => setTitleValue(e.target.value)}
-                    className="w-full rounded border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
-                  />
-                </div>
-
                 {/* Type + Duration on same row */}
                 <div className="flex gap-3 items-start">
                   <div>
@@ -328,6 +318,16 @@ export function SectionCard({ section, availableTopics, onChanged }: SectionCard
                       className="h-9 w-full rounded border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
                     />
                   </div>
+                </div>
+
+                {/* Title */}
+                <div>
+                  <label className="block text-xs text-muted-foreground mb-1">Title</label>
+                  <input
+                    value={titleValue}
+                    onChange={(e) => setTitleValue(e.target.value)}
+                    className="w-full rounded border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
+                  />
                 </div>
 
                 {/* Topic selector */}

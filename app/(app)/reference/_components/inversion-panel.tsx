@@ -12,6 +12,12 @@ import { type Chord as SVGChord, OPEN, SILENT, type Finger, type FingerOptions }
 import { INTERVAL_DEGREE_COLORS } from "@/lib/rendering/tab"
 import { ChordDiagram } from "./chord-diagram"
 import { FretboardViewer } from "./fretboard-viewer"
+import {
+  getArpeggioBoxSystems,
+  CHORD_TYPE_TO_SCALE,
+  CAGED_BOX_LABELS,
+} from "@/lib/rendering/fretboard"
+import type { BoxSystem } from "@/lib/rendering/fretboard"
 import { SoloScalesPanel } from "./solo-scales-panel"
 import { cn } from "@/lib/utils"
 import { AddToGoalButton } from "@/components/add-to-goal-button"
@@ -127,6 +133,14 @@ const ROOT_NOTES = [
   "Ab", "A", "A#", "Bb", "B", "C", "C#", "Db", "D", "D#", "Eb", "E", "F", "F#", "Gb", "G", "G#",
 ]
 
+const BOX_SYSTEM_LABELS: Record<BoxSystem, string> = {
+  none:       "All notes",
+  caged:      "CAGED",
+  "3nps":     "3NPS",
+  pentatonic: "Pentatonic boxes",
+  windows:    "Position windows",
+}
+
 interface InversionPanelProps {
   root: string
   onRootChange: (root: string) => void
@@ -161,7 +175,9 @@ export function InversionPanel({ root, onRootChange, inversionTypeTrigger, onSca
   const [inversionFilter, setInvFilter]       = useState<string>("all")
   const [stringSetFilter, setStringSetFilter] = useState<string>("all")
   const [showMode, setShowMode]               = useState<ShowMode>("intervals")
-  const [labelMode, setLabelMode]             = useState<"note" | "interval">("interval")
+  const [labelMode, setLabelMode]             = useState<"note" | "interval">("note")
+  const [boxSystem, setBoxSystem]             = useState<BoxSystem>("none")
+  const [boxIndex, setBoxIndex]               = useState(0)
 
   const inversionScale = useMemo(
     () => getInversionAsScale(root, inversionType),
@@ -178,6 +194,16 @@ export function InversionPanel({ root, onRootChange, inversionTypeTrigger, onSca
     () => inversionScale.intervals.map((iv) => INTERVAL_LABEL[iv] ?? iv).join(" – "),
     [inversionScale],
   )
+
+  const availableBoxSystems = useMemo(() => getArpeggioBoxSystems(inversionType), [inversionType])
+  const parentScaleType = CHORD_TYPE_TO_SCALE[inversionType]
+  const boxCount = useMemo(() => {
+    if (boxSystem === "caged")   return CAGED_BOX_LABELS.length
+    if (boxSystem === "3nps")    return 7
+    if (boxSystem === "windows") return inversionScale.positions.length
+    return 0
+  }, [boxSystem, inversionScale.positions.length])
+  const safeBoxIndex = boxIndex < boxCount ? boxIndex : 0
 
   const allVoicings = useMemo(
     () => getInversionVoicings(root, inversionType),
@@ -236,7 +262,13 @@ export function InversionPanel({ root, onRootChange, inversionTypeTrigger, onSca
           <select
             id="inversion-type-select"
             value={inversionType}
-            onChange={(e) => setInversionType(e.target.value)}
+            onChange={(e) => {
+              const newType = e.target.value
+              setInversionType(newType)
+              setBoxIndex(0)
+              const newSystems = getArpeggioBoxSystems(newType)
+              if (!newSystems.includes(boxSystem)) setBoxSystem("none")
+            }}
             className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
           >
             {inversionGroups.map(({ category, label, types }) => (
@@ -302,23 +334,73 @@ export function InversionPanel({ root, onRootChange, inversionTypeTrigger, onSca
       {/* Fretboard view */}
       {viewMode === "fretboard" && (
         <>
-          <div className="flex justify-end">
-            <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={labelMode === "interval"}
-                onChange={(e) => setLabelMode(e.target.checked ? "interval" : "note")}
-                className="accent-accent"
-              />
-              Show intervals
-            </label>
+          <div className="flex flex-wrap gap-3 items-end">
+            {availableBoxSystems.length > 1 && (
+              <>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs text-muted-foreground" htmlFor="inversion-box-system-select">
+                    Highlight
+                  </label>
+                  <select
+                    id="inversion-box-system-select"
+                    value={boxSystem}
+                    onChange={(e) => {
+                      setBoxSystem(e.target.value as BoxSystem)
+                      setBoxIndex(0)
+                    }}
+                    className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
+                  >
+                    {availableBoxSystems.map((s) => (
+                      <option key={s} value={s}>{BOX_SYSTEM_LABELS[s]}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {boxSystem !== "none" && boxCount > 0 && (
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-muted-foreground" htmlFor="inversion-box-index-select">
+                      Box
+                    </label>
+                    <select
+                      id="inversion-box-index-select"
+                      value={safeBoxIndex}
+                      onChange={(e) => setBoxIndex(Number(e.target.value))}
+                      className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
+                    >
+                      {Array.from({ length: boxCount }, (_, i) => (
+                        <option key={i} value={i}>
+                          {boxSystem === "caged"
+                            ? `${CAGED_BOX_LABELS[i]} shape`
+                            : `Position ${i + 1}`}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </>
+            )}
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-muted-foreground" htmlFor="inversion-fretboard-show-select">
+                Show
+              </label>
+              <select
+                id="inversion-fretboard-show-select"
+                value={labelMode}
+                onChange={(e) => setLabelMode(e.target.value as "note" | "interval")}
+                className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent"
+              >
+                <option value="note">Notes</option>
+                <option value="interval">Intervals</option>
+              </select>
+            </div>
           </div>
 
           <FretboardViewer
             scale={inversionScale}
-            boxSystem="none"
-            boxIndex={0}
+            boxSystem={boxSystem}
+            boxIndex={safeBoxIndex}
             labelMode={labelMode}
+            boxScaleType={parentScaleType}
           />
         </>
       )}
