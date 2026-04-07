@@ -167,6 +167,7 @@ export function InteractiveChordGrid({
         strokeWidth: 1.5,
         barreChordStyle: BarreChordStyle.ARC,
         fixedDiagramPosition: true,
+        noPosition: true,
       })
       .chord(chord)
       .draw()
