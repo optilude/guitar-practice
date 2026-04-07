@@ -39,7 +39,7 @@ export function ChordDiagram({ chord, numFrets = 5, fingerTextSize = 22 }: Chord
         frets: numFrets,
         tuning: [],
         color: structureColor,
-        fretLabelFontSize: 28,
+        fretLabelFontSize: 36,
         fingerSize: 0.85,
         fingerTextSize,
         strokeWidth: 1.5,
@@ -53,9 +53,12 @@ export function ChordDiagram({ chord, numFrets = 5, fingerTextSize = 22 }: Chord
     if (svg) {
       svg.classList.add("chord-diagram-svg")
       svg.setAttribute("viewBox", `0 0 ${width} ${height}`)
-      // Fixed 160px matches the reference site's 170px diagram closely
-      svg.setAttribute("width", "180")
+      // Let CSS control width so the diagram scales to its container (card)
+      svg.removeAttribute("width")
       svg.removeAttribute("height")
+      svg.style.width = "100%"
+      svg.style.maxWidth = "180px"
+      svg.style.display = "block"
     }
 
     return () => {

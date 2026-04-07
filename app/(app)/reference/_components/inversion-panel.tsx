@@ -117,7 +117,7 @@ function toSVGChord(
     if (relFret <= 0) return max
     return Math.max(max, relFret + voicing.baseFret - 1)
   }, 0)
-  const anchorToNut = maxAbsFret > 0 && maxAbsFret <= 5
+  const anchorToNut = maxAbsFret > 0 && maxAbsFret <= 4
   const position = anchorToNut ? 1 : voicing.baseFret
 
   voicing.frets.forEach((fret, i) => {
@@ -149,6 +149,18 @@ function toSVGChord(
   })
 
   return { fingers, barres: [], position }
+}
+
+// Compute the correct numFrets for SVGuitar, mirroring the anchoring logic in toSVGChord.
+// When the chord is anchored to the nut, SVGuitar receives absolute fret numbers, so
+// numFrets must cover the highest absolute fret — not the highest relative fret.
+function voicingNumFrets(voicing: InversionVoicing): number {
+  const maxAbsFret = voicing.frets.reduce((max, relFret) =>
+    relFret > 0 ? Math.max(max, relFret + voicing.baseFret - 1) : max, 0)
+  const anchorToNut = maxAbsFret > 0 && maxAbsFret <= 4
+  if (anchorToNut) return Math.max(4, maxAbsFret)
+  const maxRelFret = voicing.frets.reduce((max, f) => f > 0 ? Math.max(max, f) : max, 0)
+  return Math.max(4, maxRelFret)
 }
 
 // Compute a human-readable "X – Y – Z" label for a string set
@@ -611,15 +623,16 @@ export function InversionPanel({ root, onRootChange, inversionTypeTrigger, onSca
                       {label}
                     </h3>
                   )}
-                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2 items-start">
                     {voicings.map((pos, i) => (
-                      <div key={i} className="flex flex-col gap-0.5">
+                      <div key={i} className="flex flex-col gap-1 items-center">
                         {groupBy !== "inversion" && (
                           <span className="text-xs text-muted-foreground text-center">{pos.label}</span>
                         )}
                         <ChordDiagram
                           chord={toSVGChord(pos, showMode, isDark)}
                           fingerTextSize={showMode === "fingers" ? 26 : 20}
+                          numFrets={voicingNumFrets(pos)}
                         />
                         {(pos.omittedRoles.length > 0 || pos.addedIntervals.length > 0) && (
                           <div className="flex flex-wrap gap-1 justify-center">
