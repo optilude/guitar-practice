@@ -96,6 +96,15 @@ const ROLE_OMIT_LABEL: Record<NoteRole, string> = {
   other:   "No ext.",
 }
 
+// Pill base: matches reference site sizing (padding 0 5px, border-radius 3px, 0.62rem, weight 600)
+const PILL_BASE = "inline-block px-1.5 rounded-sm text-[10px] font-semibold leading-[1.5]"
+
+// Omit pills: neutral slate — conveys "something is absent" without strong colour association
+const OMIT_PILL_CLASS = "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+
+// Add pills: emerald — conveys "something extra is present", distinct from slate
+const ADD_PILL_CLASS = "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+
 function toSVGChord(
   voicing: InversionVoicing,
   showMode: ShowMode,
@@ -608,16 +617,23 @@ export function InversionPanel({ root, onRootChange, inversionTypeTrigger, onSca
                         {groupBy !== "inversion" && (
                           <span className="text-xs text-muted-foreground text-center">{pos.label}</span>
                         )}
-                        <ChordDiagram chord={toSVGChord(pos, showMode, isDark)} />
-                        {pos.omittedRoles.length > 0 && (
-                          <span className="text-[10px] text-muted-foreground text-center leading-tight">
-                            {`No ${pos.omittedRoles.map((r) => ROLE_OMIT_LABEL[r].slice(3)).join(", ")}`}
-                          </span>
-                        )}
-                        {pos.addedIntervals.length > 0 && (
-                          <span className="text-[10px] text-muted-foreground text-center leading-tight">
-                            {`Add ${pos.addedIntervals.join(", ")}`}
-                          </span>
+                        <ChordDiagram
+                          chord={toSVGChord(pos, showMode, isDark)}
+                          fingerTextSize={showMode === "fingers" ? 26 : 20}
+                        />
+                        {(pos.omittedRoles.length > 0 || pos.addedIntervals.length > 0) && (
+                          <div className="flex flex-wrap gap-1 justify-center">
+                            {pos.omittedRoles.length > 0 && (
+                              <span className={`${PILL_BASE} ${OMIT_PILL_CLASS}`}>
+                                {`No ${pos.omittedRoles.map((r) => ROLE_OMIT_LABEL[r].slice(3)).join(", ")}`}
+                              </span>
+                            )}
+                            {pos.addedIntervals.length > 0 && (
+                              <span className={`${PILL_BASE} ${ADD_PILL_CLASS}`}>
+                                {`Add ${pos.addedIntervals.join(", ")}`}
+                              </span>
+                            )}
+                          </div>
                         )}
                       </div>
                     ))}

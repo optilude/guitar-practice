@@ -473,6 +473,7 @@ export function ChordPanel({ root, onRootChange, chordTypeTrigger, onScaleSelect
                   <ChordDiagram
                     numFrets={4}
                     chord={toSVGChord(pos, showMode, isDark, chordNotes, chordIntervals)}
+                    fingerTextSize={showMode === "fingers" ? 26 : 20}
                   />
                 </div>
               ))}

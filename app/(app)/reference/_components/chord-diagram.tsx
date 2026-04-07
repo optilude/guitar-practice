@@ -1,14 +1,16 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { SVGuitarChord, type Chord } from "svguitar"
+import { SVGuitarChord, BarreChordStyle, type Chord } from "svguitar"
 
 interface ChordDiagramProps {
   chord: Chord
   numFrets?: number
+  /** Size of the finger label text. Use 26 for single-digit fingering numbers, 20 for note names / intervals. */
+  fingerTextSize?: number
 }
 
-export function ChordDiagram({ chord, numFrets = 5 }: ChordDiagramProps) {
+export function ChordDiagram({ chord, numFrets = 5, fingerTextSize = 22 }: ChordDiagramProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [isDark, setIsDark] = useState(false)
 
@@ -27,8 +29,8 @@ export function ChordDiagram({ chord, numFrets = 5 }: ChordDiagramProps) {
     if (!container) return
 
     // Structural elements (strings, frets, nut, X/O markers):
-    // light mode → gray-500 (#6b7280); dark mode → gray-200 (#e5e7eb) for higher contrast.
-    const structureColor = isDark ? "#e5e7eb" : "#6b7280"
+    // light mode → gray-700 (#374151) for clear readability; dark mode → gray-200 (#e5e7eb).
+    const structureColor = isDark ? "#e5e7eb" : "#374151"
 
     const chart = new SVGuitarChord(container)
     const { width, height } = chart
@@ -38,11 +40,10 @@ export function ChordDiagram({ chord, numFrets = 5 }: ChordDiagramProps) {
         tuning: [],
         color: structureColor,
         fretLabelFontSize: 28,
-        fingerSize: 0.8,
-        emptyStringIndicatorSize: 0.8,
-        fingerTextSize: 22,
-        // fretSize: 0.95,
+        fingerSize: 0.85,
+        fingerTextSize,
         strokeWidth: 1.5,
+        barreChordStyle: BarreChordStyle.ARC,
         fixedDiagramPosition: true,
       })
       .chord(chord)
@@ -52,14 +53,15 @@ export function ChordDiagram({ chord, numFrets = 5 }: ChordDiagramProps) {
     if (svg) {
       svg.classList.add("chord-diagram-svg")
       svg.setAttribute("viewBox", `0 0 ${width} ${height}`)
-      svg.setAttribute("width", String(Math.round(width * 0.65)))
+      // Fixed 160px matches the reference site's 170px diagram closely
+      svg.setAttribute("width", "180")
       svg.removeAttribute("height")
     }
 
     return () => {
       chart.remove()
     }
-  }, [chord, numFrets, isDark])
+  }, [chord, numFrets, isDark, fingerTextSize])
 
   return <div ref={containerRef} className="w-full flex justify-center" />
 }

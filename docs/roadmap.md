@@ -68,6 +68,7 @@ Account management and better authentication support. Admin UI for managing user
 * On the history view, when selecting a date on the calendar, it is shown with a pill-shaped orange background. If the selected date does not contain any practice sessions, make this background gray instead.
 
 * Practice session page: The "Next" and "Prev" buttons at the bottom are not visible without scrolling. Find a way to bring them into view.
+* Also, if there are a sufficient number of routine sections, the box scrolls horizontally. This is OK, but the currently selected/running section needs to always be in view. Using auto-advance or the next/prev buttons, it's possible for it to be outside the visible area.
 
 General/UX:
 
