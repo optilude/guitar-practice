@@ -108,7 +108,7 @@ export function ChordFinderClient() {
     : undefined
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 md:gap-10">
+    <div className="flex flex-col md:flex-row gap-4 md:gap-16">
       {/* Left column: shrink-wrapped to content */}
       <div className="flex flex-col gap-3 shrink-0">
         {/* Key/scale filter */}
