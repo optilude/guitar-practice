@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { href: "/history", label: "History" },
   { href: "/library", label: "Library" },
   { href: "/reference", label: "Reference" },
+  { href: "/tools", label: "Tools" },
 ]
 
 export function NavbarClient() {

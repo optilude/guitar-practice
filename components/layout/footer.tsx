@@ -6,6 +6,7 @@ const NAV_ITEMS = [
   { href: "/library",   label: "Library" },
   { href: "/reference", label: "Reference" },
   { href: "/history",   label: "History" },
+  { href: "/tools",     label: "Tools" },
 ]
 
 export function Footer() {
