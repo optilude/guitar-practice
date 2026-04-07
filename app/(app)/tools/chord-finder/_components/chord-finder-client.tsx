@@ -38,7 +38,9 @@ function qualityDescription(chord: DetectedChord): string {
 }
 
 function positionLabel(chord: DetectedChord): string {
-  return chord.isRootPosition ? "root position" : "inversion"
+  if (chord.isRootPosition) return "root position"
+  const ordinals = ["root position", "1st inversion", "2nd inversion", "3rd inversion", "4th inversion"]
+  return ordinals[chord.inversionNumber] ?? `${chord.inversionNumber}th inversion`
 }
 
 export function ChordFinderClient() {
@@ -159,7 +161,9 @@ export function ChordFinderClient() {
                   <span className="text-xs text-muted-foreground ml-auto shrink-0">
                     {positionLabel(chord)}
                     {chord.degreeLabel && (
-                      <span className="ml-2 font-mono text-accent">{chord.degreeLabel}</span>
+                      <span className="ml-2 inline-flex items-center rounded px-1.5 py-0.5 text-xs font-mono font-medium bg-accent/10 text-accent border border-accent/20">
+                        {chord.degreeLabel}
+                      </span>
                     )}
                   </span>
                 </div>

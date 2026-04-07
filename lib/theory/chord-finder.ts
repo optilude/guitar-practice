@@ -15,6 +15,7 @@ export type DetectedChord = {
   quality: string      // tonal alias[0], e.g. "m7", "M", "" (empty = major)
   bass: string         // lowest sounding note name
   isRootPosition: boolean
+  inversionNumber: number  // 0 = root position, 1 = 1st inversion, 2 = 2nd, etc.
   degreeLabel?: string // e.g. "vi" — only when key+scale filter active
 }
 
@@ -114,7 +115,18 @@ export function detectChords(
       if (!allInScale) continue
     }
 
-    const chord: DetectedChord = { symbol, root, quality, bass, isRootPosition }
+    // inversionNumber: index of the bass note's chroma among the chord tones
+    const bassChroma = Note.chroma(effectiveBass) ?? -1
+    const inversionNumber = isRootPosition
+      ? 0
+      : info.notes.findIndex((n) => {
+          const c = Note.chroma(n)
+          return Number.isFinite(c) && c === bassChroma
+        })
+    // findIndex returns -1 if not found (unusual) — treat as 0
+    const safeInversion = inversionNumber < 0 ? 0 : inversionNumber
+
+    const chord: DetectedChord = { symbol, root, quality, bass, isRootPosition, inversionNumber: safeInversion }
     if (scaleNotes) {
       const isMinorish = info.quality === "Minor" || info.quality === "Diminished"
       chord.degreeLabel = computeDegreeLabel(root, scaleNotes, isMinorish)
