@@ -121,6 +121,7 @@ export function ChordFinderClient() {
 
         {(filterKey || filterScale) && (
           <button
+            type="button"
             onClick={() => { setFilterKey(""); setFilterScale("") }}
             className={btn("standalone", "sm")}
           >
@@ -139,13 +140,13 @@ export function ChordFinderClient() {
             onFretsChange={setFrets}
             onStartFretChange={setStartFret}
           />
-          <button onClick={() => setFrets(INITIAL_FRETS)} className={btn("standalone", "sm")}>
+          <button type="button" onClick={() => setFrets(INITIAL_FRETS)} className={btn("standalone", "sm")}>
             Clear
           </button>
         </div>
 
         {/* Right: results */}
-        <div className="flex-1 min-w-0 pt-1">
+        <div className="flex-1 min-w-0 pt-1" aria-live="polite">
           {allMuted ? (
             <p className="text-sm text-muted-foreground">Place dots on the diagram to identify chords.</p>
           ) : chords.length === 0 ? (
@@ -154,8 +155,8 @@ export function ChordFinderClient() {
             </p>
           ) : (
             <div className="divide-y divide-border">
-              {chords.map((chord, i) => (
-                <div key={i} className="flex items-baseline gap-2 py-2">
+              {chords.map((chord) => (
+                <div key={chord.symbol} className="flex items-baseline gap-2 py-2">
                   <span className="font-medium text-foreground text-sm w-16 shrink-0">{chord.symbol}</span>
                   <span className="text-xs text-muted-foreground">{qualityDescription(chord)}</span>
                   <span className="text-xs text-muted-foreground ml-auto shrink-0">
