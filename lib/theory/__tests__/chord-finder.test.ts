@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest"
 import { detectChords } from "@/lib/theory/chord-finder"
 
 // Open-string chroma reference: [4,9,2,7,11,4] = low-E, A, D, G, B, high-e
