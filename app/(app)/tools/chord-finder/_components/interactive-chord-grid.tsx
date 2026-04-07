@@ -167,12 +167,16 @@ export function InteractiveChordGrid({
         strokeWidth: 1.5,
         barreChordStyle: BarreChordStyle.ARC,
         fixedDiagramPosition: true,
-        noPosition: true,
       })
       .chord(chord)
       .draw()
 
     const svgEl = container.querySelector("svg")
+    // Remove the position label (e.g. "2fr.") — it overlaps the numeric input.
+    // The nut/position rendering is still controlled by the `position` field on the chord.
+    svgEl?.querySelectorAll<SVGTextElement>("text").forEach((el) => {
+      if (/fr\.?$/i.test(el.textContent ?? "")) el.remove()
+    })
     if (svgEl) {
       svgEl.removeAttribute("width")
       svgEl.removeAttribute("height")
