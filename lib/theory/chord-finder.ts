@@ -31,7 +31,8 @@ function complexityTier(chordType: string): number {
 }
 
 function chordScore(isRootPosition: boolean, chordType: string, symbolLength: number): number {
-  return (isRootPosition ? 0 : 10) + complexityTier(chordType) + symbolLength
+  // Complexity tier is the primary sort key (× 100), root position preference is secondary
+  return complexityTier(chordType) * 100 + (isRootPosition ? 0 : 10) + symbolLength
 }
 
 const DEGREE_NUMERALS = ["I", "II", "III", "IV", "V", "VI", "VII"] as const
