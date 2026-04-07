@@ -1,10 +1,7 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { SVGuitarChord, OPEN, SILENT, type Chord, BarreChordStyle } from "svguitar"
-
-// Open-string chroma: index 0 = string 6 (low E), index 5 = string 1 (high e)
-const OPEN_CHROMA = [4, 9, 2, 7, 11, 4] as const
 
 interface InteractiveChordGridProps {
   frets: (number | null)[]       // null=muted, 0=open, N=absolute fret
@@ -170,16 +167,20 @@ export function InteractiveChordGrid({
       const firstFretZone = zones.find((z) => z.fret === startFret)
       if (nutZone && firstFretZone) {
         const firstFretCenterY = nutZone.svgH + firstFretZone.svgH / 2
-        const svgRendered = svgEl.getBoundingClientRect()
         const svgViewBoxH = height
-        setInputTopPx((firstFretCenterY / svgViewBoxH) * svgRendered.height)
+        requestAnimationFrame(() => {
+          const svgRendered = svgEl.getBoundingClientRect()
+          if (svgRendered.height > 0) {
+            setInputTopPx((firstFretCenterY / svgViewBoxH) * svgRendered.height)
+          }
+        })
       }
     }
 
     return () => chart.remove()
   }, [frets, startFret, numFrets, isDark])
 
-  function handleZoneClick(zone: HitZone) {
+  const handleZoneClick = useCallback((zone: HitZone) => {
     const newFrets = [...frets]
     const si = zone.stringIndex
     if (zone.fret === "header") {
@@ -191,7 +192,7 @@ export function InteractiveChordGrid({
       newFrets[si] = frets[si] === absoluteFret ? null : absoluteFret
     }
     onFretsChange(newFrets)
-  }
+  }, [frets, onFretsChange])
 
   return (
     <div className="flex gap-2 items-start">
@@ -206,12 +207,12 @@ export function InteractiveChordGrid({
               inset: 0,
               width: "100%",
               height: "100%",
-              overflow: "visible",
+              overflow: "hidden",
             }}
           >
             {hitZones.map((zone, i) => (
               <rect
-                key={i}
+                key={`${zone.stringIndex}-${String(zone.fret)}`}
                 x={zone.svgX}
                 y={zone.svgY}
                 width={zone.svgW}
