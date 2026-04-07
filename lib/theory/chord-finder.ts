@@ -88,7 +88,7 @@ export function detectChords(
 
   // 6. Build result entries
   const scaleChromas = scaleNotes
-    ? new Set(scaleNotes.map((n) => Note.chroma(n)))
+    ? new Set(scaleNotes.map((n) => Note.chroma(n)).filter((c): c is number => Number.isFinite(c as number)))
     : null
 
   const entries: Array<{ chord: DetectedChord; score: number }> = []
@@ -109,7 +109,7 @@ export function detectChords(
     if (scaleChromas) {
       const allInScale = info.notes.every((n) => {
         const c = Note.chroma(n)
-        return c !== undefined && c !== null && scaleChromas.has(c)
+        return Number.isFinite(c) && scaleChromas!.has(c as number)
       })
       if (!allInScale) continue
     }
