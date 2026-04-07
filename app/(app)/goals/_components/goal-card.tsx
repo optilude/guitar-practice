@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import ReactMarkdown from "react-markdown"
 import { setActiveGoal } from "@/app/(app)/goals/actions"
+import { btn } from "@/lib/button-styles"
 
 interface GoalCardProps {
   goal: { id: string; title: string; description: string; isActive: boolean }
@@ -59,7 +60,7 @@ export function GoalCard({ goal, topicCount, routineCount }: GoalCardProps) {
             <button
               onClick={handleSetActive}
               disabled={isPending}
-              className="text-xs font-medium bg-accent/10 text-accent border border-accent/40 px-2.5 py-1 rounded hover:bg-accent/20 transition-colors disabled:opacity-50"
+              className={btn("standalone", "sm")}
             >
               Activate
             </button>

@@ -60,7 +60,7 @@ export function MetronomePanel({ bpm, isRunning, onBpmChange, onStart, onStop }:
       </div>
       <button
         onClick={isRunning ? onStop : onStart}
-        className={cn(btn("secondary", "sm"), "ml-auto flex items-center gap-1")}
+        className={cn(btn("standalone", "sm"), "ml-auto flex items-center gap-1")}
       >
         {isRunning ? "■ Stop" : "▶ Start"}
       </button>

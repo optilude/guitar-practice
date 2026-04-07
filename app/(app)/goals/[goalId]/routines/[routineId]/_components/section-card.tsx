@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { btn } from "@/lib/button-styles"
 import ReactMarkdown from "react-markdown"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
@@ -248,7 +249,7 @@ export function SectionCard({ section, availableTopics, onChanged }: SectionCard
                 type="button"
                 onClick={handleDone}
                 disabled={isSaving}
-                className="text-xs text-accent border border-accent px-2 py-1 rounded flex-shrink-0 disabled:opacity-50"
+                className={btn("primary", "sm")}
               >
                 {isSaving ? "Saving…" : "Save"}
               </button>
@@ -263,7 +264,7 @@ export function SectionCard({ section, availableTopics, onChanged }: SectionCard
                   setError(null)
                 }}
                 disabled={isSaving}
-                className="text-xs text-muted-foreground border border-border px-2 py-1 rounded flex-shrink-0 hover:text-foreground transition-colors disabled:opacity-50"
+                className={btn("standalone", "sm")}
               >
                 Cancel
               </button>
@@ -272,7 +273,7 @@ export function SectionCard({ section, availableTopics, onChanged }: SectionCard
             <button
               type="button"
               onClick={() => { setIsExpanded(true); setIsEditing(true) }}
-              className="text-xs text-muted-foreground border border-border px-2 py-1 rounded flex-shrink-0 hover:text-foreground transition-colors"
+              className={btn("standalone", "sm")}
             >
               Edit
             </button>
@@ -282,9 +283,9 @@ export function SectionCard({ section, availableTopics, onChanged }: SectionCard
           <button
             type="button"
             onClick={() => setShowDeleteModal(true)}
-            className="text-xs text-muted-foreground border border-border px-2 py-1 rounded flex-shrink-0 hover:text-foreground transition-colors"
+            className={btn("destructive", "sm")}
           >
-            Delete
+            Remove
           </button>
         </div>
 
@@ -453,17 +454,17 @@ export function SectionCard({ section, availableTopics, onChanged }: SectionCard
             </p>
             <div className="flex gap-3 justify-end">
               <button
-                onClick={() => setShowDeleteModal(false)}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Cancel
-              </button>
-              <button
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="px-4 py-2 rounded-md bg-destructive text-white text-sm font-medium hover:bg-destructive/90 transition-colors disabled:opacity-50"
+                className={btn("destructive")}
               >
                 {isDeleting ? "Removing…" : "Remove section"}
+              </button>
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className={btn("secondary")}
+              >
+                Cancel
               </button>
             </div>
           </div>

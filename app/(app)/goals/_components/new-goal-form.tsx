@@ -23,10 +23,7 @@ export function NewGoalForm() {
     if ("error" in result) {
       setError(result.error)
     } else {
-      setIsOpen(false)
-      setError(null)
-      ;(e.target as HTMLFormElement).reset()
-      router.refresh()
+      router.push(`/goals/${result.id}`)
     }
   }
 

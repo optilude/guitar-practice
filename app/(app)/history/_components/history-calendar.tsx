@@ -19,7 +19,7 @@ interface HistoryCalendarProps {
 }
 
 export function HistoryCalendar({ sessions }: HistoryCalendarProps) {
-  const [selectedDate, setSelectedDate] = useState<string | null>(() => format(new Date(), "yyyy-MM-dd"))
+  const [selectedDate, setSelectedDate] = useState(() => format(new Date(), "yyyy-MM-dd"))
   const [month, setMonth] = useState<Date>(new Date())
 
   const sessionDates = new Set(sessions.map((s) => s.localDate))
@@ -29,12 +29,12 @@ export function HistoryCalendar({ sessions }: HistoryCalendarProps) {
     : []
 
   function handleDayClick(day: Date) {
-    const str = format(day, "yyyy-MM-dd")
-    setSelectedDate((prev) => (prev === str ? null : str))
+    setSelectedDate(format(day, "yyyy-MM-dd"))
   }
 
   return (
     <div className="space-y-10">
+      <div className="max-w-sm">
       <DayPicker
         month={month}
         onMonthChange={setMonth}
@@ -44,8 +44,9 @@ export function HistoryCalendar({ sessions }: HistoryCalendarProps) {
           selected: (day) => format(day, "yyyy-MM-dd") === selectedDate,
         }}
         modifiersClassNames={{
-          hasSession: "font-bold text-accent bg-accent/20 rounded-full",
-          selected: "bg-accent text-accent-foreground rounded-full",
+          hasSession: "[&>button]:bg-accent/20 font-bold",
+          selected: "bg-accent/20 rounded-full font-bold [&>button]:!bg-transparent",
+          today: "[&>button]:text-accent [&>button]:font-semibold",
         }}
         classNames={{
           root: "w-full",
@@ -67,36 +68,35 @@ export function HistoryCalendar({ sessions }: HistoryCalendarProps) {
           disabled: "opacity-30 cursor-default",
         }}
       />
+      </div>
 
-      {selectedDate && (
-        <div>
-          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">
-            Sessions on {format(parseISO(selectedDate), "d MMMM yyyy")}
-          </p>
-          {sessionsForDay.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No sessions on this day.</p>
-          ) : (
-            <div className="space-y-1">
-              {sessionsForDay.map((s) => (
-                <Link
-                  key={s.id}
-                  href={`/history/${s.id}`}
-                  className="flex items-center justify-between gap-4 px-4 py-2.5 rounded-lg border border-border bg-card hover:bg-muted transition-colors text-sm"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <span className="font-medium truncate">{s.routineTitle}</span>
-                    <span className="text-muted-foreground shrink-0">
-                      {s.startedAtLocal.slice(11, 16)} – {s.endedAtLocal.slice(11, 16)}
-                    </span>
-                    <span className="text-muted-foreground truncate">{s.goalTitle}</span>
-                  </div>
-                  <span className="text-muted-foreground shrink-0">→</span>
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+      <div>
+        <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">
+          Sessions on {format(parseISO(selectedDate), "d MMMM yyyy")}
+        </p>
+        {sessionsForDay.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No sessions on this day.</p>
+        ) : (
+          <div className="space-y-1">
+            {sessionsForDay.map((s) => (
+              <Link
+                key={s.id}
+                href={`/history/${s.id}`}
+                className="flex items-center justify-between gap-4 px-4 py-2.5 rounded-lg border border-border bg-card hover:bg-muted transition-colors text-sm"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="font-medium truncate">{s.routineTitle}</span>
+                  <span className="text-muted-foreground shrink-0">
+                    {s.startedAtLocal.slice(11, 16)} – {s.endedAtLocal.slice(11, 16)}
+                  </span>
+                  <span className="text-muted-foreground truncate">{s.goalTitle}</span>
+                </div>
+                <span className="text-muted-foreground shrink-0">→</span>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

@@ -30,19 +30,14 @@ export default async function ManageLibraryPage() {
 
   return (
     <div className="pt-6">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
-            Library
-          </p>
-          <h1 className="text-2xl font-semibold text-foreground">Manage my library</h1>
-        </div>
+      <div>
         <Link
           href="/library"
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          className="inline-flex items-center gap-1 text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors mb-1"
         >
-          ← Back to library
+          ← Library
         </Link>
+        <h1 className="text-2xl font-semibold text-foreground mb-6">Manage my library</h1>
       </div>
 
       <div className="space-y-10">
@@ -54,7 +49,7 @@ export default async function ManageLibraryPage() {
                 href={`/library/${cat.slug}`}
                 className="text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
-                Browse standard ↗
+                Browse standard →
               </Link>
             </div>
             <UserLessonList

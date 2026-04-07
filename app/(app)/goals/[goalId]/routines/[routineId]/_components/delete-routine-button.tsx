@@ -37,7 +37,7 @@ export function DeleteRoutineButton({ routineId, goalId, routineTitle }: DeleteR
           onClick={() => setShowModal(true)}
           className={btn("destructive", "sm")}
         >
-          Delete routine…
+          Delete routine
         </button>
       </div>
 

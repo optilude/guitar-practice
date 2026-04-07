@@ -28,7 +28,7 @@ export function DeleteSessionButton({ sessionId }: DeleteSessionButtonProps) {
         onClick={() => setShowModal(true)}
         className={btn("destructive", "sm")}
       >
-        Delete session…
+        Delete session
       </button>
 
       {showModal && (

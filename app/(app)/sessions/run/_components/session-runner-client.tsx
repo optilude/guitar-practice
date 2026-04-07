@@ -37,6 +37,8 @@ export function SessionRunnerClient({ routine }: SessionRunnerClientProps) {
 
   // When true, navigation away will be intercepted. Set false before intentional navigations.
   const guardActiveRef = useRef(true)
+  // Becomes true once the timer has been started at least once.
+  const hasStartedRef = useRef(false)
   // Stores the pending navigation callback shown in the leave modal.
   const pendingNavRef = useRef<(() => void) | null>(null)
 
@@ -49,10 +51,15 @@ export function SessionRunnerClient({ routine }: SessionRunnerClientProps) {
     totalSecs(routine.sections, 0),
   )
 
+  // Arm the guard the first time the timer is started
+  useEffect(() => {
+    if (timer.isRunning) hasStartedRef.current = true
+  }, [timer.isRunning])
+
   // Browser unload / refresh / external navigation
   useEffect(() => {
     function handleBeforeUnload(e: BeforeUnloadEvent) {
-      if (!guardActiveRef.current) return
+      if (!guardActiveRef.current || !hasStartedRef.current) return
       e.preventDefault()
     }
     window.addEventListener("beforeunload", handleBeforeUnload)
@@ -62,7 +69,7 @@ export function SessionRunnerClient({ routine }: SessionRunnerClientProps) {
   // Intercept all internal link clicks via capture phase
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (!guardActiveRef.current) return
+      if (!guardActiveRef.current || !hasStartedRef.current) return
       const anchor = (e.target as Element).closest("a[href]")
       if (!anchor) return
       const href = anchor.getAttribute("href")
@@ -118,8 +125,9 @@ export function SessionRunnerClient({ routine }: SessionRunnerClientProps) {
     if (prev >= 0) handleGoToSection(prev)
   }, [nav.currentSectionIndex, handleGoToSection])
 
-  // "← Back" button — show leave guard
+  // "← Back" button — show leave guard only if session has started
   function handleBack() {
+    if (!hasStartedRef.current) { router.back(); return }
     pendingNavRef.current = () => router.back()
     setShowLeaveModal(true)
   }
@@ -168,7 +176,7 @@ export function SessionRunnerClient({ routine }: SessionRunnerClientProps) {
   }, [metronome])
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-44px)]">
+    <div className="flex flex-col h-[calc(100dvh-44px)] overflow-hidden">
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-2 border-b border-border bg-background shrink-0">
         <button
@@ -247,33 +255,29 @@ export function SessionRunnerClient({ routine }: SessionRunnerClientProps) {
         </div>
       </div>
 
-      {/* Section strip */}
-      <div className="px-4 py-2 border-t border-border bg-background shrink-0">
-        <SectionStrip
-          sections={routine.sections}
-          currentIndex={nav.currentSectionIndex}
-          onSelect={handleGoToSection}
-        />
-      </div>
-
-      {/* Controls */}
-      <div className="px-4 py-1.5 border-t border-border bg-background shrink-0">
-        <div className="flex items-center justify-center gap-4">
-          <button
-            onClick={handlePrev}
-            disabled={nav.currentSectionIndex === 0}
-            className={btn("standalone")}
-          >
-            ← Prev
-          </button>
-          <button
-            onClick={handleNext}
-            disabled={nav.currentSectionIndex === routine.sections.length - 1}
-            className={btn("standalone")}
-          >
-            Next →
-          </button>
+      {/* Section strip + Prev/Next */}
+      <div className="flex items-center gap-2 px-4 py-2 border-t border-border bg-background shrink-0">
+        <button
+          onClick={handlePrev}
+          disabled={nav.currentSectionIndex === 0}
+          className={btn("standalone", "sm")}
+        >
+          ← Prev
+        </button>
+        <div className="flex-1 min-w-0">
+          <SectionStrip
+            sections={routine.sections}
+            currentIndex={nav.currentSectionIndex}
+            onSelect={handleGoToSection}
+          />
         </div>
+        <button
+          onClick={handleNext}
+          disabled={nav.currentSectionIndex === routine.sections.length - 1}
+          className={btn("standalone", "sm")}
+        >
+          Next →
+        </button>
       </div>
 
       {/* End session modal */}

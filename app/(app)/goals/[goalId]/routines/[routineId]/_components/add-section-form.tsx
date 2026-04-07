@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { btn } from "@/lib/button-styles"
 import {
   createSection,
   addTopicToSection,
@@ -240,18 +241,18 @@ export function AddSectionForm({ routineId, availableTopics, onAdded }: AddSecti
 
       <div className="flex gap-3 justify-end">
         <button
-          type="button"
-          onClick={handleClose}
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          Cancel
-        </button>
-        <button
           type="submit"
           disabled={isPending}
-          className="px-4 py-2 rounded-md bg-accent text-accent-foreground text-sm font-medium hover:opacity-90 disabled:opacity-50"
+          className={btn("primary")}
         >
           {isPending ? "Adding…" : "Add section"}
+        </button>
+        <button
+          type="button"
+          onClick={handleClose}
+          className={btn("secondary")}
+        >
+          Cancel
         </button>
       </div>
     </form>

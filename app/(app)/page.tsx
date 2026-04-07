@@ -107,28 +107,37 @@ export default async function HomePage() {
                     </Link>
                   </p>
                 ) : (
-                  activeGoal.routines.map((routine) => {
-                    const totalMin = routine.sections.reduce((s, r) => s + r.durationMinutes, 0)
-                    return (
-                      <div
-                        key={routine.id}
-                        className="flex items-center justify-between gap-4 rounded-lg border border-border bg-card px-4 py-3"
-                      >
-                        <div className="flex items-center gap-3 text-sm min-w-0">
-                          <span className="font-medium truncate">{routine.title}</span>
-                          <span className="text-muted-foreground shrink-0">
-                            {routine._count.sections} sections · {formatDuration(totalMin)}
-                          </span>
-                        </div>
+                  <>
+                    {activeGoal.routines.map((routine) => {
+                      const totalMin = routine.sections.reduce((s, r) => s + r.durationMinutes, 0)
+                      return (
                         <Link
+                          key={routine.id}
                           href={`/sessions/run?routineId=${routine.id}`}
-                          className="shrink-0 px-3 py-1 text-xs rounded-md bg-accent text-accent-foreground hover:opacity-90 transition-opacity"
+                          className="flex items-center justify-between gap-4 rounded-lg border border-border bg-card px-4 py-3 hover:bg-muted transition-colors group"
                         >
-                          ▶ Start
+                          <div className="flex items-center gap-3 text-sm min-w-0">
+                            <span className="font-medium truncate">{routine.title}</span>
+                            <span className="text-muted-foreground shrink-0">
+                              {routine._count.sections} sections · {formatDuration(totalMin)}
+                            </span>
+                          </div>
+                          <span
+                            aria-hidden="true"
+                            className="shrink-0 px-3 py-1 text-xs rounded-md bg-accent text-accent-foreground group-hover:opacity-90 transition-opacity"
+                          >
+                            ▶ Start
+                          </span>
                         </Link>
-                      </div>
-                    )
-                  })
+                      )
+                    })}
+                    <Link
+                      href={`/goals/${activeGoal.id}`}
+                      className="inline-block text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      Manage goal and practice routines →
+                    </Link>
+                  </>
                 )}
               </div>
             </div>

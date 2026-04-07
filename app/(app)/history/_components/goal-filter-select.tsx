@@ -11,22 +11,18 @@ export function GoalFilterSelect({ goals, selectedGoalId }: GoalFilterSelectProp
   const router = useRouter()
   if (goals.length === 0) return null
   return (
-    <div className="flex items-center gap-2 text-sm">
-      <label htmlFor="goal-filter" className="text-muted-foreground text-xs">Filter by goal:</label>
-      <select
-        id="goal-filter"
-        defaultValue={selectedGoalId ?? ""}
-        onChange={(e) => {
-          const val = e.target.value
-          router.push(val ? `/history?goalId=${val}` : "/history")
-        }}
-        className="rounded border border-border bg-card text-foreground text-xs px-2 py-1 focus:outline-none focus:ring-1 focus:ring-accent"
-      >
-        <option value="">All goals</option>
-        {goals.map((g) => (
-          <option key={g.id} value={g.id}>{g.title}</option>
-        ))}
-      </select>
-    </div>
+    <select
+      defaultValue={selectedGoalId ?? ""}
+      onChange={(e) => {
+        const val = e.target.value
+        router.push(val ? `/history?goalId=${val}` : "/history")
+      }}
+      className="w-full rounded border border-border bg-card text-foreground text-xs px-2 py-1 focus:outline-none focus:ring-1 focus:ring-accent"
+    >
+      <option value="">All goals</option>
+      {goals.map((g) => (
+        <option key={g.id} value={g.id}>{g.title}</option>
+      ))}
+    </select>
   )
 }

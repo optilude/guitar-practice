@@ -51,10 +51,17 @@ export default async function HistoryPage({
       })
     : sessions
 
+  const unarchivedGoalIds = new Set(
+    (await db.goal.findMany({
+      where: { userId, isArchived: false },
+      select: { id: true },
+    })).map((g) => g.id)
+  )
+
   const distinctGoals = [
     ...new Map(
       allSessions
-        .filter((s) => s.goalId)
+        .filter((s) => s.goalId && unarchivedGoalIds.has(s.goalId))
         .map((s) => [s.goalId, { id: s.goalId!, title: s.goalTitle }]),
     ).values(),
   ]
@@ -81,10 +88,7 @@ export default async function HistoryPage({
 
   return (
     <div className="pt-6 max-w-4xl">
-      <div className="flex items-baseline justify-between mb-6">
-        <h1 className="text-2xl font-semibold">History</h1>
-        <GoalFilterSelect goals={distinctGoals} selectedGoalId={goalId} />
-      </div>
+      <h1 className="text-2xl font-semibold mb-6">History</h1>
 
       {sessions.length === 0 ? (
         <p className="text-sm text-muted-foreground">
@@ -94,15 +98,24 @@ export default async function HistoryPage({
           </Link>
         </p>
       ) : (
-        <div className="flex flex-col gap-10 lg:flex-row lg:justify-between lg:gap-0">
-          {/* Calendar */}
-          <div className="w-full max-w-sm">
+        <div className="flex flex-col gap-10 lg:flex-row lg:gap-10">
+          {/* Calendar + session list */}
+          <div className="flex-1 min-w-0">
             <HistoryCalendar sessions={sessions} />
           </div>
 
           {/* Stats sidebar */}
-          <div className="w-full max-w-sm flex flex-col gap-6">
-            <div className="space-y-2">
+          <div className="w-full lg:w-44 lg:shrink-0 flex flex-col gap-6">
+            {totalStreak > 0 && (
+              <div className="space-y-2">
+                <p className="text-xs uppercase tracking-[0.1em] text-muted-foreground">Streak</p>
+                <p className="text-sm font-semibold text-foreground">
+                  {totalStreak} day{totalStreak !== 1 ? "s" : ""} 🔥
+                </p>
+              </div>
+            )}
+
+            <div className="border-t border-border pt-4">
               <p className="text-xs uppercase tracking-[0.1em] text-muted-foreground mb-3">Sessions</p>
               {statRow("This week", sessionsThisWeek)}
               {statRow("This month", sessionsThisMonth)}
@@ -110,12 +123,9 @@ export default async function HistoryPage({
               {statRow("All time", totalSessions)}
             </div>
 
-            {totalStreak > 0 && (
-              <div className="border-t border-border pt-4 space-y-2">
-                <p className="text-xs uppercase tracking-[0.1em] text-muted-foreground">Streak</p>
-                <p className="text-sm font-semibold text-foreground">
-                  {totalStreak} day{totalStreak !== 1 ? "s" : ""} 🔥
-                </p>
+            {distinctGoals.length > 1 && (
+              <div className="border-t border-border pt-4">
+                <GoalFilterSelect goals={distinctGoals} selectedGoalId={goalId} />
               </div>
             )}
           </div>

@@ -33,12 +33,16 @@ Allow the user to maintain a custom library of lessons.
 
 ---
 
-## Phase 6: Sessions and Progress Tracking
+## Phase 6: Sessions and Progress Tracking ✅ Complete
 Run a practice session: timer, metronome, flashcards, notes. Session logs, streaks, and per-topic completion status (linked to Phase 2 library content).
 
 ---
 
-## Phase 7: Authentication and administration
+## Phase 7: Tools
+Add a Tools section with chord, scale, and key finders, plus a metronome.
+
+---
+## Phase 8: Authentication and administration
 Account management and better authentication support. Admin UI for managing users and library content (CRUD).
 
 ---
@@ -64,27 +68,10 @@ Account management and better authentication support. Admin UI for managing user
 
 # Known issues
 
-UX improvements:
 
-- Home page: make the whole practice routine bar clickable, not just the "Start" button (but leave the button there as a visual clue)
+* There are three different highlight styles when hovering over tiles: a dark/black outline; an orange outline; or the tile background changes from white to dark gray. Use the latter style as the default and remember this choice. Fix the goal tiles (/goals page) and library tiles (/library page) to use this style (the other places already do).
 
-- Goal page: Remove ellipsis from "Archive goal..."  button
-- Goal page: "+ Add routine" link should have the same dashed outline as the other "add" targets
-
-- Routine edit page: The form to add a new section – change button order to "Add section" (left) and "cancel" (right). Make "Cancel" a secondary button, not a link.
-- Routine edit page: Remove ellipsis from "Delete routine..."
-- Routine edit page: Style "Delete" button in the section title bar as a destructive button and rename from "Delete" to "Remove". Follow the styling of the "Manage my library" page, for all the header buttons (Edit, Delete, as well as Save and Cancel).
-- Routine edit page: Confirmation dialogue buttons should be opposite order ("Remove section" first, then cancel). Cancel should be a button not a link. Follow the same style as the equivalent modal on the "Manage my library" page.
-
-- History page: Move "Filter by goal" dropdown to its own line under the title, but inside the same panel as the calendar. Remove the label but leave the dropdown ("All goals", etc.). Hide the drop-down if there are zero or one goals to filter by, i.e. only show it if there is more than one available (un-archived) goal with history entries. Note that if "all goals" is selected, sessions related to archived or even deleted goals should still show in the daily list, streaks calculation etc..
-
-- Library page: Put the "Manage my library" link at the same line (right-aligned) as the "Browse" and "Library" headings above the page title.
-- "Manage my library" page has a "Back to library" link top right. Remove this and instead put the left arrow in front of "Library" above the "Manage my library" title, and make this the link back to the library front page.
-- "Manage my library" page: Change the "up and right" arrow on the "Browes standard" links to be right arrows.
-
-- Se
-
-Inversions:
+* Practice session page: The "Next" and "Prev" buttons at the bottom are not visible without scrolling. Find a way to bring them into view.
 
 * For inversions that are omitting one or more chord tones, call these out ("No root", or "No 5th" or "No root, 5th" if more than one).
 
@@ -92,7 +79,6 @@ General/UX:
 
 * More comprehensive testing for dark mode
 * More comprehensive testing on mobile/iPad
-* Review button, action link, and modal dialogue styles for consistency
 
 Scales:
 

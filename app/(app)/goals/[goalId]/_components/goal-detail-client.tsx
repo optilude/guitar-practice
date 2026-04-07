@@ -8,6 +8,7 @@ import { updateGoal, archiveGoal, removeTopicFromGoal } from "@/app/(app)/goals/
 import { formatTopicName } from "@/lib/goals"
 import { TopicKind } from "@/lib/generated/prisma/enums"
 import { btn } from "@/lib/button-styles"
+import { NewRoutineForm } from "./new-routine-form"
 
 type GoalTopicWithLesson = {
   id: string
@@ -218,12 +219,7 @@ export function GoalDetailClient({ goal, recentSessions }: GoalDetailClientProps
               ))}
             </ul>
           )}
-          <Link
-            href={`/goals/${goal.id}/routines/new`}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            + Add routine
-          </Link>
+          <NewRoutineForm goalId={goal.id} />
         </div>
       </div>
 
@@ -266,7 +262,7 @@ export function GoalDetailClient({ goal, recentSessions }: GoalDetailClientProps
           onClick={() => setShowArchiveModal(true)}
           className={btn("destructive", "sm")}
         >
-          Archive goal…
+          Archive goal
         </button>
       </div>
 
