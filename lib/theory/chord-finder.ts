@@ -96,15 +96,13 @@ export function detectChords(
   for (const symbol of detected) {
     const slashIdx = symbol.indexOf("/")
     const baseSymbol = slashIdx >= 0 ? symbol.slice(0, slashIdx) : symbol
-    const slashBass = slashIdx >= 0 ? symbol.slice(slashIdx + 1) : null
 
     const info = Chord.get(baseSymbol)
     const root = info.tonic
     if (!root) continue
 
     const quality = info.aliases[0] ?? ""
-    const effectiveBass = slashBass ?? root
-    const isRootPosition = Note.chroma(effectiveBass) === Note.chroma(bass)
+    const isRootPosition = Note.chroma(root) === Note.chroma(bass)
 
     // Scale filter: skip chords with any tone outside the scale
     if (scaleChromas) {
@@ -116,7 +114,7 @@ export function detectChords(
     }
 
     // inversionNumber: index of the bass note's chroma among the chord tones
-    const bassChroma = Note.chroma(effectiveBass) ?? -1
+    const bassChroma = Note.chroma(bass) ?? -1
     const inversionNumber = isRootPosition
       ? 0
       : info.notes.findIndex((n) => {

@@ -3,6 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { SVGuitarChord, OPEN, SILENT, type Chord, BarreChordStyle } from "svguitar"
 
+// Open-string chroma: index 0 = string 6 (low E), index 5 = string 1 (high e)
+const OPEN_CHROMA = [4, 9, 2, 7, 11, 4] as const
+const CHROMA_TO_NOTE = ["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"] as const
+
 interface InteractiveChordGridProps {
   frets: (number | null)[]       // null=muted, 0=open, N=absolute fret
   startFret: number              // first visible fret (default 1)
@@ -22,15 +26,19 @@ function toSVGuitarChord(
   const fingers: Chord["fingers"] = frets.map((f, i) => {
     const stringNum = 6 - i // SVGuitar string number
     if (f === null) return [stringNum, SILENT]
-    if (f === 0) return [stringNum, OPEN]
+    if (f === 0) {
+      const noteName = CHROMA_TO_NOTE[OPEN_CHROMA[i]]
+      return [stringNum, OPEN, noteName]
+    }
     const relativeFret = f - startFret + 1
     if (relativeFret < 1 || relativeFret > numFrets) return [stringNum, SILENT]
-    return [stringNum, relativeFret]
+    const noteName = CHROMA_TO_NOTE[(OPEN_CHROMA[i] + f) % 12]
+    return [stringNum, relativeFret, noteName]
   })
   return {
     fingers,
     barres: [],
-    position: startFret > 1 ? startFret : undefined,
+    position: startFret, // always pass so SVGuitar draws the nut at fret 1
   }
 }
 
@@ -140,7 +148,8 @@ export function InteractiveChordGrid({
         tuning: [],
         color: structureColor,
         fretLabelFontSize: 36,
-        fingerSize: 0.85,
+        fingerSize: 0.9,
+        fingerTextSize: 20,
         strokeWidth: 1.5,
         barreChordStyle: BarreChordStyle.ARC,
         fixedDiagramPosition: true,
@@ -237,7 +246,7 @@ export function InteractiveChordGrid({
           if (!isNaN(v) && v >= 1 && v <= 22) onStartFretChange(v)
         }}
         style={{ marginTop: `${inputTopPx}px` }}
-        className="w-10 rounded border border-border bg-card text-foreground text-sm text-center px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-accent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-12 rounded border border-border bg-card text-foreground text-sm text-center px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-accent"
         aria-label="Start fret"
       />
     </div>
