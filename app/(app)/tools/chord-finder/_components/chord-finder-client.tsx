@@ -58,6 +58,7 @@ function positionLabel(chord: DetectedChord): string {
 export function ChordFinderClient() {
   const [frets, setFrets] = useState<(number | null)[]>(INITIAL_FRETS)
   const [startFret, setStartFret] = useState(1)
+  const [inputTopPx, setInputTopPx] = useState(0)
   const [filterKey, setFilterKey] = useState("")
   const [filterScale, setFilterScale] = useState("")
 
@@ -150,24 +151,39 @@ export function ChordFinderClient() {
           </div>
         )}
 
-        {/* Chord grid + clear button stacked, button spans grid width */}
-        <div className="w-fit flex flex-col gap-2">
-          <InteractiveChordGrid
-            frets={frets}
-            startFret={startFret}
-            onFretsChange={setFrets}
-            onStartFretChange={setStartFret}
+        {/* Chord grid + clear button, fret input aligned alongside */}
+        <div className="flex items-start gap-1">
+          <div className="w-fit flex flex-col gap-2">
+            <InteractiveChordGrid
+              frets={frets}
+              startFret={startFret}
+              onFretsChange={setFrets}
+              onInputTopPxChange={setInputTopPx}
+            />
+            <button type="button" onClick={handleClear} className={`w-full ${btn("standalone", "sm")}`}>
+              Clear
+            </button>
+          </div>
+          <input
+            type="number"
+            min={1}
+            max={22}
+            value={startFret}
+            onChange={(e) => {
+              const v = parseInt(e.target.value, 10)
+              if (!isNaN(v) && v >= 1 && v <= 22) setStartFret(v)
+            }}
+            style={{ marginTop: `${Math.max(0, inputTopPx - 14)}px`, marginLeft: "-20px" }}
+            className="w-14 rounded border border-border bg-card text-foreground text-sm text-center px-1 py-1 focus:outline-none focus:ring-1 focus:ring-accent"
+            aria-label="Start fret"
           />
-          <button type="button" onClick={handleClear} className={`w-full ${btn("standalone", "sm")}`}>
-            Clear
-          </button>
         </div>
       </div>
 
       {/* Right column: results */}
       <div aria-live="polite">
         {allMuted ? (
-          <p className="text-sm text-muted-foreground">Place dots on the diagram to identify chords.</p>
+          <p className="text-sm text-muted-foreground">Place dots on the chord box to identify chord names.</p>
         ) : chords.length === 0 ? (
           <p className="text-sm text-muted-foreground">
             No chords found{filterKey && filterScale ? ` in ${filterKey} ${filterScale}` : ""}.
@@ -175,8 +191,8 @@ export function ChordFinderClient() {
         ) : (
           <div className="divide-y divide-border">
             {chords.map((chord) => (
-              <div key={chord.symbol} className="flex items-baseline gap-3 py-2">
-                <span className="font-medium text-foreground text-sm flex-1">{chordName(chord)}</span>
+              <div key={chord.symbol} className="flex items-baseline gap-2 py-1.5">
+                <span className="font-medium text-foreground text-sm">{chordName(chord)}</span>
                 <span className="text-xs text-muted-foreground shrink-0 flex items-center gap-1.5">
                   {positionLabel(chord)}
                   {chord.degreeLabel && (

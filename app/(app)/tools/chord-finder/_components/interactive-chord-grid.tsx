@@ -12,7 +12,7 @@ interface InteractiveChordGridProps {
   startFret: number              // first visible fret (default 1)
   numFrets?: number              // visible fret rows (default 6)
   onFretsChange: (frets: (number | null)[]) => void
-  onStartFretChange: (fret: number) => void
+  onInputTopPxChange?: (px: number) => void
 }
 
 // Convert our absolute-fret state to a SVGuitar Chord object.
@@ -38,7 +38,8 @@ function toSVGuitarChord(
   return {
     fingers,
     barres: [],
-    position: startFret, // always pass so SVGuitar draws the nut at fret 1
+    // undefined → SVGuitar draws the nut; number → shows position label
+    position: startFret > 1 ? startFret : undefined,
   }
 }
 
@@ -114,13 +115,12 @@ export function InteractiveChordGrid({
   startFret,
   numFrets = 6,
   onFretsChange,
-  onStartFretChange,
+  onInputTopPxChange,
 }: InteractiveChordGridProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [isDark, setIsDark] = useState(false)
   const [hitZones, setHitZones] = useState<HitZone[]>([])
   const [overlayViewBox, setOverlayViewBox] = useState("0 0 400 500")
-  const [inputTopPx, setInputTopPx] = useState(0)
 
   // Track dark mode
   useEffect(() => {
@@ -153,7 +153,6 @@ export function InteractiveChordGrid({
         strokeWidth: 1.5,
         barreChordStyle: BarreChordStyle.ARC,
         fixedDiagramPosition: true,
-        noPosition: true,
       })
       .chord(chord)
       .draw()
@@ -164,30 +163,30 @@ export function InteractiveChordGrid({
       svgEl.removeAttribute("width")
       svgEl.removeAttribute("height")
       svgEl.style.width = "100%"
-      svgEl.style.maxWidth = "180px"
+      svgEl.style.maxWidth = "240px"
       svgEl.style.display = "block"
 
       const zones = computeHitZones(svgEl as SVGElement, startFret)
       setHitZones(zones)
       setOverlayViewBox(`0 0 ${width} ${height}`)
 
-      // Position start fret input at the level of the first fret row center
+      // Report fret input alignment offset to parent
       const nutZone = zones.find((z) => z.fret === "header")
       const firstFretZone = zones.find((z) => z.fret === startFret)
-      if (nutZone && firstFretZone) {
+      if (nutZone && firstFretZone && onInputTopPxChange) {
         const firstFretCenterY = nutZone.svgH + firstFretZone.svgH / 2
         const svgViewBoxH = height
         requestAnimationFrame(() => {
           const svgRendered = svgEl.getBoundingClientRect()
           if (svgRendered.height > 0) {
-            setInputTopPx((firstFretCenterY / svgViewBoxH) * svgRendered.height)
+            onInputTopPxChange((firstFretCenterY / svgViewBoxH) * svgRendered.height)
           }
         })
       }
     }
 
     return () => chart.remove()
-  }, [frets, startFret, numFrets, isDark])
+  }, [frets, startFret, numFrets, isDark, onInputTopPxChange])
 
   const handleZoneClick = useCallback((zone: HitZone) => {
     const newFrets = [...frets]
@@ -204,51 +203,33 @@ export function InteractiveChordGrid({
   }, [frets, onFretsChange])
 
   return (
-    <div className="flex gap-2 items-start">
-      {/* Diagram + click overlay */}
-      <div style={{ position: "relative", display: "inline-block" }}>
-        <div ref={containerRef} />
-        {hitZones.length > 0 && (
-          <svg
-            viewBox={overlayViewBox}
-            style={{
-              position: "absolute",
-              inset: 0,
-              width: "100%",
-              height: "100%",
-              overflow: "hidden",
-            }}
-          >
-            {hitZones.map((zone, i) => (
-              <rect
-                key={`${zone.stringIndex}-${String(zone.fret)}`}
-                x={zone.svgX}
-                y={zone.svgY}
-                width={zone.svgW}
-                height={zone.svgH}
-                fill="transparent"
-                style={{ cursor: "pointer" }}
-                onClick={() => handleZoneClick(zone)}
-              />
-            ))}
-          </svg>
-        )}
-      </div>
-
-      {/* Start fret input — aligned with first fret row */}
-      <input
-        type="number"
-        min={1}
-        max={22}
-        value={startFret}
-        onChange={(e) => {
-          const v = parseInt(e.target.value, 10)
-          if (!isNaN(v) && v >= 1 && v <= 22) onStartFretChange(v)
-        }}
-        style={{ marginTop: `${inputTopPx}px` }}
-        className="w-12 rounded border border-border bg-card text-foreground text-sm text-center px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-accent"
-        aria-label="Start fret"
-      />
+    <div style={{ position: "relative", display: "inline-block" }}>
+      <div ref={containerRef} />
+      {hitZones.length > 0 && (
+        <svg
+          viewBox={overlayViewBox}
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            overflow: "hidden",
+          }}
+        >
+          {hitZones.map((zone) => (
+            <rect
+              key={`${zone.stringIndex}-${String(zone.fret)}`}
+              x={zone.svgX}
+              y={zone.svgY}
+              width={zone.svgW}
+              height={zone.svgH}
+              fill="transparent"
+              style={{ cursor: "pointer" }}
+              onClick={() => handleZoneClick(zone)}
+            />
+          ))}
+        </svg>
+      )}
     </div>
   )
 }
