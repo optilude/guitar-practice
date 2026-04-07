@@ -159,7 +159,7 @@ describe("addTopicToSection", () => {
     } as never)
     vi.mocked(db.sectionTopic.create).mockResolvedValue({ id: "st-1" } as never)
     const result = await addTopicToSection("section-1", "goal-topic-1")
-    expect(result).toEqual({ success: true })
+    expect(result).toEqual({ success: true, sectionTopicId: "st-1" })
     expect(db.sectionTopic.create).toHaveBeenCalledWith({
       data: { sectionId: "section-1", goalTopicId: "goal-topic-1" },
     })

@@ -203,12 +203,13 @@ describe("InversionPanel", () => {
     expect(screen.getByTestId("fretboard-viewer")).toBeDefined()
   })
 
-  it("show-intervals checkbox starts checked and toggles off", () => {
+  it("show mode select defaults to 'intervals' and can be changed", () => {
     render(<InversionPanel root="C" onRootChange={vi.fn()} />)
-    const checkbox = screen.getByRole("checkbox", { name: /show intervals/i }) as HTMLInputElement
-    expect(checkbox.checked).toBe(true)
-    fireEvent.click(checkbox)
-    expect(checkbox.checked).toBe(false)
+    fireEvent.click(screen.getByRole("button", { name: /fingerings/i }))
+    const select = screen.getByLabelText(/^show$/i) as HTMLSelectElement
+    expect(select.value).toBe("intervals")
+    fireEvent.change(select, { target: { value: "fingers" } })
+    expect(select.value).toBe("fingers")
   })
 
   it("renders the root selector with alphabetical enharmonic options", () => {

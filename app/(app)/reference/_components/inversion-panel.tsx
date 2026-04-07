@@ -662,16 +662,16 @@ export function InversionPanel({ root, onRootChange, inversionTypeTrigger, onSca
                           fingerTextSize={showMode === "fingers" ? 26 : 20}
                           numFrets={voicingNumFrets(pos)}
                         />
-                        {(pos.omittedRoles.length > 0 || pos.addedIntervals.length > 0) && (
+                        {((pos.omittedRoles?.length ?? 0) > 0 || (pos.addedIntervals?.length ?? 0) > 0) && (
                           <div className="flex flex-wrap gap-1 justify-center">
-                            {pos.omittedRoles.length > 0 && (
+                            {(pos.omittedRoles?.length ?? 0) > 0 && (
                               <span className={`${PILL_BASE} ${OMIT_PILL_CLASS}`}>
-                                {`No ${pos.omittedRoles.map((r) => ROLE_OMIT_LABEL[r].slice(3)).join(", ")}`}
+                                {`No ${pos.omittedRoles!.map((r) => ROLE_OMIT_LABEL[r].slice(3)).join(", ")}`}
                               </span>
                             )}
-                            {pos.addedIntervals.length > 0 && (
+                            {(pos.addedIntervals?.length ?? 0) > 0 && (
                               <span className={`${PILL_BASE} ${ADD_PILL_CLASS}`}>
-                                {`Add ${pos.addedIntervals.join(", ")}`}
+                                {`Add ${pos.addedIntervals!.join(", ")}`}
                               </span>
                             )}
                           </div>

@@ -79,14 +79,14 @@ describe("ScalePanel", () => {
     render(<ScalePanel root="C" onRootChange={vi.fn()} />)
     const tabButton = screen.getByRole("button", { name: /notes/i })
     await userEvent.click(tabButton)
-    // After switching, the 'Show intervals' checkbox should disappear
-    expect(screen.queryByText(/show intervals/i)).toBeNull()
+    // After switching to notes view, the Show select should be hidden
+    expect(screen.queryByLabelText(/^show$/i)).toBeNull()
   })
 
-  it("shows interval checkbox in fretboard mode", async () => {
+  it("shows the show-mode select in fretboard mode", async () => {
     render(<ScalePanel root="C" onRootChange={vi.fn()} />)
     await userEvent.click(screen.getByRole("button", { name: /fretboard/i }))
-    expect(screen.getByText(/show intervals/i)).toBeDefined()
+    expect(screen.getByLabelText(/^show$/i)).toBeDefined()
   })
 
   it("changes scale type when selector changes", async () => {

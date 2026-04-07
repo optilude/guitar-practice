@@ -121,10 +121,10 @@ describe("ChordPanel", () => {
     expect(screen.getByTestId("fretboard-viewer")).toBeDefined()
   })
 
-  it("renders the show-intervals checkbox", () => {
+  it("renders the show-mode selector", () => {
     render(<ChordPanel root="C" onRootChange={vi.fn()} />)
-    const checkbox = screen.getByRole("checkbox", { name: /show intervals/i })
-    expect(checkbox).toBeDefined()
+    const select = screen.getByLabelText(/^show$/i) as HTMLSelectElement
+    expect(select).toBeDefined()
   })
 
   it("renders the root selector with alphabetical enharmonic options", () => {
