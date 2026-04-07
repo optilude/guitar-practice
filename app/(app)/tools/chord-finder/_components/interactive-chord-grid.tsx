@@ -181,7 +181,6 @@ export function InteractiveChordGrid({
       svgEl.removeAttribute("width")
       svgEl.removeAttribute("height")
       svgEl.style.width = "100%"
-      svgEl.style.maxWidth = "240px"
       svgEl.style.display = "block"
 
       // Compute hit zones in original SVG coordinate space (before viewBox crop)
@@ -198,22 +197,26 @@ export function InteractiveChordGrid({
         // Crop top: remove the upper half of the header dead space
         const cropY = nutSvgY / 2
 
-        // Crop left: remove dead space before string 6, leaving room for a full dot.
-        // Dot radius ≈ fingerSize (0.9) × halfSpacing; add 4 SVG units safety margin.
+        // Crop left and right: remove dead space outside the outermost strings,
+        // leaving room for a full dot. Dot radius ≈ fingerSize (0.9) × halfSpacing;
+        // add 4 SVG units safety margin on each side.
         const dotRadius = 0.9 * halfSpacing
-        const chordBoxLeftSvg = headerZones[0].svgX + halfSpacing  // string 6 centre x
+        const chordBoxLeftSvg = headerZones[0].svgX + halfSpacing   // string 6 centre x
+        const chordBoxRightSvg = headerZones[5].svgX + halfSpacing  // string 1 centre x
         const cropX = Math.max(0, chordBoxLeftSvg - dotRadius - 4)
+        const cropRight = Math.min(width, chordBoxRightSvg + dotRadius + 4)
 
-        const croppedViewBox = `${cropX} ${cropY} ${width - cropX} ${height - cropY}`
+        const croppedViewBoxW = cropRight - cropX
+        // Scale maxWidth proportionally so the chord box stays the same visual size
+        svgEl.style.maxWidth = `${Math.round(240 * croppedViewBoxW / width)}px`
+        const croppedViewBox = `${cropX} ${cropY} ${croppedViewBoxW} ${height - cropY}`
         svgEl.setAttribute("viewBox", croppedViewBox)
         setOverlayViewBox(croppedViewBox)
 
         if (onMetricsChange) {
-          const chordBoxRightSvg = headerZones[5].svgX + halfSpacing  // string 1 centre x
           const chordBoxWidthSvg = chordBoxRightSvg - chordBoxLeftSvg
 
           // Positions relative to cropped viewBox origin
-          const croppedViewBoxW = width - cropX
           const croppedViewBoxH = height - cropY
           const firstFretCenterY = nutSvgY + firstFretZone.svgH / 2
 
@@ -235,6 +238,7 @@ export function InteractiveChordGrid({
         }
       } else {
         // Fallback: full viewBox
+        svgEl.style.maxWidth = "240px"
         svgEl.setAttribute("viewBox", `0 0 ${width} ${height}`)
         setOverlayViewBox(`0 0 ${width} ${height}`)
       }
