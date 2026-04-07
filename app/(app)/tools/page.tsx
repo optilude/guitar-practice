@@ -5,19 +5,19 @@ const TOOLS = [
     href: "/tools/chord-finder",
     icon: "♦",
     name: "Chord Finder",
-    description: "Find chords by name or shape",
+    description: "Find chords by shape",
   },
   {
     href: "/tools/scale-finder",
     icon: "〜",
     name: "Scale Finder",
-    description: "Explore scales and modes",
+    description: "Find scales from notes",
   },
   {
     href: "/tools/key-finder",
     icon: "♩",
     name: "Key Finder",
-    description: "Identify keys from notes or chords",
+    description: "Identify keys from the chords in a progression",
   },
   {
     href: "/tools/transposer",
@@ -45,7 +45,8 @@ export default function ToolsPage() {
             href={tool.href}
             className="block rounded-lg border border-border dark:border-neutral-600 bg-card dark:bg-neutral-800 p-4 hover:bg-muted dark:hover:bg-secondary transition-colors"
           >
-            <p className="text-sm font-medium text-foreground">{tool.icon} {tool.name}</p>
+            <p className="text-sm font-medium text-foreground">{tool.icon}</p>
+            <p>{tool.name}</p>
             <p className="text-xs text-muted-foreground mt-1">{tool.description}</p>
           </Link>
         ))}
