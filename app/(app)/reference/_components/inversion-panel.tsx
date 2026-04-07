@@ -3,7 +3,6 @@
 import { useState, useMemo, useEffect } from "react"
 import {
   INVERSION_TYPES,
-  INVERSION_STRING_SETS,
   getInversionVoicings,
   getInversionAsScale,
   type InversionVoicing,
@@ -162,6 +161,14 @@ const BOX_SYSTEM_LABELS: Record<BoxSystem, string> = {
   windows:    "Position windows",
 }
 
+const INVERSION_GROUP_ORDER = ["root", "first", "second", "third"]
+const INVERSION_GROUP_LABELS: Record<string, string> = {
+  root:   "Root position",
+  first:  "1st inversion",
+  second: "2nd inversion",
+  third:  "3rd inversion",
+}
+
 interface InversionPanelProps {
   root: string
   onRootChange: (root: string) => void
@@ -195,6 +202,7 @@ export function InversionPanel({ root, onRootChange, inversionTypeTrigger, onSca
   const [voicingFilter, setVoicingFilter]     = useState<string>("all")
   const [inversionFilter, setInvFilter]       = useState<string>("all")
   const [stringSetFilter, setStringSetFilter] = useState<string>("all")
+  const [groupBy, setGroupBy]                 = useState<"stringSet" | "inversion" | "none">("stringSet")
   const [showMode, setShowMode]               = useState<ShowMode>("intervals")
   const [labelMode, setLabelMode]             = useState<"note" | "interval">("note")
   const [boxSystem, setBoxSystem]             = useState<BoxSystem>("none")
@@ -236,6 +244,23 @@ export function InversionPanel({ root, onRootChange, inversionTypeTrigger, onSca
     [root, inversionType, soloingMode],
   )
 
+  // String sets available for the current chord type + voicing/inversion filters,
+  // sorted descending alphabetically for the dropdown.
+  const availableStringSets = useMemo(() => {
+    let v = allVoicings
+    if (voicingFilter !== "all")   v = v.filter((x) => x.voicingType === voicingFilter)
+    if (inversionFilter !== "all") v = v.filter((x) => x.inversion   === inversionFilter)
+    const seen = new Set(v.map((x) => x.stringSet))
+    return [...seen].sort((a, b) => b.localeCompare(a))
+  }, [allVoicings, voicingFilter, inversionFilter])
+
+  // Reset string set filter if it's no longer in the available set
+  useEffect(() => {
+    if (stringSetFilter !== "all" && !availableStringSets.includes(stringSetFilter)) {
+      setStringSetFilter("all")
+    }
+  }, [availableStringSets, stringSetFilter])
+
   const filtered = useMemo(() => {
     let v = allVoicings
     if (voicingFilter !== "all")   v = v.filter((x) => x.voicingType === voicingFilter)
@@ -244,17 +269,39 @@ export function InversionPanel({ root, onRootChange, inversionTypeTrigger, onSca
     return v
   }, [allVoicings, voicingFilter, inversionFilter, stringSetFilter])
 
-  // Group by string set in canonical order
   const grouped = useMemo(() => {
+    const byFret = [...filtered].sort((a, b) =>
+      a.minFret !== b.minFret
+        ? a.minFret - b.minFret
+        : b.stringSet.localeCompare(a.stringSet) // ties: lower strings first
+    )
+
+    if (groupBy === "none") {
+      return byFret.length === 0 ? [] : [{ label: null as string | null, voicings: byFret }]
+    }
+
+    if (groupBy === "inversion") {
+      const map = new Map<string, InversionVoicing[]>()
+      for (const v of byFret) {
+        const key = v.inversion ?? "other"
+        if (!map.has(key)) map.set(key, [])
+        map.get(key)!.push(v)
+      }
+      return [...INVERSION_GROUP_ORDER, "other"]
+        .filter((k) => map.has(k))
+        .map((k) => ({ label: INVERSION_GROUP_LABELS[k] ?? "Other", voicings: map.get(k)! }))
+    }
+
+    // "stringSet" — descending alphabetical, matching the dropdown order
     const map = new Map<string, InversionVoicing[]>()
-    for (const v of filtered) {
+    for (const v of byFret) {
       if (!map.has(v.stringSet)) map.set(v.stringSet, [])
       map.get(v.stringSet)!.push(v)
     }
-    return INVERSION_STRING_SETS
-      .filter((s) => map.has(s))
-      .map((s) => ({ stringSet: s, voicings: map.get(s)! }))
-  }, [filtered])
+    return [...map.keys()]
+      .sort((a, b) => b.localeCompare(a))
+      .map((s) => ({ label: stringSetLabel(s), voicings: map.get(s)! }))
+  }, [filtered, groupBy])
 
   return (
     <div className="space-y-4">
@@ -505,7 +552,7 @@ export function InversionPanel({ root, onRootChange, inversionTypeTrigger, onSca
                 className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
               >
                 <option value="all">All</option>
-                {INVERSION_STRING_SETS.map((s) => (
+                {availableStringSets.map((s) => (
                   <option key={s} value={s}>{s}</option>
                 ))}
               </select>
@@ -526,25 +573,50 @@ export function InversionPanel({ root, onRootChange, inversionTypeTrigger, onSca
                 <option value="fingers">Fingers</option>
               </select>
             </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-muted-foreground" htmlFor="inversion-groupby-select">
+                Group by
+              </label>
+              <select
+                id="inversion-groupby-select"
+                value={groupBy}
+                onChange={(e) => setGroupBy(e.target.value as "stringSet" | "inversion" | "none")}
+                className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
+              >
+                <option value="stringSet">String set</option>
+                <option value="inversion">Inversion</option>
+                <option value="none">None</option>
+              </select>
+            </div>
           </div>
 
           {grouped.length === 0 ? (
             <p className="text-xs text-muted-foreground">No voicings match the current filters.</p>
           ) : (
             <div className="space-y-8">
-              {grouped.map(({ stringSet, voicings }) => (
-                <div key={stringSet}>
-                  <h3 className="text-xs font-medium tracking-widest text-muted-foreground mb-4">
-                    {stringSetLabel(stringSet)}
-                  </h3>
+              {grouped.map(({ label, voicings }, gi) => (
+                <div key={label ?? gi}>
+                  {label !== null && (
+                    <h3 className="text-xs font-medium tracking-widest text-muted-foreground mb-4">
+                      {label}
+                    </h3>
+                  )}
                   <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
                     {voicings.map((pos, i) => (
                       <div key={i} className="flex flex-col gap-0.5">
-                        <span className="text-xs text-muted-foreground text-center">{pos.label}</span>
+                        {groupBy !== "inversion" && (
+                          <span className="text-xs text-muted-foreground text-center">{pos.label}</span>
+                        )}
                         <ChordDiagram chord={toSVGChord(pos, showMode, isDark)} />
                         {pos.omittedRoles.length > 0 && (
                           <span className="text-[10px] text-muted-foreground text-center leading-tight">
-                            {pos.omittedRoles.map((r) => ROLE_OMIT_LABEL[r]).join(", ")}
+                            {`No ${pos.omittedRoles.map((r) => ROLE_OMIT_LABEL[r].slice(3)).join(", ")}`}
+                          </span>
+                        )}
+                        {pos.addedIntervals.length > 0 && (
+                          <span className="text-[10px] text-muted-foreground text-center leading-tight">
+                            {`Add ${pos.addedIntervals.join(", ")}`}
                           </span>
                         )}
                       </div>

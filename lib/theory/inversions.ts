@@ -26,6 +26,16 @@ const INTERVAL_LABEL: Record<string, string> = {
   "13M": "13",
 }
 
+// Semitone distance from tonic → default interval id (for non-chord tones)
+const SEMITONE_TO_IV: readonly string[] = [
+  "1P", "2m", "2M", "3m", "3M", "4P", "4A", "5P", "5A", "6M", "7m", "7M",
+]
+
+// Chroma → default note name (flat spelling for accidentals)
+const CHROMA_TO_NOTE: readonly string[] = [
+  "C", "Db", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B",
+]
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -45,6 +55,8 @@ export interface InversionVoicing extends ChordPosition {
   noteIntervals: Array<string | null>
   /** Chord tone roles that are absent from this voicing (e.g. ["fifth"] for shell voicings). */
   omittedRoles: NoteRole[]
+  /** Short interval labels of notes played that fall outside the chord tones (e.g. ["6", "b9"]). */
+  addedIntervals: string[]
 }
 
 // ---------------------------------------------------------------------------
@@ -142,17 +154,20 @@ function computeNoteInfo(
   tonalSymbol: string,
   tonic: string,
 ): {
-  noteRoles:     Array<NoteRole | null>
-  noteNames:     Array<string | null>
-  noteIntervals: Array<string | null>
-  omittedRoles:  NoteRole[]
+  noteRoles:      Array<NoteRole | null>
+  noteNames:      Array<string | null>
+  noteIntervals:  Array<string | null>
+  omittedRoles:   NoteRole[]
+  addedIntervals: string[]
 } {
   const { notes: chordNotes, intervals: chordIntervals } = resolveChordNotes(tonic, tonalSymbol)
-  const chordChromas = chordNotes.map((n) => Note.get(n).chroma ?? -1)
+  const chordChromas  = chordNotes.map((n) => Note.get(n).chroma ?? -1)
+  const tonicChroma   = Note.get(tonic).chroma ?? 0
 
   const noteRoles:     Array<NoteRole | null> = Array(6).fill(null)
   const noteNames:     Array<string | null>   = Array(6).fill(null)
   const noteIntervals: Array<string | null>   = Array(6).fill(null)
+  const addedLabels:   string[]               = []
 
   frets.forEach((relFret, idx) => {
     if (relFret === -1) return // muted
@@ -164,15 +179,33 @@ function computeNoteInfo(
       noteRoles[idx]     = intervalToRole(iv)
       noteNames[idx]     = chordNotes[match]
       noteIntervals[idx] = INTERVAL_LABEL[iv] ?? iv
+    } else {
+      // Non-chord tone: still show it, marked as "other"
+      const semitones    = (chroma - tonicChroma + 12) % 12
+      const iv           = SEMITONE_TO_IV[semitones] ?? "1P"
+      const label        = INTERVAL_LABEL[iv] ?? iv
+      noteRoles[idx]     = "other"
+      noteNames[idx]     = CHROMA_TO_NOTE[chroma]
+      noteIntervals[idx] = label
+      addedLabels.push(label)
     }
   })
 
-  // Detect chord tones that are entirely absent from this voicing
-  const expectedRoles = new Set(chordIntervals.map(intervalToRole))
-  const presentRoles  = new Set(noteRoles.filter((r): r is NoteRole => r !== null))
-  const omittedRoles  = [...expectedRoles].filter((r) => !presentRoles.has(r))
+  // Detect chord tones that are entirely absent from this voicing.
+  // Only count roles from actual chord-tone matches (not from added non-chord-tone slots).
+  const expectedRoles     = new Set(chordIntervals.map(intervalToRole))
+  const chordPresentRoles = new Set<NoteRole>()
+  frets.forEach((relFret, idx) => {
+    if (relFret === -1) return
+    const absFret = relFret === 0 ? 0 : relFret + baseFret - 1
+    const chroma  = (OPEN_CHROMA[idx] + absFret) % 12
+    const match   = chordChromas.indexOf(chroma)
+    if (match >= 0) chordPresentRoles.add(intervalToRole(chordIntervals[match] ?? "1P"))
+  })
+  const omittedRoles   = [...expectedRoles].filter((r) => !chordPresentRoles.has(r))
+  const addedIntervals = [...new Set(addedLabels)]
 
-  return { noteRoles, noteNames, noteIntervals, omittedRoles }
+  return { noteRoles, noteNames, noteIntervals, omittedRoles, addedIntervals }
 }
 
 // ---------------------------------------------------------------------------
@@ -196,7 +229,7 @@ function convertPosition(pos: any, suffix: string, tonic: string): InversionVoic
   const minFret        = hasClosedFrets ? baseFret : 0
 
   const tonalSymbol = SUFFIX_TO_TONAL[suffix] ?? suffix
-  const { noteRoles, noteNames, noteIntervals, omittedRoles } = computeNoteInfo(frets, baseFret, tonalSymbol, tonic)
+  const { noteRoles, noteNames, noteIntervals, omittedRoles, addedIntervals } = computeNoteInfo(frets, baseFret, tonalSymbol, tonic)
 
   return {
     frets,
@@ -213,6 +246,7 @@ function convertPosition(pos: any, suffix: string, tonic: string): InversionVoic
     noteNames,
     noteIntervals,
     omittedRoles,
+    addedIntervals,
   }
 }
 
@@ -319,8 +353,8 @@ export function getInversionVoicings(tonic: string, type: string): InversionVoic
   if (normalized === tonic) return rawVoicings
   const tonalSymbol = SUFFIX_TO_TONAL[type] ?? type
   return rawVoicings.map((v) => {
-    const { noteRoles, noteNames, noteIntervals, omittedRoles } = computeNoteInfo(v.frets, v.baseFret, tonalSymbol, tonic)
-    return { ...v, noteRoles, noteNames, noteIntervals, omittedRoles }
+    const { noteRoles, noteNames, noteIntervals, omittedRoles, addedIntervals } = computeNoteInfo(v.frets, v.baseFret, tonalSymbol, tonic)
+    return { ...v, noteRoles, noteNames, noteIntervals, omittedRoles, addedIntervals }
   })
 }
 
