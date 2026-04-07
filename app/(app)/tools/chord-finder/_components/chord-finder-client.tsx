@@ -108,7 +108,7 @@ export function ChordFinderClient() {
     : undefined
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+    <div className="flex flex-col md:flex-row gap-4 md:gap-10">
       {/* Left column: shrink-wrapped to content */}
       <div className="flex flex-col gap-3 shrink-0">
         {/* Key/scale filter */}
@@ -196,7 +196,7 @@ export function ChordFinderClient() {
               const v = parseInt(e.target.value, 10)
               if (!isNaN(v) && v >= 1 && v <= 22) setStartFret(v)
             }}
-            style={{ marginTop: `${Math.max(0, metrics.inputTopPx - 14)}px`, marginLeft: "-20px" }}
+            style={{ marginTop: `${Math.max(0, metrics.inputTopPx - 19)}px`, marginLeft: "-25px" }}
             className="w-14 rounded border border-border bg-card text-foreground text-sm text-center px-1 py-1 focus:outline-none focus:ring-1 focus:ring-accent"
             aria-label="Start fret"
           />
