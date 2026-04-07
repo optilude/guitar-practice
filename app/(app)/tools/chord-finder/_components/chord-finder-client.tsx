@@ -143,13 +143,11 @@ export function ChordFinderClient() {
           </div>
         </div>
 
-        {/* Notes + Formula — shown when both key and scale are set */}
-        {scaleInfo && (
-          <div className="text-xs text-muted-foreground space-y-0.5">
-            <p><span className="text-foreground font-medium">Notes</span>&ensp;{scaleInfo.notes.join("  ")}</p>
-            <p><span className="text-foreground font-medium">Formula</span>&ensp;{scaleInfo.intervals.map(intervalToDegree).join(" – ")}</p>
-          </div>
-        )}
+        {/* Notes + Formula — always rendered to reserve space, hidden when no scale selected */}
+        <div className={`text-xs text-muted-foreground space-y-0.5 ${scaleInfo ? "" : "invisible"}`}>
+          <p><span className="text-foreground font-medium">Notes</span>&ensp;{scaleInfo?.notes.join("  ") ?? ""}</p>
+          <p><span className="text-foreground font-medium">Formula</span>&ensp;{scaleInfo?.intervals.map(intervalToDegree).join(" – ") ?? ""}</p>
+        </div>
 
         {/* Chord grid + clear button, fret input aligned alongside */}
         <div className="flex items-start gap-1">
