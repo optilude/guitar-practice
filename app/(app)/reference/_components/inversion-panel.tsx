@@ -7,7 +7,7 @@ import {
   getInversionAsScale,
   type InversionVoicing,
 } from "@/lib/theory"
-import { type Chord as SVGChord, OPEN, SILENT, type Finger, type FingerOptions } from "svguitar"
+import { type Chord as SVGChord, OPEN, SILENT, type Finger, type FingerOptions, type Barre, BarreChordStyle } from "svguitar"
 import { INTERVAL_DEGREE_COLORS } from "@/lib/rendering/tab"
 import { ChordDiagram } from "./chord-diagram"
 import { FretboardViewer } from "./fretboard-viewer"
@@ -148,7 +148,35 @@ function toSVGChord(
     }
   })
 
-  return { fingers, barres: [], position }
+  // Detect barres: group strings by (finger, svgFret); 2+ strings → arc
+  const barreMap = new Map<string, { svgFret: number; indices: number[] }>()
+  voicing.frets.forEach((relFret, idx) => {
+    if (relFret <= 0) return
+    const finger = voicing.fingers[idx]
+    if (!finger || finger === 0) return
+    const svgFret = anchorToNut ? (relFret + voicing.baseFret - 1) : relFret
+    const key = `${finger}:${svgFret}`
+    if (!barreMap.has(key)) barreMap.set(key, { svgFret, indices: [] })
+    barreMap.get(key)!.indices.push(idx)
+  })
+
+  const barreColor = isDark ? "#d1d5db" : "#9ca3af"
+  const svgBarres: Barre[] = []
+  for (const { svgFret, indices } of barreMap.values()) {
+    if (indices.length < 2) continue
+    const minIdx = Math.min(...indices)
+    const maxIdx = Math.max(...indices)
+    svgBarres.push({
+      fret: svgFret,
+      fromString: 6 - minIdx,
+      toString: 6 - maxIdx,
+      style: BarreChordStyle.ARC,
+      color: barreColor,
+      strokeColor: barreColor,
+    })
+  }
+
+  return { fingers, barres: svgBarres, position }
 }
 
 // Compute the correct numFrets for SVGuitar, mirroring the anchoring logic in toSVGChord.
