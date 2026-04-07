@@ -176,7 +176,7 @@ export function SessionRunnerClient({ routine }: SessionRunnerClientProps) {
   }, [metronome])
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-44px)] overflow-hidden">
+    <div className="flex flex-col h-[calc(100dvh-44px-2rem)] overflow-hidden">
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-2 border-b border-border bg-background shrink-0">
         <button

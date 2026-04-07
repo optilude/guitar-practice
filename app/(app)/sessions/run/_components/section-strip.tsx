@@ -1,3 +1,6 @@
+"use client"
+
+import { useEffect, useRef } from "react"
 import { cn } from "@/lib/utils"
 import type { SessionSection } from "@/lib/sessions"
 
@@ -18,8 +21,17 @@ interface SectionStripProps {
 }
 
 export function SectionStrip({ sections, currentIndex, onSelect }: SectionStripProps) {
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+    const buttons = container.querySelectorAll("button")
+    buttons[currentIndex]?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" })
+  }, [currentIndex])
+
   return (
-    <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+    <div ref={containerRef} className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
       {sections.map((s, i) => (
         <button
           key={s.id}

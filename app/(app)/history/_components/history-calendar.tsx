@@ -41,12 +41,14 @@ export function HistoryCalendar({ sessions }: HistoryCalendarProps) {
         onDayClick={handleDayClick}
         modifiers={{
           hasSession: (day) => sessionDates.has(format(day, "yyyy-MM-dd")),
-          selected: (day) => format(day, "yyyy-MM-dd") === selectedDate,
+          selectedWithSession: (day) => format(day, "yyyy-MM-dd") === selectedDate && sessionDates.has(format(day, "yyyy-MM-dd")),
+          selectedEmpty: (day) => format(day, "yyyy-MM-dd") === selectedDate && !sessionDates.has(format(day, "yyyy-MM-dd")),
         }}
         modifiersClassNames={{
-          hasSession: "[&>button]:bg-accent/20 font-bold",
-          selected: "bg-accent/20 rounded-full font-bold [&>button]:!bg-transparent",
-          today: "[&>button]:text-accent [&>button]:font-semibold",
+          hasSession: "[&>button]:bg-accent/20",
+          selectedWithSession: "bg-accent/20 rounded-full [&>button]:!bg-transparent",
+          selectedEmpty: "bg-muted rounded-full [&>button]:!bg-transparent",
+          today: "[&>button]:font-bold",
         }}
         classNames={{
           root: "w-full",

@@ -43,7 +43,7 @@ Add a Tools section with chord, scale, and key finders, plus a metronome.
 
 ---
 ## Phase 8: Authentication and administration
-Account management and better authentication support. Admin UI for managing users and library content (CRUD).
+Account management and better authentication support. Consider moving to a SaaS authentication service, either by default or as an option. Add an admin UI for managing default library content (CRUD) and users, including anointing admins.
 
 ---
 
@@ -62,13 +62,6 @@ Account management and better authentication support. Admin UI for managing user
 * Audio recorder for practice (note this will significantly change data storage requirements)
 
 # Known issues
-
-* On the history view, days with a streak are highlighted with a background circle and bold date number. Do not bold the text (leave it the same as the other text).
-* On the history view, today's date in the calendar uses the orange font colour for the date number. Revert to black text, but make it bold.
-* On the history view, when selecting a date on the calendar, it is shown with a pill-shaped orange background. If the selected date does not contain any practice sessions, make this background gray instead.
-
-* Practice session page: The "Next" and "Prev" buttons at the bottom are not visible without scrolling. Find a way to bring them into view.
-* Also, if there are a sufficient number of routine sections, the box scrolls horizontally. This is OK, but the currently selected/running section needs to always be in view. Using auto-advance or the next/prev buttons, it's possible for it to be outside the visible area.
 
 General/UX:
 
