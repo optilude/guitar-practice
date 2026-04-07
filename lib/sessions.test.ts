@@ -6,10 +6,14 @@ import type { SessionTopic } from "./sessions"
 
 describe("computeStreak", () => {
   const today = new Date()
+  // Use local date components (not toISOString which is UTC) to match computeStreak's date-fns local formatting
   function d(daysAgo: number): string {
     const dt = new Date(today)
     dt.setDate(dt.getDate() - daysAgo)
-    return dt.toISOString().slice(0, 10)
+    const y = dt.getFullYear()
+    const m = String(dt.getMonth() + 1).padStart(2, "0")
+    const day = String(dt.getDate()).padStart(2, "0")
+    return `${y}-${m}-${day}`
   }
 
   it("returns 0 for empty array", () => {
