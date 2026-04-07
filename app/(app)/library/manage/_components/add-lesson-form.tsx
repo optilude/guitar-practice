@@ -44,9 +44,9 @@ export function AddLessonForm({
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="mt-2 w-full text-sm text-accent border border-dashed border-border rounded-lg py-2 hover:border-accent transition-colors"
+        className="mt-2 w-full text-sm text-muted-foreground hover:text-foreground border border-dashed border-border rounded-lg py-2 hover:border-foreground/40 transition-colors cursor-pointer"
       >
-        + Add a lesson to {categoryName}
+        + Add lesson
       </button>
     )
   }

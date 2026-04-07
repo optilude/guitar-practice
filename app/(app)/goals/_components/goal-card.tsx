@@ -31,7 +31,7 @@ export function GoalCard({ goal, topicCount, routineCount }: GoalCardProps) {
   return (
     <li
       onClick={() => router.push(`/goals/${goal.id}`)}
-      className={`rounded-lg border p-4 cursor-pointer hover:bg-muted transition-colors ${
+      className={`rounded-lg border p-4 cursor-pointer hover:bg-muted dark:hover:bg-secondary transition-colors ${
         goal.isActive ? "border-accent" : "border-border dark:border-neutral-600"
       } bg-card dark:bg-neutral-800`}
     >

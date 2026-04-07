@@ -201,7 +201,7 @@ export function GoalDetailClient({ goal, recentSessions }: GoalDetailClientProps
                 <li key={routine.id} className="flex items-center gap-2">
                   <Link
                     href={`/goals/${goal.id}/routines/${routine.id}`}
-                    className="flex flex-1 items-center justify-between py-2 hover:bg-card rounded px-2 -mx-2 transition-colors min-w-0"
+                    className="flex flex-1 items-center justify-between py-2 hover:bg-muted rounded px-2 -mx-2 transition-colors min-w-0"
                   >
                     <span className="text-sm text-foreground">{routine.title}</span>
                     <span className="text-xs text-muted-foreground">

@@ -43,7 +43,7 @@ export function NewRoutineForm({ goalId }: NewRoutineFormProps) {
       <button
         type="button"
         onClick={() => { setIsOpen(true); setError(null) }}
-        className="mt-3 block w-full rounded border border-dashed border-border px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:border-foreground/40 transition-colors"
+        className="mt-3 block w-full rounded border border-dashed border-border px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:border-foreground/40 transition-colors cursor-pointer"
       >
         + Add routine
       </button>

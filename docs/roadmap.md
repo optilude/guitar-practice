@@ -65,14 +65,11 @@ Account management and better authentication support. Consider moving to a SaaS 
 
 General/UX:
 
-* More comprehensive testing for dark mode
 * More comprehensive testing on mobile/iPad
 
 Scales:
 
 * When switching between light and dark mode, the stave view is corrupted until the view is changed (e.g. click a different tab in the UI)
-
-* Find a way to test scale patterns and tabs for accuracy
 * Review/refine the chord-to-scale mapping. It might be somewhat naive.
 
 Chords:
@@ -100,3 +97,13 @@ The Tools page should have tiles or other selectors similar to the Library page,
 - The fourth tool is a transposer. Enter a progression in the same vein as for the key finder, but have the user explicitly select a key centre and scale/mode from a drop-down similar to the one used for the Modes tab on the harmony section of the reference page. then allow the user to choose a target key centre and show the same chords transposed to this new key.
 
 - The fifth tool is a standalone metronome. Base this on the simple metronome from the practice session view, but allow the user to choose alternative time signatures (e.g. 6/8 or 3/4, but default to 4/4) and to play only certain beats of the masure (e.g. "2 and 4"). If helpful, we can introduce additional dependencies for the metronome component.
+
+## Start phase 8
+
+Currently, there is no way to manage users, and no concept of an administrator. Users also can't change or reset their passwords.
+
+Research the best way to add user mangagement. I want a way to do it for free at low user volumes, but woudl consider a SaaS solution, so long as there is a practical way to run and test "offline" during development. Alternatively, we can build a simple user management and permission system (admin vs. normal is sufficient for now), though this might introduce a dependency on SMTP to send password reset emails and the like, which is just another dependency. Consider the best options and recommend a path forward.
+
+Once this exists, there needs to be a way for an administrator to promote or demote other users as admins. We also need a way to seed the database with a default admin who's forced to set a new password when the app is first set up.
+
+With admin mode established, create an editor for the default library content. This can use the exact same components and UX as the "Manage my library" screen, except it is editing the default library content.

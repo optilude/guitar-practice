@@ -21,7 +21,7 @@ export default async function LibraryPage() {
           <Link
             key={cat.id}
             href={`/library/${cat.slug}`}
-            className="block rounded-lg border border-border dark:border-neutral-600 bg-card dark:bg-neutral-800 p-4 hover:bg-muted transition-colors"
+            className="block rounded-lg border border-border dark:border-neutral-600 bg-card dark:bg-neutral-800 p-4 hover:bg-muted dark:hover:bg-secondary transition-colors"
           >
             <p className="text-sm font-medium text-foreground">{cat.name}</p>
             <p className="text-xs text-muted-foreground mt-1">

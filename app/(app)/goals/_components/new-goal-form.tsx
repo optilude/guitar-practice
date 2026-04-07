@@ -31,7 +31,7 @@ export function NewGoalForm() {
     <div>
       <button
         onClick={() => { setIsOpen((o) => !o); setError(null) }}
-        className="w-full rounded-lg border border-dashed border-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-foreground/40 transition-colors text-left"
+        className="w-full rounded-lg border border-dashed border-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-foreground/40 transition-colors text-left cursor-pointer"
       >
         + New goal
       </button>

@@ -45,8 +45,8 @@ export function HistoryCalendar({ sessions }: HistoryCalendarProps) {
           selectedEmpty: (day) => format(day, "yyyy-MM-dd") === selectedDate && !sessionDates.has(format(day, "yyyy-MM-dd")),
         }}
         modifiersClassNames={{
-          hasSession: "[&>button]:bg-accent/20",
-          selectedWithSession: "bg-accent/20 rounded-full [&>button]:!bg-transparent",
+          hasSession: "[&>button]:bg-accent/20 dark:[&>button]:bg-accent/40",
+          selectedWithSession: "bg-accent/20 dark:bg-accent/40 rounded-full [&>button]:!bg-transparent",
           selectedEmpty: "bg-muted rounded-full [&>button]:!bg-transparent",
           today: "[&>button]:font-bold",
         }}

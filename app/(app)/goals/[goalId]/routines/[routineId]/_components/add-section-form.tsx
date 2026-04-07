@@ -124,7 +124,7 @@ export function AddSectionForm({ routineId, availableTopics, onAdded }: AddSecti
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors border border-dashed border-border rounded px-3 py-2 w-full"
+        className="mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors border border-dashed border-border rounded px-3 py-2 w-full cursor-pointer"
       >
         + Add section
       </button>
