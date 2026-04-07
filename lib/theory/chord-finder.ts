@@ -4,10 +4,36 @@ import { getScale } from "@/lib/theory/scales"
 // Open-string chroma: index 0 = string 6 (low E), index 5 = string 1 (high e)
 const OPEN_CHROMA = [4, 9, 2, 7, 11, 4] as const
 
-// Flat-preferred chroma → note name mapping
-const CHROMA_TO_NOTE = [
+// Chroma → note name mappings (flat-preferred by default)
+const CHROMA_TO_NOTE_FLAT = [
   "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B",
 ] as const
+
+const CHROMA_TO_NOTE_SHARP = [
+  "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
+] as const
+
+/**
+ * Build a chroma→note array tuned to the enharmonic spelling of the given scale.
+ * Scale notes take priority; remaining chromatics use sharps if the scale uses sharps,
+ * flats otherwise. Returns flat-preferred names when no scale is provided.
+ */
+export function buildChromaMap(scaleNotes: string[] | null): string[] {
+  if (!scaleNotes) return [...CHROMA_TO_NOTE_FLAT]
+  const map = new Array(12).fill(null) as (string | null)[]
+  let hasSharp = false
+  let hasFlat = false
+  for (const note of scaleNotes) {
+    const c = Note.chroma(note)
+    if (c !== undefined && Number.isFinite(c)) {
+      map[c] = note
+      if (note.includes("#")) hasSharp = true
+      if (note.includes("b")) hasFlat = true
+    }
+  }
+  const fallback = hasSharp && !hasFlat ? CHROMA_TO_NOTE_SHARP : CHROMA_TO_NOTE_FLAT
+  return map.map((n, c) => n ?? fallback[c])
+}
 
 export type DetectedChord = {
   symbol: string       // e.g. "Cm7", "Eb/G"
@@ -50,17 +76,30 @@ export function detectChords(
   frets: (number | null)[],
   options?: { key?: string; scaleType?: string },
 ): DetectedChord[] {
-  // 1. Compute sounding note for each non-muted string (low E first = index 0)
+  // 1. Resolve scale notes first — needed for enharmonic spelling and scale filtering
+  let scaleNotes: string[] | null = null
+  if (options?.key && options?.scaleType) {
+    try {
+      scaleNotes = getScale(options.key, options.scaleType).notes
+    } catch {
+      // unknown combination — skip filter
+    }
+  }
+
+  // 2. Build chroma→note map tuned to the key's enharmonic convention
+  const chromaToNote = buildChromaMap(scaleNotes)
+
+  // 3. Compute sounding note for each non-muted string (low E first = index 0)
   const soundingStrings: Array<{ note: string }> = []
   for (let i = 0; i < 6; i++) {
     const fret = frets[i]
     if (fret === null) continue
     const chroma = (OPEN_CHROMA[i] + fret) % 12
-    soundingStrings.push({ note: CHROMA_TO_NOTE[chroma] })
+    soundingStrings.push({ note: chromaToNote[chroma] })
   }
   if (soundingStrings.length === 0) return []
 
-  // 2. Unique pitch classes (preserve encounter order for Chord.detect)
+  // 4. Unique pitch classes (preserve encounter order for Chord.detect)
   const seenChromas = new Set<number>()
   const uniqueNotes: string[] = []
   for (const { note } of soundingStrings) {
@@ -71,24 +110,14 @@ export function detectChords(
     }
   }
 
-  // 3. Bass = lowest non-muted string note
+  // 5. Bass = lowest non-muted string note
   const bass = soundingStrings[0].note
 
-  // 4. Detect all matching chords
+  // 6. Detect all matching chords
   const detected = Chord.detect(uniqueNotes)
   if (detected.length === 0) return []
 
-  // 5. Resolve scale notes for optional filter + degree labelling
-  let scaleNotes: string[] | null = null
-  if (options?.key && options?.scaleType) {
-    try {
-      scaleNotes = getScale(options.key, options.scaleType).notes
-    } catch {
-      // unknown combination — skip filter
-    }
-  }
-
-  // 6. Build result entries
+  // 7. Build result entries
   const scaleChromas = scaleNotes
     ? new Set(scaleNotes.map((n) => Note.chroma(n)).filter((c): c is number => Number.isFinite(c as number)))
     : null
@@ -134,6 +163,6 @@ export function detectChords(
     entries.push({ chord, score: chordScore(isRootPosition, info.type, symbol.length) })
   }
 
-  // 7. Sort by score (ascending = simpler/more obvious first)
+  // 8. Sort by score (ascending = simpler/more obvious first)
   return entries.sort((a, b) => a.score - b.score).map((e) => e.chord)
 }

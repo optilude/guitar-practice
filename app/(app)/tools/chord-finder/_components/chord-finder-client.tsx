@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo, useEffect, useRef } from "react"
-import { detectChords, type DetectedChord } from "@/lib/theory/chord-finder"
+import { detectChords, buildChromaMap, type DetectedChord } from "@/lib/theory/chord-finder"
 import { listScaleTypes, getScale } from "@/lib/theory/scales"
 import { InteractiveChordGrid, type GridMetrics } from "./interactive-chord-grid"
 import { btn } from "@/lib/button-styles"
@@ -78,6 +78,8 @@ export function ChordFinderClient() {
     if (!filterKey || !filterScale) return null
     try { return getScale(filterKey, filterScale) } catch { return null }
   }, [filterKey, filterScale])
+
+  const chromaToNote = useMemo(() => buildChromaMap(scaleInfo?.notes ?? null), [scaleInfo])
 
   const chords = useMemo(
     () => detectChords(frets, { key: filterKey || undefined, scaleType: filterScale || undefined }),
@@ -172,6 +174,7 @@ export function ChordFinderClient() {
             <InteractiveChordGrid
               frets={frets}
               startFret={startFret}
+              chromaToNote={chromaToNote}
               onFretsChange={setFrets}
               onMetricsChange={setMetrics}
             />

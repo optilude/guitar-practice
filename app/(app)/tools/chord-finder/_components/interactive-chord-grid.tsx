@@ -5,7 +5,6 @@ import { SVGuitarChord, OPEN, SILENT, type Chord, BarreChordStyle } from "svguit
 
 // Open-string chroma: index 0 = string 6 (low E), index 5 = string 1 (high e)
 const OPEN_CHROMA = [4, 9, 2, 7, 11, 4] as const
-const CHROMA_TO_NOTE = ["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"] as const
 
 export type GridMetrics = {
   inputTopPx: number      // vertical offset for the fret-number input
@@ -18,9 +17,12 @@ interface InteractiveChordGridProps {
   frets: (number | null)[]       // null=muted, 0=open, N=absolute fret
   startFret: number              // first visible fret (default 1)
   numFrets?: number              // visible fret rows (default 6)
+  chromaToNote?: string[]        // key-aware chroma→note map for dot labels
   onFretsChange: (frets: (number | null)[]) => void
   onMetricsChange?: (metrics: GridMetrics) => void
 }
+
+const CHROMA_TO_NOTE_FLAT = ["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"] as const
 
 // Convert our absolute-fret state to a SVGuitar Chord object.
 // SVGuitar strings: 6=low E (index 0), 1=high e (index 5).
@@ -29,17 +31,18 @@ function toSVGuitarChord(
   frets: (number | null)[],
   startFret: number,
   numFrets: number,
+  noteNames: string[],
 ): Chord {
   const fingers: Chord["fingers"] = frets.map((f, i) => {
     const stringNum = 6 - i // SVGuitar string number
     if (f === null) return [stringNum, SILENT]
     if (f === 0) {
-      const noteName = CHROMA_TO_NOTE[OPEN_CHROMA[i]]
+      const noteName = noteNames[OPEN_CHROMA[i]]
       return [stringNum, OPEN, noteName]
     }
     const relativeFret = f - startFret + 1
     if (relativeFret < 1 || relativeFret > numFrets) return [stringNum, SILENT]
-    const noteName = CHROMA_TO_NOTE[(OPEN_CHROMA[i] + f) % 12]
+    const noteName = noteNames[(OPEN_CHROMA[i] + f) % 12]
     return [stringNum, relativeFret, noteName]
   })
   return {
@@ -121,6 +124,7 @@ export function InteractiveChordGrid({
   frets,
   startFret,
   numFrets = 6,
+  chromaToNote,
   onFretsChange,
   onMetricsChange,
 }: InteractiveChordGridProps) {
@@ -146,7 +150,8 @@ export function InteractiveChordGrid({
 
     const structureColor = isDark ? "#e5e7eb" : "#374151"
     const fingerTextColor = isDark ? "#111827" : "#ffffff"
-    const chord = toSVGuitarChord(frets, startFret, numFrets)
+    const noteNames = chromaToNote ?? [...CHROMA_TO_NOTE_FLAT]
+    const chord = toSVGuitarChord(frets, startFret, numFrets, noteNames)
 
     const chart = new SVGuitarChord(container)
     const { width, height } = chart
@@ -224,7 +229,7 @@ export function InteractiveChordGrid({
     }
 
     return () => chart.remove()
-  }, [frets, startFret, numFrets, isDark, onMetricsChange])
+  }, [frets, startFret, numFrets, isDark, chromaToNote, onMetricsChange])
 
   const handleZoneClick = useCallback((zone: HitZone) => {
     const newFrets = [...frets]
