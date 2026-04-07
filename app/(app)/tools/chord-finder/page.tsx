@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { ChordFinderClient } from "./_components/chord-finder-client"
 
 export default function ChordFinderPage() {
   return (
@@ -9,8 +10,8 @@ export default function ChordFinderPage() {
       >
         ← Tools
       </Link>
-      <h1 className="text-2xl font-semibold text-foreground mb-2">Chord Finder</h1>
-      <p className="text-sm text-muted-foreground">Coming soon.</p>
+      <h1 className="text-2xl font-semibold text-foreground mb-6">Chord Finder</h1>
+      <ChordFinderClient />
     </div>
   )
 }
