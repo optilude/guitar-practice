@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect, useRef } from "react"
 import { detectChords, type DetectedChord } from "@/lib/theory/chord-finder"
 import { listScaleTypes, getScale } from "@/lib/theory/scales"
-import { InteractiveChordGrid } from "./interactive-chord-grid"
+import { InteractiveChordGrid, type GridMetrics } from "./interactive-chord-grid"
 import { btn } from "@/lib/button-styles"
 
 const ROOT_NOTES = ["Ab", "A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "Gb", "G"] as const
@@ -30,6 +30,7 @@ const TONAL_TO_DEGREE: Record<string, string> = {
 const intervalToDegree = (iv: string) => TONAL_TO_DEGREE[iv] ?? iv
 
 const INITIAL_FRETS: (number | null)[] = [null, null, null, null, null, null]
+const INITIAL_METRICS: GridMetrics = { inputTopPx: 0, buttonOffsetPx: 0, buttonWidthPx: 0, nutTopPx: 0 }
 
 function qualityDescription(chord: DetectedChord): string {
   const q = chord.quality
@@ -58,9 +59,13 @@ function positionLabel(chord: DetectedChord): string {
 export function ChordFinderClient() {
   const [frets, setFrets] = useState<(number | null)[]>(INITIAL_FRETS)
   const [startFret, setStartFret] = useState(1)
-  const [inputTopPx, setInputTopPx] = useState(0)
+  const [metrics, setMetrics] = useState<GridMetrics>(INITIAL_METRICS)
+  const [resultsPaddingTop, setResultsPaddingTop] = useState(0)
   const [filterKey, setFilterKey] = useState("")
   const [filterScale, setFilterScale] = useState("")
+
+  const diagramRef = useRef<HTMLDivElement>(null)
+  const rightColRef = useRef<HTMLDivElement>(null)
 
   const scaleTypes = useMemo(() => listScaleTypes(), [])
   const majorModes = useMemo(() => MAJOR_SCALE_MODES.filter((t) => scaleTypes.includes(t)), [scaleTypes])
@@ -79,6 +84,14 @@ export function ChordFinderClient() {
     [frets, filterKey, filterScale],
   )
 
+  // Align results column top with the nut line on the diagram
+  useEffect(() => {
+    if (!diagramRef.current || !rightColRef.current || metrics.nutTopPx === 0) return
+    const diagramTop = diagramRef.current.getBoundingClientRect().top
+    const rightTop = rightColRef.current.getBoundingClientRect().top
+    setResultsPaddingTop(Math.max(0, diagramTop - rightTop + metrics.nutTopPx))
+  }, [metrics])
+
   const allMuted = frets.every((f) => f === null)
 
   function handleClear() {
@@ -88,6 +101,10 @@ export function ChordFinderClient() {
     setFilterScale("")
   }
 
+  const buttonStyle = metrics.buttonWidthPx > 0
+    ? { marginLeft: `${metrics.buttonOffsetPx}px`, width: `${metrics.buttonWidthPx}px` }
+    : undefined
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {/* Left column: filter + notes/formula + chord grid + clear */}
@@ -96,7 +113,7 @@ export function ChordFinderClient() {
         <div className="flex flex-wrap gap-3 items-end">
           <div className="flex flex-col gap-1">
             <label className="text-xs text-muted-foreground" htmlFor="cf-root-select">
-              Root
+              Key
             </label>
             <select
               id="cf-root-select"
@@ -149,16 +166,21 @@ export function ChordFinderClient() {
           <p><span className="text-foreground font-medium">Formula</span>&ensp;{scaleInfo?.intervals.map(intervalToDegree).join(" – ") ?? ""}</p>
         </div>
 
-        {/* Chord grid + clear button, fret input aligned alongside */}
-        <div className="flex items-start gap-1">
+        {/* Chord grid + clear button, fret input alongside */}
+        <div ref={diagramRef} className="flex items-start gap-1">
           <div className="w-fit flex flex-col gap-2">
             <InteractiveChordGrid
               frets={frets}
               startFret={startFret}
               onFretsChange={setFrets}
-              onInputTopPxChange={setInputTopPx}
+              onMetricsChange={setMetrics}
             />
-            <button type="button" onClick={handleClear} className={`w-full ${btn("standalone", "sm")}`}>
+            <button
+              type="button"
+              onClick={handleClear}
+              style={buttonStyle}
+              className={btn("destructive", "sm")}
+            >
               Clear
             </button>
           </div>
@@ -171,15 +193,15 @@ export function ChordFinderClient() {
               const v = parseInt(e.target.value, 10)
               if (!isNaN(v) && v >= 1 && v <= 22) setStartFret(v)
             }}
-            style={{ marginTop: `${Math.max(0, inputTopPx - 14)}px`, marginLeft: "-20px" }}
+            style={{ marginTop: `${Math.max(0, metrics.inputTopPx - 14)}px`, marginLeft: "-20px" }}
             className="w-14 rounded border border-border bg-card text-foreground text-sm text-center px-1 py-1 focus:outline-none focus:ring-1 focus:ring-accent"
             aria-label="Start fret"
           />
         </div>
       </div>
 
-      {/* Right column: results */}
-      <div aria-live="polite">
+      {/* Right column: results, top-aligned with the chord diagram's nut line */}
+      <div ref={rightColRef} aria-live="polite" style={{ paddingTop: `${resultsPaddingTop}px` }}>
         {allMuted ? (
           <p className="text-sm text-muted-foreground">Place dots on the chord box to identify chord names.</p>
         ) : chords.length === 0 ? (

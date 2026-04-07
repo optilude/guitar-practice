@@ -7,12 +7,19 @@ import { SVGuitarChord, OPEN, SILENT, type Chord, BarreChordStyle } from "svguit
 const OPEN_CHROMA = [4, 9, 2, 7, 11, 4] as const
 const CHROMA_TO_NOTE = ["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"] as const
 
+export type GridMetrics = {
+  inputTopPx: number      // vertical offset for the fret-number input
+  buttonOffsetPx: number  // left offset to align Clear button with chord box
+  buttonWidthPx: number   // width of the chord box (between outermost strings)
+  nutTopPx: number        // vertical offset of the nut line from the rendered SVG top
+}
+
 interface InteractiveChordGridProps {
   frets: (number | null)[]       // null=muted, 0=open, N=absolute fret
   startFret: number              // first visible fret (default 1)
   numFrets?: number              // visible fret rows (default 6)
   onFretsChange: (frets: (number | null)[]) => void
-  onInputTopPxChange?: (px: number) => void
+  onMetricsChange?: (metrics: GridMetrics) => void
 }
 
 // Convert our absolute-fret state to a SVGuitar Chord object.
@@ -115,7 +122,7 @@ export function InteractiveChordGrid({
   startFret,
   numFrets = 6,
   onFretsChange,
-  onInputTopPxChange,
+  onMetricsChange,
 }: InteractiveChordGridProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [isDark, setIsDark] = useState(false)
@@ -138,6 +145,7 @@ export function InteractiveChordGrid({
     if (!container) return
 
     const structureColor = isDark ? "#e5e7eb" : "#374151"
+    const fingerTextColor = isDark ? "#111827" : "#ffffff"
     const chord = toSVGuitarChord(frets, startFret, numFrets)
 
     const chart = new SVGuitarChord(container)
@@ -150,6 +158,7 @@ export function InteractiveChordGrid({
         fretLabelFontSize: 36,
         fingerSize: 0.9,
         fingerTextSize: 20,
+        fingerTextColor,
         strokeWidth: 1.5,
         barreChordStyle: BarreChordStyle.ARC,
         fixedDiagramPosition: true,
@@ -159,34 +168,63 @@ export function InteractiveChordGrid({
 
     const svgEl = container.querySelector("svg")
     if (svgEl) {
-      svgEl.setAttribute("viewBox", `0 0 ${width} ${height}`)
       svgEl.removeAttribute("width")
       svgEl.removeAttribute("height")
       svgEl.style.width = "100%"
       svgEl.style.maxWidth = "240px"
       svgEl.style.display = "block"
 
+      // Compute hit zones in original SVG coordinate space (before viewBox crop)
       const zones = computeHitZones(svgEl as SVGElement, startFret)
       setHitZones(zones)
-      setOverlayViewBox(`0 0 ${width} ${height}`)
 
-      // Report fret input alignment offset to parent
-      const nutZone = zones.find((z) => z.fret === "header")
+      const headerZones = zones.filter((z) => z.fret === "header").sort((a, b) => a.svgX - b.svgX)
       const firstFretZone = zones.find((z) => z.fret === startFret)
-      if (nutZone && firstFretZone && onInputTopPxChange) {
-        const firstFretCenterY = nutZone.svgH + firstFretZone.svgH / 2
-        const svgViewBoxH = height
-        requestAnimationFrame(() => {
-          const svgRendered = svgEl.getBoundingClientRect()
-          if (svgRendered.height > 0) {
-            onInputTopPxChange((firstFretCenterY / svgViewBoxH) * svgRendered.height)
-          }
-        })
+
+      if (headerZones.length >= 6 && firstFretZone) {
+        const nutSvgY = headerZones[0].svgH  // header zone height = distance from top to nut line
+
+        // Crop the top half of the header area to reduce excess whitespace
+        const cropY = nutSvgY / 2
+        const croppedViewBox = `0 ${cropY} ${width} ${height - cropY}`
+        svgEl.setAttribute("viewBox", croppedViewBox)
+        setOverlayViewBox(croppedViewBox)
+
+        if (onMetricsChange) {
+          // Chord box spans between the outermost string lines (not the full zone half-spacings)
+          const chordBoxLeftSvg = headerZones[0].svgX + headerZones[0].svgW / 2
+          const chordBoxRightSvg = headerZones[5].svgX + headerZones[5].svgW / 2
+          const chordBoxWidthSvg = chordBoxRightSvg - chordBoxLeftSvg
+
+          // First fret row center Y, adjusted into the cropped coordinate space
+          const firstFretCenterY = nutSvgY + firstFretZone.svgH / 2
+          const croppedY = firstFretCenterY - cropY
+          const croppedViewBoxH = height - cropY
+
+          requestAnimationFrame(() => {
+            const svgRendered = svgEl.getBoundingClientRect()
+            if (svgRendered.height > 0) {
+              const scaleX = svgRendered.width / width
+              const scaleY = svgRendered.height / croppedViewBoxH
+              onMetricsChange({
+                inputTopPx: croppedY * scaleY,
+                buttonOffsetPx: chordBoxLeftSvg * scaleX,
+                buttonWidthPx: chordBoxWidthSvg * scaleX,
+                // nut line is at nutSvgY/2 from top of the cropped viewBox
+                nutTopPx: (nutSvgY / 2) * scaleY,
+              })
+            }
+          })
+        }
+      } else {
+        // Fallback: full viewBox
+        svgEl.setAttribute("viewBox", `0 0 ${width} ${height}`)
+        setOverlayViewBox(`0 0 ${width} ${height}`)
       }
     }
 
     return () => chart.remove()
-  }, [frets, startFret, numFrets, isDark, onInputTopPxChange])
+  }, [frets, startFret, numFrets, isDark, onMetricsChange])
 
   const handleZoneClick = useCallback((zone: HitZone) => {
     const newFrets = [...frets]
