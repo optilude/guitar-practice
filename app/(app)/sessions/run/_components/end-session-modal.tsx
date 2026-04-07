@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { format, differenceInMinutes, parseISO } from "date-fns"
+import { btn } from "@/lib/button-styles"
 
 interface EndSessionModalProps {
   routineTitle: string
@@ -63,16 +64,16 @@ export function EndSessionModal({
             </p>
             <div className="flex gap-3 justify-end">
               <button
-                onClick={() => setShowDiscardConfirm(false)}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Cancel
-              </button>
-              <button
                 onClick={onDiscardSession}
-                className="px-4 py-2 rounded-md bg-destructive text-white text-sm font-medium hover:bg-destructive/90 transition-colors"
+                className={btn("destructive")}
               >
                 Discard session
+              </button>
+              <button
+                onClick={() => setShowDiscardConfirm(false)}
+                className={btn("secondary")}
+              >
+                Cancel
               </button>
             </div>
           </>
@@ -101,25 +102,25 @@ export function EndSessionModal({
 
             <div className="flex gap-3 justify-end">
               <button
-                onClick={onCancel}
+                onClick={() => onSave(finalNotes)}
                 disabled={isSaving}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+                className={btn("primary")}
               >
-                Cancel
+                {isSaving ? "Saving…" : "Save session"}
               </button>
               <button
                 onClick={() => setShowDiscardConfirm(true)}
                 disabled={isSaving}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+                className={btn("destructive")}
               >
                 Discard session
               </button>
               <button
-                onClick={() => onSave(finalNotes)}
+                onClick={onCancel}
                 disabled={isSaving}
-                className="px-4 py-2 rounded-md bg-accent text-accent-foreground text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                className={btn("secondary")}
               >
-                {isSaving ? "Saving…" : "Save session"}
+                Cancel
               </button>
             </div>
           </>

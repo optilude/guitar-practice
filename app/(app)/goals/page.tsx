@@ -17,19 +17,16 @@ export default async function GoalsPage() {
 
   return (
     <div className="pt-6">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
-            Your goals
-          </p>
-          <h1 className="text-2xl font-semibold text-foreground">Goals</h1>
-        </div>
-        <NewGoalForm />
+      <div className="mb-6">
+        <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
+          Your goals
+        </p>
+        <h1 className="text-2xl font-semibold text-foreground">Goals</h1>
       </div>
 
       {goals.length === 0 ? (
         <p className="text-sm text-muted-foreground">
-          No goals yet — click &ldquo;+ New goal&rdquo; above to create your first one.
+          No goals yet.
         </p>
       ) : (
         <ul className="space-y-3">
@@ -43,6 +40,10 @@ export default async function GoalsPage() {
           ))}
         </ul>
       )}
+
+      <div className="mt-3">
+        <NewGoalForm />
+      </div>
 
       <div className="mt-8">
         <Link

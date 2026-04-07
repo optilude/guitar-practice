@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { deleteSession } from "@/app/(app)/sessions/actions"
+import { btn } from "@/lib/button-styles"
 
 interface DeleteSessionButtonProps {
   sessionId: string
@@ -25,7 +26,7 @@ export function DeleteSessionButton({ sessionId }: DeleteSessionButtonProps) {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="mt-4 text-sm text-muted-foreground hover:text-destructive transition-colors"
+        className={btn("destructive", "sm")}
       >
         Delete session…
       </button>
@@ -42,18 +43,18 @@ export function DeleteSessionButton({ sessionId }: DeleteSessionButtonProps) {
             </p>
             <div className="flex gap-3 justify-end">
               <button
-                onClick={() => setShowModal(false)}
-                disabled={isDeleting}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Cancel
-              </button>
-              <button
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="px-4 py-2 rounded-md bg-destructive text-white text-sm font-medium hover:bg-destructive/90 transition-colors disabled:opacity-50"
+                className={btn("destructive")}
               >
                 {isDeleting ? "Deleting…" : "Delete session"}
+              </button>
+              <button
+                onClick={() => setShowModal(false)}
+                disabled={isDeleting}
+                className={btn("secondary")}
+              >
+                Cancel
               </button>
             </div>
           </div>

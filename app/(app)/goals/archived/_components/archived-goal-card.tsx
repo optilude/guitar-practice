@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { unarchiveGoal, deleteGoal } from "@/app/(app)/goals/actions"
+import { btn } from "@/lib/button-styles"
 
 interface ArchivedGoalCardProps {
   goal: { id: string; title: string; description: string }
@@ -50,14 +51,14 @@ export function ArchivedGoalCard({ goal }: ArchivedGoalCardProps) {
             <button
               onClick={handleUnarchive}
               disabled={isPending}
-              className="text-xs font-medium border border-border px-2.5 py-1 rounded text-muted-foreground hover:text-foreground hover:border-foreground/40 transition-colors disabled:opacity-50"
+              className={btn("standalone", "sm")}
             >
               Unarchive
             </button>
             <button
               onClick={() => setShowDeleteModal(true)}
               disabled={isPending}
-              className="text-xs font-medium border border-destructive/40 bg-destructive/10 text-destructive px-2.5 py-1 rounded hover:bg-destructive/20 transition-colors disabled:opacity-50"
+              className={btn("destructive", "sm")}
             >
               Delete
             </button>
@@ -79,17 +80,17 @@ export function ArchivedGoalCard({ goal }: ArchivedGoalCardProps) {
             </p>
             <div className="flex gap-3 justify-end">
               <button
-                onClick={() => setShowDeleteModal(false)}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Cancel
-              </button>
-              <button
                 onClick={handleDelete}
                 disabled={isPending}
-                className="px-4 py-2 rounded-md bg-destructive text-white text-sm font-medium hover:bg-destructive/90 transition-colors disabled:opacity-50"
+                className={btn("destructive")}
               >
                 {isPending ? "Deleting…" : "Delete goal"}
+              </button>
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className={btn("secondary")}
+              >
+                Cancel
               </button>
             </div>
           </div>

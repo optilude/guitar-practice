@@ -7,6 +7,7 @@ import ReactMarkdown from "react-markdown"
 import { updateGoal, archiveGoal, removeTopicFromGoal } from "@/app/(app)/goals/actions"
 import { formatTopicName } from "@/lib/goals"
 import { TopicKind } from "@/lib/generated/prisma/enums"
+import { btn } from "@/lib/button-styles"
 
 type GoalTopicWithLesson = {
   id: string
@@ -209,7 +210,7 @@ export function GoalDetailClient({ goal, recentSessions }: GoalDetailClientProps
                   </Link>
                   <Link
                     href={`/sessions/run?routineId=${routine.id}`}
-                    className="shrink-0 px-3 py-1 text-xs rounded-md bg-accent text-accent-foreground hover:opacity-90 transition-opacity"
+                    className={btn("primary", "sm")}
                   >
                     ▶ Start
                   </Link>
@@ -263,7 +264,7 @@ export function GoalDetailClient({ goal, recentSessions }: GoalDetailClientProps
       <div className="mt-10 pt-6 border-t border-border">
         <button
           onClick={() => setShowArchiveModal(true)}
-          className="text-sm text-red-600 hover:text-red-400 transition-colors"
+          className={btn("destructive", "sm")}
         >
           Archive goal…
         </button>
@@ -283,17 +284,17 @@ export function GoalDetailClient({ goal, recentSessions }: GoalDetailClientProps
             </p>
             <div className="flex gap-3 justify-end">
               <button
-                onClick={() => setShowArchiveModal(false)}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Cancel
-              </button>
-              <button
                 onClick={handleConfirmArchive}
                 disabled={isArchiving}
-                className="px-4 py-2 rounded-md bg-destructive text-white text-sm font-medium hover:bg-destructive/90 transition-colors disabled:opacity-50"
+                className={btn("destructive")}
               >
                 {isArchiving ? "Archiving…" : "Archive goal"}
+              </button>
+              <button
+                onClick={() => setShowArchiveModal(false)}
+                className={btn("secondary")}
+              >
+                Cancel
               </button>
             </div>
           </div>

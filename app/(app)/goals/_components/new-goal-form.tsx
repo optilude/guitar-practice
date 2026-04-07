@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { createGoal } from "@/app/(app)/goals/actions"
+import { btn } from "@/lib/button-styles"
 
 export function NewGoalForm() {
   const [isOpen, setIsOpen] = useState(false)
@@ -31,10 +32,9 @@ export function NewGoalForm() {
 
   return (
     <div>
-      {/* Button always visible in the header */}
       <button
         onClick={() => { setIsOpen((o) => !o); setError(null) }}
-        className="text-xs font-semibold bg-accent text-accent-foreground px-3 py-1.5 rounded-md hover:opacity-90 transition-opacity whitespace-nowrap"
+        className="w-full rounded-lg border border-dashed border-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-foreground/40 transition-colors text-left"
       >
         + New goal
       </button>
@@ -64,18 +64,18 @@ export function NewGoalForm() {
             {error && <p className="text-xs text-red-500">{error}</p>}
             <div className="flex gap-3 justify-end">
               <button
-                type="button"
-                onClick={() => { setIsOpen(false); setError(null) }}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Cancel
-              </button>
-              <button
                 type="submit"
                 disabled={isPending}
-                className="px-4 py-2 rounded-md bg-accent text-accent-foreground text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                className={btn("primary")}
               >
                 {isPending ? "Creating…" : "Create goal"}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setIsOpen(false); setError(null) }}
+                className={btn("secondary")}
+              >
+                Cancel
               </button>
             </div>
           </form>

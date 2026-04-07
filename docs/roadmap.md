@@ -64,14 +64,29 @@ Account management and better authentication support. Admin UI for managing user
 
 # Known issues
 
-Practice session UI:
+UX improvements:
 
-* If a practice session has been started (even if currently paused), and the user navigates away (either by browser action or clicking a link in the app), use a modal to give them the option to stay on the session to not lose progress
+- Home page: make the whole practice routine bar clickable, not just the "Start" button (but leave the button there as a visual clue)
+
+- Goal page: Remove ellipsis from "Archive goal..."  button
+- Goal page: "+ Add routine" link should have the same dashed outline as the other "add" targets
+
+- Routine edit page: The form to add a new section – change button order to "Add section" (left) and "cancel" (right). Make "Cancel" a secondary button, not a link.
+- Routine edit page: Remove ellipsis from "Delete routine..."
+- Routine edit page: Style "Delete" button in the section title bar as a destructive button and rename from "Delete" to "Remove". Follow the styling of the "Manage my library" page, for all the header buttons (Edit, Delete, as well as Save and Cancel).
+- Routine edit page: Confirmation dialogue buttons should be opposite order ("Remove section" first, then cancel). Cancel should be a button not a link. Follow the same style as the equivalent modal on the "Manage my library" page.
+
+- History page: Move "Filter by goal" dropdown to its own line under the title, but inside the same panel as the calendar. Remove the label but leave the dropdown ("All goals", etc.). Hide the drop-down if there are zero or one goals to filter by, i.e. only show it if there is more than one available (un-archived) goal with history entries. Note that if "all goals" is selected, sessions related to archived or even deleted goals should still show in the daily list, streaks calculation etc..
+
+- Library page: Put the "Manage my library" link at the same line (right-aligned) as the "Browse" and "Library" headings above the page title.
+- "Manage my library" page has a "Back to library" link top right. Remove this and instead put the left arrow in front of "Library" above the "Manage my library" title, and make this the link back to the library front page.
+- "Manage my library" page: Change the "up and right" arrow on the "Browes standard" links to be right arrows.
+
+- Se
 
 Inversions:
 
-* When rendering an inversion on a low string, so that the highest used fret is fret 5 or 5 or lower, adjust the chord diagram so that it is always shown at the nut, even if that means the lowest visible fret (fret 1) is unused. An example would be Bb major, 2nd inversion, strings 4-3-2. It's currently rendered as three notes on the first visible fret with the box fixed 3fr. It would be more logical to show this box anchored at the nut, with the three notes on the third fret.
-* For inversions that are omitting one or more chord tones, call these out ("No root", etc.)
+* For inversions that are omitting one or more chord tones, call these out ("No root", or "No 5th" or "No root, 5th" if more than one).
 
 General/UX:
 

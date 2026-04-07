@@ -89,7 +89,7 @@ function ReferencePanel({ topic, currentKey }: { topic: SessionTopic; currentKey
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 text-sm text-accent hover:underline"
             >
-              Open lesson →
+              Open lesson ↗
             </a>
           ) : (
             <p className="text-sm text-muted-foreground">(no link available)</p>

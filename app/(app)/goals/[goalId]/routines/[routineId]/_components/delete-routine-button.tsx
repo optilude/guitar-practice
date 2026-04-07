@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { deleteRoutine } from "@/app/(app)/goals/actions"
+import { btn } from "@/lib/button-styles"
 
 interface DeleteRoutineButtonProps {
   routineId: string
@@ -34,7 +35,7 @@ export function DeleteRoutineButton({ routineId, goalId, routineTitle }: DeleteR
         {error && <p className="text-xs text-red-500 mb-2">{error}</p>}
         <button
           onClick={() => setShowModal(true)}
-          className="text-sm text-red-600 hover:text-red-400 transition-colors"
+          className={btn("destructive", "sm")}
         >
           Delete routine…
         </button>
@@ -53,17 +54,17 @@ export function DeleteRoutineButton({ routineId, goalId, routineTitle }: DeleteR
             </p>
             <div className="flex gap-3 justify-end">
               <button
-                onClick={() => setShowModal(false)}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Cancel
-              </button>
-              <button
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="px-4 py-2 rounded-md bg-destructive text-white text-sm font-medium hover:bg-destructive/90 transition-colors disabled:opacity-50"
+                className={btn("destructive")}
               >
                 {isDeleting ? "Deleting…" : "Delete routine"}
+              </button>
+              <button
+                onClick={() => setShowModal(false)}
+                className={btn("secondary")}
+              >
+                Cancel
               </button>
             </div>
           </div>

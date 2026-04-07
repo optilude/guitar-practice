@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
+import { btn } from "@/lib/button-styles"
 import { useSessionTimer } from "@/lib/hooks/use-session-timer"
 import { useSessionNav } from "@/lib/hooks/use-session-nav"
 import { useMetronome } from "@/lib/hooks/use-metronome"
@@ -183,22 +184,19 @@ export function SessionRunnerClient({ routine }: SessionRunnerClientProps) {
         />
         <button
           onClick={timer.isRunning ? timer.pause : timer.play}
-          className="text-xs px-2.5 py-1 rounded border border-border hover:bg-muted transition-colors"
+          className={btn("primary", "sm")}
         >
           {timer.isRunning ? "⏸" : "▶"}
         </button>
         <button
           onClick={() => setAutoAdvance((v) => !v)}
-          className={cn(
-            "text-xs px-2.5 py-1 rounded border transition-colors",
-            autoAdvance ? "border-accent bg-accent/10 text-foreground" : "border-border text-muted-foreground hover:text-foreground",
-          )}
+          className={cn(btn("standalone", "sm"), autoAdvance ? "border-accent bg-accent/10 text-accent" : "")}
         >
           Auto
         </button>
         <button
           onClick={handleEndSession}
-          className="text-xs px-3 py-1.5 rounded-md bg-accent text-accent-foreground hover:opacity-90 transition-opacity"
+          className={btn("secondary", "sm")}
         >
           End Session
         </button>
@@ -264,14 +262,14 @@ export function SessionRunnerClient({ routine }: SessionRunnerClientProps) {
           <button
             onClick={handlePrev}
             disabled={nav.currentSectionIndex === 0}
-            className="px-3 py-1.5 text-sm rounded border border-border hover:bg-muted transition-colors disabled:opacity-40"
+            className={btn("standalone")}
           >
             ← Prev
           </button>
           <button
             onClick={handleNext}
             disabled={nav.currentSectionIndex === routine.sections.length - 1}
-            className="px-3 py-1.5 text-sm rounded border border-border hover:bg-muted transition-colors disabled:opacity-40"
+            className={btn("standalone")}
           >
             Next →
           </button>
@@ -302,16 +300,16 @@ export function SessionRunnerClient({ routine }: SessionRunnerClientProps) {
             </p>
             <div className="flex gap-3 justify-end">
               <button
-                onClick={() => setShowLeaveModal(false)}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Stay
-              </button>
-              <button
                 onClick={handleConfirmLeave}
-                className="px-4 py-2 rounded-md bg-destructive text-white text-sm font-medium hover:bg-destructive/90 transition-colors"
+                className={btn("destructive")}
               >
                 Leave session
+              </button>
+              <button
+                onClick={() => setShowLeaveModal(false)}
+                className={btn("secondary")}
+              >
+                Stay
               </button>
             </div>
           </div>

@@ -1,6 +1,8 @@
 "use client"
 
 import { useState } from "react"
+import { cn } from "@/lib/utils"
+import { btn } from "@/lib/button-styles"
 
 interface MetronomePanelProps {
   bpm: number
@@ -58,7 +60,7 @@ export function MetronomePanel({ bpm, isRunning, onBpmChange, onStart, onStop }:
       </div>
       <button
         onClick={isRunning ? onStop : onStart}
-        className="ml-auto h-7 px-3 rounded border border-border bg-muted hover:bg-muted/80 text-sm font-medium transition-colors flex items-center gap-1"
+        className={cn(btn("secondary", "sm"), "ml-auto flex items-center gap-1")}
       >
         {isRunning ? "■ Stop" : "▶ Start"}
       </button>
