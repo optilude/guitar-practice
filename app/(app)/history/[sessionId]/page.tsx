@@ -70,7 +70,7 @@ export default async function SessionDetailPage({
         href="/history"
         className="inline-flex items-center gap-1 text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors mb-4"
       >
-        ← Back to History
+        ← History
       </Link>
 
       <h1 className="text-2xl font-semibold mb-1">{session.routineTitle}</h1>
