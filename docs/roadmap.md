@@ -66,6 +66,7 @@ Account management and better authentication support. Consider moving to a SaaS 
 # Known issues
 
 * "+ New goal" is left-aligned. Should be "+ Add goal" and centre aligned.
+* The icons on the "Tools" page don't look great. Consider larger, bolder icons, or right-aligning them in their tiles.
 
 General/UX:
 
@@ -86,23 +87,50 @@ Chords:
 
 # Prompts
 
-## Start phase 7
+## Scale finder tool
 
-Let's build the chord finder tool using the Superpowers plugin.
+Let's design and build the scale finder.
 
-- Create a 6-fret chord box like the one used for the Fingerings boxes on the Chords tab. Let the user pick the start fret (default to fret 1, at the nut). Then let the user click on any fret to toggle a dot (finger) on that fret.
-- In real time, calculate any possible chord or inversion that could represent that fingering, starting with the simpler or more obvious ones. Root position inversions (i.e. root note in the bass) would be more obvious than other inversions, for instance.
-- By default, consider this for any scale (but in this case, prefer flats over sharps and don't list all enharmonics). However, allow the user to also select a key and scale/mode (using the same dropdowns as for the Scales tab in the Reference section), in which case the chord options should be calculated relative to this.
+* Follow the general layout and UX of the Chord finder, though consider if the input and output should stack vertically even on desktop, given the width of the fretboard diagram
+* Render a fretboard like the one used in the Fretboard panels on the Reference page (using Fretboard.js)
+* Allow the user to click on any fret/string to toggle a note at that fret. Show the note name in the dot. Follow the same style and colour coding as on the Reference page.
+* In real time, list all scales that contain these notes. Sort these so the more obvious or common scales come first, and more esoteric scales come later.
+* However, allow the user to choose a specific key centre, and in this case, calculate all scales that could contain these notes with that key centre.
 
-Consider how best to implement and test this, noting that will add other "finder" tools shortly, so we should establish UX patterns that make sense for those too.
+Note: https://moonwave99.github.io/fretboard.js/examples-events.html contains an example of using Fretboard.js and interactively adding notes. (It does not allow individual toggling off of notes in this demo.)
 
-- Build the scale finder. Render a fretboard like the one used in the Fretboard panels on the Reference page. Allow the user to click on any fret/string to add a note. In real time, list all scales that contain these notes. By default, consider only the modes of the major key (but any key centre). However, allow the user to choose a specific key centre, and in this case, calculate all scales that could contain these notes with that key centre.
+## Key finder tool
 
-- Build the key finder. Allow the user to enter a set of chords, visually following the style of the harmony section (Modes and Progressions) on the Reference tab. Click "+" to add a new chord and type in the chord symbol. Use autocomplete to limit to known chord types (per the Chord tab on the Reference panel). Allow drag-and-drop to reorder chords in the progression, as well as removing erroneous chord tiles. In real time, calculate all valid keys for a progression containing these chords, with more common or likely ones first. If necessary, consider the first and/or last chord as resolutions to the key centre, and use knowledge of harmony (e.g. 7th chords may be V of a key, or part of V-I or ii-V-I) to guide the key finding.
+Let's design and build the key finder.
 
-- Build the transposer. Enter a progression in the same vein as for the key finder, but have the user explicitly select a key centre and scale/mode from a drop-down similar to the one used for the Modes tab on the harmony section of the reference page. then allow the user to choose a target key centre and show the same chords transposed to this new key.
+* Follow the general layout and UX of the Chord finder and Scale finder
+* Allow the user to enter a set of chords, visually following the style of the harmony section (Modes and Progressions) on the Reference tab.
+  - Click "+" to add a new chord and type in the chord symbol.
+  - Use autocomplete to limit to known chord types (per the Chord tab on the Reference page).
+  - Allow drag-and-drop to reorder chords in the progression
+  - Allow chord tiles to be edited
+  - Allow chord tiles to be removed
+* In real time, calculate all valid keys for a progression containing these chords, with more common or likely ones first.
+* If necessary, consider the first and/or last chord as resolutions to the key centre, and use knowledge of harmony (e.g. 7th chords may be V of a key, or part of V-I or ii-V-I) to guide the key finding the best fit key
 
-- Build the standalone metronome. Base this on the simple metronome from the practice session view, but allow the user to choose alternative time signatures (e.g. 6/8 or 3/4, but default to 4/4) and to play only certain beats of the masure (e.g. "2 and 4"). If helpful, we can introduce additional dependencies for the metronome component.
+## Transposer tool
+
+Let's design and build the transposer.
+
+* Follow the general layout and UX of the Key finder
+* The user select a key and scale/mode from a drop-down similar to the one used for the Scales tab on the Reference page
+* Allow the user to a progression in the same vein as for the key finder. Calculate all roman numeral chord references relative to the selected key
+* Allow the user to choose a target key centre and show the same chords transposed to this new key
+
+## Metronome tool
+
+Let's design and build the standalone metronome.
+
+* Start with the simple metronome from the practice session view
+* Allow the user to choose alternative time signatures (e.g. 6/8 or 3/4, but default to 4/4) 
+* Also let the user choose to play only certain beats of the masure (e.g. "2 and 4").
+
+If helpful, we can introduce additional dependencies for the metronome component.
 
 ## Start phase 8
 
