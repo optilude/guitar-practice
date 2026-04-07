@@ -91,7 +91,7 @@ export function ChordFinderClient() {
     if (!diagramRef.current || !rightColRef.current || metrics.nutTopPx === 0) return
     const diagramTop = diagramRef.current.getBoundingClientRect().top
     const rightTop = rightColRef.current.getBoundingClientRect().top
-    setResultsPaddingTop(Math.max(0, diagramTop - rightTop + metrics.nutTopPx))
+    setResultsPaddingTop(Math.max(0, diagramTop - rightTop + metrics.nutTopPx - 10))
   }, [metrics])
 
   const allMuted = frets.every((f) => f === null)
@@ -108,9 +108,9 @@ export function ChordFinderClient() {
     : undefined
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {/* Left column: filter + notes/formula + chord grid + clear */}
-      <div className="flex flex-col gap-3">
+    <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+      {/* Left column: shrink-wrapped to content */}
+      <div className="flex flex-col gap-3 shrink-0">
         {/* Key/scale filter */}
         <div className="flex flex-wrap gap-3 items-end">
           <div className="flex flex-col gap-1">
@@ -203,8 +203,8 @@ export function ChordFinderClient() {
         </div>
       </div>
 
-      {/* Right column: results, top-aligned with the chord diagram's nut line */}
-      <div ref={rightColRef} aria-live="polite" style={{ paddingTop: `${resultsPaddingTop}px` }}>
+      {/* Right column: fixed width, top-aligned with the chord diagram's nut line */}
+      <div ref={rightColRef} aria-live="polite" className="w-56 shrink-0" style={{ paddingTop: `${resultsPaddingTop}px` }}>
         {allMuted ? (
           <p className="text-sm text-muted-foreground">Place dots on the chord box to identify chord names.</p>
         ) : chords.length === 0 ? (
