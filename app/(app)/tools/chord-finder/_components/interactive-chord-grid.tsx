@@ -193,35 +193,42 @@ export function InteractiveChordGrid({
 
       if (headerZones.length >= 6 && firstFretZone) {
         const nutSvgY = headerZones[0].svgH  // header zone height = distance from top to nut line
+        const halfSpacing = headerZones[0].svgW / 2
 
-        // Crop the top half of the header area to reduce excess whitespace
+        // Crop top: remove the upper half of the header dead space
         const cropY = nutSvgY / 2
-        const croppedViewBox = `0 ${cropY} ${width} ${height - cropY}`
+
+        // Crop left: remove dead space before string 6, leaving room for a full dot.
+        // Dot radius ≈ fingerSize (0.9) × halfSpacing; add 4 SVG units safety margin.
+        const dotRadius = 0.9 * halfSpacing
+        const chordBoxLeftSvg = headerZones[0].svgX + halfSpacing  // string 6 centre x
+        const cropX = Math.max(0, chordBoxLeftSvg - dotRadius - 4)
+
+        const croppedViewBox = `${cropX} ${cropY} ${width - cropX} ${height - cropY}`
         svgEl.setAttribute("viewBox", croppedViewBox)
         setOverlayViewBox(croppedViewBox)
 
         if (onMetricsChange) {
-          // Chord box spans between the outermost string lines (not the full zone half-spacings)
-          const chordBoxLeftSvg = headerZones[0].svgX + headerZones[0].svgW / 2
-          const chordBoxRightSvg = headerZones[5].svgX + headerZones[5].svgW / 2
+          const chordBoxRightSvg = headerZones[5].svgX + halfSpacing  // string 1 centre x
           const chordBoxWidthSvg = chordBoxRightSvg - chordBoxLeftSvg
 
-          // First fret row center Y, adjusted into the cropped coordinate space
-          const firstFretCenterY = nutSvgY + firstFretZone.svgH / 2
-          const croppedY = firstFretCenterY - cropY
+          // Positions relative to cropped viewBox origin
+          const croppedViewBoxW = width - cropX
           const croppedViewBoxH = height - cropY
+          const firstFretCenterY = nutSvgY + firstFretZone.svgH / 2
 
           requestAnimationFrame(() => {
             const svgRendered = svgEl.getBoundingClientRect()
             if (svgRendered.height > 0) {
-              const scaleX = svgRendered.width / width
+              const scaleX = svgRendered.width / croppedViewBoxW
               const scaleY = svgRendered.height / croppedViewBoxH
               onMetricsChange({
-                inputTopPx: croppedY * scaleY,
-                buttonOffsetPx: chordBoxLeftSvg * scaleX,
+                inputTopPx: (firstFretCenterY - cropY) * scaleY,
+                // button offset/width relative to the rendered SVG left edge (post-crop)
+                buttonOffsetPx: (chordBoxLeftSvg - cropX) * scaleX,
                 buttonWidthPx: chordBoxWidthSvg * scaleX,
-                // nut line is at nutSvgY/2 from top of the cropped viewBox
-                nutTopPx: (nutSvgY / 2) * scaleY,
+                // nut line is at nutSvgY - cropY within the cropped viewBox
+                nutTopPx: (nutSvgY - cropY) * scaleY,
               })
             }
           })
