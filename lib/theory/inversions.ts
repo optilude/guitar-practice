@@ -43,6 +43,8 @@ export interface InversionVoicing extends ChordPosition {
   noteNames: Array<string | null>
   /** Short interval label for each string (e.g. "R", "b3", "b7"). null = string not played. */
   noteIntervals: Array<string | null>
+  /** Chord tone roles that are absent from this voicing (e.g. ["fifth"] for shell voicings). */
+  omittedRoles: NoteRole[]
 }
 
 // ---------------------------------------------------------------------------
@@ -143,6 +145,7 @@ function computeNoteInfo(
   noteRoles:     Array<NoteRole | null>
   noteNames:     Array<string | null>
   noteIntervals: Array<string | null>
+  omittedRoles:  NoteRole[]
 } {
   const { notes: chordNotes, intervals: chordIntervals } = resolveChordNotes(tonic, tonalSymbol)
   const chordChromas = chordNotes.map((n) => Note.get(n).chroma ?? -1)
@@ -164,7 +167,12 @@ function computeNoteInfo(
     }
   })
 
-  return { noteRoles, noteNames, noteIntervals }
+  // Detect chord tones that are entirely absent from this voicing
+  const expectedRoles = new Set(chordIntervals.map(intervalToRole))
+  const presentRoles  = new Set(noteRoles.filter((r): r is NoteRole => r !== null))
+  const omittedRoles  = [...expectedRoles].filter((r) => !presentRoles.has(r))
+
+  return { noteRoles, noteNames, noteIntervals, omittedRoles }
 }
 
 // ---------------------------------------------------------------------------
@@ -188,7 +196,7 @@ function convertPosition(pos: any, suffix: string, tonic: string): InversionVoic
   const minFret        = hasClosedFrets ? baseFret : 0
 
   const tonalSymbol = SUFFIX_TO_TONAL[suffix] ?? suffix
-  const { noteRoles, noteNames, noteIntervals } = computeNoteInfo(frets, baseFret, tonalSymbol, tonic)
+  const { noteRoles, noteNames, noteIntervals, omittedRoles } = computeNoteInfo(frets, baseFret, tonalSymbol, tonic)
 
   return {
     frets,
@@ -204,6 +212,7 @@ function convertPosition(pos: any, suffix: string, tonic: string): InversionVoic
     noteRoles,
     noteNames,
     noteIntervals,
+    omittedRoles,
   }
 }
 
@@ -310,8 +319,8 @@ export function getInversionVoicings(tonic: string, type: string): InversionVoic
   if (normalized === tonic) return rawVoicings
   const tonalSymbol = SUFFIX_TO_TONAL[type] ?? type
   return rawVoicings.map((v) => {
-    const { noteRoles, noteNames, noteIntervals } = computeNoteInfo(v.frets, v.baseFret, tonalSymbol, tonic)
-    return { ...v, noteRoles, noteNames, noteIntervals }
+    const { noteRoles, noteNames, noteIntervals, omittedRoles } = computeNoteInfo(v.frets, v.baseFret, tonalSymbol, tonic)
+    return { ...v, noteRoles, noteNames, noteIntervals, omittedRoles }
   })
 }
 

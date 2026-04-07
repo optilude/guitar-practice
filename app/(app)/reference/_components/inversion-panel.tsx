@@ -88,12 +88,29 @@ const INTERVAL_LABEL: Record<string, string> = {
   "13M": "13",
 }
 
+const ROLE_OMIT_LABEL: Record<NoteRole, string> = {
+  root:    "No root",
+  third:   "No 3rd",
+  fifth:   "No 5th",
+  seventh: "No 7th",
+  ninth:   "No 9th",
+  other:   "No ext.",
+}
+
 function toSVGChord(
   voicing: InversionVoicing,
   showMode: ShowMode,
   isDark: boolean,
 ): SVGChord {
   const fingers: Finger[] = []
+
+  // If all played notes are at fret 5 or below, anchor the diagram at the nut
+  const maxAbsFret = voicing.frets.reduce((max, relFret) => {
+    if (relFret <= 0) return max
+    return Math.max(max, relFret + voicing.baseFret - 1)
+  }, 0)
+  const anchorToNut = maxAbsFret > 0 && maxAbsFret <= 5
+  const position = anchorToNut ? 1 : voicing.baseFret
 
   voicing.frets.forEach((fret, i) => {
     const str  = 6 - i // index 0 (str6/low E) → SVGuitar string 6
@@ -116,10 +133,14 @@ function toSVGChord(
 
     if (fret === -1)     fingers.push([str, SILENT])
     else if (fret === 0) fingers.push([str, OPEN, options])
-    else                 fingers.push([str, fret, options])
+    else {
+      // When anchoring to nut, pass absolute fret numbers; otherwise relative
+      const svgFret = anchorToNut ? (fret + voicing.baseFret - 1) : fret
+      fingers.push([str, svgFret, options])
+    }
   })
 
-  return { fingers, barres: [], position: voicing.baseFret }
+  return { fingers, barres: [], position }
 }
 
 // Compute a human-readable "X – Y – Z" label for a string set
@@ -521,6 +542,11 @@ export function InversionPanel({ root, onRootChange, inversionTypeTrigger, onSca
                       <div key={i} className="flex flex-col gap-0.5">
                         <span className="text-xs text-muted-foreground text-center">{pos.label}</span>
                         <ChordDiagram chord={toSVGChord(pos, showMode, isDark)} />
+                        {pos.omittedRoles.length > 0 && (
+                          <span className="text-[10px] text-muted-foreground text-center leading-tight">
+                            {pos.omittedRoles.map((r) => ROLE_OMIT_LABEL[r]).join(", ")}
+                          </span>
+                        )}
                       </div>
                     ))}
                   </div>

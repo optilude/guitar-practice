@@ -1,11 +1,14 @@
 "use client"
 
+import { useRouter } from "next/navigation"
+
 interface GoalFilterSelectProps {
   goals: { id: string; title: string }[]
   selectedGoalId?: string
 }
 
 export function GoalFilterSelect({ goals, selectedGoalId }: GoalFilterSelectProps) {
+  const router = useRouter()
   if (goals.length === 0) return null
   return (
     <div className="flex items-center gap-2 text-sm">
@@ -15,7 +18,7 @@ export function GoalFilterSelect({ goals, selectedGoalId }: GoalFilterSelectProp
         defaultValue={selectedGoalId ?? ""}
         onChange={(e) => {
           const val = e.target.value
-          window.location.href = val ? `/history?goalId=${val}` : "/history"
+          router.push(val ? `/history?goalId=${val}` : "/history")
         }}
         className="rounded border border-border bg-card text-foreground text-xs px-2 py-1 focus:outline-none focus:ring-1 focus:ring-accent"
       >

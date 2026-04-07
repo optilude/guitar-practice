@@ -7,11 +7,11 @@ import { HistoryCalendar } from "./_components/history-calendar"
 import { GoalFilterSelect } from "./_components/goal-filter-select"
 import { computeStreak } from "@/lib/sessions"
 
-function statBlock(value: number | string, label: string) {
+function statRow(label: string, value: number | string) {
   return (
-    <div className="flex flex-col gap-0.5">
-      <span className="text-3xl font-semibold tabular-nums text-foreground leading-none">{value}</span>
-      <span className="text-xs text-muted-foreground">{label}</span>
+    <div className="flex items-baseline justify-between gap-6">
+      <span className="text-sm text-muted-foreground">{label}</span>
+      <span className="text-sm font-semibold tabular-nums text-foreground">{value}</span>
     </div>
   )
 }
@@ -78,7 +78,6 @@ export default async function HistoryPage({
   const sessionsThisYear  = allLocalDates.filter((d) => d >= yearStart).length
   const totalSessions     = allLocalDates.length
   const totalStreak       = computeStreak(uniqueDates)
-  const totalDays         = uniqueDates.length
 
   return (
     <div className="pt-6 max-w-4xl">
@@ -95,32 +94,30 @@ export default async function HistoryPage({
           </Link>
         </p>
       ) : (
-        <div className="flex flex-col lg:flex-row gap-10">
+        <div className="flex flex-col gap-10 lg:flex-row lg:justify-between lg:gap-0">
           {/* Calendar */}
-          <div className="flex-1 min-w-0">
+          <div className="w-full max-w-sm">
             <HistoryCalendar sessions={sessions} />
           </div>
 
           {/* Stats sidebar */}
-          <div className="lg:w-48 shrink-0 space-y-6">
-            <div>
+          <div className="w-full max-w-sm flex flex-col gap-6">
+            <div className="space-y-2">
               <p className="text-xs uppercase tracking-[0.1em] text-muted-foreground mb-3">Sessions</p>
-              <div className="space-y-4">
-                {statBlock(sessionsThisWeek, "this week")}
-                {statBlock(sessionsThisMonth, "this month")}
-                {statBlock(sessionsThisYear, "this year")}
-                {statBlock(totalSessions, "all time")}
-              </div>
+              {statRow("This week", sessionsThisWeek)}
+              {statRow("This month", sessionsThisMonth)}
+              {statRow("This year", sessionsThisYear)}
+              {statRow("All time", totalSessions)}
             </div>
 
-            <div className="border-t border-border pt-6 space-y-4">
-              <p className="text-xs uppercase tracking-[0.1em] text-muted-foreground -mb-2">Streaks</p>
-              {statBlock(
-                totalStreak > 0 ? `🔥 ${totalStreak}` : "—",
-                "day streak"
-              )}
-              {statBlock(totalDays, "days practised")}
-            </div>
+            {totalStreak > 0 && (
+              <div className="border-t border-border pt-4 space-y-2">
+                <p className="text-xs uppercase tracking-[0.1em] text-muted-foreground">Streak</p>
+                <p className="text-sm font-semibold text-foreground">
+                  {totalStreak} day{totalStreak !== 1 ? "s" : ""} 🔥
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}
