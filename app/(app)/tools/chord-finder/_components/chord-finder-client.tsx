@@ -108,14 +108,11 @@ export function ChordFinderClient() {
     : undefined
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 md:gap-16">
-      {/* Left column: shrink-wrapped to content */}
-      <div className="flex flex-col gap-3">
-        {/* Row 1: Key */}
+    <div className="flex flex-col gap-3">
+      {/* Row 1: Key + Scale + valid notes, all on one line */}
+      <div className="flex flex-wrap items-end gap-3">
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-muted-foreground" htmlFor="cf-root-select">
-            Key
-          </label>
+          <label className="text-xs text-muted-foreground" htmlFor="cf-root-select">Key</label>
           <select
             id="cf-root-select"
             value={filterKey}
@@ -129,46 +126,45 @@ export function ChordFinderClient() {
           </select>
         </div>
 
-        {/* Row 2: Scale + valid notes inline, notes centred with the select */}
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-muted-foreground" htmlFor="cf-scale-select">
-            Scale
-          </label>
-          <div className="flex items-center gap-3">
-            <select
-              id="cf-scale-select"
-              value={filterScale}
-              onChange={(e) => setFilterScale(e.target.value)}
-              className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
-            >
-              <option value="">Any</option>
-              <optgroup label="Modes of the Major scale">
-                {majorModes.map((t) => <option key={t} value={t}>{SCALE_LABEL[t] ?? t}</option>)}
+          <label className="text-xs text-muted-foreground" htmlFor="cf-scale-select">Scale</label>
+          <select
+            id="cf-scale-select"
+            value={filterScale}
+            onChange={(e) => setFilterScale(e.target.value)}
+            className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
+          >
+            <option value="">Any</option>
+            <optgroup label="Modes of the Major scale">
+              {majorModes.map((t) => <option key={t} value={t}>{SCALE_LABEL[t] ?? t}</option>)}
+            </optgroup>
+            <optgroup label="Modes of the Melodic Minor scale">
+              {melodicMinorModes.map((t) => <option key={t} value={t}>{SCALE_LABEL[t] ?? t}</option>)}
+            </optgroup>
+            <optgroup label="Modes of the Harmonic Minor scale">
+              {harmonicMinorModes.map((t) => <option key={t} value={t}>{SCALE_LABEL[t] ?? t}</option>)}
+            </optgroup>
+            <optgroup label="Pentatonics">
+              {pentatonics.map((t) => <option key={t} value={t}>{SCALE_LABEL[t] ?? t}</option>)}
+            </optgroup>
+            {otherTypes.length > 0 && (
+              <optgroup label="Other">
+                {otherTypes.map((t) => <option key={t} value={t}>{t}</option>)}
               </optgroup>
-              <optgroup label="Modes of the Melodic Minor scale">
-                {melodicMinorModes.map((t) => <option key={t} value={t}>{SCALE_LABEL[t] ?? t}</option>)}
-              </optgroup>
-              <optgroup label="Modes of the Harmonic Minor scale">
-                {harmonicMinorModes.map((t) => <option key={t} value={t}>{SCALE_LABEL[t] ?? t}</option>)}
-              </optgroup>
-              <optgroup label="Pentatonics">
-                {pentatonics.map((t) => <option key={t} value={t}>{SCALE_LABEL[t] ?? t}</option>)}
-              </optgroup>
-              {otherTypes.length > 0 && (
-                <optgroup label="Other">
-                  {otherTypes.map((t) => <option key={t} value={t}>{t}</option>)}
-                </optgroup>
-              )}
-            </select>
-            {scaleInfo && (
-              <span className="text-xs text-muted-foreground whitespace-nowrap">
-                <span className="text-foreground font-medium">Valid notes:</span>&ensp;{scaleInfo.notes.join("  ")}
-              </span>
             )}
-          </div>
+          </select>
         </div>
 
-        {/* Chord grid + clear button, fret input alongside */}
+        {scaleInfo && (
+          <span className="text-xs text-muted-foreground whitespace-nowrap pb-1.5">
+            <span className="text-foreground font-medium">Valid notes:</span>&ensp;{scaleInfo.notes.join("  ")}
+          </span>
+        )}
+      </div>
+
+      {/* Row 2: chord box (col 1) + results table (col 2) */}
+      <div className="flex flex-col md:flex-row gap-4 md:gap-16">
+        {/* Col 1: diagram + clear + fret input */}
         <div ref={diagramRef} className="flex items-start gap-1 shrink-0">
           <div className="w-fit flex flex-col gap-2">
             <InteractiveChordGrid
@@ -201,33 +197,33 @@ export function ChordFinderClient() {
             aria-label="Start fret"
           />
         </div>
-      </div>
 
-      {/* Right column: fixed width, top-aligned with the chord diagram's nut line */}
-      <div ref={rightColRef} aria-live="polite" className="w-56 shrink-0" style={{ paddingTop: `${resultsPaddingTop}px` }}>
-        {allMuted ? (
-          <p className="text-sm text-muted-foreground">Place dots on the chord box to identify chord names.</p>
-        ) : chords.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            No chords found{filterKey && filterScale ? ` in ${filterKey} ${filterScale}` : ""}.
-          </p>
-        ) : (
-          <div className="divide-y divide-border">
-            {chords.map((chord) => (
-              <div key={chord.symbol} className="flex items-baseline gap-2 py-1.5">
-                <span className="font-medium text-foreground text-sm">{chordName(chord)}</span>
-                <span className="text-xs text-muted-foreground shrink-0 flex items-center gap-1.5">
-                  {positionLabel(chord)}
-                  {chord.degreeLabel && (
-                    <span className="inline-flex items-center rounded px-1.5 py-0.5 text-xs font-mono font-medium bg-accent/10 text-accent border border-accent/20">
-                      {chord.degreeLabel}
-                    </span>
-                  )}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
+        {/* Col 2: results, top-aligned with the nut line */}
+        <div ref={rightColRef} aria-live="polite" className="w-56 shrink-0" style={{ paddingTop: `${resultsPaddingTop}px` }}>
+          {allMuted ? (
+            <p className="text-sm text-muted-foreground">Place dots on the chord box to identify chord names.</p>
+          ) : chords.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No chords found{filterKey && filterScale ? ` in ${filterKey} ${filterScale}` : ""}.
+            </p>
+          ) : (
+            <div className="divide-y divide-border">
+              {chords.map((chord) => (
+                <div key={chord.symbol} className="flex items-baseline gap-2 py-1.5">
+                  <span className="font-medium text-foreground text-sm">{chordName(chord)}</span>
+                  <span className="text-xs text-muted-foreground shrink-0 flex items-center gap-1.5">
+                    {positionLabel(chord)}
+                    {chord.degreeLabel && (
+                      <span className="inline-flex items-center rounded px-1.5 py-0.5 text-xs font-mono font-medium bg-accent/10 text-accent border border-accent/20">
+                        {chord.degreeLabel}
+                      </span>
+                    )}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
