@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { parseChord, normalizeQuality, detectKey } from "./key-finder"
+import { parseChord, normalizeQuality, detectKey, type InputChord } from "./key-finder"
 
 describe("parseChord", () => {
   it("parses a minor 7th chord", () => {
@@ -55,6 +55,21 @@ describe("normalizeQuality", () => {
   })
   it("falls back to 'major' for unknown types", () => {
     expect(normalizeQuality("unknowntype")).toBe("major")
+  })
+  it('maps "minor" to "minor"', () => {
+    expect(normalizeQuality("minor")).toBe("minor")
+  })
+  it('maps "major" to "major"', () => {
+    expect(normalizeQuality("major")).toBe("major")
+  })
+  it('maps "augmented" to "aug"', () => {
+    expect(normalizeQuality("augmented")).toBe("aug")
+  })
+  it('maps "diminished" to "dim"', () => {
+    expect(normalizeQuality("diminished")).toBe("dim")
+  })
+  it('maps "dominant" to "major"', () => {
+    expect(normalizeQuality("dominant")).toBe("major")
   })
 })
 
@@ -143,5 +158,31 @@ describe("detectKey", () => {
     const results = detectKey(chords)
     const cMajor = results.find(r => r.tonic === "C" && r.mode === "major")
     expect(cMajor!.displayName).toBe("C Major")
+  })
+})
+
+describe("detectKey — triad matching", () => {
+  it("C major triad + Am triad score 100% fitScore in C major", () => {
+    const chords = [parseChord("C"), parseChord("Am")].filter(
+      (c): c is InputChord => c !== null,
+    )
+    expect(chords).toHaveLength(2)
+    const results = detectKey(chords)
+    const cMajor = results.find(r => r.tonic === "C" && r.mode === "major")
+    expect(cMajor).toBeDefined()
+    expect(cMajor!.fitScore).toBe(1.0)
+  })
+
+  it("Bdim is diatonic (degree vii) in C major", () => {
+    const chords = [parseChord("C"), parseChord("Bdim")].filter(
+      (c): c is InputChord => c !== null,
+    )
+    expect(chords).toHaveLength(2)
+    const results = detectKey(chords)
+    const cMajor = results.find(r => r.tonic === "C" && r.mode === "major")
+    expect(cMajor).toBeDefined()
+    const bdim = cMajor!.chordAnalysis.find(a => a.inputChord.root === "B")
+    expect(bdim?.role).toBe("diatonic")
+    expect(bdim?.score).toBe(1.0)
   })
 })

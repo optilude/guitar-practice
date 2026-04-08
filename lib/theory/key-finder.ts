@@ -61,6 +61,10 @@ const TYPE_TO_QUALITY: Record<string, string> = {
   "dim": "dim", "dim7": "dim", "°7": "dim",
   // Augmented
   "aug": "aug", "+": "aug", "aug7": "aug", "maj7#5": "aug",
+  // Full-word aliases (TonalJS may return these as chord types)
+  "minor": "minor", "major": "major",
+  "augmented": "aug", "diminished": "dim",
+  "dominant": "major",
 }
 
 export function normalizeQuality(type: string): string {
@@ -100,6 +104,10 @@ function buildDiatonicLookup(diatonicChords: DiatonicChord[]): DiatonicLookup {
     const quality = normalizeQuality(chord.type)
     const existing = map.get(chroma) ?? []
     existing.push({ chord, quality })
+    // Half-diminished seventh also accepts its triad (diminished triad)
+    if (chord.type === "m7b5") {
+      existing.push({ chord, quality: "dim" })
+    }
     map.set(chroma, existing)
   }
   return map
