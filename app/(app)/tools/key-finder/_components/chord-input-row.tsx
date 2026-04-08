@@ -44,8 +44,9 @@ export function ChordInputRow({
   onStartEdit,
   onAdd,
 }: ChordInputRowProps) {
+  // distance:5 lets quick clicks pass through to inner buttons without activating drag
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   )
 
@@ -64,6 +65,7 @@ export function ChordInputRow({
     return selectedResult.chordAnalysis[index]
   }
 
+  // items-start: × badge at -top-1.5 overflows tile bounds; items-center would mis-align on wrap
   return (
     <div className="flex flex-wrap items-start gap-2">
       <DndContext
@@ -76,29 +78,36 @@ export function ChordInputRow({
           items={chords.map(c => c.id)}
           strategy={horizontalListSortingStrategy}
         >
-          {chords.map(chord => (
-            <ChordTile
-              key={chord.id}
-              id={chord.id}
-              symbol={chord.symbol}
-              analysis={getAnalysis(chord.id)}
-              isEditing={editingId === chord.id}
-              onCommit={symbol => onCommit(chord.id, symbol)}
-              onRemove={() => onRemove(chord.id)}
-              onStartEdit={() => onStartEdit(chord.id)}
-            />
+          {chords.map((chord, i) => (
+            // Arrow + tile grouped as flex-shrink-0 so wrapping keeps → ahead of its tile
+            <div key={chord.id} className="flex items-center gap-1 flex-shrink-0">
+              {i > 0 && (
+                <span className="text-muted-foreground text-sm select-none">→</span>
+              )}
+              <ChordTile
+                id={chord.id}
+                symbol={chord.symbol}
+                analysis={getAnalysis(chord.id)}
+                isEditing={editingId === chord.id}
+                onCommit={symbol => onCommit(chord.id, symbol)}
+                onRemove={() => onRemove(chord.id)}
+                onStartEdit={() => onStartEdit(chord.id)}
+              />
+            </div>
           ))}
         </SortableContext>
       </DndContext>
 
       {/* Add button — outside SortableContext so it cannot be dragged */}
+      {/* Two-row structure matches chord tile height exactly */}
       <button
         type="button"
         onClick={onAdd}
-        className="flex items-center justify-center rounded-lg border-2 border-dashed border-border text-muted-foreground hover:border-accent hover:text-foreground transition-colors px-3 py-2.5 min-w-[44px] text-sm"
+        className="flex flex-col items-center rounded-lg border-2 border-dashed border-border px-3 py-2.5 min-w-[68px] text-muted-foreground hover:border-accent hover:text-foreground transition-colors"
         aria-label="add chord"
       >
-        +
+        <span className="text-[10px] mb-1 invisible">+</span>
+        <span className="text-sm">+</span>
       </button>
     </div>
   )

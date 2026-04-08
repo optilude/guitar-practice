@@ -22,7 +22,7 @@ export const COMMONALITY_TIER: Record<string, number> = {
 // ---------------------------------------------------------------------------
 export const ALL_KEY_MODES: Array<{ displayName: string; modeName: string; tier: number }> = [
   { displayName: "Ionian (major)",              modeName: "major",              tier: 1 },
-  { displayName: "Aeolian (natural minor)",           modeName: "minor",              tier: 1 },
+  { displayName: "Aeolian (natural minor)",    modeName: "minor",              tier: 1 },
   { displayName: "Dorian",            modeName: "dorian",             tier: 2 },
   { displayName: "Mixolydian",        modeName: "mixolydian",         tier: 2 },
   { displayName: "Phrygian",          modeName: "phrygian",           tier: 3 },

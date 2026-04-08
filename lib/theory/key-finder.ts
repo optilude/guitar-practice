@@ -25,7 +25,7 @@ export type ChordAnalysis = {
 export type KeyMatch = {
   tonic: string           // e.g. "Bb"
   mode: string            // e.g. "major" (the modeName passed to getKey())
-  displayName: string     // e.g. "Bb Major"
+  displayName: string     // e.g. "Bb Ionian (major)"
   score: number           // fitScore + bonuses — used for sorting only
   fitScore: number        // average chord score with no bonuses — used for display %
   diatonicCount: number   // number of fully diatonic input chords
@@ -61,6 +61,9 @@ const TYPE_TO_QUALITY: Record<string, string> = {
   "dim": "dim", "dim7": "dim", "°7": "dim",
   // Augmented
   "aug": "aug", "+": "aug", "aug7": "aug", "maj7#5": "aug",
+  // Full-word aliases (TonalJS may return these as chord types)
+  "minor": "minor", "major": "major",
+  "augmented": "aug", "diminished": "dim",
 }
 
 export function normalizeQuality(type: string): string {
@@ -100,6 +103,10 @@ function buildDiatonicLookup(diatonicChords: DiatonicChord[]): DiatonicLookup {
     const quality = normalizeQuality(chord.type)
     const existing = map.get(chroma) ?? []
     existing.push({ chord, quality })
+    // Half-diminished seventh also accepts its triad (diminished triad)
+    if (chord.type === "m7b5") {
+      existing.push({ chord, quality: "dim" })
+    }
     map.set(chroma, existing)
   }
   return map
