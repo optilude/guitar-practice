@@ -1,10 +1,10 @@
 "use client"
 
 import { useCallback, useMemo, useState } from "react"
-import { INTERVAL_DEGREE_COLORS } from "@/lib/rendering/tab"
 import { parseChord, detectKey, countDistinctChords } from "@/lib/theory/key-finder"
 import type { KeyMatch, ChordAnalysis } from "@/lib/theory/key-finder"
-import { ChordInputRow } from "./chord-input-row"
+import { ChordInputRow } from "@/app/(app)/tools/_components/chord-input-row"
+import { chordBlockStyle } from "@/app/(app)/reference/_components/chord-quality-block"
 import { btn } from "@/lib/button-styles"
 
 interface ChordEntry {
@@ -95,7 +95,7 @@ export function KeyFinderClient() {
       <ChordInputRow
         chords={chords}
         editingId={editingId}
-        selectedResult={selectedResult}
+        chordAnalyses={selectedResult?.chordAnalysis ?? null}
         onChordChange={(newChords) => {
           setChords(newChords)
           setSelectedResult(null)
@@ -186,51 +186,25 @@ export function KeyFinderClient() {
 // Inline display-only badge for results list
 // ---------------------------------------------------------------------------
 
-const DEGREE_HEX: Record<number, string> = {
-  1: "#b45309",
-  2: INTERVAL_DEGREE_COLORS.second,
-  3: INTERVAL_DEGREE_COLORS.third,
-  4: INTERVAL_DEGREE_COLORS.fourth,
-  5: INTERVAL_DEGREE_COLORS.fifth,
-  6: INTERVAL_DEGREE_COLORS.sixth,
-  7: INTERVAL_DEGREE_COLORS.seventh,
-}
-
-function hexToRgba(hex: string, alpha: number): string {
-  const r = parseInt(hex.slice(1, 3), 16)
-  const g = parseInt(hex.slice(3, 5), 16)
-  const b = parseInt(hex.slice(5, 7), 16)
-  return `rgba(${r},${g},${b},${alpha})`
-}
-
 interface ResultChordBadgeProps {
   analysis: ChordAnalysis
   symbol: string
 }
 
 function ResultChordBadge({ analysis, symbol }: ResultChordBadgeProps) {
-  const isDiatonic = analysis.role === "diatonic" || analysis.role === "borrowed"
-
-  if (isDiatonic && analysis.degree !== null && analysis.roman !== null) {
-    const hex = DEGREE_HEX[analysis.degree] ?? "#6b7280"
-    return (
-      <div
-        className="flex flex-col items-center rounded-lg border-2 px-3 py-2.5 text-center min-w-[68px]"
-        style={{
-          borderColor: hexToRgba(hex, 0.2),
-          backgroundColor: hexToRgba(hex, 0.1),
-        }}
-      >
-        <span className="text-[10px] text-muted-foreground mb-1">{analysis.roman}</span>
-        <span className="text-sm font-semibold text-foreground leading-tight">{symbol}</span>
-      </div>
-    )
-  }
-
+  const variant: "diatonic" | "borrowed" | "non-diatonic" =
+    analysis.role === "diatonic" ? "diatonic"
+    : analysis.role === "borrowed" ? "borrowed"
+    : "non-diatonic"
+  // Renders as <div> not <button> — this badge lives inside a clickable <button> row,
+  // so nesting another <button> would be invalid HTML.
   return (
-    <div className="flex flex-col items-center rounded-lg border-2 border-border px-3 py-2.5 text-center min-w-[68px] bg-card opacity-40">
-      <span className="text-[10px] text-muted-foreground mb-1">—</span>
-      <span className="text-sm font-semibold text-muted-foreground leading-tight">{symbol}</span>
+    <div
+      className="flex flex-col items-center rounded-lg border-2 px-3 py-2.5 text-center min-w-[68px]"
+      style={chordBlockStyle(analysis.degree ?? 1, variant, false)}
+    >
+      <span className="text-[10px] text-muted-foreground mb-1">{analysis.roman}</span>
+      <span className="text-sm font-semibold text-foreground leading-tight">{symbol}</span>
     </div>
   )
 }
