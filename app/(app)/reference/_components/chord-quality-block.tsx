@@ -12,8 +12,6 @@ const DEGREE_HEX: Record<number, string> = {
   7: INTERVAL_DEGREE_COLORS.seventh, // purple-600
 }
 
-const NON_DIATONIC_HEX = "#c2410c" // orange-700 — signals unusual/unexpected chord
-
 function hexToRgba(hex: string, alpha: number): string {
   const r = parseInt(hex.slice(1, 3), 16)
   const g = parseInt(hex.slice(3, 5), 16)
@@ -26,7 +24,13 @@ export function chordBlockStyle(
   variant: "diatonic" | "borrowed" | "non-diatonic",
   isSelected: boolean,
 ): { borderColor: string; backgroundColor: string } {
-  const hex = variant === "non-diatonic" ? NON_DIATONIC_HEX : (DEGREE_HEX[degree] ?? "#6b7280")
+  if (variant === "non-diatonic") {
+    return {
+      borderColor: isSelected ? "rgba(55,65,81,0.7)" : "rgba(55,65,81,0.4)",    // gray-700
+      backgroundColor: isSelected ? "rgba(107,114,128,0.18)" : "rgba(107,114,128,0.08)", // gray-500
+    }
+  }
+  const hex = DEGREE_HEX[degree] ?? "#6b7280"
   const borderAlpha = variant === "borrowed"
     ? (isSelected ? 0.4 : 0.15)
     : (isSelected ? 0.6 : 0.2)
