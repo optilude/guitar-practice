@@ -73,17 +73,26 @@ export function normalizeQuality(type: string): string {
 // ---------------------------------------------------------------------------
 // Parse a chord symbol into InputChord using TonalJS
 // ---------------------------------------------------------------------------
+// Roots ordered longest-first so Array.find picks the longest match (e.g. "C#" before "C")
+const PARSE_ROOTS = ["Ab", "A#", "A", "Bb", "B", "C#", "C", "Db", "D#", "D", "Eb", "E", "F#", "F", "Gb", "G#", "G"] as const
+
 export function parseChord(symbol: string): InputChord | null {
   if (!symbol.trim()) return null
   const chord = Chord.get(symbol)
-  if (chord.empty || !chord.tonic) return null
+  if (!chord.empty && chord.tonic) {
+    const root = chord.tonic
+    const typeFromSymbol = symbol.substring(root.length)
+    return { root, type: typeFromSymbol, symbol }
+  }
 
-  // Use TonalJS canonical symbol for consistent spelling (e.g. "CM7" → "Cmaj7")
-  const root = chord.tonic
-  const canonical = chord.symbol || root  // chord.symbol = tonic + primary alias
-  const type = canonical.substring(root.length)
+  // Fallback for chords TonalJS doesn't recognise (e.g. "Dmaj11"): accept if the
+  // suffix is in TYPE_TO_QUALITY (our quality normalisation table).
+  const root = PARSE_ROOTS.find(r => symbol.startsWith(r))
+  if (!root) return null
+  const type = symbol.substring(root.length)
+  if (type in TYPE_TO_QUALITY) return { root, type, symbol }
 
-  return { root, type, symbol: canonical }
+  return null
 }
 
 // ---------------------------------------------------------------------------

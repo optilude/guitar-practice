@@ -1,6 +1,7 @@
 "use client"
 
 import { useRef, useEffect, useState } from "react"
+import { Chord } from "tonal"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { ChordQualityBlock } from "@/app/(app)/reference/_components/chord-quality-block"
@@ -12,6 +13,29 @@ import { parseChord, type ChordAnalysis } from "@/lib/theory/key-finder"
 const ROOT_NOTES = ["Ab", "A#", "A", "Bb", "B", "C#", "C", "Db", "D#", "D", "Eb", "E", "F#", "F", "Gb", "G#", "G"] as const
 
 const ALL_SUFFIXES = listChordDbSuffixes()
+
+// Map any valid chord input to the chords-db suffix spelling (the form shown in the
+// dropdown). Strategy:
+//   1. If the input is already root+dbSuffix (e.g. "Dmaj11"), accept as-is.
+//   2. Otherwise parse with TonalJS and find the DB suffix whose chord type matches.
+//   3. Return null if the input can't be interpreted as any known chord.
+function toDbCanonical(value: string): string | null {
+  const trimmed = value.trim()
+  if (!trimmed) return ""
+
+  // Direct match: already in root + DB-suffix form (handles TonalJS-unknown suffixes like "maj11")
+  const directRoot = ROOT_NOTES.find(
+    r => trimmed.startsWith(r) && ALL_SUFFIXES.includes(trimmed.slice(r.length))
+  )
+  if (directRoot !== undefined) return trimmed
+
+  // TonalJS parse + DB suffix lookup (handles alternate spellings like "CM7" → "Cmaj7")
+  const chord = Chord.get(trimmed)
+  if (chord.empty || !chord.tonic) return null
+  const { tonic, type } = chord
+  const match = ALL_SUFFIXES.find(s => Chord.get(`${tonic}${s}`).type === type)
+  return match !== undefined ? `${tonic}${match}` : (chord.symbol || tonic)
+}
 
 interface ChordTileProps {
   id: string
@@ -75,18 +99,17 @@ export function ChordTile({
     )
   }
 
-  // Commit value (with validation + canonical normalisation), then optionally navigate.
-  // Invalid non-empty input reverts to the original symbol.
+  // Commit value normalised to the chords-db spelling, then optionally navigate.
+  // Invalid non-empty input reverts silently to the original symbol.
   function commitAndNavigate(value: string, navigate?: () => void) {
     isSelectingSuggestionRef.current = false
     setSuggestions([])
     setActiveIdx(-1)
-    const trimmed = value.trim()
-    const parsed = trimmed ? parseChord(trimmed) : null
-    if (trimmed && !parsed) {
-      onCommit(symbol)  // revert to original
+    const canonical = toDbCanonical(value)
+    if (canonical === null) {
+      onCommit(symbol)  // invalid — revert to original
     } else {
-      onCommit(parsed?.symbol ?? "")  // commit canonical spelling (or "" to remove)
+      onCommit(canonical)  // "" removes the tile; db-canonical string commits it
     }
     navigate?.()
   }
