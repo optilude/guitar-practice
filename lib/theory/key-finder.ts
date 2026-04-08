@@ -78,19 +78,29 @@ export function parseChord(symbol: string): InputChord | null {
   const chord = Chord.get(symbol)
   if (chord.empty || !chord.tonic) return null
 
-  // Extract the type suffix from the original symbol
-  // e.g., "Cm7" -> "m7", "G" -> "", "BbMaj7" -> "Maj7"
+  // Use TonalJS canonical symbol for consistent spelling (e.g. "CM7" → "Cmaj7")
   const root = chord.tonic
-  const typeFromSymbol = symbol.substring(root.length)
+  const canonical = chord.symbol || root  // chord.symbol = tonic + primary alias
+  const type = canonical.substring(root.length)
 
-  return { root, type: typeFromSymbol, symbol }
+  return { root, type, symbol: canonical }
 }
 
 // ---------------------------------------------------------------------------
 // Internal helpers
 // ---------------------------------------------------------------------------
 
-const ALL_ROOTS = ["C", "C#", "Db", "D", "D#", "Eb", "E", "F", "F#", "Gb", "G", "G#", "Ab", "A", "A#", "Bb", "B"] as const
+const FLAT_ROOTS  = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"] as const
+const SHARP_ROOTS = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"] as const
+
+function prefersSharps(chords: InputChord[]): boolean {
+  let sharps = 0, flats = 0
+  for (const c of chords) {
+    if (c.root.endsWith("#")) sharps++
+    else if (c.root.endsWith("b")) flats++
+  }
+  return sharps > flats
+}
 
 type DiatonicEntry = { chord: DiatonicChord; quality: string }
 type DiatonicLookup = Map<number, DiatonicEntry[]>  // rootChroma → entries
@@ -172,8 +182,9 @@ export function detectKey(chords: InputChord[]): KeyMatch[] {
   if (chords.length < 2) return []
 
   const results: KeyMatch[] = []
+  const roots = prefersSharps(chords) ? SHARP_ROOTS : FLAT_ROOTS
 
-  for (const root of ALL_ROOTS) {
+  for (const root of roots) {
     for (const { displayName, modeName, tier } of ALL_KEY_MODES) {
       let keyData
       try {

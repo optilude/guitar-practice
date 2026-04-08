@@ -21,6 +21,9 @@ interface ChordTileProps {
   onCommit: (symbol: string) => void
   onRemove: () => void
   onStartEdit: () => void
+  onTabNext?: () => void       // Tab: commit + move to next chord or add new
+  onArrowPrev?: () => void     // ArrowLeft at start: commit + move to previous
+  onArrowNext?: () => void     // ArrowRight at end: commit + move to next (no add)
 }
 
 export function ChordTile({
@@ -31,6 +34,9 @@ export function ChordTile({
   onCommit,
   onRemove,
   onStartEdit,
+  onTabNext,
+  onArrowPrev,
+  onArrowNext,
 }: ChordTileProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
@@ -47,6 +53,8 @@ export function ChordTile({
   const [suggestions, setSuggestions] = useState<string[]>([])
   const [activeIdx, setActiveIdx] = useState(-1)
   const inputRef = useRef<HTMLInputElement>(null)
+  // Prevents blur from committing when user clicks a suggestion button
+  const isSelectingSuggestionRef = useRef(false)
 
   useEffect(() => {
     if (isEditing) {
@@ -67,31 +75,68 @@ export function ChordTile({
     )
   }
 
-  function commit(value: string) {
+  // Commit value (with validation + canonical normalisation), then optionally navigate.
+  // Invalid non-empty input reverts to the original symbol.
+  function commitAndNavigate(value: string, navigate?: () => void) {
+    isSelectingSuggestionRef.current = false
     setSuggestions([])
     setActiveIdx(-1)
     const trimmed = value.trim()
-    // Reject non-empty input that TonalJS cannot parse — revert to original
-    if (trimmed && !parseChord(trimmed)) {
-      onCommit(symbol)
-      return
+    const parsed = trimmed ? parseChord(trimmed) : null
+    if (trimmed && !parsed) {
+      onCommit(symbol)  // revert to original
+    } else {
+      onCommit(parsed?.symbol ?? "")  // commit canonical spelling (or "" to remove)
     }
-    onCommit(trimmed)
+    navigate?.()
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    // Autocomplete list navigation
     if (e.key === "ArrowDown") {
       e.preventDefault()
       setActiveIdx(i => Math.min(i + 1, suggestions.length - 1))
-    } else if (e.key === "ArrowUp") {
+      return
+    }
+    if (e.key === "ArrowUp") {
       e.preventDefault()
       setActiveIdx(i => Math.max(i - 1, -1))
-    } else if (e.key === "Enter") {
+      return
+    }
+
+    const activeValue = activeIdx >= 0 && suggestions[activeIdx] ? suggestions[activeIdx] : inputValue
+
+    if (e.key === "Enter") {
       e.preventDefault()
-      commit(activeIdx >= 0 && suggestions[activeIdx] ? suggestions[activeIdx] : inputValue)
-    } else if (e.key === "Escape") {
+      commitAndNavigate(activeValue)
+      return
+    }
+    if (e.key === "Escape") {
       setSuggestions([])
       onCommit(symbol)
+      return
+    }
+    if (e.key === "Tab") {
+      e.preventDefault()
+      commitAndNavigate(activeValue, e.shiftKey ? onArrowPrev : onTabNext)
+      return
+    }
+
+    // Chord sequence navigation — only when autocomplete is closed
+    if (suggestions.length === 0) {
+      if (e.key === "ArrowLeft") {
+        const input = inputRef.current
+        if (input && input.selectionStart === 0 && input.selectionEnd === 0) {
+          e.preventDefault()
+          commitAndNavigate(inputValue, onArrowPrev)
+        }
+      } else if (e.key === "ArrowRight") {
+        const input = inputRef.current
+        if (input && input.selectionStart === input.value.length && input.selectionEnd === input.value.length) {
+          e.preventDefault()
+          commitAndNavigate(inputValue, onArrowNext)
+        }
+      }
     }
   }
 
@@ -111,7 +156,10 @@ export function ChordTile({
               setActiveIdx(-1)
             }}
             onKeyDown={handleKeyDown}
-            onBlur={() => commit(inputValue)}
+            onBlur={() => {
+              if (!isSelectingSuggestionRef.current) commitAndNavigate(inputValue)
+              isSelectingSuggestionRef.current = false
+            }}
             className="w-full bg-transparent text-foreground text-sm font-semibold text-center focus:outline-none leading-tight placeholder:text-muted-foreground placeholder:font-normal"
             placeholder="Chord"
           />
@@ -122,7 +170,11 @@ export function ChordTile({
               <button
                 key={s}
                 type="button"
-                onMouseDown={e => { e.preventDefault(); commit(s) }}
+                onMouseDown={e => {
+                  e.preventDefault()
+                  isSelectingSuggestionRef.current = true
+                  commitAndNavigate(s)
+                }}
                 className={`w-full text-left px-2 py-1 text-xs transition-colors ${
                   i === activeIdx
                     ? "bg-accent text-accent-foreground"

@@ -111,6 +111,8 @@ Let's design and build the transposer.
 * Allow the user to a progression in the same vein as for the key finder. Calculate all roman numeral chord references relative to the selected key. Allow borrowed chords but highlight them appropriately as not being diatonic to the selected key and scale.
 * Allow the user to choose a target key centre and show the same chords transposed to this new key
 
+Be careful with enharmonics. The source and target keys may use different enharmonics (flats in one, sharps in the other).
+
 ## Metronome tool
 
 Let's design and build the standalone metronome tool.

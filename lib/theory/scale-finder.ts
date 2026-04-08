@@ -47,7 +47,9 @@ const DISPLAY_TO_TONAL: Record<string, string> = {
   "Diminished Half-Whole":   "half-whole diminished",
 }
 
-const ALL_ROOTS = ["C", "C#", "Db", "D", "D#", "Eb", "E", "F", "F#", "Gb", "G", "G#", "Ab", "A", "A#", "Bb", "B"] as const
+// When no key is specified, iterate flat-preferred spellings to avoid enharmonic duplicates.
+// When a key is specified (including sharp keys like "C#"), use that single root directly.
+const FLAT_ROOTS = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"] as const
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -71,7 +73,7 @@ export function detectScales(
 ): ScaleMatch[] {
   if (selectedChromas.size < 3) return []
 
-  const roots: readonly string[] = options?.key ? [options.key] : ALL_ROOTS
+  const roots: readonly string[] = options?.key ? [options.key] : FLAT_ROOTS
   const scaleTypes = Object.keys(DISPLAY_TO_TONAL)
   const results: Array<{ match: ScaleMatch; sortKey: [number, number, string] }> = []
 

@@ -92,6 +92,12 @@ export function ChordInputRow({
                 onCommit={symbol => onCommit(chord.id, symbol)}
                 onRemove={() => onRemove(chord.id)}
                 onStartEdit={() => onStartEdit(chord.id)}
+                onTabNext={() => {
+                  if (i === chords.length - 1) onAdd()
+                  else onStartEdit(chords[i + 1].id)
+                }}
+                onArrowPrev={i > 0 ? () => onStartEdit(chords[i - 1].id) : undefined}
+                onArrowNext={i < chords.length - 1 ? () => onStartEdit(chords[i + 1].id) : undefined}
               />
             </div>
           ))}
