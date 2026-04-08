@@ -17,7 +17,7 @@ export type ChordRole = "diatonic" | "borrowed" | "secondary-dominant" | "non-di
 export type ChordAnalysis = {
   inputChord: InputChord
   degree: number | null   // 1–7 when diatonic or borrowed; null otherwise
-  roman: string | null    // e.g. "ii", "V"; null for non-diatonic
+  roman: string           // chromatic roman numeral, always set (e.g. "♭VII", "II")
   score: number           // 0 | 0.5 | 0.6 | 1.0
   role: ChordRole
 }
@@ -68,6 +68,23 @@ const TYPE_TO_QUALITY: Record<string, string> = {
 
 export function normalizeQuality(type: string): string {
   return TYPE_TO_QUALITY[type] ?? "major"
+}
+
+// ---------------------------------------------------------------------------
+// Chromatic roman numeral (works for any chord relative to any tonic)
+// ---------------------------------------------------------------------------
+const CHROMATIC_UPPER = ["I", "♭II", "II", "♭III", "III", "IV", "♭V", "V", "♭VI", "VI", "♭VII", "VII"] as const
+const CHROMATIC_LOWER = ["i", "♭ii", "ii", "♭iii", "iii", "iv", "♭v", "v", "♭vi", "vi", "♭vii", "vii"] as const
+
+export function chromaticRoman(rootChroma: number, tonicChroma: number, quality: string): string {
+  const interval = (rootChroma - tonicChroma + 12) % 12
+  const q = normalizeQuality(quality)
+  const isMinorLike = q === "minor" || q === "dim" || q === "half-dim"
+  const base = isMinorLike ? CHROMATIC_LOWER[interval] : CHROMATIC_UPPER[interval]
+  if (q === "dim") return base + "°"
+  if (q === "aug") return base + "+"
+  if (q === "half-dim") return base + "ø"
+  return base
 }
 
 // ---------------------------------------------------------------------------
@@ -136,10 +153,11 @@ function analyzeChord(
   diatonicLookup: DiatonicLookup,
   parallelMajorLookup: DiatonicLookup,
   parallelMinorLookup: DiatonicLookup,
+  tonicChroma: number,
 ): ChordAnalysis {
   const rootChroma = Note.chroma(inputChord.root)
   if (typeof rootChroma !== "number" || !Number.isFinite(rootChroma)) {
-    return { inputChord, degree: null, roman: null, score: 0, role: "non-diatonic" }
+    return { inputChord, degree: null, roman: "?", score: 0, role: "non-diatonic" }
   }
 
   const quality = normalizeQuality(inputChord.type)
@@ -176,12 +194,24 @@ function analyzeChord(
   if (quality === "major") {
     for (const [diatonicChroma] of diatonicLookup) {
       if ((diatonicChroma + 7) % 12 === rootChroma) {
-        return { inputChord, degree: null, roman: null, score: 0.5, role: "secondary-dominant" }
+        return {
+          inputChord,
+          degree: null,
+          roman: chromaticRoman(rootChroma, tonicChroma, inputChord.type),
+          score: 0.5,
+          role: "secondary-dominant",
+        }
       }
     }
   }
 
-  return { inputChord, degree: null, roman: null, score: 0, role: "non-diatonic" }
+  return {
+    inputChord,
+    degree: null,
+    roman: chromaticRoman(rootChroma, tonicChroma, inputChord.type),
+    score: 0,
+    role: "non-diatonic",
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -226,50 +256,51 @@ export function detectKey(chords: InputChord[]): KeyMatch[] {
         ? buildDiatonicLookup(parallelMinorData.diatonicChords)
         : new Map<number, DiatonicEntry[]>()
 
+      // Compute tonic chroma early — needed for analyzeChord and bonuses
+      const tonicChroma = Note.chroma(root)
+      if (typeof tonicChroma !== "number" || !Number.isFinite(tonicChroma)) continue
+
       // Score each chord
       const analyses = chords.map(c =>
-        analyzeChord(c, diatonicLookup, parallelMajorLookup, parallelMinorLookup)
+        analyzeChord(c, diatonicLookup, parallelMajorLookup, parallelMinorLookup, tonicChroma)
       )
 
       const fitScore = analyses.reduce((sum, a) => sum + a.score, 0) / chords.length
       const diatonicCount = analyses.filter(a => a.role === "diatonic").length
 
       // Bonuses
-      const tonicChroma = Note.chroma(root)
       let bonus = 0
-      if (typeof tonicChroma === "number") {
-        const firstChroma = Note.chroma(chords[0].root)
-        const lastChroma = Note.chroma(chords[chords.length - 1].root)
-        if (firstChroma === tonicChroma) bonus += 0.05
-        if (lastChroma === tonicChroma) bonus += 0.10
+      const firstChroma = Note.chroma(chords[0].root)
+      const lastChroma = Note.chroma(chords[chords.length - 1].root)
+      if (firstChroma === tonicChroma) bonus += 0.05
+      if (lastChroma === tonicChroma) bonus += 0.10
 
-        // V→I cadence at end?
-        if (chords.length >= 2) {
-          const secondLastChroma = Note.chroma(chords[chords.length - 2].root)
-          if (
-            typeof secondLastChroma === "number" &&
-            typeof lastChroma === "number" &&
-            lastChroma === tonicChroma &&
-            (secondLastChroma + 5) % 12 === tonicChroma
-          ) {
-            bonus += 0.05
-          }
+      // V→I cadence at end?
+      if (chords.length >= 2) {
+        const secondLastChroma = Note.chroma(chords[chords.length - 2].root)
+        if (
+          typeof secondLastChroma === "number" &&
+          typeof lastChroma === "number" &&
+          lastChroma === tonicChroma &&
+          (secondLastChroma + 5) % 12 === tonicChroma
+        ) {
+          bonus += 0.05
         }
+      }
 
-        // ii→V→I at end?
-        if (chords.length >= 3) {
-          const thirdLastChroma = Note.chroma(chords[chords.length - 3].root)
-          const secondLastChroma = Note.chroma(chords[chords.length - 2].root)
-          if (
-            typeof thirdLastChroma === "number" &&
-            typeof secondLastChroma === "number" &&
-            typeof lastChroma === "number" &&
-            lastChroma === tonicChroma &&
-            (secondLastChroma + 5) % 12 === tonicChroma &&
-            (thirdLastChroma + 10) % 12 === tonicChroma
-          ) {
-            bonus += 0.05
-          }
+      // ii→V→I at end?
+      if (chords.length >= 3) {
+        const thirdLastChroma = Note.chroma(chords[chords.length - 3].root)
+        const secondLastChroma = Note.chroma(chords[chords.length - 2].root)
+        if (
+          typeof thirdLastChroma === "number" &&
+          typeof secondLastChroma === "number" &&
+          typeof lastChroma === "number" &&
+          lastChroma === tonicChroma &&
+          (secondLastChroma + 5) % 12 === tonicChroma &&
+          (thirdLastChroma + 10) % 12 === tonicChroma
+        ) {
+          bonus += 0.05
         }
       }
 
@@ -297,4 +328,30 @@ export function detectKey(chords: InputChord[]): KeyMatch[] {
   })
 
   return results
+}
+
+// ---------------------------------------------------------------------------
+// Public single-chord analysis (used by transposer.ts)
+// ---------------------------------------------------------------------------
+export function analyzeChordInKey(chord: InputChord, tonic: string, mode: string): ChordAnalysis {
+  const tonicChroma = Note.chroma(tonic)
+  if (typeof tonicChroma !== "number" || !Number.isFinite(tonicChroma)) {
+    return { inputChord: chord, degree: null, roman: "?", score: 0, role: "non-diatonic" }
+  }
+  let keyData
+  try { keyData = getKey(tonic, mode) } catch {
+    return { inputChord: chord, degree: null, roman: "?", score: 0, role: "non-diatonic" }
+  }
+  const diatonicLookup = buildDiatonicLookup(keyData.diatonicChords)
+  let parallelMajorData
+  let parallelMinorData
+  try { parallelMajorData = getKey(tonic, "major") } catch { /* skip */ }
+  try { parallelMinorData = getKey(tonic, "minor") } catch { /* skip */ }
+  const parallelMajorLookup = parallelMajorData
+    ? buildDiatonicLookup(parallelMajorData.diatonicChords)
+    : new Map<number, DiatonicEntry[]>()
+  const parallelMinorLookup = parallelMinorData
+    ? buildDiatonicLookup(parallelMinorData.diatonicChords)
+    : new Map<number, DiatonicEntry[]>()
+  return analyzeChord(chord, diatonicLookup, parallelMajorLookup, parallelMinorLookup, tonicChroma)
 }
