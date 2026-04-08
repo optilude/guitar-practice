@@ -65,7 +65,6 @@ Account management and better authentication support. Consider moving to a SaaS 
 
 # Known issues
 
-* "+ New goal" is left-aligned. Should be "+ Add goal" and centre aligned.
 * The icons on the "Tools" page don't look great. Consider larger, bolder icons, or right-aligning them in their tiles.
 
 General/UX:
@@ -136,7 +135,7 @@ If helpful, we can introduce additional dependencies for the metronome component
 
 Currently, there is no way to manage users, and no concept of an administrator. Users also can't change or reset their passwords.
 
-Research the best way to add user mangagement. I want a way to do it for free at low user volumes, but woudl consider a SaaS solution, so long as there is a practical way to run and test "offline" during development. Alternatively, we can build a simple user management and permission system (admin vs. normal is sufficient for now), though this might introduce a dependency on SMTP to send password reset emails and the like, which is just another dependency. Consider the best options and recommend a path forward.
+Research the best way to add user mangagement. I want a way to do it for free at low user volumes, but would consider a SaaS solution so long as there is a practical way to run and test "offline" during development. Alternatively, we can build a simple user management and permission system (admin vs. normal is sufficient for now), though this might introduce a dependency on SMTP to send password reset emails and the like, which might require another hosted tool. Note that I am likely to use Vercel for hosting the app itself. Consider the best options and recommend a path forward.
 
 Once this exists, there needs to be a way for an administrator to promote or demote other users as admins. We also need a way to seed the database with a default admin who's forced to set a new password when the app is first set up.
 
