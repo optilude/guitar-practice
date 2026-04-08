@@ -16,7 +16,7 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable"
 import { ChordTile } from "./chord-tile"
-import type { ChordAnalysis, KeyMatch } from "@/lib/theory/key-finder"
+import type { ChordAnalysis } from "@/lib/theory/key-finder"
 
 interface ChordEntry {
   id: string
@@ -26,7 +26,7 @@ interface ChordEntry {
 interface ChordInputRowProps {
   chords: ChordEntry[]
   editingId: string | null
-  selectedResult: KeyMatch | null
+  chordAnalyses: ChordAnalysis[] | null
   onChordChange: (chords: ChordEntry[]) => void
   onCommit: (id: string, symbol: string) => void
   onRemove: (id: string) => void
@@ -37,7 +37,7 @@ interface ChordInputRowProps {
 export function ChordInputRow({
   chords,
   editingId,
-  selectedResult,
+  chordAnalyses,
   onChordChange,
   onCommit,
   onRemove,
@@ -59,17 +59,17 @@ export function ChordInputRow({
   }
 
   function getAnalysis(id: string): ChordAnalysis | null {
-    if (!selectedResult) return null
+    if (!chordAnalyses) return null
     const index = chords.findIndex(c => c.id === id)
-    if (index === -1 || index >= selectedResult.chordAnalysis.length) return null
-    return selectedResult.chordAnalysis[index]
+    if (index === -1 || index >= chordAnalyses.length) return null
+    return chordAnalyses[index]
   }
 
   // items-start: × badge at -top-1.5 overflows tile bounds; items-center would mis-align on wrap
   return (
     <div className="flex flex-wrap items-start gap-2">
       <DndContext
-        id="key-finder-dnd"
+        id="chord-input-dnd"
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
@@ -105,7 +105,6 @@ export function ChordInputRow({
       </DndContext>
 
       {/* Add button — outside SortableContext so it cannot be dragged */}
-      {/* Invisible rows match tile height; + is absolutely centred and oversized */}
       <button
         type="button"
         onClick={onAdd}

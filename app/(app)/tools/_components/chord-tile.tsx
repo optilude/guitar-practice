@@ -14,22 +14,15 @@ const ROOT_NOTES = ["Ab", "A#", "A", "Bb", "B", "C#", "C", "Db", "D#", "D", "Eb"
 
 const ALL_SUFFIXES = listChordDbSuffixes()
 
-// Map any valid chord input to the chords-db suffix spelling (the form shown in the
-// dropdown). Strategy:
-//   1. If the input is already root+dbSuffix (e.g. "Dmaj11"), accept as-is.
-//   2. Otherwise parse with TonalJS and find the DB suffix whose chord type matches.
-//   3. Return null if the input can't be interpreted as any known chord.
 function toDbCanonical(value: string): string | null {
   const trimmed = value.trim()
   if (!trimmed) return ""
 
-  // Direct match: already in root + DB-suffix form (handles TonalJS-unknown suffixes like "maj11")
   const directRoot = ROOT_NOTES.find(
     r => trimmed.startsWith(r) && ALL_SUFFIXES.includes(trimmed.slice(r.length))
   )
   if (directRoot !== undefined) return trimmed
 
-  // TonalJS parse + DB suffix lookup (handles alternate spellings like "CM7" → "Cmaj7")
   const chord = Chord.get(trimmed)
   if (chord.empty || !chord.tonic) return null
   const { tonic, type } = chord
@@ -45,9 +38,9 @@ interface ChordTileProps {
   onCommit: (symbol: string) => void
   onRemove: () => void
   onStartEdit: () => void
-  onTabNext?: () => void       // Tab: commit + move to next chord or add new
-  onArrowPrev?: () => void     // ArrowLeft at start: commit + move to previous
-  onArrowNext?: () => void     // ArrowRight at end: commit + move to next (no add)
+  onTabNext?: () => void
+  onArrowPrev?: () => void
+  onArrowNext?: () => void
 }
 
 export function ChordTile({
@@ -77,7 +70,6 @@ export function ChordTile({
   const [suggestions, setSuggestions] = useState<string[]>([])
   const [activeIdx, setActiveIdx] = useState(-1)
   const inputRef = useRef<HTMLInputElement>(null)
-  // Prevents blur from committing when user clicks a suggestion button
   const isSelectingSuggestionRef = useRef(false)
 
   useEffect(() => {
@@ -99,23 +91,20 @@ export function ChordTile({
     )
   }
 
-  // Commit value normalised to the chords-db spelling, then optionally navigate.
-  // Invalid non-empty input reverts silently to the original symbol.
   function commitAndNavigate(value: string, navigate?: () => void) {
     isSelectingSuggestionRef.current = false
     setSuggestions([])
     setActiveIdx(-1)
     const canonical = toDbCanonical(value)
     if (canonical === null) {
-      onCommit(symbol)  // invalid — revert to original
+      onCommit(symbol)
     } else {
-      onCommit(canonical)  // "" removes the tile; db-canonical string commits it
+      onCommit(canonical)
     }
     navigate?.()
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    // Autocomplete list navigation
     if (e.key === "ArrowDown") {
       e.preventDefault()
       setActiveIdx(i => Math.min(i + 1, suggestions.length - 1))
@@ -145,7 +134,6 @@ export function ChordTile({
       return
     }
 
-    // Chord sequence navigation — only when autocomplete is closed
     if (suggestions.length === 0) {
       if (e.key === "ArrowLeft") {
         const input = inputRef.current
@@ -163,7 +151,7 @@ export function ChordTile({
     }
   }
 
-  // Editing mode — dashed tile outline, input aligned to chord symbol row, no × button
+  // Editing mode
   if (isEditing) {
     return (
       <div ref={setNodeRef} style={style} className="relative flex-shrink-0">
@@ -213,9 +201,6 @@ export function ChordTile({
     )
   }
 
-  const isDiatonic = analysis?.role === "diatonic" || analysis?.role === "borrowed"
-
-  // × button rendered inside every display variant
   const removeBtn = (
     <button
       type="button"
@@ -227,7 +212,6 @@ export function ChordTile({
     </button>
   )
 
-  // Whole tile is the drag handle — PointerSensor distance:5 (set in ChordInputRow) prevents accidental drags
   return (
     <div
       ref={setNodeRef}
@@ -236,27 +220,20 @@ export function ChordTile({
       {...attributes}
       {...listeners}
     >
-      {analysis && isDiatonic ? (
+      {analysis ? (
         <div className="relative">
           <ChordQualityBlock
-            roman={analysis.roman ?? ""}
+            roman={analysis.roman}
             chordName={symbol}
             degree={analysis.degree ?? 1}
             isSelected={false}
             onClick={onStartEdit}
+            variant={
+              analysis.role === "diatonic" ? "diatonic"
+              : analysis.role === "borrowed" ? "borrowed"
+              : "non-diatonic"
+            }
           />
-          {removeBtn}
-        </div>
-      ) : analysis ? (
-        <div className="relative">
-          <button
-            type="button"
-            onClick={onStartEdit}
-            className="flex flex-col items-center rounded-lg border-2 border-border px-3 py-2.5 text-center min-w-[68px] bg-card opacity-40 hover:opacity-60 transition-opacity"
-          >
-            <span className="text-[10px] text-muted-foreground mb-1">—</span>
-            <span className="text-sm font-semibold text-muted-foreground leading-tight">{symbol}</span>
-          </button>
           {removeBtn}
         </div>
       ) : (
