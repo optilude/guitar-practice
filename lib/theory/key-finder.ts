@@ -25,7 +25,7 @@ export type ChordAnalysis = {
 export type KeyMatch = {
   tonic: string           // e.g. "Bb"
   mode: string            // e.g. "major" (the modeName passed to getKey())
-  displayName: string     // e.g. "Bb Major"
+  displayName: string     // e.g. "Bb Ionian (major)"
   score: number           // fitScore + bonuses — used for sorting only
   fitScore: number        // average chord score with no bonuses — used for display %
   diatonicCount: number   // number of fully diatonic input chords
