@@ -55,11 +55,17 @@ export function ScaleFinderClient() {
 
   const handleScaleRowClick = useCallback(
     (scale: ScaleMatch) => {
-      setPreviewedScale((prev) =>
-        prev?.displayName === scale.displayName ? null : scale,
-      )
+      const isToggleOff = previewedScale?.displayName === scale.displayName
+      if (isToggleOff) {
+        setPreviewedScale(null)
+        setFilterKey("")
+        setLabelMode("notes")
+      } else {
+        setPreviewedScale(scale)
+        setFilterKey(scale.root)
+      }
     },
-    [],
+    [previewedScale],
   )
 
   function handleClear() {
