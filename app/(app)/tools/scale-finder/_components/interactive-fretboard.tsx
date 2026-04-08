@@ -84,7 +84,7 @@ export function InteractiveFretboard({
     // Theme-aware colours (matches lib/rendering/fretboard.ts convention)
     const accentColor = isDark ? "#d97706" : "#b45309"
     // Card background for hollow (preview) dot fill
-    const cardBg = isDark ? "#111827" : "#ffffff"
+    const cardBg = isDark ? "#111" : "#ffffff"
 
     // Build preview chroma set from the previewed scale's notes
     const previewChromas = new Set<number>()
