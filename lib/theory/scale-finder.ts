@@ -44,7 +44,6 @@ const DISPLAY_TO_TONAL: Record<string, string> = {
   "Whole Tone":              "whole tone",
   "Diminished Whole-Half":   "diminished",
   "Diminished Half-Whole":   "half-whole diminished",
-  "Chromatic":               "chromatic",
 }
 
 // ---------------------------------------------------------------------------
