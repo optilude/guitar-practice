@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react"
 import { INTERVAL_DEGREE_COLORS } from "@/lib/rendering/tab"
-import { parseChord, detectKey } from "@/lib/theory/key-finder"
+import { parseChord, detectKey, countDistinctChords } from "@/lib/theory/key-finder"
 import type { KeyMatch, ChordAnalysis } from "@/lib/theory/key-finder"
 import { ChordInputRow } from "./chord-input-row"
 import { btn } from "@/lib/button-styles"
@@ -35,10 +35,7 @@ export function KeyFinderClient() {
     [chords],
   )
 
-  const results = useMemo(
-    () => (parsedChords.length >= 2 ? detectKey(parsedChords) : []),
-    [parsedChords],
-  )
+  const results = useMemo(() => detectKey(parsedChords), [parsedChords])
 
   // Group results by tier label, preserving order
   const groupedResults = useMemo(() => {
@@ -125,10 +122,10 @@ export function KeyFinderClient() {
 
       {/* Results */}
       <div aria-live="polite">
-        {parsedChords.length < 2 ? (
+        {countDistinctChords(parsedChords) < 2 ? (
           chords.length > 0 && (
             <p className="text-sm text-muted-foreground">
-              Add at least 2 chords to identify possible keys.
+              Add at least 2 different chords to identify possible keys.
             </p>
           )
         ) : results.length === 0 ? (

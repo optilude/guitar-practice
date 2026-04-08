@@ -187,8 +187,18 @@ function analyzeChord(
 // ---------------------------------------------------------------------------
 // detectKey — main export
 // ---------------------------------------------------------------------------
+export function countDistinctChords(chords: InputChord[]): number {
+  const seen = new Set<string>()
+  for (const c of chords) {
+    const chroma = Note.chroma(c.root)
+    if (typeof chroma !== "number") continue
+    seen.add(`${chroma}:${normalizeQuality(c.type)}`)
+  }
+  return seen.size
+}
+
 export function detectKey(chords: InputChord[]): KeyMatch[] {
-  if (chords.length < 2) return []
+  if (chords.length < 2 || countDistinctChords(chords) < 2) return []
 
   const results: KeyMatch[] = []
   const roots = prefersSharps(chords) ? SHARP_ROOTS : FLAT_ROOTS

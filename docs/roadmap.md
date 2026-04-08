@@ -107,6 +107,7 @@ Chords:
 Let's design and build the transposer.
 
 * Follow the general layout and UX of the Key finder
+* Factor out (if necessary) and reuse the chord editor / progression builder
 * The user select a key and scale/mode from a drop-down similar to the one used for the Scales tab on the Reference page
 * Allow the user to a progression in the same vein as for the key finder. Calculate all roman numeral chord references relative to the selected key. Allow borrowed chords but highlight them appropriately as not being diatonic to the selected key and scale.
 * Allow the user to choose a target key centre and show the same chords transposed to this new key
