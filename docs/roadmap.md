@@ -51,17 +51,33 @@ Account management and better authentication support. Consider moving to a SaaS 
 
 * Improve the metronome on the practice session page (different time signatures, different beat patterns)
 
-* All the user to add additional progressions (Reference tab)
+* Allow the user to add additional progressions (Reference tab)
 
 * Align the selector values in Inversions and Chords? They currently use different conventions (descriptive vs. common suffixes). The argument against is that `chords-db` uses the suffix style, so we'd need a translation, and these are more the chord symbols you'd see in a song sheet. The Inversions tab is more about studying and memorising inversions for use in improvisation or comping, where the theoretical function of each chord is more relevant.
 
-* Should each practice routine element allow for more than one topic? Might be useful to introduce some degree of optionality to the practice routine without having to create lots of different routines, e.g. add major and minor triads to a single triad study section.
+Practicing:
 
+* Should each practice routine element allow for more than one topic? Might be useful to introduce some degree of optionality to the practice routine without having to create lots of different routines, e.g. add major and minor triads to a single triad study section.
 * More streaks/gamification features
 * Practice notifications/reminders
 
+Audio:
+
 * Midi playback for scales, arpeggios, and progressions?
 * Audio recorder for practice (note this will significantly change data storage requirements)
+
+More theory topics:
+
+* Consider broader rules for the key finder, and perhaps adding these to the Reference section:
+  - Secondary dominant
+  - Secondary diminished
+  - Parallel natural minor
+  - Parallel melodic minor
+  - Parallel harmonic minor
+* Add support for quartal triads to the Reference section?
+* Include tritone substitutions in the Reference section?
+* Encode the Beato Book chord substitution rules into the Reference section?
+
 
 # Known issues
 
@@ -92,12 +108,12 @@ Let's design and build the transposer.
 
 * Follow the general layout and UX of the Key finder
 * The user select a key and scale/mode from a drop-down similar to the one used for the Scales tab on the Reference page
-* Allow the user to a progression in the same vein as for the key finder. Calculate all roman numeral chord references relative to the selected key
+* Allow the user to a progression in the same vein as for the key finder. Calculate all roman numeral chord references relative to the selected key. Allow borrowed chords but highlight them appropriately as not being diatonic to the selected key and scale.
 * Allow the user to choose a target key centre and show the same chords transposed to this new key
 
 ## Metronome tool
 
-Let's design and build the standalone metronome.
+Let's design and build the standalone metronome tool.
 
 * Start with the simple metronome from the practice session view
 * Allow the user to choose alternative time signatures (e.g. 6/8 or 3/4, but default to 4/4) 

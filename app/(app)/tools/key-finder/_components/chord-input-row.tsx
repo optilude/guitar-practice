@@ -99,15 +99,16 @@ export function ChordInputRow({
       </DndContext>
 
       {/* Add button — outside SortableContext so it cannot be dragged */}
-      {/* Two-row structure matches chord tile height exactly */}
+      {/* Invisible rows match tile height; + is absolutely centred and oversized */}
       <button
         type="button"
         onClick={onAdd}
-        className="flex flex-col items-center rounded-lg border-2 border-dashed border-border px-3 py-2.5 min-w-[68px] text-muted-foreground hover:border-accent hover:text-foreground transition-colors"
+        className="relative flex flex-col items-center rounded-lg border-2 border-dashed border-border px-3 py-2.5 min-w-[68px] text-muted-foreground hover:border-accent hover:text-foreground transition-colors"
         aria-label="add chord"
       >
-        <span className="text-[10px] mb-1 invisible">+</span>
-        <span className="text-sm">+</span>
+        <span className="text-[10px] mb-1 invisible" aria-hidden="true">&nbsp;</span>
+        <span className="text-sm invisible" aria-hidden="true">&nbsp;</span>
+        <span className="absolute inset-0 flex items-center justify-center text-xl leading-none">+</span>
       </button>
     </div>
   )

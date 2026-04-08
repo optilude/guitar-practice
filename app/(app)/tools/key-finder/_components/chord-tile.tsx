@@ -95,24 +95,27 @@ export function ChordTile({
     }
   }
 
-  // Editing mode — no drag, no × button
+  // Editing mode — dashed tile outline, input aligned to chord symbol row, no × button
   if (isEditing) {
     return (
       <div ref={setNodeRef} style={style} className="relative flex-shrink-0">
-        <input
-          ref={inputRef}
-          type="text"
-          value={inputValue}
-          onChange={e => {
-            setInputValue(e.target.value)
-            detectSuggestions(e.target.value)
-            setActiveIdx(-1)
-          }}
-          onKeyDown={handleKeyDown}
-          onBlur={() => commit(inputValue)}
-          className="w-20 rounded border border-accent bg-card text-foreground text-sm text-center px-2 py-2 focus:outline-none focus:ring-1 focus:ring-accent"
-          placeholder="Chord"
-        />
+        <div className="flex flex-col items-center rounded-lg border-2 border-dashed border-border px-3 py-2.5 w-[80px]">
+          <span className="text-[10px] mb-1 invisible" aria-hidden="true">·</span>
+          <input
+            ref={inputRef}
+            type="text"
+            value={inputValue}
+            onChange={e => {
+              setInputValue(e.target.value)
+              detectSuggestions(e.target.value)
+              setActiveIdx(-1)
+            }}
+            onKeyDown={handleKeyDown}
+            onBlur={() => commit(inputValue)}
+            className="w-full bg-transparent text-foreground text-sm font-semibold text-center focus:outline-none leading-tight placeholder:text-muted-foreground placeholder:font-normal"
+            placeholder="Chord"
+          />
+        </div>
         {suggestions.length > 0 && (
           <div className="absolute top-full left-0 z-50 mt-1 w-28 rounded border border-border bg-card shadow-md overflow-hidden">
             {suggestions.map((s, i) => (
