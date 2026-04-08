@@ -70,13 +70,13 @@ const ALL_ROOTS = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "
 // Public types
 // ---------------------------------------------------------------------------
 export type ScaleMatch = {
-  root: string          // e.g. "C"
-  type: string          // e.g. "Dorian"
-  displayName: string   // e.g. "C Dorian"
-  notes: string[]       // e.g. ["C", "D", "Eb", "F", "G", "A", "Bb"]
-  intervals: string[]   // e.g. ["1", "2", "b3", "4", "5", "6", "b7"]
-  extraNotes: number    // scale size − selectedChromas.size
-  commonalityTier: number  // 1–5
+  readonly root: string          // e.g. "C"
+  readonly type: string          // e.g. "Dorian"
+  readonly displayName: string   // e.g. "C Dorian"
+  readonly notes: readonly string[]       // e.g. ["C", "D", "Eb", "F", "G", "A", "Bb"]
+  readonly intervals: readonly string[]   // e.g. ["1", "2", "b3", "4", "5", "6", "b7"]
+  readonly extraNotes: number    // scale size − selectedChromas.size
+  readonly commonalityTier: number  // 1–5
 }
 
 // ---------------------------------------------------------------------------
