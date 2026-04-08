@@ -149,7 +149,7 @@ export function ScaleFinderClient() {
       <div aria-live="polite">
         {selectedChromas.size < 3 ? (
           <p className="text-sm text-muted-foreground">
-            Select at least 3 notes to identify scales.
+            Select at least 3 notes to identify potential scales.
           </p>
         ) : results.length === 0 ? (
           <p className="text-sm text-muted-foreground">No matching scales found.</p>
