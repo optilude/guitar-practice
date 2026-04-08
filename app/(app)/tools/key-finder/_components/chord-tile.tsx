@@ -7,7 +7,11 @@ import { ChordQualityBlock } from "@/app/(app)/reference/_components/chord-quali
 import { listChordDbSuffixes } from "@/lib/theory/chords"
 import type { ChordAnalysis } from "@/lib/theory/key-finder"
 
+// Two-char roots (Ab, Bb, etc.) must precede single-char roots (A, B, etc.)
+// so that Array.find returns the longest prefix match first.
 const ROOT_NOTES = ["Ab", "A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "Gb", "G"] as const
+
+const ALL_SUFFIXES = listChordDbSuffixes()
 
 interface ChordTileProps {
   id: string
@@ -35,8 +39,6 @@ export function ChordTile({ id, symbol, analysis, isEditing, onCommit, onRemove,
   const [suggestions, setSuggestions] = useState<string[]>([])
   const [activeIdx, setActiveIdx] = useState(-1)
   const inputRef = useRef<HTMLInputElement>(null)
-  const allSuffixes = listChordDbSuffixes()
-
   useEffect(() => {
     if (isEditing) {
       setInputValue(symbol)
@@ -53,7 +55,7 @@ export function ChordTile({ id, symbol, analysis, isEditing, onCommit, onRemove,
     if (!root) { setSuggestions([]); return }
     const suffix = value.slice(root.length)
     setSuggestions(
-      allSuffixes.filter(s => s.startsWith(suffix)).slice(0, 10).map(s => `${root}${s}`)
+      ALL_SUFFIXES.filter(s => s.startsWith(suffix)).slice(0, 10).map(s => `${root}${s}`)
     )
   }
 
