@@ -111,29 +111,30 @@ export function ChordFinderClient() {
     <div className="flex flex-col md:flex-row gap-4 md:gap-16">
       {/* Left column: shrink-wrapped to content */}
       <div className="flex flex-col gap-3">
-        {/* Key/scale filter + inline notes */}
-        <div className="flex flex-wrap gap-3 items-end">
-          <div className="flex flex-col gap-1">
-            <label className="text-xs text-muted-foreground" htmlFor="cf-root-select">
-              Key
-            </label>
-            <select
-              id="cf-root-select"
-              value={filterKey}
-              onChange={(e) => setFilterKey(e.target.value)}
-              className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
-            >
-              <option value="">Any</option>
-              {ROOT_NOTES.map((n) => (
-                <option key={n} value={n}>{n}</option>
-              ))}
-            </select>
-          </div>
+        {/* Row 1: Key */}
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-muted-foreground" htmlFor="cf-root-select">
+            Key
+          </label>
+          <select
+            id="cf-root-select"
+            value={filterKey}
+            onChange={(e) => setFilterKey(e.target.value)}
+            className="rounded border border-border bg-card text-foreground text-sm px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent w-fit"
+          >
+            <option value="">Any</option>
+            {ROOT_NOTES.map((n) => (
+              <option key={n} value={n}>{n}</option>
+            ))}
+          </select>
+        </div>
 
-          <div className="flex flex-col gap-1">
-            <label className="text-xs text-muted-foreground" htmlFor="cf-scale-select">
-              Scale
-            </label>
+        {/* Row 2: Scale + valid notes inline, notes centred with the select */}
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-muted-foreground" htmlFor="cf-scale-select">
+            Scale
+          </label>
+          <div className="flex items-center gap-3">
             <select
               id="cf-scale-select"
               value={filterScale}
@@ -159,14 +160,12 @@ export function ChordFinderClient() {
                 </optgroup>
               )}
             </select>
+            {scaleInfo && (
+              <span className="text-xs text-muted-foreground whitespace-nowrap">
+                <span className="text-foreground font-medium">Valid notes:</span>&ensp;{scaleInfo.notes.join("  ")}
+              </span>
+            )}
           </div>
-
-          {/* Valid notes — inline after dropdowns, wraps as a unit */}
-          {scaleInfo && (
-            <span className="text-xs text-muted-foreground whitespace-nowrap pb-1.5">
-              <span className="text-foreground font-medium">Valid notes:</span>&ensp;{scaleInfo.notes.join("  ")}
-            </span>
-          )}
         </div>
 
         {/* Chord grid + clear button, fret input alongside */}
