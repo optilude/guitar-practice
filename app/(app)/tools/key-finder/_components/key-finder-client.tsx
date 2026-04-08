@@ -99,7 +99,10 @@ export function KeyFinderClient() {
         chords={chords}
         editingId={editingId}
         selectedResult={selectedResult}
-        onChordChange={setChords}
+        onChordChange={(newChords) => {
+          setChords(newChords)
+          setSelectedResult(null)
+        }}
         onCommit={handleCommit}
         onRemove={handleRemove}
         onStartEdit={handleStartEdit}

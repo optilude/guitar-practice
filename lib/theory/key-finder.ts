@@ -213,7 +213,7 @@ export function detectKey(chords: InputChord[]): KeyMatch[] {
             typeof secondLastChroma === "number" &&
             typeof lastChroma === "number" &&
             lastChroma === tonicChroma &&
-            (secondLastChroma + 7) % 12 === tonicChroma
+            (secondLastChroma + 5) % 12 === tonicChroma
           ) {
             bonus += 0.05
           }
@@ -228,8 +228,8 @@ export function detectKey(chords: InputChord[]): KeyMatch[] {
             typeof secondLastChroma === "number" &&
             typeof lastChroma === "number" &&
             lastChroma === tonicChroma &&
-            (secondLastChroma + 7) % 12 === tonicChroma &&
-            (thirdLastChroma + 5) % 12 === tonicChroma
+            (secondLastChroma + 5) % 12 === tonicChroma &&
+            (thirdLastChroma + 10) % 12 === tonicChroma
           ) {
             bonus += 0.05
           }
