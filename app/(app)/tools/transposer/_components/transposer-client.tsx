@@ -177,14 +177,16 @@ export function TransposerClient() {
       )}
 
       {/* Transposed output row */}
-      {transposedChords && transposedAnalyses && (
+      {transposedChords && transposedAnalyses ? (
         <div>
           <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">
             In {targetRoot} {sourceMode.displayName}
           </p>
           <TransposedRow chords={transposedChords} analyses={transposedAnalyses} />
         </div>
-      )}
+      ) : (parsedChords.length > 0 && chords.length > 0 && (
+        <p className="text-sm text-muted-foreground">Same key — change the target root to transpose.</p>
+      ))}
 
     </div>
   )
