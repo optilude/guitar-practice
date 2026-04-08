@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { Note } from "tonal"
 import { buildChromaMap } from "@/lib/theory/chord-finder"
 import { getScale } from "@/lib/theory/scales"
@@ -39,28 +39,28 @@ export function ScaleFinderClient() {
     [selectedChromas, filterKey],
   )
 
-  const handleChromaToggle = useCallback((chroma: number) => {
-    setSelectedChromas((prev) => {
-      const next = new Set(prev)
+  const handleChromaToggle = useCallback(
+    (chroma: number) => {
+      const next = new Set(selectedChromas)
       if (next.has(chroma)) {
         next.delete(chroma)
       } else {
         next.add(chroma)
       }
-      return next
-    })
-  }, [])
+      setSelectedChromas(next)
+      if (next.size < 3) setPreviewedScale(null)
+    },
+    [selectedChromas],
+  )
 
-  // Clear preview when selection drops below 3 notes (no valid results to preview)
-  useEffect(() => {
-    if (selectedChromas.size < 3) setPreviewedScale(null)
-  }, [selectedChromas.size])
-
-  function handleScaleRowClick(scale: ScaleMatch) {
-    setPreviewedScale((prev) =>
-      prev?.displayName === scale.displayName ? null : scale,
-    )
-  }
+  const handleScaleRowClick = useCallback(
+    (scale: ScaleMatch) => {
+      setPreviewedScale((prev) =>
+        prev?.displayName === scale.displayName ? null : scale,
+      )
+    },
+    [],
+  )
 
   function handleClear() {
     setSelectedChromas(new Set())
