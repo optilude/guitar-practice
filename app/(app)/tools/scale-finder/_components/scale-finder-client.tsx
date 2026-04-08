@@ -9,7 +9,7 @@ import type { ScaleMatch } from "@/lib/theory/scale-finder"
 import { InteractiveFretboard } from "./interactive-fretboard"
 import { btn } from "@/lib/button-styles"
 
-const ROOT_NOTES = ["Ab", "A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "Gb", "G"] as const
+const ROOT_NOTES = ["C", "C#", "Db", "D", "D#", "Eb", "E", "F", "F#", "Gb", "G", "G#", "Ab", "A", "A#", "Bb", "B"] as const
 
 export function ScaleFinderClient() {
   const [selectedChromas, setSelectedChromas] = useState<Set<number>>(new Set())

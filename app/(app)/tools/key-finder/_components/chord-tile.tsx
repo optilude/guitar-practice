@@ -7,9 +7,9 @@ import { ChordQualityBlock } from "@/app/(app)/reference/_components/chord-quali
 import { listChordDbSuffixes } from "@/lib/theory/chords"
 import { parseChord, type ChordAnalysis } from "@/lib/theory/key-finder"
 
-// Two-char roots (Ab, Bb, etc.) must precede single-char roots (A, B, etc.)
-// so that Array.find returns the longest prefix match first.
-const ROOT_NOTES = ["Ab", "A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "Gb", "G"] as const
+// Two-char roots must precede their single-char base so Array.find returns the
+// longest prefix match first (e.g. "A#" before "A", "Gb" before "G").
+const ROOT_NOTES = ["Ab", "A#", "A", "Bb", "B", "C#", "C", "Db", "D#", "D", "Eb", "E", "F#", "F", "Gb", "G#", "G"] as const
 
 const ALL_SUFFIXES = listChordDbSuffixes()
 

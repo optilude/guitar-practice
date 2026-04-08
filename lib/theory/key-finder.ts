@@ -90,7 +90,7 @@ export function parseChord(symbol: string): InputChord | null {
 // Internal helpers
 // ---------------------------------------------------------------------------
 
-const ALL_ROOTS = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"] as const
+const ALL_ROOTS = ["C", "C#", "Db", "D", "D#", "Eb", "E", "F", "F#", "Gb", "G", "G#", "Ab", "A", "A#", "Bb", "B"] as const
 
 type DiatonicEntry = { chord: DiatonicChord; quality: string }
 type DiatonicLookup = Map<number, DiatonicEntry[]>  // rootChroma → entries
