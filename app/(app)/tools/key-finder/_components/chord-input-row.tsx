@@ -66,6 +66,7 @@ export function ChordInputRow({
   }
 
   return (
+    {/* items-start: × badge at -top-1.5 overflows tile bounds; items-center would mis-align on wrap */}
     <div className="flex flex-wrap items-start gap-2">
       <DndContext
         id="key-finder-dnd"
