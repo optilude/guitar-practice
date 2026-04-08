@@ -64,7 +64,6 @@ const TYPE_TO_QUALITY: Record<string, string> = {
   // Full-word aliases (TonalJS may return these as chord types)
   "minor": "minor", "major": "major",
   "augmented": "aug", "diminished": "dim",
-  "dominant": "major",
 }
 
 export function normalizeQuality(type: string): string {

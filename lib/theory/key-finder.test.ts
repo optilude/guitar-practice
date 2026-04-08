@@ -68,9 +68,6 @@ describe("normalizeQuality", () => {
   it('maps "diminished" to "dim"', () => {
     expect(normalizeQuality("diminished")).toBe("dim")
   })
-  it('maps "dominant" to "major"', () => {
-    expect(normalizeQuality("dominant")).toBe("major")
-  })
 })
 
 describe("detectKey", () => {
