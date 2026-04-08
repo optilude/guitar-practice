@@ -154,7 +154,7 @@ describe("detectKey", () => {
     const chords = ["Dm7", "G7", "Cmaj7"].map(s => parseChord(s)!)
     const results = detectKey(chords)
     const cMajor = results.find(r => r.tonic === "C" && r.mode === "major")
-    expect(cMajor!.displayName).toBe("C Major")
+    expect(cMajor!.displayName).toBe("C Ionian (major)")
   })
 })
 
