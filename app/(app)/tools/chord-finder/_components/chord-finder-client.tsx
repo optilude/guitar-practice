@@ -110,8 +110,8 @@ export function ChordFinderClient() {
   return (
     <div className="flex flex-col md:flex-row gap-4 md:gap-16">
       {/* Left column: shrink-wrapped to content */}
-      <div className="flex flex-col gap-3 shrink-0">
-        {/* Key/scale filter */}
+      <div className="flex flex-col gap-3">
+        {/* Key/scale filter + inline notes */}
         <div className="flex flex-wrap gap-3 items-end">
           <div className="flex flex-col gap-1">
             <label className="text-xs text-muted-foreground" htmlFor="cf-root-select">
@@ -160,16 +160,17 @@ export function ChordFinderClient() {
               )}
             </select>
           </div>
-        </div>
 
-        {/* Notes + Formula — always rendered to reserve space, hidden when no scale selected */}
-        <div className={`text-xs text-muted-foreground space-y-0.5 ${scaleInfo ? "" : "invisible"}`}>
-          <p><span className="text-foreground font-medium">Notes</span>&ensp;{scaleInfo?.notes.join("  ") ?? ""}</p>
-          <p><span className="text-foreground font-medium">Formula</span>&ensp;{scaleInfo?.intervals.map(intervalToDegree).join(" – ") ?? ""}</p>
+          {/* Valid notes — inline after dropdowns, wraps as a unit */}
+          {scaleInfo && (
+            <span className="text-xs text-muted-foreground whitespace-nowrap pb-1.5">
+              <span className="text-foreground font-medium">Valid notes:</span>&ensp;{scaleInfo.notes.join("  ")}
+            </span>
+          )}
         </div>
 
         {/* Chord grid + clear button, fret input alongside */}
-        <div ref={diagramRef} className="flex items-start gap-1">
+        <div ref={diagramRef} className="flex items-start gap-1 shrink-0">
           <div className="w-fit flex flex-col gap-2">
             <InteractiveChordGrid
               frets={frets}
