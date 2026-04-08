@@ -51,8 +51,6 @@ Account management and better authentication support. Consider moving to a SaaS 
 
 * Improve the metronome on the practice session page (different time signatures, different beat patterns)
 
-* Allow the user to add additional progressions (Reference tab)
-
 * Align the selector values in Inversions and Chords? They currently use different conventions (descriptive vs. common suffixes). The argument against is that `chords-db` uses the suffix style, so we'd need a translation, and these are more the chord symbols you'd see in a song sheet. The Inversions tab is more about studying and memorising inversions for use in improvisation or comping, where the theoretical function of each chord is more relevant.
 
 Practicing:
@@ -68,18 +66,15 @@ Audio:
 
 More theory topics:
 
-* Consider broader rules for the key finder, and perhaps adding these to the Reference section:
-  - Secondary dominant
-  - Secondary diminished
-  - Parallel natural minor
-  - Parallel melodic minor
-  - Parallel harmonic minor
+* Consider broader rules for the key finder, and perhaps adding these to the Reference section: Secondary dominant; Secondary diminished; Parallel natural minor; Parallel melodic minor; Parallel harmonic minor
 * Add support for quartal triads to the Reference section?
 * Include tritone substitutions in the Reference section?
 * Encode the Beato Book chord substitution rules into the Reference section?
 
 
 # Known issues
+
+* The highlight colour for the IV chord / note is red, which can also look like an error. Find a better colour.
 
 * The icons on the "Tools" page don't look great. Consider larger, bolder icons, or right-aligning them in their tiles.
 
@@ -102,18 +97,6 @@ Chords:
 
 # Prompts
 
-## Transposer tool
-
-Let's design and build the transposer.
-
-* Follow the general layout and UX of the Key finder
-* Factor out (if necessary) and reuse the chord editor / progression builder
-* The user select a key and scale/mode from a drop-down similar to the one used for the Scales tab on the Reference page
-* Allow the user to a progression in the same vein as for the key finder. Calculate all roman numeral chord references relative to the selected key. Allow borrowed chords but highlight them appropriately as not being diatonic to the selected key and scale.
-* Allow the user to choose a target key centre and show the same chords transposed to this new key
-
-Be careful with enharmonics. The source and target keys may use different enharmonics (flats in one, sharps in the other).
-
 ## Metronome tool
 
 Let's design and build the standalone metronome tool.
@@ -124,6 +107,8 @@ Let's design and build the standalone metronome tool.
 
 If helpful, we can introduce additional dependencies for the metronome component.
 
+Once this is done, add the ability to change time signature to the simple metronome on the practice session runner view. (Do not introduce other advanced metronome functions).
+
 ## Custom progressions
 
 Allow the user to manage a list of custom progressions, to appear on the Progressions tab in the harmony section of the Reference page. Custom progressions, like standard ones, should be available as a topic to study against a goal, be saved in the history, etc.
@@ -132,7 +117,7 @@ Custom progressions should be saved per-user.
 
 Add a link (a circle with a pencil icon?) after the "?" link in the Progressions tab, that opens a new editor page. Base this on the "Manage my library" or "Practice Routine" editor. Allow CRUD and reorder (drag and drop) operation of custom progressions. Follow the UX patterns of those editor pages.
 
-Each custom progression has a name, a description (markdown formatted), and a set of chords. Use the same chord editor as the Transposer tool.
+Each custom progression has a name, a description (markdown formatted), and a set of chords. Use the same chord / progression editor as the Key Finder and Transposer tools.
 
 When entering/editing chords, the editor should let the user choose a key and scale/mode, and enter chords in that key. However, we should save the progression in such a way that it can be transposed to any key (i.e. roman numerals not specific note letters). If the user chooses a different key when using the editor, automatically transpose the chords in real time.
 
