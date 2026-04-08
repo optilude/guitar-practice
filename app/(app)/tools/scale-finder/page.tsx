@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { ScaleFinderClient } from "./_components/scale-finder-client"
 
 export default function ScaleFinderPage() {
   return (
@@ -9,8 +10,8 @@ export default function ScaleFinderPage() {
       >
         ← Tools
       </Link>
-      <h1 className="text-2xl font-semibold text-foreground mb-2">Scale Finder</h1>
-      <p className="text-sm text-muted-foreground">Coming soon.</p>
+      <h1 className="text-2xl font-semibold text-foreground mb-6">Scale Finder</h1>
+      <ScaleFinderClient />
     </div>
   )
 }
