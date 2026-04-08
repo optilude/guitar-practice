@@ -26,8 +26,8 @@ describe("chromaticRoman", () => {
   it("handles non-zero tonic: E (chroma 4) over C (chroma 0) = III", () => {
     expect(chromaticRoman(4, 0, "")).toBe("III")
   })
-  it("handles non-zero tonic: Bb (chroma 10) over D (chroma 2) = ♭VII", () => {
-    expect(chromaticRoman(10, 2, "")).toBe("♭VII")
+  it("handles non-zero tonic: Bb (chroma 10) over D (chroma 2) = ♭VI", () => {
+    expect(chromaticRoman(10, 2, "")).toBe("♭VI")
   })
   it("handles wrap-around: B (chroma 11) over C (chroma 0) = VII", () => {
     expect(chromaticRoman(11, 0, "")).toBe("VII")
@@ -63,7 +63,7 @@ describe("transposeProgression", () => {
 
   it("uses flat spelling for flat keys: Am transposed to Bb major becomes Bbm", () => {
     const input = [parseChord("Am")!]
-    const result = transposeProgression(input, "C", "Bb", "major")
+    const result = transposeProgression(input, "A", "Bb", "major")
     expect(result[0].root).toBe("Bb")
   })
 
