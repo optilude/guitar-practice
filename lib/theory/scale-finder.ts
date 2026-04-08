@@ -1,4 +1,5 @@
 import { Scale, Note } from "tonal"
+import { COMMONALITY_TIER } from "./commonality-tiers"
 
 // ---------------------------------------------------------------------------
 // Interval conversion (mirrors chord-finder-client.tsx — kept local to avoid
@@ -44,23 +45,6 @@ const DISPLAY_TO_TONAL: Record<string, string> = {
   "Whole Tone":              "whole tone",
   "Diminished Whole-Half":   "diminished",
   "Diminished Half-Whole":   "half-whole diminished",
-}
-
-// ---------------------------------------------------------------------------
-// Commonality tiers (1 = most common in blues/rock/pop/jazz, 5 = most exotic)
-// Anything not listed defaults to tier 5.
-// ---------------------------------------------------------------------------
-const COMMONALITY_TIER: Record<string, number> = {
-  // Tier 1 — ubiquitous
-  "Major": 1, "Aeolian": 1, "Pentatonic Major": 1, "Pentatonic Minor": 1, "Blues": 1,
-  // Tier 2 — very common in rock/jazz
-  "Dorian": 2, "Mixolydian": 2,
-  // Tier 3 — common in jazz/classical
-  "Phrygian": 3, "Lydian": 3, "Locrian": 3, "Melodic Minor": 3, "Harmonic Minor": 3,
-  // Tier 4 — jazz/fusion (Melodic Minor modes)
-  "Dorian b2": 4, "Lydian Augmented": 4, "Lydian Dominant": 4,
-  "Mixolydian b6": 4, "Locrian #2": 4, "Altered": 4,
-  // Everything else is tier 5 (default)
 }
 
 const ALL_ROOTS = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"] as const
