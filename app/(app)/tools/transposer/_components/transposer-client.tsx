@@ -91,10 +91,10 @@ export function TransposerClient() {
     setEditingId(id)
   }, [])
 
-  function handleClear() {
+  const handleClear = useCallback(() => {
     setChords([])
     setEditingId(null)
-  }
+  }, [])
 
   return (
     <div className="flex flex-col gap-6">
@@ -138,7 +138,7 @@ export function TransposerClient() {
         chords={chords}
         editingId={editingId}
         chordAnalyses={chordAnalyses}
-        onChordChange={newChords => setChords(newChords)}
+        onChordChange={setChords}
         onCommit={handleCommit}
         onRemove={handleRemove}
         onStartEdit={handleStartEdit}
