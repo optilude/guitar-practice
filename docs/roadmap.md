@@ -86,32 +86,6 @@ Chords:
 
 # Prompts
 
-## Scale finder tool
-
-Let's design and build the scale finder.
-
-* Follow the general layout and UX of the Chord finder, though consider if the input and output should stack vertically even on desktop, given the width of the fretboard diagram
-* Render a fretboard like the one used in the Fretboard panels on the Reference page (using Fretboard.js)
-* Allow the user to click on any fret/string to toggle a note at that fret. Show the note name in the dot. Follow the same style and colour coding as on the Reference page.
-* In real time, list all scales that contain these notes. Sort these so the more obvious or common scales come first, and more esoteric scales come later.
-* However, allow the user to choose a specific key centre, and in this case, calculate all scales that could contain these notes with that key centre.
-
-Note: https://moonwave99.github.io/fretboard.js/examples-events.html contains an example of using Fretboard.js and interactively adding notes. (It does not allow individual toggling off of notes in this demo.)
-
-## Key finder tool
-
-Let's design and build the key finder.
-
-* Follow the general layout and UX of the Chord finder and Scale finder
-* Allow the user to enter a set of chords, visually following the style of the harmony section (Modes and Progressions) on the Reference tab.
-  - Click "+" to add a new chord and type in the chord symbol.
-  - Use autocomplete to limit to known chord types (per the Chord tab on the Reference page).
-  - Allow drag-and-drop to reorder chords in the progression
-  - Allow chord tiles to be edited
-  - Allow chord tiles to be removed
-* In real time, calculate all valid keys for a progression containing these chords, with more common or likely ones first.
-* If necessary, consider the first and/or last chord as resolutions to the key centre, and use knowledge of harmony (e.g. 7th chords may be V of a key, or part of V-I or ii-V-I) to guide the key finding the best fit key
-
 ## Transposer tool
 
 Let's design and build the transposer.
@@ -130,6 +104,20 @@ Let's design and build the standalone metronome.
 * Also let the user choose to play only certain beats of the masure (e.g. "2 and 4").
 
 If helpful, we can introduce additional dependencies for the metronome component.
+
+## Custom progressions
+
+Allow the user to manage a list of custom progressions, to appear on the Progressions tab in the harmony section of the Reference page. Custom progressions, like standard ones, should be available as a topic to study against a goal, be saved in the history, etc.
+
+Custom progressions should be saved per-user.
+
+Add a link (a circle with a pencil icon?) after the "?" link in the Progressions tab, that opens a new editor page. Base this on the "Manage my library" or "Practice Routine" editor. Allow CRUD and reorder (drag and drop) operation of custom progressions. Follow the UX patterns of those editor pages.
+
+Each custom progression has a name, a description (markdown formatted), and a set of chords. Use the same chord editor as the Transposer tool.
+
+When entering/editing chords, the editor should let the user choose a key and scale/mode, and enter chords in that key. However, we should save the progression in such a way that it can be transposed to any key (i.e. roman numerals not specific note letters). If the user chooses a different key when using the editor, automatically transpose the chords in real time.
+
+On the Reference page, in the Progressions tab, show all user-defined progressions in their own category at the bottom of the list of progressions. If there are none, hide the category label.
 
 ## Start phase 8
 
