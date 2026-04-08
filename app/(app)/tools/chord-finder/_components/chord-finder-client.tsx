@@ -163,7 +163,7 @@ export function ChordFinderClient() {
       </div>
 
       {/* Row 2: chord box (col 1) + results table (col 2) */}
-      <div className="flex flex-col md:flex-row gap-4 md:gap-16">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-24">
         {/* Col 1: diagram + clear + fret input */}
         <div ref={diagramRef} className="flex items-start gap-1 shrink-0">
           <div className="w-fit flex flex-col gap-2">
