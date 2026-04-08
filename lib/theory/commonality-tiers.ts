@@ -21,8 +21,8 @@ export const COMMONALITY_TIER: Record<string, number> = {
 // modeName is passed to getKey(); displayName is shown in the UI.
 // ---------------------------------------------------------------------------
 export const ALL_KEY_MODES: Array<{ displayName: string; modeName: string; tier: number }> = [
-  { displayName: "Major",              modeName: "major",              tier: 1 },
-  { displayName: "Aeolian",           modeName: "minor",              tier: 1 },
+  { displayName: "Ionian (major)",              modeName: "major",              tier: 1 },
+  { displayName: "Aeolian (natural minor)",           modeName: "minor",              tier: 1 },
   { displayName: "Dorian",            modeName: "dorian",             tier: 2 },
   { displayName: "Mixolydian",        modeName: "mixolydian",         tier: 2 },
   { displayName: "Phrygian",          modeName: "phrygian",           tier: 3 },
