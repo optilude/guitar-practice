@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { parseChord, normalizeQuality, detectKey, type InputChord } from "./key-finder"
+import { parseChord, normalizeQuality, detectKey, analyzeChordInKey, type InputChord } from "./key-finder"
 
 describe("parseChord", () => {
   it("parses a minor 7th chord", () => {
@@ -109,6 +109,17 @@ describe("detectKey", () => {
     const bbAnalysis = cMajor!.chordAnalysis.find(a => a.inputChord.symbol === "Bb")
     expect(bbAnalysis!.role).toBe("borrowed")
     expect(bbAnalysis!.score).toBe(0.6)
+    // Roman numeral must be relative to the tonic (C major), not the parallel key
+    expect(bbAnalysis!.roman).toBe("♭VII")
+  })
+
+  it("borrowed chord roman numerals are relative to the actual tonic, not the parallel key", () => {
+    // Bb in C major: interval from C = 10 semitones → ♭VII (not VII, which is B natural)
+    expect(analyzeChordInKey(parseChord("Bb")!, "C", "major").roman).toBe("♭VII")
+    // Eb in C major: interval from C = 3 semitones → ♭III
+    expect(analyzeChordInKey(parseChord("Eb")!, "C", "major").roman).toBe("♭III")
+    // Ab in C major: interval from C = 8 semitones → ♭VI
+    expect(analyzeChordInKey(parseChord("Ab")!, "C", "major").roman).toBe("♭VI")
   })
 
   it("identifies secondary dominants", () => {

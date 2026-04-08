@@ -183,7 +183,7 @@ function analyzeChord(
       return {
         inputChord,
         degree: parallelMatch.chord.degree,
-        roman: parallelMatch.chord.roman,
+        roman: chromaticRoman(rootChroma, tonicChroma, inputChord.type),
         score: 0.6,
         role: "borrowed",
       }
