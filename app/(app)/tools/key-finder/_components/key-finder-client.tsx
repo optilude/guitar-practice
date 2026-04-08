@@ -109,6 +109,11 @@ export function KeyFinderClient() {
         onAdd={handleAdd}
       />
 
+      {/* Empty state */}
+      {chords.length === 0 && (
+        <p className="text-sm text-muted-foreground">Add chords to analyse.</p>
+      )}
+
       {/* Clear button */}
       {chords.length > 0 && (
         <div>
