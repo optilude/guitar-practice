@@ -6,20 +6,19 @@ function buildEnabledBeats(count: number): Set<number> {
 }
 
 export function useMetronome() {
+  const initialEnabledBeats = buildEnabledBeats(DEFAULT_BEATS_PER_BAR)
   const [bpm, setBpmState] = useState(80)
   const [isRunning, setIsRunning] = useState(false)
   const [beatsPerBar, setBeatsPerBarState] = useState(DEFAULT_BEATS_PER_BAR)
   const [beat, setBeat] = useState(0)
-  const [enabledBeats, setEnabledBeatsState] = useState<Set<number>>(
-    () => buildEnabledBeats(DEFAULT_BEATS_PER_BAR)
-  )
+  const [enabledBeats, setEnabledBeatsState] = useState<Set<number>>(initialEnabledBeats)
 
   const ctxRef = useRef<AudioContext | null>(null)
   const nextTickRef = useRef<number>(0)
   const timerIdRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const beatCountRef = useRef<number>(0)
   const beatsPerBarRef = useRef<number>(DEFAULT_BEATS_PER_BAR)
-  const enabledBeatsRef = useRef<Set<number>>(buildEnabledBeats(DEFAULT_BEATS_PER_BAR))
+  const enabledBeatsRef = useRef<Set<number>>(initialEnabledBeats)
 
   const scheduleTick = useCallback((ctx: AudioContext, when: number, isDownbeat: boolean) => {
     const osc = ctx.createOscillator()
@@ -35,8 +34,8 @@ export function useMetronome() {
 
   const scheduleAhead = useCallback((ctx: AudioContext, bpmVal: number) => {
     const interval = 60 / bpmVal
-    const scheduleWindow = 0.1
-    const checkInterval = 50
+    const scheduleWindow = 0.1 // schedule 100ms ahead
+    const checkInterval = 50 // ms
 
     while (nextTickRef.current < ctx.currentTime + scheduleWindow) {
       const currentBeat = beatCountRef.current % beatsPerBarRef.current
@@ -85,8 +84,9 @@ export function useMetronome() {
   }, [])
 
   const setEnabledBeats = useCallback((beats: Set<number>) => {
-    enabledBeatsRef.current = beats
-    setEnabledBeatsState(beats)
+    const valid = new Set([...beats].filter(b => b < beatsPerBarRef.current))
+    enabledBeatsRef.current = valid
+    setEnabledBeatsState(valid)
   }, [])
 
   const isPlaying = isRunning

@@ -34,4 +34,10 @@ describe("useMetronome — enabledBeats", () => {
     act(() => { result.current.setBeatsPerBar(5) })
     expect(result.current.enabledBeats).toEqual(new Set([0, 1, 2, 3, 4]))
   })
+
+  it("setEnabledBeats filters out-of-range indices", () => {
+    const { result } = renderHook(() => useMetronome())
+    act(() => { result.current.setEnabledBeats(new Set([1, 99])) })
+    expect(result.current.enabledBeats).toEqual(new Set([1]))
+  })
 })
