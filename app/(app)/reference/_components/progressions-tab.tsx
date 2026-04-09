@@ -3,10 +3,11 @@
 import { useState, useEffect, useRef, useMemo } from "react"
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
-import { listProgressions, getProgression, getSoloScales } from "@/lib/theory"
+import { listProgressions, getProgression, getSoloScales, analyzeFunctionalContext } from "@/lib/theory"
 import { getSubstitutions } from "@/lib/theory"
 import { SubstitutionsPanel } from "./substitutions-panel"
 import type { ChordSubstitution, PreviewChord } from "@/lib/theory/types"
+import type { FunctionalAnalysis, ChordContext } from "@/lib/theory"
 import { cn } from "@/lib/utils"
 import { getUserProgressionChords } from "@/lib/theory/user-progressions"
 import { ChordQualityBlock } from "./chord-quality-block"
@@ -158,17 +159,17 @@ export function ProgressionsTab({
   useEffect(() => {
     const chord = chords[0]
     if (chord) {
-      const soloScales = getSoloScales({ tonic: chord.tonic, type: chord.type, degree: chord.degree }, mode)
+      const firstAnalysis = analyzeFunctionalContext(
+        { ...chord, quality: chord.quality as ChordContext["quality"] },
+        chords[1] ? { ...chords[1], quality: chords[1].quality as ChordContext["quality"] } : null,
+        tonic,
+        mode,
+      )
+      const soloScales = firstAnalysis.scalesOverride ??
+        getSoloScales({ tonic: chord.tonic, type: chord.type, degree: chord.degree }, mode)
       onChordSelect?.(chord.tonic, chord.type, chord.quality, soloScales.primary.scaleName)
     }
   }, []) // intentionally empty: only on mount
-
-  const scales = selectedChord
-    ? getSoloScales(
-        { tonic: selectedChord.tonic, type: selectedChord.type, degree: selectedChord.degree },
-        mode
-      )
-    : null
 
   const { previewChords, highlightIndices } = useMemo(() => {
     if (!previewedSub) {
@@ -184,12 +185,39 @@ export function ProgressionsTab({
     [selectedChord, chords, selectedIndex, tonic, mode],
   )
 
+  const functionalAnalyses = useMemo(
+    (): FunctionalAnalysis[] =>
+      chords.map((chord, i) =>
+        analyzeFunctionalContext(
+          { ...chord, quality: chord.quality as ChordContext["quality"] },
+          chords[i + 1] ? { ...chords[i + 1]!, quality: chords[i + 1]!.quality as ChordContext["quality"] } : null,
+          tonic,
+          mode,
+        )
+      ),
+    [chords, tonic, mode],
+  )
+
+  const scales = selectedChord
+    ? (selectedIndex !== null
+        ? (functionalAnalyses[selectedIndex]?.scalesOverride ?? getSoloScales(
+            { tonic: selectedChord.tonic, type: selectedChord.type, degree: selectedChord.degree },
+            mode,
+          ))
+        : getSoloScales(
+            { tonic: selectedChord.tonic, type: selectedChord.type, degree: selectedChord.degree },
+            mode,
+          ))
+    : null
+
   function handleIndexClick(index: number) {
     setPreviewedSub(null)
     if (selectedIndex !== index) {
       const chord = chords[index]
       if (chord) {
-        const soloScales = getSoloScales({ tonic: chord.tonic, type: chord.type, degree: chord.degree }, mode)
+        const analysis = functionalAnalyses[index]
+        const soloScales = analysis?.scalesOverride ??
+          getSoloScales({ tonic: chord.tonic, type: chord.type, degree: chord.degree }, mode)
         onChordSelect?.(chord.tonic, chord.type, chord.quality, soloScales.primary.scaleName)
       }
     }
@@ -210,7 +238,14 @@ export function ProgressionsTab({
 
     const chord0 = newChords[0]
     if (chord0) {
-      const soloScales = getSoloScales({ tonic: chord0.tonic, type: chord0.type, degree: chord0.degree }, newMode)
+      const firstAnalysis = analyzeFunctionalContext(
+        { ...chord0, quality: chord0.quality as ChordContext["quality"] },
+        newChords[1] ? { ...newChords[1], quality: newChords[1].quality as ChordContext["quality"] } : null,
+        tonic,
+        newMode,
+      )
+      const soloScales = firstAnalysis.scalesOverride ??
+        getSoloScales({ tonic: chord0.tonic, type: chord0.type, degree: chord0.degree }, newMode)
       onChordSelect?.(chord0.tonic, chord0.type, chord0.quality, soloScales.primary.scaleName)
     }
   }
@@ -349,7 +384,11 @@ export function ProgressionsTab({
             <div key={i} className="flex items-center gap-1 flex-shrink-0">
               {i > 0 && <span className="text-muted-foreground text-sm flex-shrink-0">→</span>}
               <ChordQualityBlock
-                roman={chord.roman}
+                roman={
+                  !previewedSub && selectedIndex !== null
+                    ? (functionalAnalyses[i]?.romanOverride ?? chord.roman)
+                    : chord.roman
+                }
                 chordName={`${chord.tonic}${chord.type}`}
                 degree={chord.degree ?? 1}
                 isSelected={!previewedSub && selectedIndex === i}
