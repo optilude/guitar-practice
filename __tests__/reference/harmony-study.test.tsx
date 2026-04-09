@@ -48,6 +48,7 @@ vi.mock("@/lib/theory", () => ({
     { roman: "I", nashville: "1", tonic, type: "maj7", quality: "major", degree: 1 },
     { roman: "V", nashville: "5", tonic: "G", type: "7", quality: "dominant", degree: 5 },
   ],
+  getSubstitutions: () => [],
 }))
 
 import { HarmonyStudy } from "@/app/(app)/reference/_components/harmony-study"

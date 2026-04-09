@@ -53,6 +53,7 @@ vi.mock("@/lib/theory", () => ({
     primary: { scaleName: "Mixolydian" },
     additional: [{ scaleName: "Minor Pentatonic", hint: "bluesy" }],
   }),
+  getSubstitutions: () => [],
 }))
 
 import { ProgressionsTab } from "@/app/(app)/reference/_components/progressions-tab"
@@ -112,5 +113,29 @@ describe("ProgressionsTab", () => {
     )
     // Resets to index 0 of new progression — scales panel still visible
     expect(screen.getByText(/scales to solo over/i)).toBeDefined()
+  })
+
+  it("shows Soloing and Substitutions tabs when a chord is selected", () => {
+    render(<ProgressionsTab tonic="C" userProgressions={[]} />)
+    // First chord is auto-selected on mount; tabs should be visible
+    expect(screen.getByRole("button", { name: /^soloing$/i })).toBeDefined()
+    expect(screen.getByRole("button", { name: /^substitutions$/i })).toBeDefined()
+  })
+
+  it("does not show tabs when no chord is selected", async () => {
+    render(<ProgressionsTab tonic="C" userProgressions={[]} />)
+    // The first chord is auto-selected; click it to deselect
+    const chordGroup = screen.getByRole("group", { name: /progression chords/i })
+    const chordButtons = within(chordGroup).getAllByRole("button")
+    await userEvent.click(chordButtons[0]!)
+    expect(screen.queryByRole("button", { name: /^soloing$/i })).toBeNull()
+    expect(screen.queryByRole("button", { name: /^substitutions$/i })).toBeNull()
+  })
+
+  it("switches to Substitutions tab on click", async () => {
+    render(<ProgressionsTab tonic="C" userProgressions={[]} />)
+    await userEvent.click(screen.getByRole("button", { name: /^substitutions$/i }))
+    // SubstitutionsPanel heading should appear (empty state since mock returns [])
+    expect(screen.getByText(/no substitutions available/i)).toBeDefined()
   })
 })

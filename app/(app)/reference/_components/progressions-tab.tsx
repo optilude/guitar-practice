@@ -1,9 +1,13 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useMemo } from "react"
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
 import { listProgressions, getProgression, getSoloScales } from "@/lib/theory"
+import { getSubstitutions } from "@/lib/theory"
+import { SubstitutionsPanel } from "./substitutions-panel"
+import type { ChordSubstitution, PreviewChord } from "@/lib/theory/types"
+import { cn } from "@/lib/utils"
 import { getUserProgressionChords } from "@/lib/theory/user-progressions"
 import { ChordQualityBlock } from "./chord-quality-block"
 import { SoloScalesPanel } from "./solo-scales-panel"
@@ -45,6 +49,56 @@ interface ProgressionsTabProps {
   userProgressions: UserProgressionForTab[]
 }
 
+// ---------------------------------------------------------------------------
+// Preview helpers (pure, module-level for testability)
+// ---------------------------------------------------------------------------
+
+function chordToPreview(c: import("@/lib/theory/types").ProgressionChord): PreviewChord {
+  return { tonic: c.tonic, type: c.type, roman: c.roman, quality: c.quality, degree: c.degree }
+}
+
+function applyPreview(
+  chords: import("@/lib/theory/types").ProgressionChord[],
+  sub: ChordSubstitution,
+): { previewChords: PreviewChord[]; highlightIndices: Set<number> } {
+  const base = chords.map(chordToPreview)
+  const { result } = sub
+
+  if (result.kind === "replacement") {
+    const preview = [...base]
+    const indices = new Set<number>()
+    for (const { index, chord } of result.replacements) {
+      preview[index] = chord
+      indices.add(index)
+    }
+    return { previewChords: preview, highlightIndices: indices }
+  }
+
+  if (result.kind === "insertion") {
+    const preview = [
+      ...base.slice(0, result.insertBefore),
+      ...result.chords,
+      ...base.slice(result.insertBefore),
+    ]
+    const count = result.chords.length
+    const indices = new Set(
+      Array.from({ length: count + 1 }, (_, i) => result.insertBefore + i),
+    )
+    return { previewChords: preview, highlightIndices: indices }
+  }
+
+  // range_replacement
+  const preview = [
+    ...base.slice(0, result.startIndex),
+    ...result.chords,
+    ...base.slice(result.endIndex + 1),
+  ]
+  const indices = new Set(
+    Array.from({ length: result.chords.length }, (_, i) => result.startIndex + i),
+  )
+  return { previewChords: preview, highlightIndices: indices }
+}
+
 export function ProgressionsTab({
   tonic,
   defaultProgressionName,
@@ -56,6 +110,8 @@ export function ProgressionsTab({
   const [selected, setSelected] = useState(defaultProgressionName ?? "pop-standard")
   const [selectedIndex, setSelectedIndex] = useState<number | null>(0)
   const [infoOpen, setInfoOpen] = useState(false)
+  const [previewedSub, setPreviewedSub] = useState<ChordSubstitution | null>(null)
+  const [chordDetailTab, setChordDetailTab] = useState<"soloing" | "substitutions">("soloing")
   const infoRef = useRef<HTMLDivElement>(null)
 
   const builtinProgressions = listProgressions()
@@ -114,7 +170,22 @@ export function ProgressionsTab({
       )
     : null
 
+  const { previewChords, highlightIndices } = useMemo(() => {
+    if (!previewedSub) {
+      return { previewChords: chords.map(chordToPreview), highlightIndices: new Set<number>() }
+    }
+    return applyPreview(chords, previewedSub)
+  }, [chords, previewedSub])
+
+  const substitutions = useMemo(
+    () => selectedIndex !== null && selectedChord
+      ? getSubstitutions(selectedChord, chords, selectedIndex, tonic, mode)
+      : [],
+    [selectedChord, chords, selectedIndex, tonic, mode],
+  )
+
   function handleIndexClick(index: number) {
+    setPreviewedSub(null)
     if (selectedIndex !== index) {
       const chord = chords[index]
       if (chord) {
@@ -126,6 +197,7 @@ export function ProgressionsTab({
   }
 
   function handleSelectionChange(newSelected: string) {
+    setPreviewedSub(null)
     setSelected(newSelected)
     setSelectedIndex(0)
     setInfoOpen(false)
@@ -273,28 +345,76 @@ export function ProgressionsTab({
           Chords in {tonic} · {romanDisplay}
         </p>
         <div role="group" aria-label="Progression chords" className="flex flex-wrap items-center gap-1">
-          {chords.map((chord, i) => (
+          {previewChords.map((chord, i) => (
             <div key={i} className="flex items-center gap-1 flex-shrink-0">
               {i > 0 && <span className="text-muted-foreground text-sm flex-shrink-0">→</span>}
               <ChordQualityBlock
                 roman={chord.roman}
                 chordName={`${chord.tonic}${chord.type}`}
-                degree={chord.degree}
-                isSelected={selectedIndex === i}
-                onClick={() => handleIndexClick(i)}
+                degree={chord.degree ?? 1}
+                isSelected={!previewedSub && selectedIndex === i}
+                onClick={() => {
+                  if (previewedSub) {
+                    setPreviewedSub(null)
+                    return
+                  }
+                  handleIndexClick(i)
+                }}
+                variant={chord.degree !== undefined ? "diatonic" : "non-diatonic"}
+                isSubstitutionPreview={highlightIndices.has(i)}
               />
             </div>
           ))}
         </div>
       </div>
 
-      {/* Per-chord scale recommendation */}
-      {scales && selectedChord && (
-        <SoloScalesPanel
-          scales={scales}
-          chordName={`${selectedChord.tonic}${selectedChord.type}`}
-          onScaleSelect={onScaleSelect}
-        />
+      {/* Per-chord detail: tab bar + Soloing / Substitutions panels */}
+      {selectedChord && (
+        <div className="space-y-3">
+          <div className="flex rounded border border-border overflow-hidden text-sm w-fit">
+            <button
+              type="button"
+              onClick={() => setChordDetailTab("soloing")}
+              className={cn(
+                "px-3 py-1.5 transition-colors",
+                chordDetailTab === "soloing"
+                  ? "bg-accent text-accent-foreground"
+                  : "bg-card text-muted-foreground hover:bg-muted",
+              )}
+            >
+              Soloing
+            </button>
+            <button
+              type="button"
+              onClick={() => setChordDetailTab("substitutions")}
+              className={cn(
+                "px-3 py-1.5 transition-colors border-l border-border",
+                chordDetailTab === "substitutions"
+                  ? "bg-accent text-accent-foreground"
+                  : "bg-card text-muted-foreground hover:bg-muted",
+              )}
+            >
+              Substitutions
+            </button>
+          </div>
+
+          {chordDetailTab === "soloing" && scales && (
+            <SoloScalesPanel
+              scales={scales}
+              chordName={`${selectedChord.tonic}${selectedChord.type}`}
+              onScaleSelect={onScaleSelect}
+            />
+          )}
+
+          {chordDetailTab === "substitutions" && (
+            <SubstitutionsPanel
+              substitutions={substitutions}
+              chordName={`${selectedChord.tonic}${selectedChord.type}`}
+              previewedId={previewedSub?.id ?? null}
+              onPreview={setPreviewedSub}
+            />
+          )}
+        </div>
       )}
 
       {/* Progression-wide recommendation */}
