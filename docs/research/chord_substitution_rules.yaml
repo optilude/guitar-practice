@@ -1,0 +1,124 @@
+rules:
+  - id: modal_extensions
+    beato_rule: "Rule I"
+    name: "Modal Extensions"
+    description: "For basic chords, any modal extension may be added."
+    applicable_contexts:
+      - "Any basic seventh chord where the melody permits extensions."
+    mechanics:
+      - target: "Base Chord"
+        substitutes: ["Add 9, 11, 13 based on modal context"]
+    effect: "Increases color without changing function."
+
+  - id: diatonic_substitution
+    beato_rule: "Rule II, Rule III"
+    name: "Diatonic Substitution (Major & Minor)"
+    description: "Substitute a chord with its mediant or submediant (Major) or relative major/dominant minor (Minor)."
+    applicable_contexts:
+      - "Target chord is a diatonic major or minor seventh chord."
+      - "The melody note must not clash with the substituted chord's extensions."
+    mechanics:
+      - target: "Imaj7"
+        substitutes: ["iii-7", "vi-7"]
+        interval_relation: "Up a diatonic third or down a diatonic third."
+      - target: "vi-7"
+        substitutes: ["Imaj7", "iii-7"]
+    effect: "Low tension. Very smooth, creates subtle color changes without disrupting overarching function."
+
+  - id: tritone_substitution
+    beato_rule: "Rule V"
+    name: "Tritone Substitution (Sub V)"
+    description: "Replace any chord (usually dominant) with another chord a tritone away. They share the same guide tones (3rd and 7th)."
+    applicable_contexts:
+      - "Typically Dominant 7th chords resolving down a perfect fifth."
+    mechanics:
+      - target: "V7"
+        substitutes: ["bII7"]
+        interval_relation: "Up or down an augmented 4th / diminished 5th."
+    effect: "High tension. Creates a chromatic descending bass line to the resolution chord."
+
+  - id: secondary_dominant
+    beato_rule: "Rule IX, Rule XVII"
+    name: "Secondary Dominant"
+    description: "Preceding any diatonic chord with its own dominant V7 (or dominant 7(b9)) to briefly tonicize it. V7 chords may also replace minors to set up stronger cadences."
+    applicable_contexts:
+      - "Target is any regular diatonic chord except the diminished vii°."
+    mechanics:
+      - target: "Any stable chord X"
+        substitutes: ["Precede X with V7/X", "Precede X with vii°7/X"]
+      - target: "vi-7 as passing chord"
+        substitutes: ["VI7"]
+    effect: "Increases forward motion and introduces strong diatonic pull toward minor or major passing targets."
+
+  - id: two_ing_the_five
+    beato_rule: "Rule XII, Rule XIV"
+    name: "Two-ing the Five (ii-V Substitution)"
+    description: "Inserting a ii-7 or ii-7b5 before a Dom7 (V7) chord, effectively splitting or preparing the dominant."
+    applicable_contexts:
+      - "Target chord is a dominant 7th chord."
+    mechanics:
+      - target: "V7"
+        substitutes: ["ii-7 -> V7", "ii-7b5 -> V7"]
+        interval_relation: "Precede the target V7 with a minor or half-diminished 7th chord a perfect fourth below it."
+    effect: "Classic jazz vocabulary. Extends the period of dominant preparation smoothly."
+
+  - id: diminished_passing
+    beato_rule: "Rule XVIII"
+    name: "Diminished Passing Chord"
+    description: "Connecting two chords (often a whole step apart) using a fully diminished 7th chord."
+    applicable_contexts:
+      - "Moving between two diatonic chords functionally (e.g., I to ii, or ii to iii)."
+      - "Places of little harmonic motion."
+    mechanics:
+      - target: "Chord A followed by Chord B"
+        substitutes: ["Insert #A°7 between A and B"]
+    effect: "Enhances bassline chromaticism and creates leading-tone tension."
+
+  - id: modal_mixture
+    beato_rule: "Rule XXII"
+    name: "Modal Mixture (Borrowed Chords)"
+    description: "Modal chords can be interchanged (e.g. borrowing from parallel minor) as long as the basic integrity of the chord remains intact."
+    applicable_contexts:
+      - "Occurs primarily in subdominant functions (e.g., minor iv) or flat-side dominant functions."
+    mechanics:
+      - target: "IVmaj7"
+        substitutes: ["iv-7", "bVII7", "bVImaj7"]
+    effect: "Darkens or brightens harmonic color while keeping root motion intact. Common in film and R&B styles."
+
+  - id: cycle_of_5ths
+    beato_rule: "Rule XXIII"
+    name: "Cycle of 5ths Insertion"
+    description: "The cycle of 5th's (descending) may be inserted for any length in a progression as long as the intersecting chord has either a V7 or a bII7 relationship to the resolution chord."
+    applicable_contexts:
+      - "Stretches of static harmony or bridging two distant target chords."
+    mechanics:
+      - target: "Chord X -> Chord Y"
+        substitutes: ["Chain of dominant 7ths descending by 5ths targeting Y"]
+    effect: "Propels the progression forward with continuous dominant-tonic resolutions."
+
+  - id: common_tone_reharmonization
+    beato_rule: "Rule XXXII"
+    name: "Common Tone Reharmonization"
+    description: "Any melody note may be retained as a common tone (in any voice) for the purpose of reharmonization."
+    applicable_contexts:
+      - "Melody is sustained, repetitive, or highlighted."
+    mechanics:
+      - target: "Static Melody Note M"
+        substitutes: [
+          "Any Major 7 chord where M = 1, 3, 5, 7, 9, #11, 13",
+          "Any Minor 7 chord where M = 1, b3, 5, b7, 9, 11, 13",
+          "Any Dominant 7 chord where M = 1, 3, 5, b7, b9, #9, #11, 13",
+          "Any Half-Diminished chord where M = 1, b3, b5, b7, 11"
+        ]
+    effect: "Allows extreme disjointed, cinematic chord changes while anchoring to a common melodic thread."
+
+  - id: coltrane_changes
+    name: "Coltrane Changes"
+    description: "A cyclical reharmonization sequence that moving root notes by major thirds, artificially modulating between three tonal centers a major third apart."
+    applicable_contexts:
+      - "Long stretches of a single ii-V-I progression, typically in major keys."
+    mechanics:
+      - target: "ii-7 -> V7 -> Imaj7 (e.g. D-7 -> G7 -> Cmaj7)"
+        substitutes: ["D-7 Eb7 | Abmaj7 B7 | Emaj7 G7 | Cmaj7"]
+        interval_relation: "Target centers are I, bVI, and III."
+    effect: "Extremely fast-paced and angular harmony characteristic of 'Giant Steps'."
