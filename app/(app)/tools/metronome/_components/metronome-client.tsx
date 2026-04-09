@@ -70,6 +70,7 @@ export function MetronomeClient() {
                 key={i}
                 type="button"
                 onClick={() => toggleBeat(i)}
+                aria-pressed={isEnabled}
                 className={cn(
                   "rounded-full border-2 transition-all flex items-center justify-center text-xs font-medium",
                   isDownbeat ? "w-10 h-10" : "w-8 h-8",
@@ -96,6 +97,7 @@ export function MetronomeClient() {
           <button
             type="button"
             onClick={() => setBpm(Math.max(20, bpm - 1))}
+            title="Decrease BPM (stops playback)"
             className="w-7 h-7 rounded border border-border bg-muted hover:bg-muted/80 text-sm font-medium transition-colors flex items-center justify-center"
           >
             −
@@ -126,6 +128,7 @@ export function MetronomeClient() {
           <button
             type="button"
             onClick={() => setBpm(Math.min(300, bpm + 1))}
+            title="Increase BPM (stops playback)"
             className="w-7 h-7 rounded border border-border bg-muted hover:bg-muted/80 text-sm font-medium transition-colors flex items-center justify-center"
           >
             +
