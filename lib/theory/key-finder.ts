@@ -266,25 +266,16 @@ export function detectKey(chords: InputChord[]): KeyMatch[] {
         analyzeChord(c, diatonicLookup, parallelMajorLookup, parallelMinorLookup, tonicChroma)
       )
 
-      // Functional harmony post-pass: override Romans and boost scores for chords
-      // that are functionally explained (secondary dominants, related ii chords, etc.)
-      // even if they're not strictly diatonic.
-      const fhContexts = analyses.map(a => ({
-        tonic:   a.inputChord.root,
-        type:    a.inputChord.type,
-        quality: qualityFromType(a.inputChord.type),
-        roman:   a.roman,
-      }))
-      const finalAnalyses: ChordAnalysis[] = analyses.map((a, i) => {
-        if (a.score >= 1.0) return a // diatonic — no change
-        const fa = analyzeFunctionalContext(
-          fhContexts[i]!,
-          fhContexts[i + 1] ?? null,
-          root,
-          modeName,
-        )
-        if (!fa.romanOverride) return a
-        return { ...a, score: 0.8, roman: fa.romanOverride, role: "secondary-dominant" as const }
+      // Functional harmony post-pass: override Romans, then boost score for
+      // non-diatonic chords that are now functionally explained.
+      const withOverrides = applyFunctionalRomanOverrides(analyses, root, modeName)
+      const finalAnalyses = withOverrides.map((a, i) => {
+        // Only boost if the roman actually changed (a rule fired) AND the original
+        // score was sub-diatonic (don't reduce a 1.0 to 0.8 for C7 etc.)
+        if (a.roman !== analyses[i]!.roman && analyses[i]!.score < 1.0) {
+          return { ...a, score: 0.8 }
+        }
+        return a
       })
 
       const fitScore = finalAnalyses.reduce((sum, a) => sum + a.score, 0) / chords.length
@@ -350,6 +341,39 @@ export function detectKey(chords: InputChord[]): KeyMatch[] {
   })
 
   return results
+}
+
+// ---------------------------------------------------------------------------
+// applyFunctionalRomanOverrides
+// Applies functional harmony look-ahead rules to a ChordAnalysis array and
+// returns a new array with roman fields overridden where a rule fires.
+//
+// Unlike the diatonic scoring in analyzeChord/analyzeChordInKey, this check is
+// NOT gated on whether a chord scored 1.0. This matters for chords like C7 in
+// C major: the scorer treats "7" and "maj7" both as "major" quality and gives
+// C7 a diatonic score of 1.0, but C7 is dominant quality and CAN be a
+// secondary dominant (V7/IV when followed by Fmaj7).
+//
+// Tonic suppression is handled inside analyzeFunctionalContext: rules 1/2/3/4
+// do not fire when the resolution target IS the key tonic (so G7→Cmaj7 stays
+// as "V7" rather than becoming "V7/I").
+// ---------------------------------------------------------------------------
+export function applyFunctionalRomanOverrides(
+  analyses: ChordAnalysis[],
+  tonic: string,
+  mode: string,
+): ChordAnalysis[] {
+  const contexts = analyses.map(a => ({
+    tonic:   a.inputChord.root,
+    type:    a.inputChord.type,
+    quality: qualityFromType(a.inputChord.type),
+    roman:   a.roman,
+  }))
+  return analyses.map((a, i) => {
+    const fa = analyzeFunctionalContext(contexts[i]!, contexts[i + 1] ?? null, tonic, mode)
+    if (!fa.romanOverride) return a
+    return { ...a, roman: fa.romanOverride, role: "secondary-dominant" as const }
+  })
 }
 
 // ---------------------------------------------------------------------------

@@ -2,10 +2,9 @@
 
 import { useCallback, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
-import { parseChord } from "@/lib/theory/key-finder"
+import { parseChord, applyFunctionalRomanOverrides } from "@/lib/theory/key-finder"
 import { analyzeProgression } from "@/lib/theory/transposer"
 import { getUserProgressionChords } from "@/lib/theory/user-progressions"
-import { analyzeFunctionalContext, qualityFromType } from "@/lib/theory"
 import { ALL_KEY_MODES } from "@/lib/theory/commonality-tiers"
 import { ChordInputRow } from "@/app/(app)/tools/_components/chord-input-row"
 import { createUserProgression, updateUserProgression } from "@/app/(app)/reference/progressions/actions"
@@ -74,19 +73,10 @@ export function ProgressionForm({ initialData }: ProgressionFormProps) {
 
   // Override chord badge Romans with functional labels (V7/IV, ii/IV, etc.)
   // so the form shows functional context as the user enters chords.
-  const displayAnalyses = useMemo(() => {
-    if (!chordAnalyses) return null
-    const contexts = chordAnalyses.map(a => ({
-      tonic:   a.inputChord.root,
-      type:    a.inputChord.type,
-      quality: qualityFromType(a.inputChord.type),
-      roman:   a.roman,
-    }))
-    return chordAnalyses.map((a, i) => {
-      const fa = analyzeFunctionalContext(contexts[i]!, contexts[i + 1] ?? null, key, mode.modeName)
-      return fa.romanOverride ? { ...a, roman: fa.romanOverride } : a
-    })
-  }, [chordAnalyses, key, mode.modeName])
+  const displayAnalyses = useMemo(
+    () => chordAnalyses ? applyFunctionalRomanOverrides(chordAnalyses, key, mode.modeName) : null,
+    [chordAnalyses, key, mode.modeName],
+  )
 
   function handleKeyOrModeChange(newKey: string, newModeIdx: number) {
     const newMode = ALL_KEY_MODES[newModeIdx]!

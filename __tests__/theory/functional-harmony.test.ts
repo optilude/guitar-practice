@@ -18,6 +18,7 @@ import {
   qualityFromType,
   type ChordContext,
 } from "@/lib/theory/functional-harmony"
+import { applyFunctionalRomanOverrides, type ChordAnalysis } from "@/lib/theory/key-finder"
 
 function c(
   tonic: string,
@@ -269,5 +270,157 @@ describe("Rule 7: deceptive resolution to minor", () => {
       "C", "major",
     )
     expect(r.romanOverride).toBe("V7/ii")  // Rule 1
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Tonic suppression — rules 1, 2, 3, 4 do NOT fire when the resolution target
+// is the key tonic (that would produce meaningless "V7/I", "ii/I" labels).
+// ---------------------------------------------------------------------------
+describe("analyzeFunctionalContext — tonic suppression", () => {
+  it("Rule 2 suppressed: G7 → Cmaj7 in C (P4 up but target C = tonic)", () => {
+    // Standard V7 → I cadence; G→C is P4 up and C IS the tonic → no override
+    const r = analyzeFunctionalContext(
+      c("G", "7", "dominant", "V"),
+      c("C", "maj7", "major", "I"),
+      "C", "major",
+    )
+    expect(r.romanOverride).toBeNull()
+    expect(r.scalesOverride).toBeNull()
+  })
+
+  it("Rule 2 NOT suppressed: C7 → Fmaj7 in C (P4 up, F is IV not tonic)", () => {
+    // C7 is a secondary dominant resolving to IV — C→F is P4 up, F ≠ tonic C
+    const r = analyzeFunctionalContext(
+      c("C", "7", "dominant", "I"),
+      c("F", "maj7", "major", "IV"),
+      "C", "major",
+    )
+    expect(r.romanOverride).toBe("V7/IV")
+    expect(r.scalesOverride!.primary.scaleName).toBe("Mixolydian")
+  })
+
+  it("Rule 1 suppressed: E7 → Am7 in A minor (Am7 root = tonic A)", () => {
+    // Standard V7 → i in minor — E→A is P4 up but A IS the tonic in Am
+    const r = analyzeFunctionalContext(
+      c("E", "7", "dominant", "V"),
+      c("A", "m7", "minor", "i"),
+      "A", "minor",
+    )
+    expect(r.romanOverride).toBeNull()
+  })
+
+  it("Rule 3 suppressed: Dm7 → G7 in C (target = C = tonic, standard ii-V-I)", () => {
+    // D→G is P4 up; target (P4 above G) = C = degree 1 → no secondary override
+    const r = analyzeFunctionalContext(
+      c("D", "m7", "minor", "ii"),
+      c("G", "7", "dominant", "V"),
+      "C", "major",
+    )
+    expect(r.romanOverride).toBeNull()
+    expect(r.scalesOverride).toBeNull()
+  })
+
+  it("Rule 3 NOT suppressed: Gm7 → C7 in C (target = F = IV, not tonic)", () => {
+    // G→C is P4 up; target (P4 above C) = F = degree 4 → fires as ii/IV
+    const r = analyzeFunctionalContext(
+      c("G", "m7", "minor", "v"),
+      c("C", "7", "dominant", "I"),
+      "C", "major",
+    )
+    expect(r.romanOverride).toBe("ii/IV")
+    expect(r.scalesOverride!.primary.scaleName).toBe("Dorian")
+  })
+
+  it("Rule 4 suppressed: G7 → C7 in C (dominant→dominant P4 up, C = tonic)", () => {
+    const r = analyzeFunctionalContext(
+      c("G", "7", "dominant", "V"),
+      c("C", "7", "dominant", "I"),
+      "C", "major",
+    )
+    expect(r.romanOverride).toBeNull()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// applyFunctionalRomanOverrides — shared post-pass used across the whole app
+// ---------------------------------------------------------------------------
+
+function analysis(
+  root: string, type: string, roman: string,
+  score: number, role: ChordAnalysis["role"],
+): ChordAnalysis {
+  return {
+    inputChord: { root, type, symbol: `${root}${type}` },
+    degree: null,
+    roman,
+    score,
+    role,
+  }
+}
+
+describe("applyFunctionalRomanOverrides", () => {
+  it("C7 (score 1.0 diatonic) → Fmaj7: gets V7/IV override (no score-gate)", () => {
+    // Core regression: the old guard skipped diatonic chords (score >= 1.0),
+    // letting C7 show as "I" instead of "V7/IV"
+    const analyses: ChordAnalysis[] = [
+      analysis("C", "7",    "I",  1.0, "diatonic"),
+      analysis("F", "maj7", "IV", 1.0, "diatonic"),
+    ]
+    const result = applyFunctionalRomanOverrides(analyses, "C", "major")
+    expect(result[0]!.roman).toBe("V7/IV")
+    expect(result[1]!.roman).toBe("IV")
+  })
+
+  it("Cmaj7-Gm7-C7-Fmaj7 in C major: I, ii/IV, V7/IV, IV", () => {
+    const analyses: ChordAnalysis[] = [
+      analysis("C", "maj7", "I",  1.0, "diatonic"),
+      analysis("G", "m7",   "v",  0.6, "borrowed"),
+      analysis("C", "7",    "I",  1.0, "diatonic"),
+      analysis("F", "maj7", "IV", 1.0, "diatonic"),
+    ]
+    const result = applyFunctionalRomanOverrides(analyses, "C", "major")
+    expect(result[0]!.roman).toBe("I")      // no secondary role
+    expect(result[1]!.roman).toBe("ii/IV")  // rule 3
+    expect(result[2]!.roman).toBe("V7/IV")  // rule 2
+    expect(result[3]!.roman).toBe("IV")     // last chord — no next
+  })
+
+  it("standard ii-V-I Dm7-G7-Cmaj7 in C: no overrides (tonic suppression)", () => {
+    const analyses: ChordAnalysis[] = [
+      analysis("D", "m7",   "ii", 1.0, "diatonic"),
+      analysis("G", "7",    "V",  1.0, "diatonic"),
+      analysis("C", "maj7", "I",  1.0, "diatonic"),
+    ]
+    const result = applyFunctionalRomanOverrides(analyses, "C", "major")
+    expect(result[0]!.roman).toBe("ii")
+    expect(result[1]!.roman).toBe("V")
+    expect(result[2]!.roman).toBe("I")
+  })
+
+  it("secondary ii-V-I to IV: Em7-A7-Dm7 → ii/ii, V7/ii, ii", () => {
+    const analyses: ChordAnalysis[] = [
+      analysis("E", "m7",  "iii", 1.0, "diatonic"),
+      analysis("A", "7",   "VI",  0.5, "secondary-dominant"),
+      analysis("D", "m7",  "ii",  1.0, "diatonic"),
+    ]
+    const result = applyFunctionalRomanOverrides(analyses, "C", "major")
+    expect(result[0]!.roman).toBe("ii/ii")   // rule 3 (Em7→A7, target=D=ii)
+    expect(result[1]!.roman).toBe("V7/ii")   // rule 1 (A7→Dm7, minor target, P4 up)
+    expect(result[2]!.roman).toBe("ii")      // last chord — no override
+  })
+
+  it("A7-D7 secondary chain: V7/II then V7/V in G context", () => {
+    // In C major: A7→D7 (dom→dom, P4 up, D≠tonic C) → V7/II
+    //             D7→G7 (dom→dom, P4 up, G≠tonic C) → V7/V
+    const analyses: ChordAnalysis[] = [
+      analysis("A", "7", "VI", 0.5, "secondary-dominant"),
+      analysis("D", "7", "II", 0.5, "secondary-dominant"),
+      analysis("G", "7", "V",  1.0, "diatonic"),
+    ]
+    const result = applyFunctionalRomanOverrides(analyses, "C", "major")
+    expect(result[0]!.roman).toBe("V7/II")
+    expect(result[1]!.roman).toBe("V7/V")
+    expect(result[2]!.roman).toBe("V")      // G7→nothing, no next chord
   })
 })

@@ -102,9 +102,10 @@ export function analyzeFunctionalContext(
 
   // ------------------------------------------------------------------
   // Rule 1: Secondary dominant to minor — dominant → minor, P4 up
+  // Suppress when nextChord root = tonic (that's just V7 → i, regular cadence)
   // Example: A7 → Dm7  →  "V7/ii"
   // ------------------------------------------------------------------
-  if (cq === "dominant" && nq === "minor" && isP4Up(ct, nt)) {
+  if (cq === "dominant" && nq === "minor" && isP4Up(ct, nt) && !sameChroma(nt, tonic)) {
     return {
       romanOverride: `V7/${nr}`,
       scalesOverride: buildScales(ct, "Phrygian Dominant", [
@@ -116,9 +117,10 @@ export function analyzeFunctionalContext(
 
   // ------------------------------------------------------------------
   // Rule 2: Secondary dominant to major — dominant → major, P4 up
+  // Suppress when nextChord root = tonic (that's just V7 → I, regular cadence)
   // Example: D7 → Gmaj7  →  "V7/V"
   // ------------------------------------------------------------------
-  if (cq === "dominant" && nq === "major" && isP4Up(ct, nt)) {
+  if (cq === "dominant" && nq === "major" && isP4Up(ct, nt) && !sameChroma(nt, tonic)) {
     return {
       romanOverride: `V7/${nr}`,
       scalesOverride: buildScales(ct, "Mixolydian", [
@@ -136,7 +138,9 @@ export function analyzeFunctionalContext(
     const targetChroma = Note.chroma(Note.transpose(nt, "P4"))
     const diatonic     = getDiatonicChords(tonic, mode)
     const targetChord  = diatonic.find(d => Note.chroma(d.tonic) === targetChroma)
-    const targetRoman = targetChord?.roman ?? "?"
+    // If the resolution target is degree I (ii→V→I), this is a standard cadence — no override
+    if (!targetChord || targetChord.degree === 1) return NONE
+    const targetRoman = targetChord.roman
     const prefix      = cq === "diminished" ? "iiø" : "ii"
     return {
       romanOverride: `${prefix}/${targetRoman}`,
@@ -148,9 +152,10 @@ export function analyzeFunctionalContext(
 
   // ------------------------------------------------------------------
   // Rule 4: Extended dominant chain — dominant → dominant, P4 up
+  // Suppress when nextChord root = tonic (dominants cycling back to tonic)
   // Example: B7 → E7  →  "V7/III"
   // ------------------------------------------------------------------
-  if (cq === "dominant" && nq === "dominant" && isP4Up(ct, nt)) {
+  if (cq === "dominant" && nq === "dominant" && isP4Up(ct, nt) && !sameChroma(nt, tonic)) {
     return {
       romanOverride: `V7/${nr}`,
       scalesOverride: buildScales(ct, "Lydian Dominant", []),
