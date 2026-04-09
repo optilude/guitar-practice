@@ -132,7 +132,7 @@ export function ProgressionForm({ initialData }: ProgressionFormProps) {
   }
 
   return (
-    <div className="space-y-6 max-w-lg">
+    <div className="space-y-6">
       {/* Name */}
       <div>
         <label className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">
@@ -203,10 +203,9 @@ export function ProgressionForm({ initialData }: ProgressionFormProps) {
           value={description}
           onChange={e => setDescription(e.target.value)}
           rows={4}
-          placeholder="Describe this progression…"
+          placeholder="Describe this progression… (supports markdown)"
           className="w-full rounded border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent resize-y"
         />
-        <p className="text-xs text-muted-foreground mt-1">Supports markdown.</p>
       </div>
 
       {error && <p className="text-xs text-red-500">{error}</p>}

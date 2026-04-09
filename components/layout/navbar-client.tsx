@@ -16,6 +16,26 @@ const NAV_ITEMS = [
   { href: "/tools", label: "Tools" },
 ]
 
+// Paths that live under /library/ but belong under Reference in the nav
+const REFERENCE_LIBRARY_PREFIXES = ["/library/progressions"]
+
+function isNavActive(href: string, pathname: string): boolean {
+  if (href === "/") return pathname === "/"
+  if (href === "/library") {
+    const underLibrary = pathname === href || pathname.startsWith(href + "/")
+    const isReferenceLibrary = REFERENCE_LIBRARY_PREFIXES.some(
+      p => pathname === p || pathname.startsWith(p + "/")
+    )
+    return underLibrary && !isReferenceLibrary
+  }
+  if (href === "/reference") {
+    return pathname === href ||
+      pathname.startsWith(href + "/") ||
+      REFERENCE_LIBRARY_PREFIXES.some(p => pathname === p || pathname.startsWith(p + "/"))
+  }
+  return pathname === href || pathname.startsWith(href + "/")
+}
+
 export function NavbarClient() {
   const pathname = usePathname()
   const router = useRouter()
@@ -39,9 +59,7 @@ export function NavbarClient() {
 
         <div className="hidden md:flex items-center gap-5">
           {NAV_ITEMS.map((item) => {
-            const isActive = item.href === "/"
-              ? pathname === "/"
-              : pathname === item.href || pathname.startsWith(item.href + "/")
+            const isActive = isNavActive(item.href, pathname)
             return (
               <Link
                 key={item.href}
