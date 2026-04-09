@@ -104,6 +104,7 @@ vi.mock("@/lib/theory", () => ({
   getProgression: (_name: string, tonic: string) => [
     { roman: "I", nashville: "1", tonic, type: "maj7", quality: "major", degree: 1 },
   ],
+  getSubstitutions: () => [],
 }))
 
 import { ReferencePageClient } from "@/app/(app)/reference/_components/reference-page-client"

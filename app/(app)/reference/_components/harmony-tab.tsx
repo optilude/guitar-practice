@@ -1,11 +1,14 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Note } from "tonal"
-import { getDiatonicChords, getSoloScales, SOLO_MODE_OPTION_GROUPS } from "@/lib/theory"
+import { getDiatonicChords, getSoloScales, SOLO_MODE_OPTION_GROUPS, getSubstitutions } from "@/lib/theory"
 import { ChordQualityBlock } from "./chord-quality-block"
 import { SoloScalesPanel } from "./solo-scales-panel"
+import { SubstitutionsPanel } from "./substitutions-panel"
 import { AddToGoalButton } from "@/components/add-to-goal-button"
+import { cn } from "@/lib/utils"
+import type { ChordSubstitution, PreviewChord, ProgressionChord } from "@/lib/theory/types"
 
 interface HarmonyTabProps {
   tonic: string
@@ -56,14 +59,67 @@ const MAJOR_ROMAN: Record<number, string> = {
   1: "I", 2: "ii", 3: "iii", 4: "IV", 5: "V", 6: "vi", 7: "vii°",
 }
 
+// ---------------------------------------------------------------------------
+// Preview helpers
+// ---------------------------------------------------------------------------
+
+function chordToPreview(c: ProgressionChord): PreviewChord {
+  return { tonic: c.tonic, type: c.type, roman: c.roman, quality: c.quality, degree: c.degree }
+}
+
+function applyPreview(
+  chords: ProgressionChord[],
+  sub: ChordSubstitution,
+): { previewChords: PreviewChord[]; highlightIndices: Set<number> } {
+  const base = chords.map(chordToPreview)
+  const { result } = sub
+
+  if (result.kind === "replacement") {
+    const preview = [...base]
+    const indices = new Set<number>()
+    for (const { index, chord } of result.replacements) {
+      preview[index] = chord
+      indices.add(index)
+    }
+    return { previewChords: preview, highlightIndices: indices }
+  }
+
+  if (result.kind === "insertion") {
+    const preview = [
+      ...base.slice(0, result.insertBefore),
+      ...result.chords,
+      ...base.slice(result.insertBefore),
+    ]
+    const count = result.chords.length
+    const indices = new Set(
+      Array.from({ length: count + 1 }, (_, i) => result.insertBefore + i),
+    )
+    return { previewChords: preview, highlightIndices: indices }
+  }
+
+  // range_replacement
+  const preview = [
+    ...base.slice(0, result.startIndex),
+    ...result.chords,
+    ...base.slice(result.endIndex + 1),
+  ]
+  const indices = new Set(
+    Array.from({ length: result.chords.length }, (_, i) => result.startIndex + i),
+  )
+  return { previewChords: preview, highlightIndices: indices }
+}
+
 export function HarmonyTab({ tonic, defaultMode, onChordSelect, onScaleSelect }: HarmonyTabProps) {
   const [mode, setMode] = useState(defaultMode ?? "ionian")
   const [selectedDegree, setSelectedDegree] = useState<number | null>(1)
   const [relative, setRelative] = useState(false)
+  const [previewedSub, setPreviewedSub] = useState<ChordSubstitution | null>(null)
+  const [chordDetailTab, setChordDetailTab] = useState<"soloing" | "substitutions">("soloing")
 
   const chords = getDiatonicChords(tonic, mode)
   const selectedChord =
     selectedDegree !== null ? chords.find((c) => c.degree === selectedDegree) ?? null : null
+  const selectedIndex = chords.findIndex(c => c.degree === selectedDegree)
   const scales = selectedChord
     ? getSoloScales(
         { tonic: selectedChord.tonic, type: selectedChord.type, degree: selectedChord.degree },
@@ -96,7 +152,23 @@ export function HarmonyTab({ tonic, defaultMode, onChordSelect, onScaleSelect }:
     return MAJOR_ROMAN[relDegree] ?? degree.toString()
   }
 
+  const { previewChords, highlightIndices } = useMemo(() => {
+    if (!previewedSub) {
+      return { previewChords: chords.map(chordToPreview), highlightIndices: new Set<number>() }
+    }
+    return applyPreview(chords, previewedSub)
+  }, [chords, previewedSub])
+
+  // Only rules 1–5 (sortRank < 50): no look-ahead beyond a single chord
+  const substitutions = useMemo(
+    () => selectedIndex !== -1 && selectedChord
+      ? getSubstitutions(selectedChord, chords, selectedIndex, tonic, mode).filter(s => s.sortRank < 50)
+      : [],
+    [selectedChord, chords, selectedIndex, tonic, mode],
+  )
+
   function handleChordClick(degree: number) {
+    setPreviewedSub(null)
     if (selectedDegree !== degree) {
       const chord = chords.find((c) => c.degree === degree)
       if (chord) {
@@ -125,6 +197,7 @@ export function HarmonyTab({ tonic, defaultMode, onChordSelect, onScaleSelect }:
             const newMode = e.target.value
             setMode(newMode)
             setSelectedDegree(1)
+            setPreviewedSub(null)
             const newChords = getDiatonicChords(tonic, newMode)
             const degree1 = newChords.find((c) => c.degree === 1)
             if (degree1) {
@@ -178,26 +251,78 @@ export function HarmonyTab({ tonic, defaultMode, onChordSelect, onScaleSelect }:
           )}
         </div>
         <div role="group" aria-label="Diatonic chords" className="flex flex-wrap gap-2">
-          {chords.map((chord) => (
+          {previewChords.map((chord, i) => (
             <ChordQualityBlock
-              key={chord.degree}
-              roman={relative ? relativeRoman(chord.degree) : chord.roman}
+              key={i}
+              roman={relative && chord.degree !== undefined ? relativeRoman(chord.degree) : chord.roman}
               chordName={`${chord.tonic}${chord.type}`}
-              degree={chord.degree}
-              isSelected={selectedDegree === chord.degree}
-              onClick={() => handleChordClick(chord.degree)}
+              degree={chord.degree ?? 1}
+              isSelected={!previewedSub && selectedDegree !== null && chord.degree === selectedDegree}
+              onClick={() => {
+                if (previewedSub && chord.degree === selectedDegree) {
+                  setPreviewedSub(null)
+                  return
+                }
+                if (chord.degree !== undefined) {
+                  handleChordClick(chord.degree)
+                } else {
+                  setPreviewedSub(null)
+                }
+              }}
+              variant={chord.degree !== undefined ? "diatonic" : "non-diatonic"}
+              isSubstitutionPreview={highlightIndices.has(i)}
             />
           ))}
         </div>
       </div>
 
-      {/* Scale recommendation */}
-      {scales && selectedChord && (
-        <SoloScalesPanel
-          scales={scales}
-          chordName={`${selectedChord.tonic}${selectedChord.type}`}
-          onScaleSelect={onScaleSelect}
-        />
+      {/* Per-chord detail: tab bar + Soloing / Substitutions panels */}
+      {selectedChord && (
+        <div className="space-y-3">
+          <div className="flex rounded border border-border overflow-hidden text-sm w-fit">
+            <button
+              type="button"
+              onClick={() => setChordDetailTab("soloing")}
+              className={cn(
+                "px-3 py-1.5 transition-colors",
+                chordDetailTab === "soloing"
+                  ? "bg-accent text-accent-foreground"
+                  : "bg-card text-muted-foreground hover:bg-muted",
+              )}
+            >
+              Soloing
+            </button>
+            <button
+              type="button"
+              onClick={() => setChordDetailTab("substitutions")}
+              className={cn(
+                "px-3 py-1.5 transition-colors border-l border-border",
+                chordDetailTab === "substitutions"
+                  ? "bg-accent text-accent-foreground"
+                  : "bg-card text-muted-foreground hover:bg-muted",
+              )}
+            >
+              Substitutions
+            </button>
+          </div>
+
+          {chordDetailTab === "soloing" && scales && (
+            <SoloScalesPanel
+              scales={scales}
+              chordName={`${selectedChord.tonic}${selectedChord.type}`}
+              onScaleSelect={onScaleSelect}
+            />
+          )}
+
+          {chordDetailTab === "substitutions" && (
+            <SubstitutionsPanel
+              substitutions={substitutions}
+              chordName={`${selectedChord.tonic}${selectedChord.type}`}
+              previewedId={previewedSub?.id ?? null}
+              onPreview={setPreviewedSub}
+            />
+          )}
+        </div>
       )}
     </div>
   )

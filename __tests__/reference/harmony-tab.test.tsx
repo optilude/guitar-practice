@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest"
-import { render, screen } from "@testing-library/react"
+import { render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 
 // Mock AddToGoalButton to avoid next-auth import chain
@@ -43,6 +43,7 @@ vi.mock("@/lib/theory", () => ({
       { scaleName: "Blues Scale", hint: "adds ♭5 colour" },
     ],
   }),
+  getSubstitutions: () => [],
 }))
 
 import { HarmonyTab } from "@/app/(app)/reference/_components/harmony-tab"
@@ -56,8 +57,24 @@ describe("HarmonyTab", () => {
 
   it("renders 7 chord blocks", () => {
     render(<HarmonyTab tonic="C" />)
-    const buttons = screen.getAllByRole("button")
-    expect(buttons.length).toBeGreaterThanOrEqual(7)
+    const chordGroup = screen.getByRole("group", { name: /diatonic chords/i })
+    const buttons = within(chordGroup).getAllByRole("button")
+    expect(buttons.length).toBe(7)
+  })
+
+  it("shows Soloing and Substitutions tabs when a chord is selected (first chord auto-selected)", () => {
+    render(<HarmonyTab tonic="C" />)
+    expect(screen.getByRole("button", { name: /^soloing$/i })).toBeDefined()
+    expect(screen.getByRole("button", { name: /^substitutions$/i })).toBeDefined()
+  })
+
+  it("does not show tabs when no chord is selected", async () => {
+    render(<HarmonyTab tonic="C" />)
+    const chordGroup = screen.getByRole("group", { name: /diatonic chords/i })
+    const buttons = within(chordGroup).getAllByRole("button")
+    await userEvent.click(buttons[0]!) // deselect the auto-selected I chord
+    expect(screen.queryByRole("button", { name: /^soloing$/i })).toBeNull()
+    expect(screen.queryByRole("button", { name: /^substitutions$/i })).toBeNull()
   })
 
   it("shows solo scales panel by default (I chord pre-selected)", () => {
@@ -67,29 +84,35 @@ describe("HarmonyTab", () => {
 
   it("shows solo scales panel when a chord is clicked", async () => {
     render(<HarmonyTab tonic="C" />)
-    const gButton = screen.getAllByRole("button").find(
-      (b) => b.textContent?.includes("G7") || b.textContent?.includes("G")
-    )!
-    await userEvent.click(gButton)
+    const chordGroup = screen.getByRole("group", { name: /diatonic chords/i })
+    const buttons = within(chordGroup).getAllByRole("button")
+    await userEvent.click(buttons[4]) // degree 5 (G7)
     expect(screen.getByText(/scales to solo over/i)).toBeDefined()
   })
 
   it("hides solo scales panel when same chord is clicked again (toggle)", async () => {
     render(<HarmonyTab tonic="C" />)
-    const buttons = screen.getAllByRole("button")
-    const g7Button = buttons[4] // degree 5 (G7)
-    await userEvent.click(g7Button)   // select G7
+    const chordGroup = screen.getByRole("group", { name: /diatonic chords/i })
+    const buttons = within(chordGroup).getAllByRole("button")
+    await userEvent.click(buttons[4]) // select G7 (degree 5)
     expect(screen.getByText(/scales to solo over/i)).toBeDefined()
-    await userEvent.click(g7Button)   // deselect
+    await userEvent.click(buttons[4]) // deselect
     expect(screen.queryByText(/scales to solo over/i)).toBeNull()
   })
 
   it("resets to I chord when mode changes", async () => {
     render(<HarmonyTab tonic="C" />)
-    const buttons = screen.getAllByRole("button")
+    const chordGroup = screen.getByRole("group", { name: /diatonic chords/i })
+    const buttons = within(chordGroup).getAllByRole("button")
     await userEvent.click(buttons[4]) // click V chord
     // Change mode → resets to degree 1, scales panel still visible
     await userEvent.selectOptions(screen.getByRole("combobox", { name: /mode/i }), "dorian")
     expect(screen.getByText(/scales to solo over/i)).toBeDefined()
+  })
+
+  it("switches to Substitutions tab on click shows empty state", async () => {
+    render(<HarmonyTab tonic="C" />)
+    await userEvent.click(screen.getByRole("button", { name: /^substitutions$/i }))
+    expect(screen.getByText(/no substitutions available/i)).toBeDefined()
   })
 })
