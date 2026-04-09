@@ -202,6 +202,30 @@ describe("dominant '7' suffix on Roman numerals", () => {
     expect(result.roman).toBe("I")
   })
 
+  it("C7 in C major is non-diatonic (secondary-dominant, roman 'I7')", () => {
+    // C7 is dominant; the diatonic I in C major is Cmaj7 (major) — not a dominant slot.
+    // C7 is V7/IV (secondary dominant of F), so role = secondary-dominant.
+    const result = analyzeChordInKey(parseChord("C7")!, "C", "major")
+    expect(result.roman).toBe("I7")
+    expect(result.role).toBe("secondary-dominant")
+    expect(result.score).toBe(0.5)
+  })
+
+  it("G7 in C major is diatonic (dominant slot V7)", () => {
+    // G7 is dominant and the diatonic V in C major is G7 — a dominant slot. Match allowed.
+    const result = analyzeChordInKey(parseChord("G7")!, "C", "major")
+    expect(result.role).toBe("diatonic")
+    expect(result.score).toBe(1.0)
+    expect(result.roman).toBe("V7")
+  })
+
+  it("G major triad in C major is still diatonic (non-dominant input allowed on dominant slot)", () => {
+    // A major triad (non-dominant) can still match the dominant diatonic V slot.
+    const result = analyzeChordInKey(parseChord("G")!, "C", "major")
+    expect(result.role).toBe("diatonic")
+    expect(result.score).toBe(1.0)
+  })
+
   it("G7 → Cmaj7: functional override null (tonic suppression), roman stays 'V7'", () => {
     const chords = ["G7", "Cmaj7"].map(s => parseChord(s)!)
     const analyses = detectKey(chords)

@@ -163,11 +163,15 @@ function analyzeChord(
   }
 
   const quality = normalizeQuality(inputChord.type)
+  // A dominant input chord (e.g. C7) must NOT match a non-dominant diatonic or
+  // borrowed slot (e.g. Cmaj7). Without this, C7 in C major scores 1.0 as "I".
+  // Major triads and all other non-dominant inputs are unaffected.
+  const inputIsDominant = qualityFromType(inputChord.type) === "dominant"
 
   // 1. Diatonic?
   const diatonicEntries = diatonicLookup.get(rootChroma) ?? []
   const diatonicMatch = diatonicEntries.find(e => e.quality === quality)
-  if (diatonicMatch) {
+  if (diatonicMatch && (!inputIsDominant || qualityFromType(diatonicMatch.chord.type) === "dominant")) {
     return {
       inputChord,
       degree: diatonicMatch.chord.degree,
@@ -181,7 +185,7 @@ function analyzeChord(
   for (const parallelLookup of [parallelMajorLookup, parallelMinorLookup]) {
     const parallelEntries = parallelLookup.get(rootChroma) ?? []
     const parallelMatch = parallelEntries.find(e => e.quality === quality)
-    if (parallelMatch) {
+    if (parallelMatch && (!inputIsDominant || qualityFromType(parallelMatch.chord.type) === "dominant")) {
       return {
         inputChord,
         degree: parallelMatch.chord.degree,
