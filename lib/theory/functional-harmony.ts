@@ -22,10 +22,6 @@ export interface FunctionalAnalysis {
 // Interval helpers — pitch-class comparison handles enharmonic equivalents
 // ---------------------------------------------------------------------------
 
-function pc(note: string): string {
-  return Note.pitchClass(note)
-}
-
 /** Compare by chroma (0–11) to handle enharmonic equivalents robustly. */
 function sameChroma(a: string, b: string): boolean {
   const ca = Note.chroma(a)
@@ -135,9 +131,9 @@ export function analyzeFunctionalContext(
   // The target chord is P4 above nextChord. We look up its Roman in the key.
   // ------------------------------------------------------------------
   if ((cq === "minor" || cq === "diminished") && nq === "dominant" && isP4Up(ct, nt)) {
-    const targetPc    = pc(Note.transpose(nt, "P4"))
-    const diatonic    = getDiatonicChords(tonic, mode)
-    const targetChord = diatonic.find(d => pc(d.tonic) === targetPc)
+    const targetChroma = Note.chroma(Note.transpose(nt, "P4"))
+    const diatonic     = getDiatonicChords(tonic, mode)
+    const targetChord  = diatonic.find(d => Note.chroma(d.tonic) === targetChroma)
     const targetRoman = targetChord?.roman ?? "?"
     const prefix      = cq === "diminished" ? "iiø" : "ii"
     return {
