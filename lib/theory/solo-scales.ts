@@ -126,6 +126,7 @@ export const SCALE_TONAL_NAMES: Record<string, string> = {
   "Blues Scale":             "blues",
   "Bebop Dominant":          "bebop",
   "Diminished Half-Whole":   "half-whole diminished",
+  "Whole-Half Diminished":   "whole-half diminished",
 }
 
 // ---------------------------------------------------------------------------
