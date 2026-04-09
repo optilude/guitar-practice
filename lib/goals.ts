@@ -6,6 +6,7 @@ export function computeRefKey(topicRef: {
   subtype?: string | null
   lessonId?: string | null
   userLessonId?: string | null
+  userProgressionId?: string | null
   defaultKey?: string | null
 }): string {
   if (topicRef.kind === "lesson" && topicRef.userLessonId) {
@@ -13,6 +14,9 @@ export function computeRefKey(topicRef: {
   }
   if (topicRef.kind === "lesson" && topicRef.lessonId) {
     return `lesson:${topicRef.lessonId}`
+  }
+  if (topicRef.kind === "progression" && topicRef.userProgressionId) {
+    return `user_progression:${topicRef.userProgressionId}:${topicRef.defaultKey ?? ""}`
   }
   return `${topicRef.kind}:${topicRef.subtype ?? ""}:${topicRef.defaultKey ?? ""}`
 }
@@ -23,6 +27,7 @@ type GoalTopicForDisplay = {
   defaultKey: string | null
   lesson?: { title: string } | null
   userLesson?: { title: string; url: string | null } | null
+  userProgression?: { displayName: string } | null
 }
 
 export function formatTopicName(topic: GoalTopicForDisplay): string {
@@ -40,6 +45,7 @@ export function formatTopicName(topic: GoalTopicForDisplay): string {
     case "arpeggio":
       return `${topic.defaultKey ?? ""} ${topic.subtype ?? ""} arpeggio`.trim()
     case "progression": {
+      if (topic.userProgression) return topic.userProgression.displayName
       const prog = listProgressions().find((p) => p.name === topic.subtype)
       return prog?.displayName ?? topic.subtype ?? "Unknown progression"
     }
