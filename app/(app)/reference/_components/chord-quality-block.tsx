@@ -50,6 +50,7 @@ interface ChordQualityBlockProps {
   isSelected: boolean
   onClick: () => void
   variant?: "diatonic" | "borrowed" | "non-diatonic"
+  isSubstitutionPreview?: boolean
 }
 
 export function ChordQualityBlock({
@@ -59,14 +60,19 @@ export function ChordQualityBlock({
   isSelected,
   onClick,
   variant = "diatonic",
+  isSubstitutionPreview = false,
 }: ChordQualityBlockProps) {
+  const baseStyle = chordBlockStyle(degree, variant, isSelected)
+  const style = isSubstitutionPreview
+    ? { ...baseStyle, borderStyle: "dashed" as const, borderColor: "var(--color-accent)" }
+    : baseStyle
   return (
     <button
       type="button"
       aria-pressed={isSelected}
       onClick={onClick}
       className="flex flex-col items-center rounded-lg border-2 px-3 py-2.5 text-center min-w-[68px] flex-shrink-0 transition-colors focus:outline-none focus:ring-1 focus:ring-accent cursor-pointer"
-      style={chordBlockStyle(degree, variant, isSelected)}
+      style={style}
     >
       <span className="text-[10px] text-muted-foreground mb-1">{roman}</span>
       <span className="text-sm font-semibold text-foreground leading-tight">{chordName}</span>
