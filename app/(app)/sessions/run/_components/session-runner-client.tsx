@@ -233,6 +233,8 @@ export function SessionRunnerClient({ routine }: SessionRunnerClientProps) {
               onBpmChange={handleMetronomeBpmChange}
               onStart={metronome.start}
               onStop={metronome.stop}
+              beatsPerBar={metronome.beatsPerBar}
+              onBeatsPerBarChange={metronome.setBeatsPerBar}
             />
             <NotesPanel value={notes} onChange={setNotes} />
           </div>
@@ -247,6 +249,8 @@ export function SessionRunnerClient({ routine }: SessionRunnerClientProps) {
               onBpmChange={handleMetronomeBpmChange}
               onStart={metronome.start}
               onStop={metronome.stop}
+              beatsPerBar={metronome.beatsPerBar}
+              onBeatsPerBarChange={metronome.setBeatsPerBar}
             />
           </div>
           <div className="flex-1 min-h-0 p-3 flex flex-col">
