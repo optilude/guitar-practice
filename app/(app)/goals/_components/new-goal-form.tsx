@@ -60,12 +60,13 @@ export function NewGoalForm() {
             </div>
             <div>
               <label htmlFor="goal-description" className="block text-xs text-muted-foreground mb-1">
-                Description <span className="font-normal">(optional — Markdown supported)</span>
+                Description
               </label>
               <textarea
                 id="goal-description"
                 name="description"
                 rows={3}
+                placeholder="Optional — Markdown supported"
                 className="w-full rounded border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent resize-none"
               />
             </div>

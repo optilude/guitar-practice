@@ -92,13 +92,13 @@ export function NewRoutineForm({ goalId }: NewRoutineFormProps) {
 
             <div>
               <label htmlFor="routine-description" className="block text-xs text-muted-foreground mb-1">
-                Description <span className="font-normal">(optional — Markdown supported)</span>
+                Description
               </label>
               <textarea
                 id="routine-description"
                 name="description"
                 rows={3}
-                placeholder="Optional notes about this routine…"
+                placeholder="Optional — Markdown supported"
                 className="w-full rounded border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent resize-none"
               />
             </div>
