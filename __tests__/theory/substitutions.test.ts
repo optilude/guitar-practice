@@ -101,27 +101,61 @@ describe("Tritone Substitution", () => {
 })
 
 // ---------------------------------------------------------------------------
-// Modal Mixture
+// Modal Mixture (generalised parallel borrow)
 // ---------------------------------------------------------------------------
 
 describe("Modal Mixture", () => {
-  it("fires for IV chord (degree 4) in major", () => {
-    const subs = getSubstitutions(C_MAJOR[2]!, C_MAJOR, 2, "C", "major")
-    expect(subs.filter(s => s.ruleName === "Modal Mixture").length).toBeGreaterThan(0)
+  it("fires for every degree in C major (parallel minor always differs)", () => {
+    for (const [i, c] of C_MAJOR.entries()) {
+      const subs = getSubstitutions(c, C_MAJOR, i, "C", "major")
+      expect(subs.filter(s => s.ruleName === "Modal Mixture").length).toBeGreaterThan(0)
+    }
   })
 
-  it("does not fire for I chord in major", () => {
+  it("offers Cm7 (i) from parallel minor for I (Cmaj7) in C major", () => {
     const subs = getSubstitutions(C_MAJOR[0]!, C_MAJOR, 0, "C", "major")
-    expect(subs.filter(s => s.ruleName === "Modal Mixture")).toHaveLength(0)
+    const sub = subs.find(s => s.id === "modal-mixture-aeolian-deg1")!
+    expect(sub).toBeDefined()
+    const r = sub.result as { kind: "replacement"; replacements: Array<{ chord: { tonic: string; type: string } }> }
+    expect(r.replacements[0]!.chord.tonic).toBe("C")
+    expect(r.replacements[0]!.chord.type).toBe("m7")
   })
 
-  it("offers iv-7 (same root as IV, type m7) in C major", () => {
+  it("offers Fm7 (iv) from parallel minor for IV (Fmaj7) in C major", () => {
     const subs = getSubstitutions(C_MAJOR[2]!, C_MAJOR, 2, "C", "major")
-    const mixture = subs.filter(s => s.ruleName === "Modal Mixture")
-    const ivM7 = mixture.find(s => s.id === "mixture-iv7")!
-    const r = ivM7.result as { kind: "replacement"; replacements: Array<{ chord: { tonic: string; type: string } }> }
-    expect(r.replacements[0]!.chord.tonic).toBe("F") // same root as Fmaj7
+    const sub = subs.find(s => s.id === "modal-mixture-aeolian-deg4")!
+    expect(sub).toBeDefined()
+    const r = sub.result as { kind: "replacement"; replacements: Array<{ chord: { tonic: string; type: string } }> }
+    expect(r.replacements[0]!.chord.tonic).toBe("F")
     expect(r.replacements[0]!.chord.type).toBe("m7")
+  })
+
+  it("offers Ebmaj7 (III) from parallel minor for iii (Em7) in C major", () => {
+    const iiiChord = chord("E", "m7", "minor", 3, "iii")
+    const progression = [...C_MAJOR, iiiChord]
+    const subs = getSubstitutions(iiiChord, progression, 4, "C", "major")
+    const sub = subs.find(s => s.id === "modal-mixture-aeolian-deg3")!
+    expect(sub).toBeDefined()
+    const r = sub.result as { kind: "replacement"; replacements: Array<{ chord: { tonic: string; type: string } }> }
+    expect(r.replacements[0]!.chord.tonic).toBe("Eb")
+    expect(r.replacements[0]!.chord.type).toBe("maj7")
+  })
+
+  it("does not offer parallel ionian when mode is already major/ionian", () => {
+    const subs = getSubstitutions(C_MAJOR[0]!, C_MAJOR, 0, "C", "major")
+    const mixture = subs.filter(s => s.ruleName === "Modal Mixture")
+    expect(mixture.every(s => !s.id.includes("ionian"))).toBe(true)
+  })
+
+  it("offers both parallel minor and major when in a non-ionian/aeolian mode", () => {
+    // C Dorian degree IV = F7. Parallel Ionian → Fmaj7, Parallel Aeolian → Fm7 (both differ)
+    const fSeventh = chord("F", "7", "dominant", 4, "IV")
+    const dorian: ProgressionChord[] = [chord("C", "m7", "minor", 1, "i"), fSeventh]
+    const subs = getSubstitutions(fSeventh, dorian, 1, "C", "dorian")
+    const mixture = subs.filter(s => s.ruleName === "Modal Mixture")
+    expect(mixture).toHaveLength(2)
+    expect(mixture.map(s => s.id)).toContain("modal-mixture-aeolian-deg4")
+    expect(mixture.map(s => s.id)).toContain("modal-mixture-ionian-deg4")
   })
 
   it("all Modal Mixture results have kind 'replacement'", () => {

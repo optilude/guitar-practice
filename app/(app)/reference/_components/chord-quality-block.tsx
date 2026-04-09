@@ -41,12 +41,12 @@ export function chordBlockStyle(
   degree: number,
   variant: "diatonic" | "borrowed" | "non-diatonic",
   isSelected: boolean,
-): { borderColor: string; backgroundColor: string; borderStyle: "solid" | "dashed" } {
+): { borderColor: string; backgroundColor: string; borderStyle: "solid" | "dashed" | "dotted" } {
   if (variant === "non-diatonic") {
     return {
       borderColor: isSelected ? "rgba(55,65,81,0.7)" : "rgba(55,65,81,0.4)",    // gray-700
       backgroundColor: isSelected ? "rgba(107,114,128,0.18)" : "rgba(107,114,128,0.08)", // gray-500
-      borderStyle: "solid",
+      borderStyle: "dotted",
     }
   }
   const hex = DEGREE_HEX[degree] ?? "#6b7280"
@@ -84,7 +84,7 @@ export function ChordQualityBlock({
 }: ChordQualityBlockProps) {
   const baseStyle = chordBlockStyle(degree, variant, isSelected)
   const style = isSubstitutionPreview
-    ? { ...baseStyle, borderStyle: "dashed" as const, borderColor: "var(--color-accent)" }
+    ? { ...baseStyle, borderStyle: "solid" as const, borderColor: "var(--color-accent)" }
     : baseStyle
   return (
     <button

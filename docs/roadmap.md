@@ -49,8 +49,6 @@ Account management and better authentication support. Consider moving to a SaaS 
 
 # Future ideas
 
-* Add borrowed chords to substitutions suggestions?
-
 * Create a new tool to analyse a progression using functional harmony analysis, as well as see chord subs, without having to create and save a permanent custom progression, but do allow such a progression to be saved. Make it possible to swap in subs "permanently". (This may need to be aware of bars as well as just a sequence of chords.)
 
 * Align the selector values in Inversions and Chords? They currently use different conventions (descriptive vs. common suffixes). The argument against is that `chords-db` uses the suffix style, so we'd need a translation, and these are more the chord symbols you'd see in a song sheet. The Inversions tab is more about studying and memorising inversions for use in improvisation or comping, where the theoretical function of each chord is more relevant.
@@ -69,7 +67,6 @@ Audio:
 More theory topics:
 
 * Add support for quartal triads to the Reference section?
-
 
 # Known issues
 

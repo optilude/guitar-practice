@@ -112,57 +112,53 @@ function tritoneSubstitution(
 }
 
 // ---------------------------------------------------------------------------
-// Rule 3: Modal Mixture (Borrowed Chords)
+// Rule 3: Modal Mixture — Parallel Borrow (generalised to all degrees)
+//
+// For the selected chord at degree N, offer the same-degree chord from the
+// parallel minor (Aeolian) and/or parallel major (Ionian). Skips the parallel
+// that IS the current mode, and skips any option that is the same chord.
 // ---------------------------------------------------------------------------
 
-function modalMixture(
+function parallelBorrow(
   chord: ProgressionChord,
   selectedIndex: number,
   tonic: string,
   mode: string,
 ): ChordSubstitution[] {
-  // Subdominant function: degree IV in major-family modes
-  const majorFamilyModes = new Set(["major", "ionian", "lydian", "mixolydian", "dorian"])
-  if (chord.degree !== 4 || !majorFamilyModes.has(mode)) return []
+  if (chord.degree < 1 || chord.degree > 7) return []
+  const deg = chord.degree
+  const results: ChordSubstitution[] = []
 
-  const bVII7Root   = Note.transpose(tonic, "m7")  // minor 7th above tonic
-  const bVImaj7Root = Note.transpose(tonic, "m6")  // minor 6th above tonic
-
-  return [
-    {
-      id: "mixture-iv7",
-      ruleName: "Modal Mixture",
-      label: `${chord.tonic}m7`,
-      effect: "iv-7 — parallel minor darkens the colour",
-      result: {
-        kind: "replacement",
-        replacements: [{ index: selectedIndex, chord: mkChord(chord.tonic, "m7", "iv-7", tonic, mode) }],
-      },
-      sortRank: 30,
-    },
-    {
-      id: "mixture-bvii7",
-      ruleName: "Modal Mixture",
-      label: `${normalizeToKey(bVII7Root, tonic, mode)}7`,
-      effect: "bVII7 — borrowed flat-seven dominant",
-      result: {
-        kind: "replacement",
-        replacements: [{ index: selectedIndex, chord: mkChord(bVII7Root, "7", "bVII7", tonic, mode) }],
-      },
-      sortRank: 31,
-    },
-    {
-      id: "mixture-bvimaj7",
-      ruleName: "Modal Mixture",
-      label: `${normalizeToKey(bVImaj7Root, tonic, mode)}maj7`,
-      effect: "bVImaj7 — borrowed from parallel minor",
-      result: {
-        kind: "replacement",
-        replacements: [{ index: selectedIndex, chord: mkChord(bVImaj7Root, "maj7", "bVImaj7", tonic, mode) }],
-      },
-      sortRank: 32,
-    },
+  const PARALLELS: Array<{ parallelMode: string; aliases: string[]; fromLabel: string; sortRank: number }> = [
+    { parallelMode: "aeolian", aliases: ["aeolian", "minor"], fromLabel: "parallel minor", sortRank: 30 },
+    { parallelMode: "ionian",  aliases: ["ionian",  "major"], fromLabel: "parallel major", sortRank: 31 },
   ]
+
+  for (const { parallelMode, aliases, fromLabel, sortRank } of PARALLELS) {
+    if (aliases.includes(mode)) continue  // already in this key family — no borrow
+
+    const diatonic = getDiatonicChords(tonic, parallelMode)
+    const dc = diatonic.find(d => d.degree === deg)
+    if (!dc) continue
+    if (dc.tonic === chord.tonic && dc.type === chord.type) continue  // same chord
+
+    results.push({
+      id: `modal-mixture-${parallelMode}-deg${deg}`,
+      ruleName: "Modal Mixture",
+      label: `${dc.tonic}${dc.type}`,
+      effect: `${dc.roman} — ${fromLabel} color`,
+      result: {
+        kind: "replacement" as const,
+        replacements: [{
+          index: selectedIndex,
+          chord: { tonic: dc.tonic, type: dc.type, roman: dc.roman, quality: dc.quality, degree: dc.degree },
+        }],
+      },
+      sortRank,
+    } satisfies ChordSubstitution)
+  }
+
+  return results
 }
 
 // ---------------------------------------------------------------------------
@@ -366,7 +362,7 @@ export function getSubstitutions(
   const all = [
     ...diatonicSubstitution(chord, selectedIndex, tonic, mode),
     ...tritoneSubstitution(chord, selectedIndex, tonic, mode),
-    ...modalMixture(chord, selectedIndex, tonic, mode),
+    ...parallelBorrow(chord, selectedIndex, tonic, mode),
     ...secondaryDominant(chord, selectedIndex, tonic, mode),
     ...iiVApproach(chord, selectedIndex, tonic, mode),
     ...diminishedPassing(chord, chords, selectedIndex, tonic, mode),
