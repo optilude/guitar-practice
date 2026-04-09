@@ -100,6 +100,30 @@ export function getSubstitutions(
 
 Returns all applicable substitutions sorted by `sortRank`. Uses TonalJS `Note.transpose` and `Interval` for all interval arithmetic. Does **not** consult the key-relative Roman numeral analysis — all V/X and ii/X computations work directly from chord roots.
 
+### Enharmonic normalization
+
+Every root note produced by `Note.transpose()` must be normalized to the correct enharmonic spelling for the key before being placed in a `PreviewChord`. The helper:
+
+```typescript
+function normalizeToKey(note: string, tonic: string, mode: string): string {
+  const sig = (mode === "major" || mode === "ionian")
+    ? Key.majorKey(tonic).keySignature
+    : Key.minorKey(tonic).keySignature
+  const preferFlats  = sig.includes("b")
+  const preferSharps = sig.includes("#")
+
+  if (preferFlats  && note.includes("#")) return Note.enharmonic(note)
+  if (preferSharps && note.includes("b")) return Note.enharmonic(note)
+  return note
+}
+```
+
+Apply `normalizeToKey(root, tonic, mode)` to every computed root in every rule — tritone roots, V7/X roots, ii/X roots, dim7 roots, cycle-of-5ths roots, and Coltrane sequence roots. For the natural keys where the key signature is empty (C major, A minor), TonalJS returns sensible defaults and no normalization is needed.
+
+Edge cases:
+- Double accidentals (e.g. `B##`) are unlikely in practice but `Note.enharmonic()` handles them correctly.
+- `Note.enharmonic()` returns `""` for notes it cannot resolve; treat that as a signal to use the original and log a warning during development.
+
 ### Rule implementations
 
 **1. Diatonic Substitution** (`sortRank` 10–11)
