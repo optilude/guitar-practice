@@ -106,33 +106,33 @@ vi.mock("@/lib/theory", () => ({
   ],
 }))
 
-import ReferencePage from "@/app/(app)/reference/page"
+import { ReferencePageClient } from "@/app/(app)/reference/_components/reference-page-client"
 
 describe("ReferencePage", () => {
   it("renders the page heading", () => {
-    render(<ReferencePage />)
+    render(<ReferencePageClient userProgressions={[]} />)
     expect(screen.getByText("Reference")).toBeDefined()
   })
 
   it("renders the Circle of Fifths", () => {
-    render(<ReferencePage />)
+    render(<ReferencePageClient userProgressions={[]} />)
     expect(screen.getByRole("img", { name: /circle of fifths/i })).toBeDefined()
   })
 
   it("defaults to key C shown in the circle centre", () => {
-    render(<ReferencePage />)
+    render(<ReferencePageClient userProgressions={[]} />)
     const cElements = screen.getAllByText("C")
     expect(cElements.length).toBeGreaterThanOrEqual(1)
   })
 
   it("renders Modes and Progressions tab buttons", () => {
-    render(<ReferencePage />)
+    render(<ReferencePageClient userProgressions={[]} />)
     expect(screen.getByRole("tab", { name: "Modes" })).toBeDefined()
     expect(screen.getByRole("tab", { name: "Progressions" })).toBeDefined()
   })
 
   it("renders Study Tools tab buttons: Scales, Arpeggios, Chords, Inversions", () => {
-    render(<ReferencePage />)
+    render(<ReferencePageClient userProgressions={[]} />)
     expect(screen.getByRole("tab", { name: "Scales" })).toBeDefined()
     expect(screen.getByRole("tab", { name: "Arpeggios" })).toBeDefined()
     expect(screen.getByRole("tab", { name: "Chords" })).toBeDefined()
@@ -140,26 +140,26 @@ describe("ReferencePage", () => {
   })
 
   it("defaults to the Scales tab", () => {
-    render(<ReferencePage />)
+    render(<ReferencePageClient userProgressions={[]} />)
     const scalesTab = screen.getByRole("tab", { name: "Scales" })
     expect(scalesTab).toHaveAttribute("aria-selected", "true")
   })
 
   it("switches to Chords panel when Chords tab is clicked", async () => {
-    render(<ReferencePage />)
+    render(<ReferencePageClient userProgressions={[]} />)
     await userEvent.click(screen.getByRole("tab", { name: "Chords" }))
     expect(screen.getByRole("tab", { name: "Chords" })).toHaveAttribute("aria-selected", "true")
     expect(screen.getByLabelText(/chord type/i)).toBeDefined()
   })
 
   it("switches to Arpeggios panel when Arpeggios tab is clicked", async () => {
-    render(<ReferencePage />)
+    render(<ReferencePageClient userProgressions={[]} />)
     await userEvent.click(screen.getByRole("tab", { name: "Arpeggios" }))
     expect(screen.getByRole("tab", { name: "Arpeggios" })).toHaveAttribute("aria-selected", "true")
   })
 
   it("updates the selected key when a circle key is clicked", async () => {
-    render(<ReferencePage />)
+    render(<ReferencePageClient userProgressions={[]} />)
     const gButton = screen.getByRole("button", { name: "Select key G" })
     await userEvent.click(gButton)
     expect(gButton).toHaveAttribute("aria-pressed", "true")

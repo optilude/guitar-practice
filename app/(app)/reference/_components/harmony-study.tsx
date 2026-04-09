@@ -4,11 +4,13 @@ import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { HarmonyTab } from "./harmony-tab"
 import { ProgressionsTab } from "./progressions-tab"
+import type { UserProgressionForTab } from "./reference-page-client"
 
 interface HarmonyStudyProps {
   tonic: string
   onChordSelect?: (tonic: string, type: string, quality: string, primaryScaleName: string) => void
   onScaleSelect?: (tonic: string, scaleName: string) => void
+  userProgressions: UserProgressionForTab[]
 }
 
 type HarmonySubTab = "harmony" | "progressions"
@@ -20,7 +22,7 @@ const TAB_LABELS: Record<HarmonySubTab, string> = {
   progressions: "Progressions",
 }
 
-export function HarmonyStudy({ tonic, onChordSelect, onScaleSelect }: HarmonyStudyProps) {
+export function HarmonyStudy({ tonic, onChordSelect, onScaleSelect, userProgressions }: HarmonyStudyProps) {
   const [tab, setTab] = useState<HarmonySubTab>("harmony")
 
   return (
@@ -64,7 +66,7 @@ export function HarmonyStudy({ tonic, onChordSelect, onScaleSelect }: HarmonyStu
         className="pt-4"
       >
         {tab === "harmony" && <HarmonyTab tonic={tonic} onChordSelect={onChordSelect} onScaleSelect={onScaleSelect} />}
-        {tab === "progressions" && <ProgressionsTab tonic={tonic} onChordSelect={onChordSelect} onScaleSelect={onScaleSelect} />}
+        {tab === "progressions" && <ProgressionsTab tonic={tonic} onChordSelect={onChordSelect} onScaleSelect={onScaleSelect} userProgressions={userProgressions} />}
       </div>
     </div>
   )

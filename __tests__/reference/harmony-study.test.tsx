@@ -54,25 +54,25 @@ import { HarmonyStudy } from "@/app/(app)/reference/_components/harmony-study"
 
 describe("HarmonyStudy", () => {
   it("renders Modes and Progressions tab buttons", () => {
-    render(<HarmonyStudy tonic="C" />)
+    render(<HarmonyStudy tonic="C" userProgressions={[]} />)
     expect(screen.getByRole("tab", { name: "Modes" })).toBeDefined()
     expect(screen.getByRole("tab", { name: "Progressions" })).toBeDefined()
   })
 
   it("defaults to Modes tab active", () => {
-    render(<HarmonyStudy tonic="C" />)
+    render(<HarmonyStudy tonic="C" userProgressions={[]} />)
     const harmonyTab = screen.getByRole("tab", { name: "Modes" })
     expect(harmonyTab).toHaveAttribute("aria-selected", "true")
   })
 
   it("Progressions tab is not selected by default", () => {
-    render(<HarmonyStudy tonic="C" />)
+    render(<HarmonyStudy tonic="C" userProgressions={[]} />)
     const progressionsTab = screen.getByRole("tab", { name: "Progressions" })
     expect(progressionsTab).toHaveAttribute("aria-selected", "false")
   })
 
   it("clicking Progressions tab shows progressions content", async () => {
-    render(<HarmonyStudy tonic="C" />)
+    render(<HarmonyStudy tonic="C" userProgressions={[]} />)
     await userEvent.click(screen.getByRole("tab", { name: "Progressions" }))
     expect(screen.getByRole("tab", { name: "Progressions" })).toHaveAttribute("aria-selected", "true")
     // ProgressionsTab shows a progression selector
@@ -80,7 +80,7 @@ describe("HarmonyStudy", () => {
   })
 
   it("clicking Modes tab after Progressions returns to modes content", async () => {
-    render(<HarmonyStudy tonic="C" />)
+    render(<HarmonyStudy tonic="C" userProgressions={[]} />)
     await userEvent.click(screen.getByRole("tab", { name: "Progressions" }))
     await userEvent.click(screen.getByRole("tab", { name: "Modes" }))
     expect(screen.getByRole("tab", { name: "Modes" })).toHaveAttribute("aria-selected", "true")

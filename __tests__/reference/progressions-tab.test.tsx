@@ -7,6 +7,10 @@ vi.mock("@/components/add-to-goal-button", () => ({
   AddToGoalButton: () => null,
 }))
 
+vi.mock("@/lib/theory/user-progressions", () => ({
+  getUserProgressionChords: () => [],
+}))
+
 vi.mock("tonal", () => ({
   Scale: { get: () => ({ notes: ["C", "D", "E", "F", "G", "A", "B"] }) },
 }))
@@ -55,30 +59,30 @@ import { ProgressionsTab } from "@/app/(app)/reference/_components/progressions-
 
 describe("ProgressionsTab", () => {
   it("renders the progression selector", () => {
-    render(<ProgressionsTab tonic="C" />)
+    render(<ProgressionsTab tonic="C" userProgressions={[]} />)
     expect(screen.getByRole("combobox", { name: /progression/i })).toBeDefined()
   })
 
   it("renders chord blocks for the default progression", () => {
-    render(<ProgressionsTab tonic="C" />)
+    render(<ProgressionsTab tonic="C" userProgressions={[]} />)
     // 4 chord buttons for pop-standard
     const buttons = screen.getAllByRole("button")
     expect(buttons.length).toBeGreaterThanOrEqual(4)
   })
 
   it("always shows the progression-wide scale recommendation", () => {
-    render(<ProgressionsTab tonic="C" />)
+    render(<ProgressionsTab tonic="C" userProgressions={[]} />)
     expect(screen.getByText(/over the whole progression/i)).toBeDefined()
     expect(screen.getByText(/major scale/i)).toBeDefined()
   })
 
   it("shows per-chord scale panel by default (first chord pre-selected)", () => {
-    render(<ProgressionsTab tonic="C" />)
+    render(<ProgressionsTab tonic="C" userProgressions={[]} />)
     expect(screen.getByText(/scales to solo over/i)).toBeDefined()
   })
 
   it("shows per-chord scale panel with Also works when chord is clicked", async () => {
-    render(<ProgressionsTab tonic="C" />)
+    render(<ProgressionsTab tonic="C" userProgressions={[]} />)
     const chordGroup = screen.getByRole("group", { name: /progression chords/i })
     const chordButtons = within(chordGroup).getAllByRole("button")
     await userEvent.click(chordButtons[1]) // click second chord (G7)
@@ -88,7 +92,7 @@ describe("ProgressionsTab", () => {
   })
 
   it("hides per-chord panel when same chord is clicked again", async () => {
-    render(<ProgressionsTab tonic="C" />)
+    render(<ProgressionsTab tonic="C" userProgressions={[]} />)
     const chordGroup = screen.getByRole("group", { name: /progression chords/i })
     const chordButtons = within(chordGroup).getAllByRole("button")
     await userEvent.click(chordButtons[1]) // select second chord
@@ -98,7 +102,7 @@ describe("ProgressionsTab", () => {
   })
 
   it("resets to first chord when progression changes", async () => {
-    render(<ProgressionsTab tonic="C" />)
+    render(<ProgressionsTab tonic="C" userProgressions={[]} />)
     const chordGroup = screen.getByRole("group", { name: /progression chords/i })
     const chordButtons = within(chordGroup).getAllByRole("button")
     await userEvent.click(chordButtons[1]) // select chord at index 1
