@@ -310,6 +310,7 @@ export function HarmonyTab({ tonic, defaultMode, onChordSelect, onScaleSelect }:
             <SoloScalesPanel
               scales={scales}
               chordName={`${selectedChord.tonic}${selectedChord.type}`}
+              romanNumeral={selectedChord.roman}
               onScaleSelect={onScaleSelect}
             />
           )}

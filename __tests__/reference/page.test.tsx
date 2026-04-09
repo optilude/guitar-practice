@@ -106,6 +106,7 @@ vi.mock("@/lib/theory", () => ({
   ],
   getSubstitutions: () => [],
   analyzeFunctionalContext: () => ({ romanOverride: null, scalesOverride: null }),
+  INVERSION_TYPES: ["major", "minor", "dim", "aug", "maj7", "m7", "7"],
 }))
 
 import { ReferencePageClient } from "@/app/(app)/reference/_components/reference-page-client"

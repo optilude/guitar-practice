@@ -73,7 +73,6 @@ More theory topics:
 
 # Known issues
 
-* Non-diatonic chords are not correctly shown on the Progressions view on the Reference page (gray tile) and borrowed/substituted chords are also not correctly highlighted (with a dashed border). This suggest a DRY failure as the colour/highlight logic should be shared as much as possible.
 * Dominant chords should perhaps always be considered "borrowed" if non-diatonic?
 
 * When clicking on a chord in the Progressions tab, the Inversions tab is updated only to major or minor, not more precise chord types, e.g m7 -> minor, maj7 -> major.
@@ -103,12 +102,6 @@ Chords:
 * Music theory: https://www.simplifyingtheory.com
 
 # Prompts
-
-## Clarifying when functional analysis scales have been applied
-
-The functional analysis rules override the recommended scales for a chord in certain circumstances, e.g. a progression with a ii/IV and V7/IV ahead of a major IV (ii-V-I to a major IV) will recommend Dorian for the ii and Mixolydian for the V. This retains the header like "SCALES TO SOLO OVER GM7". Change this to e.g. "SCALES TO SOLO OVER GM7 as a ii/IV" – add the functional harmony purpose. This makes it explicit why this scale was chosen.
-
-In fact, we can generalise this to just include the Roman numeral of the selected chord tile in all "Scales to solo over" titles when viewing a mode or progression (it won't work on the Chords and Arpeggios tabs). So the same Gm7 not working as a ii in ii-V-I would be "SCALES TO SOLO OVER GM7 as a v" (since Gm7 is a minor fifth in the context of C Ionian).
 
 ## Start phase 8
 

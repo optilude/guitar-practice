@@ -3,7 +3,9 @@
 import { useState, useEffect, useRef, useMemo } from "react"
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
+import { Scale } from "tonal"
 import { listProgressions, getProgression, getSoloScales, analyzeFunctionalContext } from "@/lib/theory"
+import { SCALE_TONAL_NAMES } from "@/lib/theory/solo-scales"
 import { getSubstitutions } from "@/lib/theory"
 import { SubstitutionsPanel } from "./substitutions-panel"
 import type { ChordSubstitution, PreviewChord } from "@/lib/theory/types"
@@ -11,6 +13,7 @@ import type { FunctionalAnalysis, ChordContext } from "@/lib/theory"
 import { cn } from "@/lib/utils"
 import { getUserProgressionChords } from "@/lib/theory/user-progressions"
 import { ChordQualityBlock, targetDegreeFromRoman } from "./chord-quality-block"
+import { analyzeChordInKey, parseChord } from "@/lib/theory/key-finder"
 import { SoloScalesPanel } from "./solo-scales-panel"
 import { AddToGoalButton } from "@/components/add-to-goal-button"
 import type { UserProgressionForTab } from "./reference-page-client"
@@ -40,6 +43,29 @@ const MODE_TO_SCALE_TYPE: Record<string, string> = {
 function modeToScaleType(mode: string): string {
   return MODE_TO_SCALE_TYPE[mode]
     ?? `${mode.charAt(0).toUpperCase()}${mode.slice(1)} Scale`
+}
+
+// Map TonalJS mode names to the SOLO_SCALE_TO_PANEL_TYPE / SCALE_TONAL_NAMES key used by
+// onScaleSelect and noteString. Needed to make the "Over the whole progression" section
+// link to the Scales tab and show scale notes.
+const MODE_TO_SOLO_SCALE_NAME: Record<string, string> = {
+  ionian:             "Ionian (major)",
+  major:              "Ionian (major)",
+  dorian:             "Dorian",
+  phrygian:           "Phrygian",
+  lydian:             "Lydian",
+  mixolydian:         "Mixolydian",
+  aeolian:            "Aeolian (natural minor)",
+  minor:              "Aeolian (natural minor)",
+  locrian:            "Locrian",
+  "melodic minor":    "Melodic Minor",
+  "harmonic minor":   "Harmonic Minor",
+  "dorian b2":        "Dorian b2",
+  "lydian augmented": "Lydian Augmented",
+  "lydian dominant":  "Lydian Dominant",
+  "mixolydian b6":    "Mixolydian b6",
+  "locrian #2":       "Locrian #2",
+  altered:            "Altered",
 }
 
 interface ProgressionsTabProps {
@@ -133,6 +159,12 @@ export function ProgressionsTab({
     : builtinProg?.recommendedScaleType ?? ""
   const mode                  = userProg?.mode ?? builtinProg?.mode ?? "major"
 
+  // Progression-wide scale for "Over the whole progression" section
+  const progressionSoloScaleName = MODE_TO_SOLO_SCALE_NAME[mode]
+  const progressionScaleNotes = progressionSoloScaleName
+    ? Scale.get(`${tonic} ${SCALE_TONAL_NAMES[progressionSoloScaleName] ?? mode}`).notes.join(" ")
+    : ""
+
   const selectedChord = selectedIndex !== null ? chords[selectedIndex] ?? null : null
 
   // Close popover on click-outside
@@ -197,6 +229,10 @@ export function ProgressionsTab({
       ),
     [chords, tonic, mode],
   )
+
+  const selectedDisplayRoman = selectedIndex !== null
+    ? (functionalAnalyses[selectedIndex]?.romanOverride ?? chords[selectedIndex]?.roman ?? null)
+    : null
 
   const scales = selectedChord
     ? (selectedIndex !== null
@@ -385,10 +421,15 @@ export function ProgressionsTab({
               ? (functionalAnalyses[i]?.romanOverride ?? chord.roman)
               : chord.roman
             const targetDegree = targetDegreeFromRoman(displayRoman)
-            const effectiveDegree = targetDegree ?? chord.degree ?? 1
+            const inputChord = parseChord(`${chord.tonic}${chord.type}`)
+            const keyAnalysis = inputChord ? analyzeChordInKey(inputChord, tonic, mode) : null
+            const role = keyAnalysis?.role ?? "non-diatonic"
+            const effectiveDegree = targetDegree ?? keyAnalysis?.degree ?? chord.degree ?? 1
             const effectiveVariant = targetDegree !== null
               ? "borrowed"
-              : chord.degree !== undefined ? "diatonic" : "non-diatonic"
+              : role === "diatonic" ? "diatonic"
+              : role === "borrowed" ? "borrowed"
+              : "non-diatonic"
             return (
               <div key={i} className="flex items-center gap-1 flex-shrink-0">
                 {i > 0 && <span className="text-muted-foreground text-sm flex-shrink-0">→</span>}
@@ -447,6 +488,7 @@ export function ProgressionsTab({
             <SoloScalesPanel
               scales={scales}
               chordName={`${selectedChord.tonic}${selectedChord.type}`}
+              romanNumeral={selectedDisplayRoman ?? undefined}
               onScaleSelect={onScaleSelect}
             />
           )}
@@ -467,9 +509,28 @@ export function ProgressionsTab({
         <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
           Over the whole progression
         </p>
-        <p className="text-sm font-semibold text-foreground">
-          {tonic} {recommendedScaleType}
-        </p>
+        {progressionSoloScaleName ? (
+          <button
+            type="button"
+            onClick={() => onScaleSelect?.(tonic, progressionSoloScaleName)}
+            className="flex items-center gap-3 flex-wrap text-left group cursor-pointer"
+            title="Open in Scales tab"
+          >
+            <span className="flex items-baseline gap-1">
+              <span className="text-sm font-semibold text-foreground group-hover:text-accent transition-colors">
+                {tonic} {recommendedScaleType}
+              </span>
+              <span className="text-xs text-muted-foreground/40 group-hover:text-accent transition-colors select-none">⏵</span>
+            </span>
+            {progressionScaleNotes && (
+              <span className="text-xs text-muted-foreground">· {progressionScaleNotes}</span>
+            )}
+          </button>
+        ) : (
+          <p className="text-sm font-semibold text-foreground">
+            {tonic} {recommendedScaleType}
+          </p>
+        )}
       </div>
     </div>
   )

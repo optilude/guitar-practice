@@ -15,6 +15,11 @@ vi.mock("tonal", () => ({
   Scale: { get: () => ({ notes: ["C", "D", "E", "F", "G", "A", "B"] }) },
 }))
 
+vi.mock("@/lib/theory/key-finder", () => ({
+  parseChord: (symbol: string) => ({ root: "C", type: "", symbol }),
+  analyzeChordInKey: () => ({ degree: 1, roman: "I", score: 1.0, role: "diatonic", inputChord: { root: "C", type: "", symbol: "C" } }),
+}))
+
 vi.mock("@/lib/theory", () => ({
   listProgressions: () => [
     {

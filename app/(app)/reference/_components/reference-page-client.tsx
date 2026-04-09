@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { INVERSION_TYPES } from "@/lib/theory"
 import { CircleOfFifths } from "./circle-of-fifths"
 import { HarmonyStudy } from "./harmony-study"
 import { ScalePanel } from "./scale-panel"
@@ -90,7 +91,7 @@ export function ReferencePageClient({ userProgressions }: ReferencePageClientPro
     setPanelRoot(chordTonic)
     setPanelChordTypeTrigger({ type })
     setPanelArpeggioTypeTrigger({ type })
-    const inversionType = QUALITY_TO_INVERSION_TYPE[quality]
+    const inversionType = INVERSION_TYPES.includes(type) ? type : QUALITY_TO_INVERSION_TYPE[quality]
     if (inversionType) setPanelInversionTypeTrigger({ type: inversionType })
     const panelScaleType = SOLO_SCALE_TO_PANEL_TYPE[primaryScaleName]
     if (panelScaleType) setPanelScaleTypeTrigger({ type: panelScaleType })

@@ -6,7 +6,8 @@ import type { SoloScales } from "@/lib/theory/types"
 
 interface SoloScalesPanelProps {
   scales: SoloScales
-  chordName: string  // e.g. "G7", "Am7" — used in heading
+  chordName: string       // e.g. "G7", "Am7" — used in heading
+  romanNumeral?: string   // e.g. "ii/IV", "V7" — appended to heading when present
   onScaleSelect?: (tonic: string, scaleName: string) => void
 }
 
@@ -16,13 +17,13 @@ function noteString(tonic: string, scaleName: string): string {
   return Scale.get(`${tonic} ${tonalName}`).notes.join(" ")
 }
 
-export function SoloScalesPanel({ scales, chordName, onScaleSelect }: SoloScalesPanelProps) {
+export function SoloScalesPanel({ scales, chordName, romanNumeral, onScaleSelect }: SoloScalesPanelProps) {
   const primaryNotes = noteString(scales.chordTonic, scales.primary.scaleName)
 
   return (
     <div className="space-y-3">
       <p className="text-xs uppercase tracking-widest text-muted-foreground">
-        Scales to solo over {chordName}
+        Scales to solo over {chordName}{romanNumeral && ` as ${romanNumeral}`}
       </p>
 
       {/* Primary scale */}
