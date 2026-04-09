@@ -48,6 +48,7 @@ model User {
   updatedAt        DateTime          @updatedAt
   goals            Goal[]
   userLessons      UserLesson[]
+  userProgressions UserProgression[]
   practiceSessions PracticeSession[]
 }
 
@@ -108,6 +109,8 @@ model GoalTopic {
   lesson        Topic?        @relation(fields: [lessonId], references: [id])
   userLessonId  String?
   userLesson    UserLesson? @relation(fields: [userLessonId], references: [id], onDelete: SetNull)
+  userProgressionId String?
+  userProgression   UserProgression? @relation(fields: [userProgressionId], references: [id], onDelete: SetNull)
   defaultKey    String?
   refKey        String
   createdAt     DateTime      @default(now())
@@ -169,6 +172,22 @@ model UserLesson {
   goalTopics  GoalTopic[]
 
   @@index([userId, categoryId])
+}
+
+model UserProgression {
+  id          String      @id @default(cuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayName String
+  description String      @default("")
+  mode        String
+  degrees     String[]
+  order       Int
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  goalTopics  GoalTopic[]
+
+  @@index([userId])
 }
 
 // ── Phase 6 models ────────────────────────────────────────────────────────────
