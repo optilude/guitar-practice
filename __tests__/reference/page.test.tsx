@@ -105,6 +105,7 @@ vi.mock("@/lib/theory", () => ({
     { roman: "I", nashville: "1", tonic, type: "maj7", quality: "major", degree: 1 },
   ],
   getSubstitutions: () => [],
+  analyzeFunctionalContext: () => ({ romanOverride: null, scalesOverride: null }),
 }))
 
 import { ReferencePageClient } from "@/app/(app)/reference/_components/reference-page-client"

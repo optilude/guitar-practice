@@ -54,6 +54,7 @@ vi.mock("@/lib/theory", () => ({
     additional: [{ scaleName: "Minor Pentatonic", hint: "bluesy" }],
   }),
   getSubstitutions: () => [],
+  analyzeFunctionalContext: () => ({ romanOverride: null, scalesOverride: null }),
 }))
 
 import { ProgressionsTab } from "@/app/(app)/reference/_components/progressions-tab"
