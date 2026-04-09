@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { btn } from "@/lib/button-styles"
+import { TIME_SIGNATURES } from "@/lib/theory/time-signatures"
 
 interface MetronomePanelProps {
   bpm: number
@@ -10,9 +11,19 @@ interface MetronomePanelProps {
   onBpmChange: (bpm: number) => void
   onStart: () => void
   onStop: () => void
+  beatsPerBar?: number
+  onBeatsPerBarChange?: (beats: number) => void
 }
 
-export function MetronomePanel({ bpm, isRunning, onBpmChange, onStart, onStop }: MetronomePanelProps) {
+export function MetronomePanel({
+  bpm,
+  isRunning,
+  onBpmChange,
+  onStart,
+  onStop,
+  beatsPerBar,
+  onBeatsPerBarChange,
+}: MetronomePanelProps) {
   const [inputValue, setInputValue] = useState<string | null>(null)
 
   function commitInput() {
@@ -25,6 +36,18 @@ export function MetronomePanel({ bpm, isRunning, onBpmChange, onStart, onStop }:
   return (
     <div className="flex items-center gap-3 p-2 rounded-lg border border-border bg-card">
       <span className="text-xs uppercase tracking-widest text-muted-foreground shrink-0">BPM</span>
+      {beatsPerBar !== undefined && onBeatsPerBarChange && (
+        <select
+          value={beatsPerBar}
+          onChange={e => onBeatsPerBarChange(Number(e.target.value))}
+          aria-label="Time signature"
+          className="bg-card border border-border rounded px-2 py-1 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
+        >
+          {TIME_SIGNATURES.map(sig => (
+            <option key={sig.label} value={sig.beats}>{sig.label}</option>
+          ))}
+        </select>
+      )}
       <div className="flex items-center gap-1">
         <button
           onClick={() => onBpmChange(Math.max(20, bpm - 1))}
