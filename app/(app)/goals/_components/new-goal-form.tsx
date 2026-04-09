@@ -44,20 +44,31 @@ export function NewGoalForm() {
             className="w-full max-w-md bg-card border border-border rounded-lg shadow-xl p-6 space-y-4"
           >
             <h2 className="text-sm font-semibold text-foreground">New goal</h2>
-            <input
-              name="title"
-              placeholder="Goal title"
-              required
-              maxLength={120}
-              autoFocus
-              className="w-full rounded border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent"
-            />
-            <textarea
-              name="description"
-              placeholder="Description (optional — Markdown supported)"
-              rows={3}
-              className="w-full rounded border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent resize-none"
-            />
+            <div>
+              <label htmlFor="goal-title" className="block text-xs text-muted-foreground mb-1">
+                Goal title
+              </label>
+              <input
+                id="goal-title"
+                name="title"
+                placeholder="e.g. Learn jazz comping"
+                required
+                maxLength={120}
+                autoFocus
+                className="w-full rounded border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent"
+              />
+            </div>
+            <div>
+              <label htmlFor="goal-description" className="block text-xs text-muted-foreground mb-1">
+                Description <span className="font-normal">(optional — Markdown supported)</span>
+              </label>
+              <textarea
+                id="goal-description"
+                name="description"
+                rows={3}
+                className="w-full rounded border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent resize-none"
+              />
+            </div>
             {error && <p className="text-xs text-red-500">{error}</p>}
             <div className="flex gap-3 justify-end">
               <button

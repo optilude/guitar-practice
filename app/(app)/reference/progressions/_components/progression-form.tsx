@@ -135,7 +135,7 @@ export function ProgressionForm({ initialData }: ProgressionFormProps) {
     <div className="space-y-6">
       {/* Name */}
       <div>
-        <label className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">
+        <label className="block text-xs text-muted-foreground mb-1">
           Name
         </label>
         <input
@@ -149,7 +149,7 @@ export function ProgressionForm({ initialData }: ProgressionFormProps) {
       {/* Key + Mode */}
       <div className="flex items-center gap-3 flex-wrap">
         <div>
-          <label className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">Key</label>
+          <label className="block text-xs text-muted-foreground mb-1">Key</label>
           <select
             value={key}
             onChange={e => handleKeyOrModeChange(e.target.value, modeIdx)}
@@ -159,7 +159,7 @@ export function ProgressionForm({ initialData }: ProgressionFormProps) {
           </select>
         </div>
         <div>
-          <label className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">Scale / Mode</label>
+          <label className="block text-xs text-muted-foreground mb-1">Scale / mode</label>
           <select
             value={modeIdx}
             onChange={e => handleKeyOrModeChange(key, Number(e.target.value))}
@@ -179,7 +179,7 @@ export function ProgressionForm({ initialData }: ProgressionFormProps) {
 
       {/* Chord entry */}
       <div>
-        <label className="block text-xs uppercase tracking-widest text-muted-foreground mb-2">
+        <label className="block text-xs text-muted-foreground mb-2">
           Chords
         </label>
         <ChordInputRow
@@ -196,7 +196,7 @@ export function ProgressionForm({ initialData }: ProgressionFormProps) {
 
       {/* Description */}
       <div>
-        <label className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">
+        <label className="block text-xs text-muted-foreground mb-1">
           Description
         </label>
         <textarea
