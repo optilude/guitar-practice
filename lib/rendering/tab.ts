@@ -54,21 +54,24 @@ function fretToVexKey(string: number, fret: number, noteName: string): string {
  * Shared interval→colour palette, used by both stave/tab and fretboard renderers.
  *
  * Aligned with music-theory convention and the app's design system:
- *   Root   → amber   (tonic / home base)
- *   2nd    → yellow  (whole-step colour, between amber and green)
- *   3rd    → green   (third quality defines major vs minor)
- *   4th    → rose    (subdominant, warm contrast)
- *   5th    → blue    (power / stability)
- *   6th    → cyan    (between blue and purple on the spectrum)
- *   7th    → purple  (leading-tone / colour note)
+ *   Chord tones (1, 3, 5, 7) are placed ~90° apart on the hue wheel for maximum
+ *   distinctiveness. Passing tones (2, 4, 6) sit visually between their neighbors.
+ *
+ *   Root   → amber   (~35°)  home base
+ *   2nd    → lime    (~83°)  between amber and emerald
+ *   3rd    → emerald (~161°) clearly distinct from amber
+ *   4th    → sky     (~199°) between emerald and blue
+ *   5th    → blue    (~221°) power / stability
+ *   6th    → violet  (~263°) between blue and fuchsia
+ *   7th    → fuchsia (~293°) leading-tone / tension
  */
 export const INTERVAL_DEGREE_COLORS = {
-  second:  "#ca8a04", // yellow-600
-  third:   "#16a34a", // green-600
-  fourth:  "#e11d48", // rose-600
+  second:  "#65a30d", // lime-600
+  third:   "#059669", // emerald-600
+  fourth:  "#0ea5e9", // sky-500
   fifth:   "#2563eb", // blue-600
-  sixth:   "#0891b2", // cyan-600
-  seventh: "#9333ea", // purple-600
+  sixth:   "#7c3aed", // violet-600
+  seventh: "#c026d3", // fuchsia-600
 } as const
 
 const SECOND_INTERVALS  = new Set(["2", "b2"])

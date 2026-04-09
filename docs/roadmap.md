@@ -74,8 +74,6 @@ More theory topics:
 
 # Known issues
 
-* The highlight colour for the IV chord / note is red, which can also look like an error. Find a better colour.
-
 * The icons on the "Tools" page don't look great. Consider larger, bolder icons, or right-aligning them in their tiles.
 
 General/UX:

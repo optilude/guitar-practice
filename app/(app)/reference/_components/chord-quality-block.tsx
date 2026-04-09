@@ -4,12 +4,12 @@ import { INTERVAL_DEGREE_COLORS } from "@/lib/rendering/tab"
 
 const DEGREE_HEX: Record<number, string> = {
   1: "#b45309",                      // amber-700  (matches fretboard root accent)
-  2: INTERVAL_DEGREE_COLORS.second,  // yellow-600
-  3: INTERVAL_DEGREE_COLORS.third,   // green-600
-  4: INTERVAL_DEGREE_COLORS.fourth,  // rose-600
+  2: INTERVAL_DEGREE_COLORS.second,  // lime-600
+  3: INTERVAL_DEGREE_COLORS.third,   // emerald-600
+  4: INTERVAL_DEGREE_COLORS.fourth,  // sky-500
   5: INTERVAL_DEGREE_COLORS.fifth,   // blue-600
-  6: INTERVAL_DEGREE_COLORS.sixth,   // cyan-600
-  7: INTERVAL_DEGREE_COLORS.seventh, // purple-600
+  6: INTERVAL_DEGREE_COLORS.sixth,   // violet-600
+  7: INTERVAL_DEGREE_COLORS.seventh, // fuchsia-600
 }
 
 function hexToRgba(hex: string, alpha: number): string {
