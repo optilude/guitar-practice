@@ -92,20 +92,6 @@ Chords:
 
 # Prompts
 
-## Custom progressions
-
-Allow the user to manage a list of custom progressions, to appear on the Progressions tab in the harmony section of the Reference page. Custom progressions, like standard ones, should be available as a topic to study against a goal, be saved in the history, etc.
-
-Custom progressions should be saved per-user.
-
-Add a link (a circle with a pencil icon?) after the "?" link in the Progressions tab, that opens a new editor page. Base this on the "Manage my library" or "Practice Routine" editor. Allow CRUD and reorder (drag and drop) operation of custom progressions. Follow the UX patterns of those editor pages.
-
-Each custom progression has a name, a description (markdown formatted), and a set of chords. Use the same chord / progression editor as the Key Finder and Transposer tools.
-
-When entering/editing chords, the editor should let the user choose a key and scale/mode, and enter chords in that key. However, we should save the progression in such a way that it can be transposed to any key (i.e. roman numerals not specific note letters). If the user chooses a different key when using the editor, automatically transpose the chords in real time.
-
-On the Reference page, in the Progressions tab, show all user-defined progressions in their own category at the bottom of the list of progressions. If there are none, hide the category label.
-
 ## Start phase 8
 
 Currently, there is no way to manage users, and no concept of an administrator. Users also can't change or reset their passwords.

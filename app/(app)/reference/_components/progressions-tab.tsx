@@ -256,7 +256,7 @@ export function ProgressionsTab({
 
         {/* Pencil link — opens custom progressions manager */}
         <Link
-          href="/library/progressions"
+          href="/reference/progressions"
           aria-label="Manage custom progressions"
           className="flex items-center justify-center w-6 h-6 rounded-full border border-border text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
         >

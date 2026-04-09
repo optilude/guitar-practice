@@ -75,7 +75,7 @@ export function RoutineHeader({
           onChange={(e) => setDescValue(e.target.value)}
           onBlur={saveDesc}
           rows={4}
-          placeholder="Routine description (Markdown supported)"
+          placeholder="Routine description (supports Markdown)"
           className="w-full rounded border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent resize-none mb-6"
         />
       ) : descValue ? (

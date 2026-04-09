@@ -7,7 +7,7 @@ import { analyzeProgression } from "@/lib/theory/transposer"
 import { getUserProgressionChords } from "@/lib/theory/user-progressions"
 import { ALL_KEY_MODES } from "@/lib/theory/commonality-tiers"
 import { ChordInputRow } from "@/app/(app)/tools/_components/chord-input-row"
-import { createUserProgression, updateUserProgression } from "@/app/(app)/library/progressions/actions"
+import { createUserProgression, updateUserProgression } from "@/app/(app)/reference/progressions/actions"
 import { btn } from "@/lib/button-styles"
 
 const ROOT_NOTES = [
@@ -127,7 +127,7 @@ export function ProgressionForm({ initialData }: ProgressionFormProps) {
       setError(result.error)
       setIsSaving(false)
     } else {
-      router.push("/library/progressions")
+      router.push("/reference/progressions")
     }
   }
 
@@ -142,7 +142,7 @@ export function ProgressionForm({ initialData }: ProgressionFormProps) {
           value={displayName}
           onChange={e => setDisplayName(e.target.value)}
           placeholder="My progression"
-          className="w-full rounded border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
+          className="w-full rounded border border-border bg-card px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
         />
       </div>
 
@@ -204,7 +204,7 @@ export function ProgressionForm({ initialData }: ProgressionFormProps) {
           onChange={e => setDescription(e.target.value)}
           rows={4}
           placeholder="Describe this progression… (supports markdown)"
-          className="w-full rounded border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent resize-y"
+          className="w-full rounded border border-border bg-card px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent resize-y"
         />
       </div>
 
@@ -213,10 +213,10 @@ export function ProgressionForm({ initialData }: ProgressionFormProps) {
       {/* Actions */}
       <div className="flex gap-3">
         <button onClick={handleSave} disabled={isSaving} className={btn("primary")}>
-          {isSaving ? "Saving…" : isEdit ? "Save changes" : "Create"}
+          {isSaving ? "Saving…" : isEdit ? "Save changes" : "Create progression"}
         </button>
         <button
-          onClick={() => router.push("/library/progressions")}
+          onClick={() => router.push("/reference/progressions")}
           disabled={isSaving}
           className={btn("standalone")}
         >

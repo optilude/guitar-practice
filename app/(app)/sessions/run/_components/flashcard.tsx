@@ -75,7 +75,7 @@ function ReferencePanel({ topic, currentKey }: { topic: SessionTopic; currentKey
     case "inversion":
       return <InversionPanel root={root} onRootChange={setRoot} inversionTypeTrigger={topic.subtype ? { type: topic.subtype } : null} />
     case "progression":
-      return <ProgressionsTab tonic={root} defaultProgressionName={topic.subtype ?? undefined} />
+      return <ProgressionsTab tonic={root} defaultProgressionName={topic.subtype ?? undefined} userProgressions={[]} />
     case "harmony":
       return <HarmonyTab tonic={root} defaultMode={topic.subtype ?? undefined} />
     case "lesson":

@@ -232,7 +232,7 @@ export function AddSectionForm({ routineId, availableTopics, onAdded }: AddSecti
           value={descValue}
           onChange={(e) => setDescValue(e.target.value)}
           rows={3}
-          placeholder="Section notes (Markdown supported)"
+          placeholder="Section notes (supports Markdown)"
           className="w-full rounded border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent resize-none"
         />
       </div>

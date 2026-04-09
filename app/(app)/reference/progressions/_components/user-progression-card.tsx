@@ -5,7 +5,7 @@ import Link from "next/link"
 import ReactMarkdown from "react-markdown"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { deleteUserProgression } from "@/app/(app)/library/progressions/actions"
+import { deleteUserProgression } from "@/app/(app)/reference/progressions/actions"
 import type { UserProgressionItem } from "./user-progression-list"
 import { btn } from "@/lib/button-styles"
 
@@ -66,7 +66,7 @@ export function UserProgressionCard({ progression, onChanged }: UserProgressionC
           </div>
 
           <Link
-            href={`/library/progressions/${progression.id}/edit`}
+            href={`/reference/progressions/${progression.id}/edit`}
             className={btn("standalone", "sm")}
           >
             Edit

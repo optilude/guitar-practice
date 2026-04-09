@@ -1189,7 +1189,7 @@ export function ProgressionForm({ initialData }: ProgressionFormProps) {
       {/* Actions */}
       <div className="flex gap-3">
         <button onClick={handleSave} disabled={isSaving} className={btn("primary")}>
-          {isSaving ? "Saving…" : isEdit ? "Save changes" : "Create"}
+          {isSaving ? "Saving…" : isEdit ? "Save changes" : "Create progression"}
         </button>
         <button
           onClick={() => router.push("/library/progressions")}

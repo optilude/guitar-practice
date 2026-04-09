@@ -10,7 +10,7 @@ export default async function NewProgressionPage() {
   return (
     <div className="pt-6">
       <Link
-        href="/library/progressions"
+        href="/reference/progressions"
         className="inline-flex items-center gap-1 text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors mb-1"
       >
         ← My Progressions

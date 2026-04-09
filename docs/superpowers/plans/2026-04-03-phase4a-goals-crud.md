@@ -879,7 +879,7 @@ export function NewGoalForm({ showOpenByDefault }: { showOpenByDefault: boolean 
       />
       <textarea
         name="description"
-        placeholder="Description (Markdown supported)"
+        placeholder="Description (supports Markdown)"
         rows={3}
         className="w-full rounded border border-border bg-card px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent resize-none"
       />
@@ -1348,7 +1348,7 @@ export function GoalDetailClient({ goal }: GoalDetailClientProps) {
             onChange={(e) => setDescValue(e.target.value)}
             onBlur={saveDesc}
             rows={4}
-            placeholder="Description (Markdown supported)"
+            placeholder="Description (supports Markdown)"
             className="w-full rounded border border-border bg-card px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent resize-none"
           />
         ) : descValue ? (

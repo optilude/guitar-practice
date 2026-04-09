@@ -17,7 +17,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
-import { reorderUserProgressions } from "@/app/(app)/library/progressions/actions"
+import { reorderUserProgressions } from "@/app/(app)/reference/progressions/actions"
 import { UserProgressionCard } from "./user-progression-card"
 
 export type UserProgressionItem = {

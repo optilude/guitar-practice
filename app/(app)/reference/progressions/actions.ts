@@ -11,7 +11,7 @@ async function requireUserId(): Promise<string> {
 }
 
 function revalidate() {
-  revalidatePath("/library/progressions")
+  revalidatePath("/reference/progressions")
   revalidatePath("/reference")
 }
 
@@ -115,7 +115,7 @@ export async function reorderUserProgressions(
         db.userProgression.update({ where: { id }, data: { order: index } })
       )
     )
-    revalidatePath("/library/progressions")
+    revalidatePath("/reference/progressions")
     return { success: true }
   } catch {
     return { error: "Failed to reorder progressions" }

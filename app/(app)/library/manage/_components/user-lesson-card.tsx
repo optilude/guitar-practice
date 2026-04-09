@@ -174,11 +174,12 @@ export function UserLessonCard({ lesson, sourceOptions, onChanged }: UserLessonC
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs text-muted-foreground mb-1">Description (Markdown)</label>
+                  <label className="block text-xs text-muted-foreground mb-1">Description</label>
                   <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     rows={3}
+                    placeholder="Add a description (supports Markdown)"
                     className="w-full rounded border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent resize-y"
                   />
                 </div>
