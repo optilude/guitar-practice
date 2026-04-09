@@ -39,4 +39,42 @@ describe("getUserProgressionChords", () => {
   it("returns empty array for empty degrees", () => {
     expect(getUserProgressionChords([], "major", "C")).toEqual([])
   })
+
+  // Suffix decorator branches (hasDim / hasHalfDim / hasAug in parseRoman)
+
+  it("handles vii° (diminished suffix, diatonic path) — returns degree-7 chord of C major", () => {
+    const chords = getUserProgressionChords(["vii°"], "major", "C")
+    expect(chords[0].tonic).toBe("B")
+    expect(chords[0].roman).toBe("vii°")
+    // quality comes from the diatonic lookup (m7b5 → "diminished" via QUALITY_MAP)
+    expect(chords[0].quality).toBe("diminished")
+  })
+
+  it("handles ♭II° (diminished suffix, non-diatonic path) — Dbdim in C major", () => {
+    // accidentals=-1, baseDegree=2, hasDim → type="dim", quality="diminished"
+    // degree 2 in C major = D (chroma 2); shift -1 → chroma 1 = Db (flat key, no sharps)
+    const chords = getUserProgressionChords(["♭II°"], "major", "C")
+    expect(chords[0].tonic).toBe("Db")
+    expect(chords[0].type).toBe("dim")
+    expect(chords[0].quality).toBe("diminished")
+    expect(chords[0].roman).toBe("♭II°")
+  })
+
+  it("handles #IVø (half-diminished suffix, non-diatonic path) — F#m7b5 in G major", () => {
+    // G major prefers sharps; degree 4 = C (chroma 0); shift +1 → chroma 1 = C# → type="m7b5"
+    // Wait: in G major degree 4 = C (chroma 0). shift +1 → chroma 1 = C# in SHARP_ROOTS
+    const chords = getUserProgressionChords(["#IVø"], "major", "G")
+    expect(chords[0].type).toBe("m7b5")
+    expect(chords[0].quality).toBe("half-dim")
+    expect(chords[0].roman).toBe("#IVø")
+  })
+
+  it("handles #I+ (augmented suffix, non-diatonic path) — Dbaug in C major", () => {
+    // C major uses flat roots; degree 1 = C (chroma 0); shift +1 → chroma 1 = Db
+    const chords = getUserProgressionChords(["#I+"], "major", "C")
+    expect(chords[0].tonic).toBe("Db")
+    expect(chords[0].type).toBe("aug")
+    expect(chords[0].quality).toBe("augmented")
+    expect(chords[0].roman).toBe("#I+")
+  })
 })
