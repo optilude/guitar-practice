@@ -52,7 +52,7 @@ export default function ToolsPage() {
                 <p className="text-sm font-medium text-foreground">{tool.name}</p>
                 <p className="text-xs text-muted-foreground mt-1">{tool.description}</p>
               </div>
-              <div className="text-muted-foreground/40 flex-shrink-0">
+              <div className="text-foreground flex-shrink-0">
                 {tool.icon}
               </div>
             </div>
