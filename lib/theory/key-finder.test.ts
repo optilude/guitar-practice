@@ -130,7 +130,8 @@ describe("detectKey", () => {
     expect(cMajor).toBeDefined()
     const d7Analysis = cMajor!.chordAnalysis.find(a => a.inputChord.symbol === "D7")
     expect(d7Analysis!.role).toBe("secondary-dominant")
-    expect(d7Analysis!.score).toBe(0.5)
+    // D7 → G is V7/V: functional harmony post-pass boosts score from 0.5 → 0.8
+    expect(d7Analysis!.score).toBe(0.8)
   })
 
   it("results are sorted: higher score first, lower tier first on tie", () => {

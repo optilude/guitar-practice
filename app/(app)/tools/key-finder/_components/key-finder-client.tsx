@@ -3,8 +3,6 @@
 import { useCallback, useMemo, useState } from "react"
 import { parseChord, detectKey, countDistinctChords } from "@/lib/theory/key-finder"
 import type { KeyMatch, ChordAnalysis } from "@/lib/theory/key-finder"
-import { analyzeFunctionalContext, qualityFromType } from "@/lib/theory"
-import type { FunctionalAnalysis } from "@/lib/theory"
 import { ChordInputRow } from "@/app/(app)/tools/_components/chord-input-row"
 import { chordBlockStyle } from "@/app/(app)/reference/_components/chord-quality-block"
 import { btn } from "@/lib/button-styles"
@@ -53,25 +51,6 @@ export function KeyFinderClient() {
     }
     return groups
   }, [results])
-
-  // Compute functional Roman numeral overrides for the selected result's chord sequence
-  const functionalRomans = useMemo((): FunctionalAnalysis[] | null => {
-    if (!selectedResult) return null
-    const contexts = selectedResult.chordAnalysis.map(a => ({
-      tonic:   a.inputChord.root,
-      type:    a.inputChord.type,
-      quality: qualityFromType(a.inputChord.type),
-      roman:   a.roman,
-    }))
-    return contexts.map((ctx, i) =>
-      analyzeFunctionalContext(
-        ctx,
-        contexts[i + 1] ?? null,
-        selectedResult.tonic,
-        selectedResult.mode,
-      )
-    )
-  }, [selectedResult])
 
   const handleAdd = useCallback(() => {
     const id = crypto.randomUUID()
@@ -187,11 +166,6 @@ export function KeyFinderClient() {
                               key={i}
                               analysis={analysis}
                               symbol={analysis.inputChord.symbol}
-                              romanOverride={
-                                isActive && functionalRomans
-                                  ? (functionalRomans[i]?.romanOverride ?? null)
-                                  : null
-                              }
                             />
                           ))}
                         </div>
@@ -215,10 +189,9 @@ export function KeyFinderClient() {
 interface ResultChordBadgeProps {
   analysis: ChordAnalysis
   symbol: string
-  romanOverride?: string | null
 }
 
-function ResultChordBadge({ analysis, symbol, romanOverride }: ResultChordBadgeProps) {
+function ResultChordBadge({ analysis, symbol }: ResultChordBadgeProps) {
   const variant: "diatonic" | "borrowed" | "non-diatonic" =
     analysis.role === "diatonic" ? "diatonic"
     : analysis.role === "borrowed" ? "borrowed"
@@ -230,7 +203,7 @@ function ResultChordBadge({ analysis, symbol, romanOverride }: ResultChordBadgeP
       className="flex flex-col items-center rounded-lg border-2 px-3 py-2.5 text-center min-w-[68px]"
       style={chordBlockStyle(analysis.degree ?? 1, variant, false)}
     >
-      <span className="text-[10px] text-muted-foreground mb-1">{romanOverride ?? analysis.roman}</span>
+      <span className="text-[10px] text-muted-foreground mb-1">{analysis.roman}</span>
       <span className="text-sm font-semibold text-foreground leading-tight">{symbol}</span>
     </div>
   )

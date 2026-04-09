@@ -2,6 +2,7 @@ import { Chord, Note } from "tonal"
 import { getKey } from "./keys"
 import { ALL_KEY_MODES } from "./commonality-tiers"
 import type { DiatonicChord } from "./types"
+import { analyzeFunctionalContext, qualityFromType } from "./functional-harmony"
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -265,8 +266,29 @@ export function detectKey(chords: InputChord[]): KeyMatch[] {
         analyzeChord(c, diatonicLookup, parallelMajorLookup, parallelMinorLookup, tonicChroma)
       )
 
-      const fitScore = analyses.reduce((sum, a) => sum + a.score, 0) / chords.length
-      const diatonicCount = analyses.filter(a => a.role === "diatonic").length
+      // Functional harmony post-pass: override Romans and boost scores for chords
+      // that are functionally explained (secondary dominants, related ii chords, etc.)
+      // even if they're not strictly diatonic.
+      const fhContexts = analyses.map(a => ({
+        tonic:   a.inputChord.root,
+        type:    a.inputChord.type,
+        quality: qualityFromType(a.inputChord.type),
+        roman:   a.roman,
+      }))
+      const finalAnalyses: ChordAnalysis[] = analyses.map((a, i) => {
+        if (a.score >= 1.0) return a // diatonic — no change
+        const fa = analyzeFunctionalContext(
+          fhContexts[i]!,
+          fhContexts[i + 1] ?? null,
+          root,
+          modeName,
+        )
+        if (!fa.romanOverride) return a
+        return { ...a, score: 0.8, roman: fa.romanOverride, role: "secondary-dominant" as const }
+      })
+
+      const fitScore = finalAnalyses.reduce((sum, a) => sum + a.score, 0) / chords.length
+      const diatonicCount = finalAnalyses.filter(a => a.role === "diatonic").length
 
       // Bonuses
       let bonus = 0
@@ -315,7 +337,7 @@ export function detectKey(chords: InputChord[]): KeyMatch[] {
         score: totalScore,
         fitScore,
         diatonicCount,
-        chordAnalysis: analyses,
+        chordAnalysis: finalAnalyses,
         commonalityTier: tier,
       })
     }
