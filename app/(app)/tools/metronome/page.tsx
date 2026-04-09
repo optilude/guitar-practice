@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { MetronomeClient } from "./_components/metronome-client"
 
 export default function MetronomePage() {
   return (
@@ -9,8 +10,8 @@ export default function MetronomePage() {
       >
         ← Tools
       </Link>
-      <h1 className="text-2xl font-semibold text-foreground mb-2">Metronome</h1>
-      <p className="text-sm text-muted-foreground">Coming soon.</p>
+      <h1 className="text-2xl font-semibold text-foreground mb-6">Metronome</h1>
+      <MetronomeClient />
     </div>
   )
 }
