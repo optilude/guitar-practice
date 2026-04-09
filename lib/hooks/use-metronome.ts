@@ -1,15 +1,25 @@
 import { useState, useRef, useCallback } from "react"
+import { DEFAULT_BEATS_PER_BAR } from "@/lib/theory/time-signatures"
+
+function buildEnabledBeats(count: number): Set<number> {
+  return new Set(Array.from({ length: count }, (_, i) => i))
+}
 
 export function useMetronome() {
   const [bpm, setBpmState] = useState(80)
   const [isRunning, setIsRunning] = useState(false)
-  const [beatsPerBar, setBeatsPerBar] = useState(4)
+  const [beatsPerBar, setBeatsPerBarState] = useState(DEFAULT_BEATS_PER_BAR)
   const [beat, setBeat] = useState(0)
+  const [enabledBeats, setEnabledBeatsState] = useState<Set<number>>(
+    () => buildEnabledBeats(DEFAULT_BEATS_PER_BAR)
+  )
+
   const ctxRef = useRef<AudioContext | null>(null)
   const nextTickRef = useRef<number>(0)
   const timerIdRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const beatCountRef = useRef<number>(0)
-  const beatsPerBarRef = useRef<number>(4)
+  const beatsPerBarRef = useRef<number>(DEFAULT_BEATS_PER_BAR)
+  const enabledBeatsRef = useRef<Set<number>>(buildEnabledBeats(DEFAULT_BEATS_PER_BAR))
 
   const scheduleTick = useCallback((ctx: AudioContext, when: number, isDownbeat: boolean) => {
     const osc = ctx.createOscillator()
@@ -25,12 +35,14 @@ export function useMetronome() {
 
   const scheduleAhead = useCallback((ctx: AudioContext, bpmVal: number) => {
     const interval = 60 / bpmVal
-    const scheduleWindow = 0.1 // schedule 100ms ahead
-    const checkInterval = 50 // ms
+    const scheduleWindow = 0.1
+    const checkInterval = 50
 
     while (nextTickRef.current < ctx.currentTime + scheduleWindow) {
       const currentBeat = beatCountRef.current % beatsPerBarRef.current
-      scheduleTick(ctx, nextTickRef.current, currentBeat === 0)
+      if (enabledBeatsRef.current.has(currentBeat)) {
+        scheduleTick(ctx, nextTickRef.current, currentBeat === 0)
+      }
       setBeat(currentBeat)
       beatCountRef.current += 1
       nextTickRef.current += interval
@@ -61,16 +73,29 @@ export function useMetronome() {
     setBpmState(val)
     if (isRunning) {
       stop()
-      // Caller should restart after setBpm if desired
     }
   }, [isRunning, stop])
 
-  const handleSetBeatsPerBar = useCallback((val: number) => {
+  const setBeatsPerBar = useCallback((val: number) => {
     beatsPerBarRef.current = val
-    setBeatsPerBar(val)
+    setBeatsPerBarState(val)
+    const all = buildEnabledBeats(val)
+    enabledBeatsRef.current = all
+    setEnabledBeatsState(all)
+  }, [])
+
+  const setEnabledBeats = useCallback((beats: Set<number>) => {
+    enabledBeatsRef.current = beats
+    setEnabledBeatsState(beats)
   }, [])
 
   const isPlaying = isRunning
 
-  return { bpm, setBpm, isPlaying, beatsPerBar, setBeatsPerBar: handleSetBeatsPerBar, beat, start, stop }
+  return {
+    bpm, setBpm,
+    isPlaying, beat,
+    beatsPerBar, setBeatsPerBar,
+    enabledBeats, setEnabledBeats,
+    start, stop,
+  }
 }
