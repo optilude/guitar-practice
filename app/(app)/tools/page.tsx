@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Search, Music, Key, ArrowLeftRight, Timer } from "lucide-react"
+import { Search, Music, Compass, ArrowLeftRight, Timer } from "lucide-react"
 import { type ReactNode } from "react"
 
 const TOOLS: { href: string; icon: ReactNode; name: string; description: string }[] = [
@@ -17,7 +17,7 @@ const TOOLS: { href: string; icon: ReactNode; name: string; description: string 
   },
   {
     href: "/tools/key-finder",
-    icon: <Key size={36} strokeWidth={1.5} aria-hidden="true" />,
+    icon: <Compass size={36} strokeWidth={1.5} aria-hidden="true" />,
     name: "Key Finder",
     description: "Identify keys from the chords in a progression",
   },
