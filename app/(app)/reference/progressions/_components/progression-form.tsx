@@ -75,7 +75,10 @@ export function ProgressionForm({ initialData }: ProgressionFormProps) {
     const newMode = ALL_KEY_MODES[newModeIdx]!
     if (parsedChords.length > 0) {
       const analyses  = analyzeProgression(parsedChords, key, mode.modeName)
-      const degrees   = analyses.map(a => a.roman)
+      const degrees   = analyses.map((a, i) => {
+        const chord = parsedChords[i]
+        return chord && chord.type ? `${a.roman}:${chord.type}` : a.roman
+      })
       const resolved  = getUserProgressionChords(degrees, newMode.modeName, newKey)
       setChords(prev => prev.map((c, i) => {
         const rc = resolved[i]
@@ -107,7 +110,13 @@ export function ProgressionForm({ initialData }: ProgressionFormProps) {
     const analyses = parsedChords.length > 0
       ? analyzeProgression(parsedChords, key, mode.modeName)
       : []
-    const degrees = analyses.map(a => a.roman)
+    // Encode as "roman:type" to preserve the exact chord type across save/load.
+    // The type suffix lets getUserProgressionChords reconstruct non-diatonic
+    // chords (e.g. "v:m7" → Gm7) rather than snapping to the diatonic default.
+    const degrees = analyses.map((a, i) => {
+      const chord = parsedChords[i]
+      return chord && chord.type ? `${a.roman}:${chord.type}` : a.roman
+    })
 
     const result = isEdit
       ? await updateUserProgression(initialData.id, {
