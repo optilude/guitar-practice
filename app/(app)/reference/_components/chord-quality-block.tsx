@@ -23,16 +23,17 @@ export function chordBlockStyle(
   degree: number,
   variant: "diatonic" | "borrowed" | "non-diatonic",
   isSelected: boolean,
-): { borderColor: string; backgroundColor: string } {
+): { borderColor: string; backgroundColor: string; borderStyle: "solid" | "dashed" } {
   if (variant === "non-diatonic") {
     return {
       borderColor: isSelected ? "rgba(55,65,81,0.7)" : "rgba(55,65,81,0.4)",    // gray-700
       backgroundColor: isSelected ? "rgba(107,114,128,0.18)" : "rgba(107,114,128,0.08)", // gray-500
+      borderStyle: "solid",
     }
   }
   const hex = DEGREE_HEX[degree] ?? "#6b7280"
   const borderAlpha = variant === "borrowed"
-    ? (isSelected ? 0.4 : 0.15)
+    ? (isSelected ? 0.55 : 0.35)
     : (isSelected ? 0.6 : 0.2)
   const bgAlpha = variant === "borrowed"
     ? (isSelected ? 0.14 : 0.07)
@@ -40,6 +41,7 @@ export function chordBlockStyle(
   return {
     borderColor: hexToRgba(hex, borderAlpha),
     backgroundColor: hexToRgba(hex, bgAlpha),
+    borderStyle: variant === "borrowed" ? "dashed" : "solid",
   }
 }
 
