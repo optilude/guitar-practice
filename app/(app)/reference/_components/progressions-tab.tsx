@@ -354,7 +354,7 @@ export function ProgressionsTab({
                 degree={chord.degree ?? 1}
                 isSelected={!previewedSub && selectedIndex === i}
                 onClick={() => {
-                  if (previewedSub) {
+                  if (previewedSub && selectedIndex === i) {
                     setPreviewedSub(null)
                     return
                   }
