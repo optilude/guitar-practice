@@ -41,6 +41,10 @@ describe("qualityFromType", () => {
   it("maps dim7 to diminished",      () => expect(qualityFromType("dim7")).toBe("diminished"))
   it("maps maj7 to major",           () => expect(qualityFromType("maj7")).toBe("major"))
   it("maps empty string to major",   () => expect(qualityFromType("")).toBe("major"))
+  it("maps -7 to minor (jazz notation)",   () => expect(qualityFromType("-7")).toBe("minor"))
+  it("maps -9 to minor (jazz notation)",   () => expect(qualityFromType("-9")).toBe("minor"))
+  it("maps °7 to diminished",              () => expect(qualityFromType("°7")).toBe("diminished"))
+  it("maps M to major (uppercase shorthand)", () => expect(qualityFromType("M")).toBe("major"))
 })
 
 // ---------------------------------------------------------------------------

@@ -70,9 +70,11 @@ function buildScales(
 export function qualityFromType(
   type: string,
 ): "major" | "minor" | "dominant" | "diminished" {
+  // Uppercase "M" = major triad (CMaj shorthand)
+  if (type === "M") return "major"
   const t = type.toLowerCase()
-  if (t.startsWith("dim") || t === "m7b5" || t === "ø7" || t === "ø") return "diminished"
-  if ((t.startsWith("m") && !t.startsWith("maj")) || t === "-" || t.startsWith("-m")) return "minor"
+  if (t.startsWith("dim") || t === "m7b5" || t === "ø7" || t === "ø" || t.startsWith("°")) return "diminished"
+  if ((t.startsWith("m") && !t.startsWith("maj")) || t === "-" || t.startsWith("-")) return "minor"
   if (/^(7|9|11|13)/.test(t) || t === "alt") return "dominant"
   return "major"
 }
