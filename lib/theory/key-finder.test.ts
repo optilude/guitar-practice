@@ -170,6 +170,48 @@ describe("detectKey", () => {
   })
 })
 
+describe("dominant '7' suffix on Roman numerals", () => {
+  it("diatonic V (G7) in C major gets roman 'V7'", () => {
+    const result = analyzeChordInKey(parseChord("G7")!, "C", "major")
+    expect(result.roman).toBe("V7")
+    expect(result.role).toBe("diatonic")
+  })
+
+  it("diatonic VII (G7) in A natural minor gets roman 'VII7'", () => {
+    // G7 is the 7th diatonic chord of A natural minor
+    const result = analyzeChordInKey(parseChord("G7")!, "A", "minor")
+    expect(result.roman).toBe("VII7")
+    expect(result.role).toBe("diatonic")
+  })
+
+  it("non-diatonic D7 in C major (secondary dominant) gets roman 'II7'", () => {
+    // D7 is not diatonic to C major; chromaticRoman with dominant type appends "7"
+    const result = analyzeChordInKey(parseChord("D7")!, "C", "major")
+    expect(result.roman).toBe("II7")
+    expect(result.role).toBe("secondary-dominant")
+  })
+
+  it("borrowed Bb7 in C major gets roman '♭VII7'", () => {
+    // Bb7 is not diatonic; dominant quality → chromaticRoman appends "7"
+    const result = analyzeChordInKey(parseChord("Bb7")!, "C", "major")
+    expect(result.roman).toBe("♭VII7")
+  })
+
+  it("diatonic Cmaj7 in C major keeps roman 'I' (no '7' suffix for major)", () => {
+    const result = analyzeChordInKey(parseChord("Cmaj7")!, "C", "major")
+    expect(result.roman).toBe("I")
+  })
+
+  it("G7 → Cmaj7: functional override null (tonic suppression), roman stays 'V7'", () => {
+    const chords = ["G7", "Cmaj7"].map(s => parseChord(s)!)
+    const analyses = detectKey(chords)
+    const cMajor = analyses.find(r => r.tonic === "C" && r.mode === "major")
+    expect(cMajor).toBeDefined()
+    const g7 = cMajor!.chordAnalysis[0]!
+    expect(g7.roman).toBe("V7")   // tonic suppression: no override, but diatonic roman is V7
+  })
+})
+
 describe("detectKey — triad matching", () => {
   it("C major triad + Am triad score 100% fitScore in C major", () => {
     const chords = [parseChord("C"), parseChord("Am")].filter(

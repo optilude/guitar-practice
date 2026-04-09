@@ -59,6 +59,12 @@ const MAJOR_ROMANS    = ["I",   "ii",  "iii", "IV",  "V",   "vi",  "vii°"]
 const MINOR_ROMANS    = ["i",   "ii°", "III", "iv",  "v",   "VI",  "VII"]
 const NASHVILLE       = ["1",   "2",   "3",   "4",   "5",   "6",   "7"]
 
+// Dominant 7th chord types in diatonic tables (e.g. "7" is the only one in
+// standard major/minor/modal sequences). Append "7" to the roman when matched.
+function isDominantType(type: string): boolean {
+  return /^(7|9|11|13)/.test(type)
+}
+
 // ---------------------------------------------------------------------------
 // Key signature sharp/flat count from circle
 // ---------------------------------------------------------------------------
@@ -90,9 +96,10 @@ function buildMajorDiatonicChords(
     const match = chordName.match(/^([A-G][#b]?)(.*)$/)
     const noteName = match?.[1] ?? "C"
     const type     = match?.[2] ?? "maj7"
+    const roman    = isDominantType(type) ? romans[i] + "7" : romans[i]
     return {
       degree:   i + 1,
-      roman:    romans[i],
+      roman,
       nashville: NASHVILLE[i],
       tonic:    noteName,
       type,
@@ -172,7 +179,7 @@ function buildModalDiatonicChords(tonic: string, mode: string): DiatonicChord[] 
   const romans = MODE_ROMANS[mode]     ?? MAJOR_ROMANS
   return scale.notes.map((note, i) => ({
     degree:    i + 1,
-    roman:     romans[i],
+    roman:     isDominantType(types[i]) ? romans[i] + "7" : romans[i],
     nashville: NASHVILLE[i],
     tonic:     note,
     type:      types[i],

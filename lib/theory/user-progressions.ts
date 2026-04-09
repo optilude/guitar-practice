@@ -109,8 +109,12 @@ export function getUserProgressionChords(
       // Use stored type when available; otherwise use the full diatonic type.
       const resolvedType    = storedType !== null ? storedType : baseDc.type
       const resolvedQuality = storedType !== null ? typeToQuality(storedType) : baseDc.quality
+      // Append "7" when the actual chord type is dominant and roman doesn't already end in "7"
+      const displayRoman = typeToQuality(resolvedType) === "dominant" && !roman.endsWith("7")
+        ? roman + "7"
+        : roman
       return {
-        roman,
+        roman:     displayRoman,
         nashville: baseDc.nashville,
         tonic:     baseDc.tonic,
         type:      resolvedType,
@@ -131,14 +135,18 @@ export function getUserProgressionChords(
         degree:    baseDc.degree,
       }
     }
-    const newChroma  = (baseChroma + accidentals + 12) % 12
-    const chordTonic = roots[newChroma]
+    const newChroma   = (baseChroma + accidentals + 12) % 12
+    const chordTonic  = roots[newChroma]
+    const resolvedType2 = storedType ?? type
+    const displayRoman2 = typeToQuality(resolvedType2) === "dominant" && !roman.endsWith("7")
+      ? roman + "7"
+      : roman
 
     return {
-      roman,
+      roman:     displayRoman2,
       nashville: String(baseDegree),
       tonic:     chordTonic,
-      type:      storedType ?? type,
+      type:      resolvedType2,
       quality:   storedType ? typeToQuality(storedType) : quality,
       degree:    baseDegree,
     }

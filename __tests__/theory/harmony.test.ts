@@ -23,11 +23,11 @@ describe("getDiatonicChords - G major", () => {
     expect(chords[1].nashville).toBe("2")
   })
 
-  it("degree 5 is D, Roman V, Nashville 5", () => {
+  it("degree 5 is D, Roman V7, Nashville 5", () => {
     const chords = getDiatonicChords("G", "major")
     expect(chords[4].degree).toBe(5)
     expect(chords[4].tonic).toBe("D")
-    expect(chords[4].roman).toBe("V")
+    expect(chords[4].roman).toBe("V7")   // dominant 7th chord gets "7" suffix
     expect(chords[4].nashville).toBe("5")
   })
 

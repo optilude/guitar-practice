@@ -85,6 +85,7 @@ export function chromaticRoman(rootChroma: number, tonicChroma: number, quality:
   if (q === "dim") return base + "°"
   if (q === "aug") return base + "+"
   if (q === "half-dim") return base + "ø"
+  if (qualityFromType(quality) === "dominant") return base + "7"
   return base
 }
 

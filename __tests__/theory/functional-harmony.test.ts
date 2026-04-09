@@ -410,6 +410,30 @@ describe("applyFunctionalRomanOverrides", () => {
     expect(result[2]!.roman).toBe("ii")      // last chord — no override
   })
 
+  it("dominant '7' suffix: C7 → Fmaj7 gives V7/IV (not V7/IV7) when Fmaj7 roman is 'IV'", () => {
+    // Fmaj7 is major — no "7" suffix on "IV". Output should be "V7/IV".
+    const analyses: ChordAnalysis[] = [
+      analysis("C", "7",    "I",  1.0, "diatonic"),
+      analysis("F", "maj7", "IV", 1.0, "diatonic"),
+    ]
+    const result = applyFunctionalRomanOverrides(analyses, "C", "major")
+    expect(result[0]!.roman).toBe("V7/IV")
+  })
+
+  it("dominant '7' suffix: A7 → D7 with D7 roman 'II7' strips to 'II' in override", () => {
+    // When D7's ChordAnalysis.roman is already "II7" (as in production after keys.ts update),
+    // the "7" must be stripped so A7 → D7 produces "V7/II" not "V7/II7"
+    const analyses: ChordAnalysis[] = [
+      analysis("A", "7",  "VI",  0.5, "secondary-dominant"),
+      analysis("D", "7",  "II7", 0.5, "secondary-dominant"),  // roman already has "7"
+      analysis("G", "7",  "V7",  1.0, "diatonic"),            // roman already has "7"
+    ]
+    const result = applyFunctionalRomanOverrides(analyses, "C", "major")
+    expect(result[0]!.roman).toBe("V7/II")    // "II7" stripped to "II"
+    expect(result[1]!.roman).toBe("V7/V")     // "V7" stripped to "V"
+    expect(result[2]!.roman).toBe("V7")       // last chord — no next, no override
+  })
+
   it("A7-D7 secondary chain: V7/II then V7/V in G context", () => {
     // In C major: A7→D7 (dom→dom, P4 up, D≠tonic C) → V7/II
     //             D7→G7 (dom→dom, P4 up, G≠tonic C) → V7/V

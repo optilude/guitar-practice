@@ -99,6 +99,8 @@ export function analyzeFunctionalContext(
 
   const { tonic: ct, quality: cq } = chord
   const { tonic: nt, quality: nq, roman: nr } = nextChord
+  // Strip any trailing "7" so "/" targets like "V7" become "V" (avoids "V7/V7")
+  const nrBase = nr.replace(/7$/, "")
 
   // ------------------------------------------------------------------
   // Rule 1: Secondary dominant to minor — dominant → minor, P4 up
@@ -107,7 +109,7 @@ export function analyzeFunctionalContext(
   // ------------------------------------------------------------------
   if (cq === "dominant" && nq === "minor" && isP4Up(ct, nt) && !sameChroma(nt, tonic)) {
     return {
-      romanOverride: `V7/${nr}`,
+      romanOverride: `V7/${nrBase}`,
       scalesOverride: buildScales(ct, "Phrygian Dominant", [
         { scaleName: "Altered",       hint: "jazz tension" },
         { scaleName: "Mixolydian b6", hint: "darker" },
@@ -122,7 +124,7 @@ export function analyzeFunctionalContext(
   // ------------------------------------------------------------------
   if (cq === "dominant" && nq === "major" && isP4Up(ct, nt) && !sameChroma(nt, tonic)) {
     return {
-      romanOverride: `V7/${nr}`,
+      romanOverride: `V7/${nrBase}`,
       scalesOverride: buildScales(ct, "Mixolydian", [
         { scaleName: "Lydian Dominant", hint: "bright tension" },
       ]),
@@ -140,10 +142,10 @@ export function analyzeFunctionalContext(
     const targetChord  = diatonic.find(d => Note.chroma(d.tonic) === targetChroma)
     // If the resolution target is degree I (ii→V→I), this is a standard cadence — no override
     if (!targetChord || targetChord.degree === 1) return NONE
-    const targetRoman = targetChord.roman
+    const targetBase  = targetChord.roman.replace(/7$/, "")
     const prefix      = cq === "diminished" ? "iiø" : "ii"
     return {
-      romanOverride: `${prefix}/${targetRoman}`,
+      romanOverride: `${prefix}/${targetBase}`,
       scalesOverride: cq === "diminished"
         ? buildScales(ct, "Locrian", [{ scaleName: "Locrian #2", hint: "less dissonant" }])
         : buildScales(ct, "Dorian", []),
@@ -157,7 +159,7 @@ export function analyzeFunctionalContext(
   // ------------------------------------------------------------------
   if (cq === "dominant" && nq === "dominant" && isP4Up(ct, nt) && !sameChroma(nt, tonic)) {
     return {
-      romanOverride: `V7/${nr}`,
+      romanOverride: `V7/${nrBase}`,
       scalesOverride: buildScales(ct, "Lydian Dominant", []),
     }
   }
@@ -168,7 +170,7 @@ export function analyzeFunctionalContext(
   // ------------------------------------------------------------------
   if (cq === "dominant" && isM2Down(ct, nt)) {
     return {
-      romanOverride: `subV7/${nr}`,
+      romanOverride: `subV7/${nrBase}`,
       scalesOverride: buildScales(ct, "Lydian Dominant", []),
     }
   }
@@ -179,7 +181,7 @@ export function analyzeFunctionalContext(
   // ------------------------------------------------------------------
   if (cq === "diminished" && isM2Up(ct, nt)) {
     return {
-      romanOverride: `vii°7/${nr}`,
+      romanOverride: `vii°7/${nrBase}`,
       scalesOverride: buildScales(ct, "Whole-Half Diminished", []),
     }
   }
