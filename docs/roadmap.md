@@ -38,7 +38,7 @@ Run a practice session: timer, metronome, flashcards, notes. Session logs, strea
 
 ---
 
-## Phase 7: Tools
+## Phase 7: Tools ✅ Complete
 Add a Tools section with chord, scale, and key finders, plus a metronome.
 
 ---
@@ -48,8 +48,6 @@ Account management and better authentication support. Consider moving to a SaaS 
 ---
 
 # Future ideas
-
-* Improve the metronome on the practice session page (different time signatures, different beat patterns)
 
 * Align the selector values in Inversions and Chords? They currently use different conventions (descriptive vs. common suffixes). The argument against is that `chords-db` uses the suffix style, so we'd need a translation, and these are more the chord symbols you'd see in a song sheet. The Inversions tab is more about studying and memorising inversions for use in improvisation or comping, where the theoretical function of each chord is more relevant.
 
@@ -69,8 +67,7 @@ More theory topics:
 * Consider broader rules for the key finder, and perhaps adding these to the Reference section: Secondary dominant; Secondary diminished; Parallel natural minor; Parallel melodic minor; Parallel harmonic minor
 * Add support for quartal triads to the Reference section?
 * Include tritone substitutions in the Reference section?
-* Encode the Beato Book chord substitution rules into the Reference section?
-
+* Add a section to find and explore chord substitutions?
 
 # Known issues
 
@@ -94,18 +91,6 @@ Chords:
 * Music theory: https://www.simplifyingtheory.com
 
 # Prompts
-
-## Metronome tool
-
-Let's design and build the standalone metronome tool.
-
-* Start with the simple metronome from the practice session view
-* Allow the user to choose alternative time signatures (e.g. 6/8 or 3/4, but default to 4/4) 
-* Also let the user choose to play only certain beats of the masure (e.g. "2 and 4").
-
-If helpful, we can introduce additional dependencies for the metronome component.
-
-Once this is done, add the ability to change time signature to the simple metronome on the practice session runner view. (Do not introduce other advanced metronome functions).
 
 ## Custom progressions
 
