@@ -95,3 +95,42 @@ export interface Key {
   diatonicChords: DiatonicChord[]
   relativeKey: { tonic: NoteName; mode: string }
 }
+
+/** A chord in a substitution preview. May not be diatonic to the key. */
+export type PreviewChord = {
+  tonic: string    // e.g. "E", "Bb"
+  type: string     // e.g. "7", "m7", "m7b5", "dim7"
+  roman: string    // local-function label e.g. "V7/vi", "ii/V", "bII7"
+  quality: string  // "major" | "minor" | "dominant" | "diminished"
+  degree?: number  // present for converted original chords; absent for substitution chords
+}
+
+export type SubstitutionResult =
+  | {
+      kind: "replacement"
+      /** Replace chord at that index in the progression array. */
+      replacements: Array<{ index: number; chord: PreviewChord }>
+    }
+  | {
+      kind: "insertion"
+      /** Splice these chords immediately before this index. */
+      insertBefore: number
+      chords: PreviewChord[]
+    }
+  | {
+      kind: "range_replacement"
+      /** Replace the contiguous slice [startIndex, endIndex] (inclusive) with an arbitrary list.
+       *  Used for Coltrane Changes (3 chords → 7). */
+      startIndex: number
+      endIndex: number
+      chords: PreviewChord[]
+    }
+
+export type ChordSubstitution = {
+  id: string         // stable unique key, e.g. "diatonic-deg6", "tritone", "v-approach"
+  ruleName: string   // group heading in SubstitutionsPanel, e.g. "Diatonic Substitution"
+  label: string      // option row text, e.g. "Em7", "D7 → Gmaj7"
+  effect: string     // one-liner description shown as muted text
+  result: SubstitutionResult
+  sortRank: number   // lower = displayed first
+}
