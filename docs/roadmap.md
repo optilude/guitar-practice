@@ -110,6 +110,61 @@ It is likely that we will need to consider the next (and possibly previous) chor
 
 Some substitutions may depend on information we don't have, e.g. melody notes. We should probably ignore these but consider if there are ways to make the user aware of them.
 
+## Functional analysis
+
+For this work, we should stay on the current feature branch. It forms part of the same evolution.
+
+The application currently displays chord progressions in a specific Key. When a user clicks a chord, the app successfully suggests basic scales based on the isolated chord's diatonic relationship to its parent scale (e.g., suggesting Dorian for a `ii7`, or Mixolydian for the `V7`).
+
+This naive, static mapping fails for advanced functional harmony. For example, if a progression contains a secondary dominant (`VI7`) resolving to a minor chord (`ii7`), the system might suggest a basic Mixolydian scale because it's a dominant chord. However, idiomatic jazz theory mandates that dominants resolving to minor targets require tension-heavy scales like Phrygian Dominant or the Altered scale.
+
+Related - the current progression analyser does not apply functional harmony. It will always assign a Roman numeral to each chord in a progression that is in relation to the tonic. It should be made more sophisticated, so it can display e.g. "V/vi" type harmonic relationships. This will be necessary for the more advanced chord scale selection, but also useful in harmonic analysis of progressions.
+
+We need to perform "look-ahead" functional analysis mathematically when presenting progressions, both in the Progressions view on the Reference page, and in the Key Finder (once a key has been selected) and My Progressions editor.
+
+If a chord matches specific functional overrides (like being a secondary dominant or a tritone sub - see below), we should intercept and return the advanced scale suggestions. 
+
+When analysing a progression: for the chord currently being evaluated, it must look at the **next chord** to establish its resolution context. Extract the root and quality of `currentChord` and `nextChord` using `@tonaljs/tonal` (e.g., `Chord.get(chordName)` and `Interval.distance(root1, root2)`). Evaluate the geometric distance between the roots and the qualities of the chords to identify matching conditions from the ruleset below.
+
+Embed these functional override rules directly in your module. If the condition is met, return the array of scales.
+
+1. **Secondary Dominant to Minor**
+   - **Condition:** `currentChord` is Dominant 7th. `nextChord` is Minor. The root of `nextChord` is a Perfect 4th UP (or P5 down) from the root of `currentChord`. (e.g., `A7 -> Dm7`).
+   - **Roman numeral analysis**: Calculate the standard diatonic Roman numeral of the `nextChord` (e.g., `ii`), and format the current chord as its dominant: `"V7/" + nextChordNumeral` (e.g., `V7/ii`).
+   - **Scales to Return:** `["Phrygian Major (Phrygian Dominant)", "Altered Dominant", "Mixolydian b6"]`
+
+2. **Secondary Dominant to Major**
+   - **Condition:** `currentChord` is Dominant 7th. `nextChord` is Major. The root of `nextChord` is a Perfect 4th UP (or P5 down) from the root of `currentChord`. (e.g., `D7 -> Gmaj7`).
+   - **Roman numeral analysis**: Calculate the standard diatonic Roman numeral of the `nextChord` (e.g., `V`), and format the current chord as its dominant: `"V7/" + nextChordNumeral` (e.g., `V7/V`).
+   - **Scales to Return:** `["Mixolydian", "Mixolydian #11 (Lydian Dominant)"]`
+
+3. **Related ii Chord (Two-ing the Five)**
+   - **Condition:** `currentChord` is Minor 7th (or Minor 7b5). `nextChord` is Dominant 7th. The root of `nextChord` is a Perfect 4th UP (or P5 down) from the root of `currentChord`. (e.g., `Em7 -> A7`).
+   - **Roman numeral analysis**: This acts as the `ii` in a secondary `ii-V` pair. Calculate the standard diatonic Roman numeral of the presumed target chord (which is a Perfect 4th UP from `nextChord`, e.g., `Dm7` which is `ii`), and format the current chord as its ii: `"ii/" + targetNumeral` (e.g., `ii/ii`). Use `"iiø/"` if it is a m7b5.
+   - **Scales to Return:** `["Dorian"]` (if Minor 7th) or `["Locrian", "Locrian Nat.2"]` (if Minor 7b5).
+
+4. **Extended Dominant Chain (Cycle of Dominants)**
+   - **Condition:** `currentChord` is Dominant 7th. `nextChord` is Dominant 7th. The root of `nextChord` is a Perfect 4th UP (or P5 down) from the root of `currentChord`. (e.g., `B7 -> E7`).
+   - **Roman numeral analysis**: Calculate the standard diatonic Roman numeral of the `nextChord`'s root (e.g., `VI`), and format the current chord as its dominant: `"V7/" + nextChordNumeral` (e.g., `V7/VI`).
+   - **Scales to Return:** `["Mixolydian #11 (Lydian Dominant)"]`
+
+5. **Tritone Substitution**
+   - **Condition:** `currentChord` is Dominant 7th. The root of `nextChord` is a minor 2nd DOWN from the root of `currentChord`. (e.g., `Db7 -> Cmaj7`).
+   - **Roman numeral analysis**: Calculate the standard diatonic Roman numeral of the `nextChord` (e.g., `I`), and format the current chord as its tritone substitute dominant: `"subV7/" + nextChordNumeral` (e.g., `subV7/I`).
+   - **Scales to Return:** `["Mixolydian #11 (Lydian Dominant)"]`
+
+6. **Diminished Passing Chord**
+   - **Condition:** `currentChord` is a Diminished 7th. The root of `nextChord` is a minor 2nd UP from the root of `currentChord`. (e.g., `C#dim7 -> Dm7`).
+   - **Roman numeral analysis**: Calculate the standard diatonic Roman numeral of the `nextChord` (e.g., `ii`), and format the current chord as its leading-tone diminished chord: `"vii°7/" + nextChordNumeral` (e.g., `vii°7/ii`).
+   - **Scales to Return:** `["Symmetrical Diminished (Whole-Half)"]`
+
+7. **Deceptive Resolution to Minor**
+   - **Condition:** `currentChord` is Dominant 7th. `nextChord` is Minor. The root of `nextChord` is a Major 2nd UP from the root of `currentChord`. (e.g., standard `G7 -> Am7`, `V7 -> vi`). A typical deceptive cadence.
+   - **Roman numeral analysis**: Calculate the standard diatonic Roman numeral of `currentChord` in the parent key (typically `V7`) but be explicitly aware that its target is minor.
+   - **Scales to Return:** `["Mixolydian b6", "Altered Dominant", "Mixolydian"]` *(Idiomatic jazz favors tension scales when leading to minor targets, even deceptively).*
+
+Update the scale finder in the Progressions editor with more sophisticated "scales to return" and the roman numeral calculation for all progressions throughout the app.
+
 ## Start phase 8
 
 Currently, there is no way to manage users, and no concept of an administrator. Users also can't change or reset their passwords.
