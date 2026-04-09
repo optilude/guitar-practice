@@ -12,6 +12,7 @@ interface AddToGoalButtonProps {
   defaultKey?: string
   lessonId?: string
   userLessonId?: string
+  userProgressionId?: string
   displayName: string
   popupAlign?: "left" | "right"
 }
@@ -22,10 +23,11 @@ export function AddToGoalButton({
   defaultKey,
   lessonId,
   userLessonId,
+  userProgressionId,
   displayName,
   popupAlign = "left",
 }: AddToGoalButtonProps) {
-  const refKey = computeRefKey({ kind, subtype, lessonId, userLessonId, defaultKey })
+  const refKey = computeRefKey({ kind, subtype, lessonId, userLessonId, userProgressionId, defaultKey })
   const { activeGoalKeys, markAdded } = useActiveGoal()
   const isAddedToActive = activeGoalKeys.has(refKey)
 
@@ -75,6 +77,7 @@ export function AddToGoalButton({
       subtype,
       lessonId,
       userLessonId,
+      userProgressionId,
       defaultKey,
     })
     if ("error" in result) {
