@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from "react"
 import { Note } from "tonal"
 import { parseChord } from "@/lib/theory/key-finder"
 import { analyzeProgression, transposeProgression } from "@/lib/theory/transposer"
+import { analyzeFunctionalContext, qualityFromType } from "@/lib/theory"
 import { ALL_KEY_MODES } from "@/lib/theory/commonality-tiers"
 import { ChordInputRow } from "@/app/(app)/tools/_components/chord-input-row"
 import { TransposedRow } from "./transposed-row"
@@ -66,6 +67,39 @@ export function TransposerClient() {
       ? analyzeProgression(transposedChords, targetRoot, sourceMode.modeName)
       : null,
     [transposedChords, targetRoot, sourceMode.modeName],
+  )
+
+  // Functional-harmony display overlays — override Roman numerals for secondary
+  // dominants, related ii chords, etc. without modifying the raw analyses.
+  function applyFunctionalOverrides(
+    analyses: NonNullable<typeof chordAnalyses>,
+    tonic: string,
+    mode: string,
+  ) {
+    const contexts = analyses.map(a => ({
+      tonic:   a.inputChord.root,
+      type:    a.inputChord.type,
+      quality: qualityFromType(a.inputChord.type),
+      roman:   a.roman,
+    }))
+    return analyses.map((a, i) => {
+      if (a.score >= 1.0) return a
+      const fa = analyzeFunctionalContext(contexts[i]!, contexts[i + 1] ?? null, tonic, mode)
+      if (!fa.romanOverride) return a
+      return { ...a, roman: fa.romanOverride, role: "secondary-dominant" as const }
+    })
+  }
+
+  const displaySourceAnalyses = useMemo(
+    () => chordAnalyses ? applyFunctionalOverrides(chordAnalyses, sourceRoot, sourceMode.modeName) : null,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [chordAnalyses, sourceRoot, sourceMode.modeName],
+  )
+
+  const displayTransposedAnalyses = useMemo(
+    () => transposedAnalyses ? applyFunctionalOverrides(transposedAnalyses, targetRoot, sourceMode.modeName) : null,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [transposedAnalyses, targetRoot, sourceMode.modeName],
   )
 
   const handleAdd = useCallback(() => {
@@ -137,7 +171,7 @@ export function TransposerClient() {
       <ChordInputRow
         chords={chords}
         editingId={editingId}
-        chordAnalyses={chordAnalyses}
+        chordAnalyses={displaySourceAnalyses}
         onChordChange={setChords}
         onCommit={handleCommit}
         onRemove={handleRemove}
@@ -182,7 +216,7 @@ export function TransposerClient() {
           <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">
             In {targetRoot} {sourceMode.displayName}
           </p>
-          <TransposedRow chords={transposedChords} analyses={transposedAnalyses} />
+          <TransposedRow chords={transposedChords} analyses={displayTransposedAnalyses!} />
         </div>
       ) : (parsedChords.length > 0 && chords.length > 0 && (
         <p className="text-sm text-muted-foreground">Same key — change the target root to transpose.</p>
