@@ -2,6 +2,24 @@
 
 import { INTERVAL_DEGREE_COLORS } from "@/lib/rendering/tab"
 
+// ---------------------------------------------------------------------------
+// Extracts the target (resolution) degree from a "/" roman numeral.
+// "V7/IV" → 4,  "ii/ii" → 2,  "subV7/I" → 1,  "vii°7/vi" → 6
+// Returns null if the roman has no "/".
+// ---------------------------------------------------------------------------
+const ROMAN_TO_DEGREE: Record<string, number> = {
+  "I": 1, "II": 2, "III": 3, "IV": 4, "V": 5, "VI": 6, "VII": 7,
+}
+
+export function targetDegreeFromRoman(roman: string): number | null {
+  const slashIdx = roman.indexOf("/")
+  if (slashIdx === -1) return null
+  const target = roman.slice(slashIdx + 1)
+  // Strip accidentals (♭, #) and decorators (°, +, ø, digits)
+  const letters = target.replace(/[♭#°+ø0-9]/g, "").toUpperCase()
+  return ROMAN_TO_DEGREE[letters] ?? null
+}
+
 const DEGREE_HEX: Record<number, string> = {
   1: "#b45309",                      // amber-700  (matches fretboard root accent)
   2: INTERVAL_DEGREE_COLORS.second,  // lime-600

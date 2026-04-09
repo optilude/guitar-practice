@@ -10,7 +10,7 @@ import type { ChordSubstitution, PreviewChord } from "@/lib/theory/types"
 import type { FunctionalAnalysis, ChordContext } from "@/lib/theory"
 import { cn } from "@/lib/utils"
 import { getUserProgressionChords } from "@/lib/theory/user-progressions"
-import { ChordQualityBlock } from "./chord-quality-block"
+import { ChordQualityBlock, targetDegreeFromRoman } from "./chord-quality-block"
 import { SoloScalesPanel } from "./solo-scales-panel"
 import { AddToGoalButton } from "@/components/add-to-goal-button"
 import type { UserProgressionForTab } from "./reference-page-client"
@@ -380,30 +380,36 @@ export function ProgressionsTab({
           Chords in {tonic} · {romanDisplay}
         </p>
         <div role="group" aria-label="Progression chords" className="flex flex-wrap items-center gap-1">
-          {previewChords.map((chord, i) => (
-            <div key={i} className="flex items-center gap-1 flex-shrink-0">
-              {i > 0 && <span className="text-muted-foreground text-sm flex-shrink-0">→</span>}
-              <ChordQualityBlock
-                roman={
-                  !previewedSub && selectedIndex !== null
-                    ? (functionalAnalyses[i]?.romanOverride ?? chord.roman)
-                    : chord.roman
-                }
-                chordName={`${chord.tonic}${chord.type}`}
-                degree={chord.degree ?? 1}
-                isSelected={!previewedSub && selectedIndex === i}
-                onClick={() => {
-                  if (previewedSub && selectedIndex === i) {
-                    setPreviewedSub(null)
-                    return
-                  }
-                  handleIndexClick(i)
-                }}
-                variant={chord.degree !== undefined ? "diatonic" : "non-diatonic"}
-                isSubstitutionPreview={highlightIndices.has(i)}
-              />
-            </div>
-          ))}
+          {previewChords.map((chord, i) => {
+            const displayRoman = !previewedSub && selectedIndex !== null
+              ? (functionalAnalyses[i]?.romanOverride ?? chord.roman)
+              : chord.roman
+            const targetDegree = targetDegreeFromRoman(displayRoman)
+            const effectiveDegree = targetDegree ?? chord.degree ?? 1
+            const effectiveVariant = targetDegree !== null
+              ? "borrowed"
+              : chord.degree !== undefined ? "diatonic" : "non-diatonic"
+            return (
+              <div key={i} className="flex items-center gap-1 flex-shrink-0">
+                {i > 0 && <span className="text-muted-foreground text-sm flex-shrink-0">→</span>}
+                <ChordQualityBlock
+                  roman={displayRoman}
+                  chordName={`${chord.tonic}${chord.type}`}
+                  degree={effectiveDegree}
+                  isSelected={!previewedSub && selectedIndex === i}
+                  onClick={() => {
+                    if (previewedSub && selectedIndex === i) {
+                      setPreviewedSub(null)
+                      return
+                    }
+                    handleIndexClick(i)
+                  }}
+                  variant={effectiveVariant}
+                  isSubstitutionPreview={highlightIndices.has(i)}
+                />
+              </div>
+            )
+          })}
         </div>
       </div>
 

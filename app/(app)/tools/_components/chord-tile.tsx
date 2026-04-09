@@ -4,7 +4,7 @@ import { useRef, useEffect, useState } from "react"
 import { Chord } from "tonal"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { ChordQualityBlock } from "@/app/(app)/reference/_components/chord-quality-block"
+import { ChordQualityBlock, targetDegreeFromRoman } from "@/app/(app)/reference/_components/chord-quality-block"
 import { listChordDbSuffixes } from "@/lib/theory/chords"
 import { parseChord, type ChordAnalysis } from "@/lib/theory/key-finder"
 
@@ -222,18 +222,25 @@ export function ChordTile({
     >
       {analysis ? (
         <div className="relative">
-          <ChordQualityBlock
-            roman={analysis.roman}
-            chordName={symbol}
-            degree={analysis.degree ?? 1}
-            isSelected={false}
-            onClick={onStartEdit}
-            variant={
-              analysis.role === "diatonic" ? "diatonic"
+          {(() => {
+            const targetDegree = targetDegreeFromRoman(analysis.roman)
+            const effectiveDegree = targetDegree ?? analysis.degree ?? 1
+            const effectiveVariant = targetDegree !== null
+              ? "borrowed"
+              : analysis.role === "diatonic" ? "diatonic"
               : analysis.role === "borrowed" ? "borrowed"
               : "non-diatonic"
-            }
-          />
+            return (
+              <ChordQualityBlock
+                roman={analysis.roman}
+                chordName={symbol}
+                degree={effectiveDegree}
+                isSelected={false}
+                onClick={onStartEdit}
+                variant={effectiveVariant}
+              />
+            )
+          })()}
           {removeBtn}
         </div>
       ) : (
