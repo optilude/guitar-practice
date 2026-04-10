@@ -2,6 +2,7 @@ import { vi, describe, it, expect, beforeEach } from "vitest"
 
 vi.mock("@/lib/db", () => ({
   db: {
+    $transaction: vi.fn(async (ops: Promise<unknown>[]) => Promise.all(ops)),
     passwordResetToken: {
       findUnique: vi.fn(),
       delete: vi.fn(),
@@ -75,10 +76,18 @@ describe("resetPassword", () => {
     expect(result).toEqual({ error: "Password must be at least 8 characters" })
   })
 
-  it("returns error when token is invalid or expired", async () => {
+  it("returns error when token does not exist", async () => {
     vi.mocked(db.passwordResetToken.findUnique).mockResolvedValue(null)
     const result = await resetPassword(
       makeFormData({ token: "bad", newPassword: "newpassword1", confirmPassword: "newpassword1" })
+    )
+    expect(result).toEqual({ error: "Invalid or expired reset link" })
+  })
+
+  it("returns error when token is expired", async () => {
+    vi.mocked(db.passwordResetToken.findUnique).mockResolvedValue(expiredToken)
+    const result = await resetPassword(
+      makeFormData({ token: "abc123", newPassword: "newpassword1", confirmPassword: "newpassword1" })
     )
     expect(result).toEqual({ error: "Invalid or expired reset link" })
   })

@@ -29,8 +29,10 @@ export async function resetPassword(
   if (!record || record.expiresAt < new Date()) return { error: "Invalid or expired reset link" }
 
   const passwordHash = await bcrypt.hash(newPassword, 12)
-  await db.user.update({ where: { id: record.userId }, data: { passwordHash } })
-  await db.passwordResetToken.delete({ where: { token } })
+  await db.$transaction([
+    db.user.update({ where: { id: record.userId }, data: { passwordHash } }),
+    db.passwordResetToken.delete({ where: { token } }),
+  ])
 
   return { success: true }
 }
