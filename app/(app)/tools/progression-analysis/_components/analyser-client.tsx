@@ -330,8 +330,9 @@ export function AnalyserClient() {
       </div>
 
       {/* Right column — always rendered to hold the 1/3 space; content shown when chord selected */}
-      <div className="min-w-0 lg:flex-1">
-        {selectedChord && (
+      <div className="min-w-0 lg:flex-1 space-y-3">
+        <p className="text-xs uppercase tracking-widest text-muted-foreground">Analysis</p>
+        {selectedChord ? (
           <div className="space-y-3">
             <div className="flex rounded border border-border overflow-hidden text-sm w-fit">
               <button
@@ -378,6 +379,10 @@ export function AnalyserClient() {
               />
             )}
           </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            Select a chord tile to view substitutions and applicable chord scales.
+          </p>
         )}
       </div>
 
