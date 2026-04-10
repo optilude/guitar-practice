@@ -18,6 +18,7 @@ vi.mock("next/cache", () => ({
 import { setAdmin } from "@/app/(app)/admin/users/actions"
 import { db } from "@/lib/db"
 import { getIsAdmin, getUserId } from "@/lib/get-user-id"
+import { revalidatePath } from "next/cache"
 
 describe("setAdmin", () => {
   beforeEach(() => vi.clearAllMocks())
@@ -55,6 +56,7 @@ describe("setAdmin", () => {
       where: { id: "target-id" },
       data: { isAdmin: true },
     })
+    expect(revalidatePath).toHaveBeenCalledWith("/admin/users")
     expect(result).toEqual({ success: true })
   })
 
@@ -70,6 +72,18 @@ describe("setAdmin", () => {
       where: { id: "target-id" },
       data: { isAdmin: false },
     })
+    expect(revalidatePath).toHaveBeenCalledWith("/admin/users")
     expect(result).toEqual({ success: true })
+  })
+
+  it("returns error when db.user.update throws", async () => {
+    vi.mocked(getIsAdmin).mockResolvedValue(true)
+    vi.mocked(getUserId).mockResolvedValue("caller-id")
+    vi.mocked(db.user.update).mockRejectedValue(new Error("connection refused"))
+
+    const result = await setAdmin("target-id", true, new FormData())
+
+    expect(result).toEqual({ error: "Failed to update user. Please try again." })
+    expect(revalidatePath).not.toHaveBeenCalled()
   })
 })

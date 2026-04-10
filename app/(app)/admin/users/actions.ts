@@ -17,7 +17,12 @@ export async function setAdmin(
     return { error: "You cannot remove your own admin status" }
   }
 
-  await db.user.update({ where: { id: userId }, data: { isAdmin } })
+  try {
+    await db.user.update({ where: { id: userId }, data: { isAdmin } })
+  } catch (err) {
+    console.error("setAdmin: db.user.update failed", err)
+    return { error: "Failed to update user. Please try again." }
+  }
   revalidatePath("/admin/users")
   return { success: true }
 }
