@@ -413,7 +413,7 @@ export function ProgressionsTab({
       {/* Chord blocks */}
       <div>
         <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">
-          Chords in {tonic} · {romanDisplay}
+          Chords in {tonic}
         </p>
         <div role="group" aria-label="Progression chords" className="flex flex-wrap items-center gap-1">
           {previewChords.map((chord, i) => {
