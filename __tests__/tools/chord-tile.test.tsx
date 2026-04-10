@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest"
+import { describe, it, expect, vi, beforeEach } from "vitest"
 import { render, screen, fireEvent } from "@testing-library/react"
 import { ChordTile } from "@/app/(app)/tools/_components/chord-tile"
 
@@ -28,6 +28,12 @@ const baseProps = {
   onRemove: vi.fn(),
   onStartEdit: vi.fn(),
 }
+
+beforeEach(() => {
+  baseProps.onCommit.mockClear()
+  baseProps.onRemove.mockClear()
+  baseProps.onStartEdit.mockClear()
+})
 
 describe("ChordTile select/edit split", () => {
   it("without onSelect, clicking tile calls onStartEdit", () => {
