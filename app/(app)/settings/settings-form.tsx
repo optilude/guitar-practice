@@ -1,9 +1,8 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { useSession } from "next-auth/react"
+import { useSession, signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { signOut } from "next-auth/react"
 import { Dialog } from "@base-ui/react/dialog"
 import { cn } from "@/lib/utils"
 import { btn } from "@/lib/button-styles"
@@ -41,11 +40,12 @@ export function SettingsForm({
     e.preventDefault()
     setNameMsg(null)
     startNameTransition(async () => {
-      const result = await updateName(nameValue, new FormData())
+      const result = await updateName(nameValue)
       if ("error" in result) {
         setNameMsg({ type: "error", text: result.error })
       } else {
         setNameMsg({ type: "success", text: "Name updated." })
+        router.refresh()
       }
     })
   }
@@ -54,14 +54,15 @@ export function SettingsForm({
     e.preventDefault()
     setPasswordMsg(null)
     const fd = new FormData(e.currentTarget)
+    const formEl = e.currentTarget
     startPasswordTransition(async () => {
       const result = await changePassword(fd)
       if ("error" in result) {
         setPasswordMsg({ type: "error", text: result.error })
       } else {
         await update({ mustChangePassword: false })
-        setPasswordMsg({ type: "success", text: "Password updated." });
-        (e.target as HTMLFormElement).reset()
+        setPasswordMsg({ type: "success", text: "Password updated." })
+        formEl.reset()
       }
     })
   }
@@ -86,13 +87,20 @@ export function SettingsForm({
       <section className="space-y-4">
         <h2 className="text-sm font-semibold">Display name</h2>
         <form onSubmit={handleNameSubmit} className="space-y-3 max-w-sm">
-          <input
-            type="text"
-            value={nameValue}
-            onChange={e => setNameValue(e.target.value)}
-            placeholder="Your name"
-            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent transition-shadow"
-          />
+          <div className="space-y-1.5">
+            <label htmlFor="displayName" className="block text-xs uppercase tracking-widest text-muted-foreground">
+              Name
+            </label>
+            <input
+              id="displayName"
+              type="text"
+              value={nameValue}
+              onChange={e => setNameValue(e.target.value)}
+              placeholder="Your name"
+              maxLength={100}
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent transition-shadow"
+            />
+          </div>
           {nameMsg && (
             <p className={cn("text-xs", nameMsg.type === "error" ? "text-destructive" : "text-green-600 dark:text-green-400")}>
               {nameMsg.text}
@@ -111,8 +119,9 @@ export function SettingsForm({
         <h2 className="text-sm font-semibold">Password</h2>
         <form onSubmit={handlePasswordSubmit} className="space-y-3 max-w-sm">
           <div className="space-y-1.5">
-            <label className="block text-xs text-muted-foreground">Current password</label>
+            <label htmlFor="currentPassword" className="block text-xs uppercase tracking-widest text-muted-foreground">Current password</label>
             <input
+              id="currentPassword"
               name="currentPassword"
               type="password"
               required
@@ -121,8 +130,9 @@ export function SettingsForm({
             />
           </div>
           <div className="space-y-1.5">
-            <label className="block text-xs text-muted-foreground">New password</label>
+            <label htmlFor="newPassword" className="block text-xs uppercase tracking-widest text-muted-foreground">New password</label>
             <input
+              id="newPassword"
               name="newPassword"
               type="password"
               required
@@ -132,8 +142,9 @@ export function SettingsForm({
             />
           </div>
           <div className="space-y-1.5">
-            <label className="block text-xs text-muted-foreground">Confirm new password</label>
+            <label htmlFor="confirmPassword" className="block text-xs uppercase tracking-widest text-muted-foreground">Confirm new password</label>
             <input
+              id="confirmPassword"
               name="confirmPassword"
               type="password"
               required
@@ -171,7 +182,8 @@ export function SettingsForm({
 
         <Dialog.Root
           open={step !== "idle"}
-          onOpenChange={open => { if (!open) setStep("idle") }}
+          onOpenChange={open => { if (!open) { setStep("idle"); setDeleteError(null) } }}
+          disablePointerDismissal={isDeletePending}
         >
           <Dialog.Portal>
             <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" />
@@ -184,13 +196,9 @@ export function SettingsForm({
                     All your data — goals, practice history, and progressions — will be permanently deleted.
                   </Dialog.Description>
                   <div className="flex justify-end gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setStep("idle")}
-                      className={btn("standalone", "sm")}
-                    >
+                    <Dialog.Close className={btn("standalone", "sm")}>
                       Cancel
-                    </button>
+                    </Dialog.Close>
                     <button
                       type="button"
                       onClick={() => setStep("confirm2")}
@@ -212,14 +220,12 @@ export function SettingsForm({
                     <p className="text-xs text-destructive">{deleteError}</p>
                   )}
                   <div className="flex justify-end gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setStep("idle")}
+                    <Dialog.Close
                       disabled={isDeletePending}
                       className={btn("standalone", "sm")}
                     >
                       Cancel
-                    </button>
+                    </Dialog.Close>
                     <button
                       type="button"
                       onClick={handleDelete}

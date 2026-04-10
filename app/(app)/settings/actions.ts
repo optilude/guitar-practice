@@ -6,7 +6,6 @@ import { revalidatePath } from "next/cache"
 
 export async function updateName(
   name: string,
-  _fd: FormData,
 ): Promise<{ success: true } | { error: string }> {
   const userId = await getUserId()
   if (!userId) return { error: "Not authenticated" }

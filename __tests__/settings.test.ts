@@ -24,14 +24,14 @@ describe("updateName", () => {
 
   it("returns error when unauthenticated", async () => {
     vi.mocked(getUserId).mockResolvedValue(null)
-    const result = await updateName("Alice", new FormData())
+    const result = await updateName("Alice")
     expect(result).toEqual({ error: "Not authenticated" })
     expect(db.user.update).not.toHaveBeenCalled()
   })
 
   it("returns error for blank name", async () => {
     vi.mocked(getUserId).mockResolvedValue("user-1")
-    const result = await updateName("   ", new FormData())
+    const result = await updateName("   ")
     expect(result).toEqual({ error: "Name is required" })
     expect(db.user.update).not.toHaveBeenCalled()
   })
@@ -40,7 +40,7 @@ describe("updateName", () => {
     vi.mocked(getUserId).mockResolvedValue("user-1")
     vi.mocked(db.user.update).mockResolvedValue({} as never)
 
-    const result = await updateName("  Alice  ", new FormData())
+    const result = await updateName("  Alice  ")
 
     expect(db.user.update).toHaveBeenCalledWith({
       where: { id: "user-1" },
@@ -54,7 +54,7 @@ describe("updateName", () => {
     vi.mocked(getUserId).mockResolvedValue("user-1")
     vi.mocked(db.user.update).mockRejectedValue(new Error("db error"))
 
-    const result = await updateName("Alice", new FormData())
+    const result = await updateName("Alice")
 
     expect(result).toEqual({ error: "Failed to update name. Please try again." })
     expect(revalidatePath).not.toHaveBeenCalled()
