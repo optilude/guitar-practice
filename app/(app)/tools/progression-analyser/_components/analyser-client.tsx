@@ -188,6 +188,17 @@ export function AnalyserClient() {
 
   const hasParsedChords = parsedChords.length > 0
 
+  const chordIdToAnalysisIdx = useMemo(() => {
+    const map = new Map<string, number>()
+    let idx = 0
+    for (const chord of chords) {
+      if (parseChord(chord.symbol) !== null) {
+        map.set(chord.id, idx++)
+      }
+    }
+    return map
+  }, [chords])
+
   const selectedId = selectedIndex !== null ? (chords[selectedIndex]?.id ?? null) : null
 
   const handleSelect = useCallback((id: string) => {
@@ -198,14 +209,14 @@ export function AnalyserClient() {
   }, [chords])
 
   const getDisplayAnalysis = useCallback((id: string) => {
-    const i = chords.findIndex(c => c.id === id)
-    if (i === -1) return null
-    const pc = progressionChords[i]
-    const fa = functionalAnalyses[i]
+    const analysisIdx = chordIdToAnalysisIdx.get(id)
+    if (analysisIdx === undefined) return null
+    const pc = progressionChords[analysisIdx]
+    const fa = functionalAnalyses[analysisIdx]
     if (!pc) return null
     const roman = fa?.romanOverride ?? pc.roman
     const tgtDeg = targetDegreeFromRoman(roman)
-    const role = displayAnalyses[i]?.role ?? "diatonic"
+    const role = displayAnalyses[analysisIdx]?.role ?? "diatonic"
     const degree = tgtDeg ?? pc.degree
     const variant: "diatonic" | "borrowed" | "non-diatonic" = tgtDeg !== null
       ? "borrowed"
@@ -213,7 +224,7 @@ export function AnalyserClient() {
       : role === "borrowed" ? "borrowed"
       : "non-diatonic"
     return { roman, degree, variant }
-  }, [chords, progressionChords, functionalAnalyses, displayAnalyses])
+  }, [chordIdToAnalysisIdx, progressionChords, functionalAnalyses, displayAnalyses])
 
   return (
     <div className="flex flex-col lg:flex-row gap-6">
