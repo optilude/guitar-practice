@@ -12,7 +12,85 @@ const mockSub: ChordSubstitution = {
   sortRank: 10,
 }
 
-describe("SubstitutionsPanel", () => {
+describe("SubstitutionsPanel — core rendering and interaction", () => {
+  it("renders the chord name heading", () => {
+    render(
+      <SubstitutionsPanel
+        substitutions={[mockSub]}
+        chordName="Cmaj7"
+        previewedId={null}
+        onPreview={vi.fn()}
+      />
+    )
+    expect(screen.getByText(/Cmaj7/)).toBeInTheDocument()
+  })
+
+  it("renders rule group headings", () => {
+    render(
+      <SubstitutionsPanel
+        substitutions={[mockSub]}
+        chordName="Cmaj7"
+        previewedId={null}
+        onPreview={vi.fn()}
+      />
+    )
+    expect(screen.getByText("Diatonic Substitution")).toBeInTheDocument()
+  })
+
+  it("renders all substitution labels", () => {
+    render(
+      <SubstitutionsPanel
+        substitutions={[mockSub]}
+        chordName="Cmaj7"
+        previewedId={null}
+        onPreview={vi.fn()}
+      />
+    )
+    expect(screen.getByText("Am7")).toBeInTheDocument()
+  })
+
+  it("calls onPreview with the sub when a row is clicked", () => {
+    const onPreview = vi.fn()
+    render(
+      <SubstitutionsPanel
+        substitutions={[mockSub]}
+        chordName="Cmaj7"
+        previewedId={null}
+        onPreview={onPreview}
+      />
+    )
+    fireEvent.click(screen.getByRole("button", { name: /Am7/ }))
+    expect(onPreview).toHaveBeenCalledWith(mockSub)
+  })
+
+  it("calls onPreview(null) when the active sub is clicked again (toggle off)", () => {
+    const onPreview = vi.fn()
+    render(
+      <SubstitutionsPanel
+        substitutions={[mockSub]}
+        chordName="Cmaj7"
+        previewedId="diatonic-deg6"
+        onPreview={onPreview}
+      />
+    )
+    fireEvent.click(screen.getByRole("button", { name: /Am7/ }))
+    expect(onPreview).toHaveBeenCalledWith(null)
+  })
+
+  it("shows empty message when no substitutions", () => {
+    render(
+      <SubstitutionsPanel
+        substitutions={[]}
+        chordName="Cmaj7"
+        previewedId={null}
+        onPreview={vi.fn()}
+      />
+    )
+    expect(screen.getByText(/No substitutions available for Cmaj7/)).toBeInTheDocument()
+  })
+})
+
+describe("SubstitutionsPanel — Apply button", () => {
   it("shows Apply button when a substitution is active and onApply is provided", () => {
     render(
       <SubstitutionsPanel
