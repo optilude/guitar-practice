@@ -186,8 +186,8 @@ export function SettingsForm({
           disablePointerDismissal={isDeletePending}
         >
           <Dialog.Portal>
-            <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" />
-            <Dialog.Popup className="fixed left-1/2 top-1/2 z-50 w-full max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-background p-6 shadow-xl">
+            <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm transition-opacity duration-150 data-starting-style:opacity-0 data-ending-style:opacity-0" />
+            <Dialog.Popup className="fixed left-1/2 top-1/2 z-[51] w-full max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-background p-6 shadow-xl transition duration-150 data-starting-style:opacity-0 data-ending-style:opacity-0">
 
               {step === "confirm1" && (
                 <div className="space-y-4">
@@ -196,9 +196,6 @@ export function SettingsForm({
                     All your data — goals, practice history, and progressions — will be permanently deleted.
                   </Dialog.Description>
                   <div className="flex justify-end gap-2">
-                    <Dialog.Close className={btn("standalone", "sm")}>
-                      Cancel
-                    </Dialog.Close>
                     <button
                       type="button"
                       onClick={() => setStep("confirm2")}
@@ -206,6 +203,9 @@ export function SettingsForm({
                     >
                       Continue
                     </button>
+                    <Dialog.Close className={btn("standalone", "sm")}>
+                      Cancel
+                    </Dialog.Close>
                   </div>
                 </div>
               )}
@@ -220,12 +220,6 @@ export function SettingsForm({
                     <p className="text-xs text-destructive">{deleteError}</p>
                   )}
                   <div className="flex justify-end gap-2">
-                    <Dialog.Close
-                      disabled={isDeletePending}
-                      className={btn("standalone", "sm")}
-                    >
-                      Cancel
-                    </Dialog.Close>
                     <button
                       type="button"
                       onClick={handleDelete}
@@ -234,6 +228,12 @@ export function SettingsForm({
                     >
                       {isDeletePending ? "Deleting…" : "Yes, delete my account"}
                     </button>
+                    <Dialog.Close
+                      disabled={isDeletePending}
+                      className={btn("standalone", "sm")}
+                    >
+                      Cancel
+                    </Dialog.Close>
                   </div>
                 </div>
               )}

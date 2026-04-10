@@ -14,8 +14,9 @@ export default async function SettingsPage() {
   if (!user) redirect("/login")
 
   return (
-    <div className="max-w-lg space-y-8">
-      <h1 className="text-lg font-semibold">Settings</h1>
+    <div className="pt-6 max-w-lg">
+      <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">User</p>
+      <h1 className="text-2xl font-semibold text-foreground mb-6">Settings</h1>
       <SettingsForm name={user.name} email={user.email} />
     </div>
   )

@@ -1,6 +1,7 @@
 import { db } from "@/lib/db"
 import { requireAdmin } from "@/lib/require-admin"
 import { getUserId } from "@/lib/get-user-id"
+import { btn } from "@/lib/button-styles"
 import { setAdmin } from "./actions"
 import { DeleteUserForm } from "./delete-user-form"
 
@@ -16,8 +17,9 @@ export default async function AdminUsersPage() {
   ])
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-lg font-semibold">User Management</h1>
+    <div className="pt-6">
+      <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Admin</p>
+      <h1 className="text-2xl font-semibold text-foreground mb-6">User Management</h1>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
@@ -47,7 +49,7 @@ export default async function AdminUsersPage() {
                   {user.id !== currentUserId && (
                     <div className="flex items-center gap-3">
                       <form action={setAdmin.bind(null, user.id, !user.isAdmin)}>
-                        <button type="submit" className="text-xs text-accent hover:underline">
+                        <button type="submit" className={btn("standalone", "sm")}>
                           {user.isAdmin ? "Remove admin" : "Make admin"}
                         </button>
                       </form>

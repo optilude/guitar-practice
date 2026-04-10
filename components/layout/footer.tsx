@@ -3,9 +3,9 @@ import Link from "next/link"
 const NAV_ITEMS = [
   { href: "/",          label: "Home" },
   { href: "/goals",     label: "Goals" },
+  { href: "/history",   label: "History" },
   { href: "/library",   label: "Library" },
   { href: "/reference", label: "Reference" },
-  { href: "/history",   label: "History" },
   { href: "/tools",     label: "Tools" },
 ]
 

@@ -36,16 +36,14 @@ export default async function CategoryPage({
       >
         ← Library
       </Link>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold text-foreground">{data.name}</h1>
-        <Link
-          href={`/library/manage#${data.slug}`}
-          className="text-xs text-accent hover:underline"
-        >
-          Manage my library →
-        </Link>
-      </div>
+      <h1 className="text-2xl font-semibold text-foreground mb-6">{data.name}</h1>
       <CategoryTabs standardTopics={standardTopics} userLessons={userLessons} />
+      <Link
+        href={`/library/manage#${data.slug}`}
+        className="mt-4 inline-block text-sm text-foreground hover:underline"
+      >
+        Manage my library →
+      </Link>
     </div>
   )
 }
