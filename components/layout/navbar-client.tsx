@@ -3,6 +3,8 @@
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { signOut } from "next-auth/react"
+import { UserCircle } from "lucide-react"
+import { Popover } from "@base-ui/react/popover"
 import { cn } from "@/lib/utils"
 import { ThemeToggle } from "@/components/layout/theme-toggle"
 import { MobileMenu } from "@/components/layout/mobile-menu"
@@ -16,7 +18,13 @@ const BASE_NAV_ITEMS = [
   { href: "/tools", label: "Tools" },
 ]
 
-export function NavbarClient({ isAdmin = false }: { isAdmin?: boolean }) {
+export function NavbarClient({
+  isAdmin = false,
+  userName = null,
+}: {
+  isAdmin?: boolean
+  userName?: string | null
+}) {
   const pathname = usePathname()
   const router = useRouter()
 
@@ -65,12 +73,38 @@ export function NavbarClient({ isAdmin = false }: { isAdmin?: boolean }) {
 
         <div className="ml-auto flex items-center gap-3">
           <ThemeToggle />
-          <button
-            onClick={handleSignOut}
-            className="hidden md:block text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Sign out
-          </button>
+          <Popover.Root>
+            <Popover.Trigger className="hidden md:flex items-center text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-accent rounded">
+              <UserCircle className="size-5" />
+              <span className="sr-only">User menu</span>
+            </Popover.Trigger>
+            <Popover.Portal>
+              <Popover.Positioner side="bottom" align="end" sideOffset={8}>
+                <Popover.Popup className="z-50 min-w-[160px] rounded-md border border-border bg-background shadow-md py-1 focus:outline-none">
+                  {userName && (
+                    <>
+                      <div className="px-3 py-2 text-xs font-medium text-muted-foreground truncate">
+                        {userName}
+                      </div>
+                      <div className="my-1 border-t border-border" />
+                    </>
+                  )}
+                  <Link
+                    href="/settings"
+                    className="block px-3 py-1.5 text-sm text-foreground hover:bg-muted transition-colors"
+                  >
+                    Settings
+                  </Link>
+                  <button
+                    onClick={handleSignOut}
+                    className="block w-full text-left px-3 py-1.5 text-sm text-foreground hover:bg-muted transition-colors"
+                  >
+                    Sign out
+                  </button>
+                </Popover.Popup>
+              </Popover.Positioner>
+            </Popover.Portal>
+          </Popover.Root>
         </div>
       </div>
     </nav>
