@@ -28,9 +28,9 @@ const TOOLS: { href: string; icon: ReactNode; name: string; description: string 
     description: "Transpose chords and progressions",
   },
   {
-    href: "/tools/progression-analyser",
+    href: "/tools/progression-analysis",
     icon: <BarChart2 size={36} strokeWidth={1.5} aria-hidden="true" />,
-    name: "Progression Analyser",
+    name: "Progression Analysis",
     description: "Analyse chord progressions with real-time harmonic labelling",
   },
   {

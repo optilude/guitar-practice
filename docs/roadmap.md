@@ -68,7 +68,7 @@ More theory topics:
 
 # Known issues
 
-* The "OVER THE WHOLE PROGRESSION" scale appears on both the Soloing and Substitutions panels on the Progressions tab on the Reference page. It should only appear on the Soloing panel.
+* The Cycle of Fifths and Diminished Passing substitutions appear to be relating to the chord _after_ the selected one, rather than insert a leading cadence to the selected chord. Confirm if this is right.
 
 * Functional harmony overrides need more testing
     - I - VI7 - ii - V

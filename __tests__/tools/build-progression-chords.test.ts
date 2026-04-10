@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { buildProgressionChords } from "@/app/(app)/tools/progression-analyser/_lib/build-progression-chords"
+import { buildProgressionChords } from "@/app/(app)/tools/progression-analysis/_lib/build-progression-chords"
 import type { InputChord, ChordAnalysis } from "@/lib/theory/key-finder"
 
 function inputChord(root: string, type: string): InputChord {

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
-import { AnalyserClient } from "@/app/(app)/tools/progression-analyser/_components/analyser-client"
+import { AnalyserClient } from "@/app/(app)/tools/progression-analysis/_components/analyser-client"
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }))
 vi.mock("@/lib/theory/key-finder", () => ({

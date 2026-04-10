@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { render, screen, fireEvent, waitFor } from "@testing-library/react"
-import { SaveModal } from "@/app/(app)/tools/progression-analyser/_components/save-modal"
+import { SaveModal } from "@/app/(app)/tools/progression-analysis/_components/save-modal"
 import type { InputChord } from "@/lib/theory/key-finder"
 
 const mockPush = vi.fn()
