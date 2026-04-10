@@ -151,8 +151,8 @@ export function AnalyserClient() {
     : null
 
   const scales = useMemo(() => {
-    if (!selectedChord || selectedIndex === null) return null
-    return functionalAnalyses[selectedIndex]?.scalesOverride ??
+    if (!selectedChord) return null
+    return functionalAnalyses[selectedIndex!]?.scalesOverride ??
       getSoloScales({ tonic: selectedChord.tonic, type: selectedChord.type, degree: selectedChord.degree }, mode.modeName)
   }, [selectedChord, selectedIndex, functionalAnalyses, mode.modeName])
 
@@ -190,14 +190,14 @@ export function AnalyserClient() {
     setSelectedIndex(prev => prev === i ? null : i)
   }, [])
 
-  function handleApplyPermanently() {
+  const handleApplyPermanently = useCallback(() => {
     if (!previewedSub) return
     const { previewChords: applied } = applyPreview(progressionChords, previewedSub)
     setChords(applied.map(c => ({ id: crypto.randomUUID(), symbol: `${c.tonic}${c.type}` })))
     setPreviewedSub(null)
     setSelectedIndex(null)
     setEditingId(null)
-  }
+  }, [progressionChords, previewedSub])
 
   const hasParsedChords = parsedChords.length > 0
 
