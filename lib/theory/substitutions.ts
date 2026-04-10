@@ -293,7 +293,7 @@ function backdoorDominant(
   tonic: string,
   mode: string,
 ): ChordSubstitution[] {
-  if (chord.quality !== "dominant") return []
+  if (chord.quality !== "dominant" || chord.degree !== 5) return []
   const nextChord = chords[selectedIndex + 1]
   if (!nextChord) return []
   const rawRoot = Note.transpose(nextChord.tonic, "M-2") // whole step below target

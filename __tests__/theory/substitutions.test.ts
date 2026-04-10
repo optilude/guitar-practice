@@ -381,6 +381,16 @@ describe("Backdoor Dominant substitution", () => {
     expect(subs.filter(s => s.ruleName === "Backdoor Dominant")).toHaveLength(0)
   })
 
+  it("does not fire for secondary dominants (degree !== 5)", () => {
+    // A7 is V7/ii (degree 6 in C major) — not the primary V7
+    const withSecondaryDom: ProgressionChord[] = [
+      chord("A", "7", "dominant", 6, "VI"),
+      chord("D", "m7", "minor", 2, "ii"),
+    ]
+    const subs = getSubstitutions(withSecondaryDom[0]!, withSecondaryDom, 0, "C", "major")
+    expect(subs.filter(s => s.ruleName === "Backdoor Dominant")).toHaveLength(0)
+  })
+
   it("replaces G7 with Bb7 (whole step below C)", () => {
     const subs = getSubstitutions(V_TO_I[0]!, V_TO_I, 0, "C", "major")
     const sub = subs.find(s => s.ruleName === "Backdoor Dominant")!
