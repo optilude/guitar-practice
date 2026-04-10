@@ -10,9 +10,13 @@ export async function changePassword(
   const userId = await getUserId()
   if (!userId) return { error: "Not authenticated" }
 
-  const currentPassword = formData.get("currentPassword") as string
-  const newPassword = formData.get("newPassword") as string
-  const confirmPassword = formData.get("confirmPassword") as string
+  const currentPassword = formData.get("currentPassword")
+  const newPassword = formData.get("newPassword")
+  const confirmPassword = formData.get("confirmPassword")
+
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    return { error: "All fields are required" }
+  }
 
   if (newPassword !== confirmPassword) return { error: "Passwords do not match" }
   if (newPassword.length < 8) return { error: "Password must be at least 8 characters" }

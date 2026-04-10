@@ -40,6 +40,7 @@ const mockUser = {
   mustChangePassword: true,
   createdAt: new Date(),
   updatedAt: new Date(),
+  passwordResetTokens: [],
 }
 
 describe("changePassword", () => {
