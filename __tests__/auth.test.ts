@@ -39,8 +39,15 @@ const mockUser = {
   email: "test@example.com",
   name: "Test User",
   passwordHash: "$2b$12$hashedpassword",
+  isAdmin: false,
+  mustChangePassword: false,
   createdAt: new Date(),
   updatedAt: new Date(),
+  goals: [],
+  userLessons: [],
+  userProgressions: [],
+  practiceSessions: [],
+  passwordResetTokens: [],
 }
 
 describe("authorizeUser", () => {
@@ -78,6 +85,8 @@ describe("authorizeUser", () => {
       id: "cuid_123",
       email: "test@example.com",
       name: "Test User",
+      isAdmin: false,
+      mustChangePassword: false,
     })
   })
 
@@ -89,4 +98,5 @@ describe("authorizeUser", () => {
 
     expect(result).not.toHaveProperty("passwordHash")
   })
+
 })

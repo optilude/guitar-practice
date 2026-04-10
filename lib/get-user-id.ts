@@ -12,3 +12,12 @@ export async function getUserId(): Promise<string | null> {
   const headersList = await headers()
   return headersList.get("x-user-id")
 }
+
+/**
+ * Returns true if the authenticated user is an admin.
+ * Reads the x-is-admin header forwarded by the edge proxy.
+ */
+export async function getIsAdmin(): Promise<boolean> {
+  const headersList = await headers()
+  return headersList.get("x-is-admin") === "true"
+}

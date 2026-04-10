@@ -12,14 +12,20 @@ import { authConfig } from "@/auth.config"
 export async function authorizeUser(
   email: string,
   password: string
-): Promise<{ id: string; email: string; name: string | null } | null> {
+): Promise<{ id: string; email: string; name: string | null; isAdmin: boolean; mustChangePassword: boolean } | null> {
   const user = await db.user.findUnique({ where: { email } })
   if (!user) return null
 
   const valid = await bcrypt.compare(password, user.passwordHash)
   if (!valid) return null
 
-  return { id: user.id, email: user.email, name: user.name }
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    isAdmin: user.isAdmin,
+    mustChangePassword: user.mustChangePassword,
+  }
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({

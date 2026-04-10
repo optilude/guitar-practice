@@ -11,7 +11,9 @@ export default auth((req) => {
   const isPublicPath =
     pathname.startsWith("/login") ||
     pathname.startsWith("/register") ||
-    pathname.startsWith("/api/auth")
+    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/forgot-password") ||
+    pathname.startsWith("/reset-password")
 
   if (!isLoggedIn && !isPublicPath) {
     return NextResponse.redirect(new URL("/login", req.nextUrl))
@@ -21,13 +23,23 @@ export default auth((req) => {
     return NextResponse.redirect(new URL("/", req.nextUrl))
   }
 
-  // Forward user ID as a request header so server components and actions
-  // can read it via `await headers()` (Next.js 16 requires async API).
-  // Strip any client-supplied x-user-id first to prevent spoofing.
+  // Redirect users who must change their password (but not if they're already on that page)
+  const mustChange = isLoggedIn && req.auth?.user?.mustChangePassword
+  const isChangePwPath = pathname.startsWith("/change-password")
+  if (mustChange && !isChangePwPath) {
+    return NextResponse.redirect(new URL("/change-password", req.nextUrl))
+  }
+
+  // Forward user ID and admin status as request headers so server components
+  // can read them via `await headers()`. Strip any client-supplied values first.
   const requestHeaders = new Headers(req.headers)
   requestHeaders.delete("x-user-id")
+  requestHeaders.delete("x-is-admin")
   if (isLoggedIn && req.auth?.user?.id) {
     requestHeaders.set("x-user-id", req.auth.user.id)
+  }
+  if (isLoggedIn && req.auth?.user?.isAdmin) {
+    requestHeaders.set("x-is-admin", "true")
   }
   return NextResponse.next({ request: { headers: requestHeaders } })
 })
