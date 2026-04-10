@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { db } from "@/lib/db"
 import { requireAdmin } from "@/lib/require-admin"
 import { getUserId } from "@/lib/get-user-id"
@@ -18,8 +19,15 @@ export default async function AdminUsersPage() {
 
   return (
     <div className="pt-6">
-      <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Admin</p>
-      <h1 className="text-2xl font-semibold text-foreground mb-6">User Management</h1>
+      <div>
+        <Link
+          href="/admin"
+          className="inline-flex items-center gap-1 text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors mb-1"
+        >
+          ← Admin
+        </Link>
+        <h1 className="text-2xl font-semibold text-foreground mb-6">User Management</h1>
+      </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
