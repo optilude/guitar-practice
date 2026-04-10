@@ -40,6 +40,7 @@ describe("buildProgressionChords", () => {
     )
     expect(result[0]!.degree).toBe(1)
     expect(result[0]!.roman).toBe("♭II")
+    expect(result[0]!.nashville).toBe("1")
   })
 
   it("derives quality 'minor' for m7 type", () => {
