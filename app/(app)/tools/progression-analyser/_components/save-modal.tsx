@@ -38,7 +38,7 @@ export function SaveModal({
     const analyses = analyzeProgression(parsedChords, tonic, modeName)
     const degrees = analyses.map((a, i) => {
       const chord = parsedChords[i]
-      return chord && chord.type ? `${a.roman}:${chord.type}` : a.roman
+      return `${a.roman}:${chord?.type ?? ""}`
     })
 
     const result = await createUserProgression({

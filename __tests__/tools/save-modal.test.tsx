@@ -16,7 +16,10 @@ vi.mock("@/app/(app)/reference/progressions/actions", () => ({
 
 const fakeParsedChords: InputChord[] = [{ root: "C", type: "maj7", symbol: "Cmaj7" }]
 
-beforeEach(() => { mockPush.mockClear() })
+beforeEach(() => {
+  mockPush.mockClear()
+  vi.clearAllMocks()
+})
 
 describe("SaveModal", () => {
   it("renders with pre-filled title and description", () => {
