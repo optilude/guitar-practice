@@ -4,7 +4,7 @@ import { useRef, useEffect, useState } from "react"
 import { Chord } from "tonal"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { ChordQualityBlock, targetDegreeFromRoman } from "@/app/(app)/reference/_components/chord-quality-block"
+import { ChordQualityBlock, targetDegreeFromRoman, chordBlockStyle } from "@/app/(app)/reference/_components/chord-quality-block"
 import { listChordDbSuffixes } from "@/lib/theory/chords"
 import { parseChord, type ChordAnalysis } from "@/lib/theory/key-finder"
 
@@ -41,6 +41,11 @@ interface ChordTileProps {
   onTabNext?: () => void
   onArrowPrev?: () => void
   onArrowNext?: () => void
+  isSelected?: boolean
+  onSelect?: () => void
+  displayRoman?: string
+  displayDegree?: number
+  displayVariant?: "diatonic" | "borrowed" | "non-diatonic"
 }
 
 export function ChordTile({
@@ -54,13 +59,18 @@ export function ChordTile({
   onTabNext,
   onArrowPrev,
   onArrowNext,
+  isSelected,
+  onSelect,
+  displayRoman,
+  displayDegree,
+  displayVariant,
 }: ChordTileProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
     disabled: isEditing,
   })
 
-  const style = {
+  const sortableStyle = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
@@ -154,7 +164,7 @@ export function ChordTile({
   // Editing mode
   if (isEditing) {
     return (
-      <div ref={setNodeRef} style={style} className="relative flex-shrink-0">
+      <div ref={setNodeRef} style={sortableStyle} className="relative flex-shrink-0">
         <div className="flex flex-col items-center rounded-lg border-2 border-dashed border-border px-3 py-2.5 w-[80px]">
           <span className="text-[10px] mb-1 invisible" aria-hidden="true">·</span>
           <input
@@ -212,10 +222,54 @@ export function ChordTile({
     </button>
   )
 
+  if (analysis && onSelect) {
+    const roman = displayRoman ?? analysis.roman
+    const tgtDeg = targetDegreeFromRoman(roman)
+    const degree = displayDegree ?? tgtDeg ?? analysis.degree ?? 1
+    const variant = displayVariant
+      ?? (tgtDeg !== null ? "borrowed"
+        : analysis.role === "diatonic" ? "diatonic"
+        : analysis.role === "borrowed" ? "borrowed"
+        : "non-diatonic")
+    const blockStyle = chordBlockStyle(degree, variant, isSelected ?? false)
+    return (
+      <div
+        ref={setNodeRef}
+        style={sortableStyle}
+        className="flex-shrink-0 cursor-grab active:cursor-grabbing touch-none select-none"
+        {...attributes}
+        {...listeners}
+      >
+        <div className="relative">
+          <div
+            role="button"
+            tabIndex={0}
+            aria-pressed={isSelected ?? false}
+            aria-label="select chord"
+            onClick={onSelect}
+            onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect() } }}
+            className="flex flex-col items-center rounded-lg border-2 px-3 py-2.5 text-center min-w-[68px] flex-shrink-0 transition-colors focus:outline-none focus:ring-1 focus:ring-accent cursor-pointer"
+            style={blockStyle}
+          >
+            <span className="text-[10px] text-muted-foreground mb-1">{roman}</span>
+            <button
+              type="button"
+              onClick={e => { e.stopPropagation(); onStartEdit() }}
+              className="text-sm font-semibold text-foreground leading-tight hover:underline focus:outline-none"
+            >
+              {symbol}
+            </button>
+          </div>
+          {removeBtn}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div
       ref={setNodeRef}
-      style={style}
+      style={sortableStyle}
       className="flex-shrink-0 cursor-grab active:cursor-grabbing touch-none select-none"
       {...attributes}
       {...listeners}
