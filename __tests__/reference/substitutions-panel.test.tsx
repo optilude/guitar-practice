@@ -146,4 +146,16 @@ describe("SubstitutionsPanel — Apply button", () => {
     fireEvent.click(screen.getByRole("button", { name: "Apply" }))
     expect(onPreview).not.toHaveBeenCalled()
   })
+
+  it("active substitution row has aria-pressed=true", () => {
+    render(
+      <SubstitutionsPanel
+        substitutions={[mockSub]}
+        chordName="Cmaj7"
+        previewedId="diatonic-deg6"
+        onPreview={vi.fn()}
+      />
+    )
+    expect(screen.getByRole("button", { pressed: true })).toBeInTheDocument()
+  })
 })

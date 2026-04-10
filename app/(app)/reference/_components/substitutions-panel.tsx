@@ -54,6 +54,7 @@ export function SubstitutionsPanel({
                 key={sub.id}
                 role="button"
                 tabIndex={0}
+                aria-pressed={isActive}
                 onClick={() => onPreview(isActive ? null : sub)}
                 onKeyDown={e => {
                   if (e.key === "Enter" || e.key === " ") {
