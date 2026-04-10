@@ -4,9 +4,11 @@ import { revalidatePath } from "next/cache"
 import { getIsAdmin } from "@/lib/get-user-id"
 import { db } from "@/lib/db"
 
+class AuthorizationError extends Error {}
+
 async function requireAdminUser(): Promise<void> {
   const isAdmin = await getIsAdmin()
-  if (!isAdmin) throw new Error("Not authorized")
+  if (!isAdmin) throw new AuthorizationError("Not authorized")
 }
 
 function slugify(text: string): string {
@@ -59,7 +61,7 @@ export async function createTopic(
     revalidateLibraryPaths(category.slug)
     return { success: true, id: topic.id }
   } catch (e) {
-    if (e instanceof Error && e.message === "Not authorized") return { error: "Not authorized" }
+    if (e instanceof AuthorizationError) return { error: "Not authorized" }
     return { error: "Failed to create topic" }
   }
 }
@@ -97,7 +99,7 @@ export async function updateTopic(
     revalidateLibraryPaths(topic.category.slug)
     return { success: true }
   } catch (e) {
-    if (e instanceof Error && e.message === "Not authorized") return { error: "Not authorized" }
+    if (e instanceof AuthorizationError) return { error: "Not authorized" }
     return { error: "Failed to update topic" }
   }
 }
@@ -125,7 +127,7 @@ export async function deleteTopic(
     revalidateLibraryPaths(topic.category.slug)
     return { success: true }
   } catch (e) {
-    if (e instanceof Error && e.message === "Not authorized") return { error: "Not authorized" }
+    if (e instanceof AuthorizationError) return { error: "Not authorized" }
     return { error: "Failed to delete topic" }
   }
 }
@@ -154,7 +156,7 @@ export async function reorderTopics(
     revalidatePath("/library")
     return { success: true }
   } catch (e) {
-    if (e instanceof Error && e.message === "Not authorized") return { error: "Not authorized" }
+    if (e instanceof AuthorizationError) return { error: "Not authorized" }
     return { error: "Failed to reorder topics" }
   }
 }

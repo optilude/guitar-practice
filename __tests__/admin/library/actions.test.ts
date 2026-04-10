@@ -62,7 +62,6 @@ describe("createTopic", () => {
   })
 
   it("returns error when category not found", async () => {
-    vi.mocked(db.source.upsert).mockResolvedValue({ id: "src-1" } as never)
     vi.mocked(db.category.findUnique).mockResolvedValue(null as never)
 
     const result = await createTopic("bad-id", {
@@ -72,6 +71,7 @@ describe("createTopic", () => {
     })
 
     expect(result).toEqual({ error: "Category not found" })
+    expect(db.source.upsert).not.toHaveBeenCalled()
   })
 
   it("returns error when not admin", async () => {
@@ -133,6 +133,12 @@ describe("updateTopic", () => {
     expect(result).toEqual({ error: "Not found" })
   })
 
+  it("returns error when not admin", async () => {
+    vi.mocked(getIsAdmin).mockResolvedValueOnce(false)
+    const result = await updateTopic("topic-1", { title: "X" })
+    expect(result).toEqual({ error: "Not authorized" })
+  })
+
   it("skips source upsert when sourceName not provided", async () => {
     vi.mocked(db.topic.findUnique).mockResolvedValue({
       id: "topic-1",
@@ -180,6 +186,12 @@ describe("deleteTopic", () => {
     const result = await deleteTopic("bad-id")
     expect(result).toEqual({ error: "Not found" })
   })
+
+  it("returns error when not admin", async () => {
+    vi.mocked(getIsAdmin).mockResolvedValueOnce(false)
+    const result = await deleteTopic("topic-1")
+    expect(result).toEqual({ error: "Not authorized" })
+  })
 })
 
 describe("reorderTopics", () => {
@@ -199,5 +211,11 @@ describe("reorderTopics", () => {
     vi.mocked(db.topic.findMany).mockResolvedValue([{ id: "topic-1" }] as never)
     const result = await reorderTopics("cat-1", ["topic-1", "topic-99"])
     expect(result).toEqual({ error: "Invalid topics provided" })
+  })
+
+  it("returns error when not admin", async () => {
+    vi.mocked(getIsAdmin).mockResolvedValueOnce(false)
+    const result = await reorderTopics("cat-1", ["topic-1"])
+    expect(result).toEqual({ error: "Not authorized" })
   })
 })
