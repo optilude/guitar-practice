@@ -78,6 +78,7 @@ describe("deleteAccount", () => {
     const result = await deleteAccount(new FormData())
 
     expect(db.user.delete).toHaveBeenCalledWith({ where: { id: "user-1" } })
+    expect(revalidatePath).not.toHaveBeenCalled()
     expect(result).toEqual({ success: true })
   })
 
