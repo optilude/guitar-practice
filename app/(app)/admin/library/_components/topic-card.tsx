@@ -107,6 +107,7 @@ export function TopicCard({ topic, onChanged }: TopicCardProps) {
           {isEditing ? (
             <>
               <button
+                type="button"
                 onClick={handleSave}
                 disabled={isSaving}
                 className={btn("primary", "sm")}
@@ -114,6 +115,7 @@ export function TopicCard({ topic, onChanged }: TopicCardProps) {
                 {isSaving ? "Saving…" : "Save"}
               </button>
               <button
+                type="button"
                 onClick={() => {
                   setTitle(topic.title)
                   setUrl(topic.url)
@@ -130,6 +132,7 @@ export function TopicCard({ topic, onChanged }: TopicCardProps) {
             </>
           ) : (
             <button
+              type="button"
               onClick={() => { setIsExpanded(true); setIsEditing(true) }}
               className={btn("standalone", "sm")}
             >
@@ -139,6 +142,7 @@ export function TopicCard({ topic, onChanged }: TopicCardProps) {
 
           {/* Delete button */}
           <button
+            type="button"
             onClick={() => { setDeleteOpen(true); setDeleteError(null) }}
             className={btn("destructive", "sm")}
           >

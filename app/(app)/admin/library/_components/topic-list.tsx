@@ -46,12 +46,12 @@ export function TopicList({ categoryId, categoryName, initialTopics }: TopicList
     if (!over || active.id === over.id) return
     const oldIndex = topics.findIndex((t) => t.id === active.id)
     const newIndex = topics.findIndex((t) => t.id === over.id)
+    const previousTopics = topics
     const reordered = arrayMove(topics, oldIndex, newIndex)
     setTopics(reordered)
     const result = await reorderTopics(categoryId, reordered.map((t) => t.id))
     if ("error" in result) {
-      // Rollback to previous order
-      setTopics(topics)
+      setTopics(previousTopics)
     }
   }
 
