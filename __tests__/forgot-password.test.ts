@@ -67,10 +67,29 @@ describe("requestPasswordReset", () => {
     const result = await requestPasswordReset(makeFormData({ email: "test@example.com" }))
 
     expect(db.passwordResetToken.deleteMany).toHaveBeenCalledWith({ where: { userId: "cuid_123" } })
-    expect(db.passwordResetToken.create).toHaveBeenCalled()
+    expect(db.passwordResetToken.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({ userId: "cuid_123", expiresAt: expect.any(Date) }),
+    })
     expect(sendEmail).toHaveBeenCalledWith(
       expect.objectContaining({ to: "test@example.com", subject: expect.stringContaining("password") })
     )
+    expect(result).toEqual({ success: true })
+  })
+
+  it("returns success even when email delivery fails (preserves enumeration guarantee)", async () => {
+    vi.mocked(db.user.findUnique).mockResolvedValue(mockUser)
+    vi.mocked(db.passwordResetToken.deleteMany).mockResolvedValue({ count: 0 })
+    vi.mocked(db.passwordResetToken.create).mockResolvedValue({
+      id: "tok1",
+      token: "deadbeefdeadbeef",
+      userId: "cuid_123",
+      expiresAt: new Date(),
+      createdAt: new Date(),
+    })
+    vi.mocked(sendEmail).mockRejectedValue(new Error("SMTP connection refused"))
+
+    const result = await requestPasswordReset(makeFormData({ email: "test@example.com" }))
+
     expect(result).toEqual({ success: true })
   })
 })
