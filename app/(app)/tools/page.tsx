@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Search, Music, Compass, ArrowLeftRight, Timer } from "lucide-react"
+import { Search, Music, Compass, ArrowLeftRight, Timer, BarChart2 } from "lucide-react"
 import { type ReactNode } from "react"
 
 const TOOLS: { href: string; icon: ReactNode; name: string; description: string }[] = [
@@ -26,6 +26,12 @@ const TOOLS: { href: string; icon: ReactNode; name: string; description: string 
     icon: <ArrowLeftRight size={36} strokeWidth={1.5} aria-hidden="true" />,
     name: "Transposer",
     description: "Transpose chords and progressions",
+  },
+  {
+    href: "/tools/progression-analyser",
+    icon: <BarChart2 size={36} strokeWidth={1.5} aria-hidden="true" />,
+    name: "Progression Analyser",
+    description: "Analyse chord progressions with real-time harmonic labelling",
   },
   {
     href: "/tools/metronome",
