@@ -49,8 +49,6 @@ Account management and better authentication support. Consider moving to a SaaS 
 
 # Future ideas
 
-* Create a new tool to analyse a progression using functional harmony analysis, as well as see chord subs, without having to create and save a permanent custom progression, but do allow such a progression to be saved. Make it possible to swap in subs "permanently". (This may need to be aware of bars as well as just a sequence of chords.)
-
 * Align the selector values in Inversions and Chords? They currently use different conventions (descriptive vs. common suffixes). The argument against is that `chords-db` uses the suffix style, so we'd need a translation, and these are more the chord symbols you'd see in a song sheet. The Inversions tab is more about studying and memorising inversions for use in improvisation or comping, where the theoretical function of each chord is more relevant.
 
 Practicing:
@@ -70,7 +68,7 @@ More theory topics:
 
 # Known issues
 
-* Dominant chords should perhaps always be considered "borrowed" if non-diatonic?
+* The "OVER THE WHOLE PROGRESSION" scale appears on both the Soloing and Substitutions panels on the Progressions tab on the Reference page. It should only appear on the Soloing panel.
 
 * Functional harmony overrides need more testing
     - I - VI7 - ii - V
@@ -104,5 +102,7 @@ Currently, there is no way to manage users, and no concept of an administrator. 
 Research the best way to add user mangagement. I want a way to do it for free at low user volumes, but would consider a SaaS solution so long as there is a practical way to run and test "offline" during development. Alternatively, we can build a simple user management and permission system (admin vs. normal is sufficient for now), though this might introduce a dependency on SMTP to send password reset emails and the like, which might require another hosted tool. Note that I am likely to use Vercel for hosting the app itself. Consider the best options and recommend a path forward.
 
 Once this exists, there needs to be a way for an administrator to promote or demote other users as admins. We also need a way to seed the database with a default admin who's forced to set a new password when the app is first set up.
+
+## Standard lessons editor
 
 With admin mode established, create an editor for the default library content. This can use the exact same components and UX as the "Manage my library" screen, except it is editing the default library content.

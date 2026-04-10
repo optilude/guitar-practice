@@ -28,7 +28,7 @@ const MODE_GROUPS = [
 ]
 
 const SELECT_CLASS =
-  "bg-card border border-border rounded px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent w-fit"
+  "bg-card border border-border rounded px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
 
 type ChordEntry = { id: string; symbol: string }
 
@@ -228,8 +228,8 @@ export function AnalyserClient() {
 
   return (
     <div className="flex flex-col lg:flex-row gap-6">
-      {/* Left column */}
-      <div className="flex flex-col gap-6 flex-1 min-w-0">
+      {/* Left column — 2/3 width */}
+      <div className="flex flex-col gap-6 min-w-0 lg:[flex:2]">
         {/* Title */}
         <div className="max-w-sm">
           <label className="block text-xs text-muted-foreground mb-1">Title</label>
@@ -254,25 +254,25 @@ export function AnalyserClient() {
         </div>
 
         {/* Key + Mode */}
-        <div className="flex flex-wrap gap-4 items-end">
-          <div className="flex flex-col gap-1">
+        <div className="flex gap-4 items-end">
+          <div className="flex flex-col gap-1 flex-shrink-0">
             <label className="text-xs text-muted-foreground" aria-hidden="true">Key</label>
             <select
               value={key}
               onChange={e => setKey(e.target.value)}
               aria-label="Key"
-              className={SELECT_CLASS}
+              className={cn(SELECT_CLASS, "w-fit")}
             >
               {ROOT_NOTES.map(r => <option key={r} value={r}>{r}</option>)}
             </select>
           </div>
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 flex-1 min-w-0">
             <label className="text-xs text-muted-foreground" aria-hidden="true">Mode</label>
             <select
               value={modeIdx}
               onChange={e => setModeIdx(Number(e.target.value))}
               aria-label="Mode"
-              className={SELECT_CLASS}
+              className={cn(SELECT_CLASS, "w-full")}
             >
               {MODE_GROUPS.map(group => (
                 <optgroup key={group.label} label={group.label}>
@@ -319,7 +319,7 @@ export function AnalyserClient() {
 
       {/* Right column — analysis panels (only when chord selected) */}
       {selectedChord && (
-        <div className="flex-1 min-w-0 space-y-3">
+        <div className="min-w-0 space-y-3 lg:flex-1">
           <div className="flex rounded border border-border overflow-hidden text-sm w-fit">
             <button
               type="button"

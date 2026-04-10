@@ -60,12 +60,12 @@ export function SaveModal({
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="Save progression"
+      aria-label="Save to My Progressions"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
       onPointerDown={e => { if (e.target === e.currentTarget) onClose() }}
     >
       <div className="w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-xl space-y-4">
-        <h2 className="text-lg font-semibold text-foreground">Save progression</h2>
+        <h2 className="text-lg font-semibold text-foreground">Save to My Progressions</h2>
 
         <div>
           <label className="block text-xs text-muted-foreground mb-1">Name</label>

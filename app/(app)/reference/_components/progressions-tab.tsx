@@ -504,8 +504,8 @@ export function ProgressionsTab({
         </div>
       )}
 
-      {/* Progression-wide recommendation */}
-      <div>
+      {/* Progression-wide recommendation — only on Soloing tab */}
+      {(!selectedChord || chordDetailTab === "soloing") && <div>
         <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
           Over the whole progression
         </p>
@@ -531,7 +531,7 @@ export function ProgressionsTab({
             {tonic} {recommendedScaleType}
           </p>
         )}
-      </div>
+      </div>}
     </div>
   )
 }
