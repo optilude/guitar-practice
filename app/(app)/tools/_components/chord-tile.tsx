@@ -242,19 +242,16 @@ export function ChordTile({
       >
         <div className="relative">
           <div
-            role="button"
-            tabIndex={0}
-            aria-pressed={isSelected ?? false}
-            aria-label="select chord"
+            data-selected={isSelected ?? false}
             onClick={onSelect}
-            onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect() } }}
-            className="flex flex-col items-center rounded-lg border-2 px-3 py-2.5 text-center min-w-[68px] flex-shrink-0 transition-colors focus:outline-none focus:ring-1 focus:ring-accent cursor-pointer"
+            className="flex flex-col items-center rounded-lg border-2 px-3 py-2.5 text-center min-w-[68px] flex-shrink-0 transition-colors cursor-pointer"
             style={blockStyle}
           >
             <span className="text-[10px] text-muted-foreground mb-1">{roman}</span>
             <button
               type="button"
               onClick={e => { e.stopPropagation(); onStartEdit() }}
+              aria-label={`edit ${symbol}`}
               className="text-sm font-semibold text-foreground leading-tight hover:underline focus:outline-none"
             >
               {symbol}

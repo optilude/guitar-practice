@@ -45,8 +45,8 @@ describe("ChordTile select/edit split", () => {
   it("with onSelect, clicking tile body calls onSelect", () => {
     const onSelect = vi.fn()
     render(<ChordTile {...baseProps} onSelect={onSelect} />)
-    const tile = screen.getByRole("button", { name: /select chord/i })
-    fireEvent.click(tile)
+    // Click on the roman numeral (tile body area, not the chord name button)
+    fireEvent.click(screen.getByText("I"))
     expect(onSelect).toHaveBeenCalled()
     expect(baseProps.onStartEdit).not.toHaveBeenCalled()
   })
@@ -60,9 +60,11 @@ describe("ChordTile select/edit split", () => {
     expect(onSelect).not.toHaveBeenCalled()
   })
 
-  it("renders isSelected state via aria-pressed", () => {
+  it("renders data-selected=true when isSelected", () => {
     const onSelect = vi.fn()
-    render(<ChordTile {...baseProps} onSelect={onSelect} isSelected={true} />)
-    expect(screen.getByRole("button", { name: /select chord/i })).toHaveAttribute("aria-pressed", "true")
+    const { container } = render(<ChordTile {...baseProps} onSelect={onSelect} isSelected={true} />)
+    // The inner tile div should have data-selected="true"
+    const selectDiv = container.querySelector("[data-selected='true']")
+    expect(selectDiv).not.toBeNull()
   })
 })
