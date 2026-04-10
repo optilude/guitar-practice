@@ -68,14 +68,6 @@ More theory topics:
 
 # Known issues
 
-* We have added a number of functional harmony rules, available both for analysis and substitutions. I asked Claude Sonnet to list out known/common Jazz rules, which are listed in the file `functional-harmony-rules.md` under the heading `# Investigation by Claude:`. These definitely overlap with the orignal set of rules (from the Rick Beato book). Please compare what we have implemented and what Claude found. Consider if these should be added to the progression analyser code (i.e. be shown as special colours/borders/roman numerals when they appear in a progression), and/or be available in the Substitutions list on the progression analysis pages.
-
-* Functional harmony overrides need more testing
-    - I - VI7 - ii - V
-    - Tritone sub ii-V-I (ii, bVII7, I)
-    - Backdoor dominant (bVII7, I)
-    - "Any chord can be a dominant"?
-
 General/UX:
 
 * More comprehensive testing on mobile/iPad
