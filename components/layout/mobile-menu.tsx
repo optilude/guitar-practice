@@ -55,6 +55,18 @@ export function MobileMenu({ items }: MobileMenuProps) {
             </Link>
           ))}
           <div className="mt-4 border-t border-border pt-4">
+            <Link
+              href="/settings"
+              onClick={() => setOpen(false)}
+              className={cn(
+                "block rounded-md px-3 py-2 text-sm transition-colors",
+                pathname === "/settings"
+                  ? "text-accent font-medium"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              )}
+            >
+              Settings
+            </Link>
             <button
               onClick={handleSignOut}
               className="w-full text-left rounded-md px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"

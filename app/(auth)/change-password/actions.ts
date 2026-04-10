@@ -28,10 +28,15 @@ export async function changePassword(
   if (!valid) return { error: "Current password is incorrect" }
 
   const passwordHash = await bcrypt.hash(newPassword, 12)
-  await db.user.update({
-    where: { id: userId },
-    data: { passwordHash, mustChangePassword: false },
-  })
+  try {
+    await db.user.update({
+      where: { id: userId },
+      data: { passwordHash, mustChangePassword: false },
+    })
+  } catch (err) {
+    console.error("changePassword: db.user.update failed", err)
+    return { error: "Failed to update password. Please try again." }
+  }
 
   return { success: true }
 }
