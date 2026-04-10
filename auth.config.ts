@@ -11,7 +11,10 @@ export const authConfig: NextAuthConfig = {
   callbacks: {
     jwt({ token, user }) {
       if (user?.id) token.id = user.id
-      // user is only defined on initial sign-in (from authorize callback)
+      // user is only defined on initial sign-in (from authorize callback).
+      // isAdmin and mustChangePassword are snapshotted into the JWT at login time.
+      // They will NOT update in real-time if an admin changes them in the DB while the
+      // user is signed in — the change only takes effect after the user's next sign-in.
       const u = user as { isAdmin?: boolean; mustChangePassword?: boolean } | undefined
       if (u?.isAdmin !== undefined) token.isAdmin = u.isAdmin
       if (u?.mustChangePassword !== undefined) token.mustChangePassword = u.mustChangePassword

@@ -25,6 +25,10 @@ export default auth((req) => {
 
   // Redirect users who must change their password (but not if they're already on that page)
   // Also exclude public paths to allow /api/auth routes (signout, token refresh, etc.)
+  // Note: this guard only applies to navigation requests. Server action POSTs (which go to
+  // the same URL as the page but with a specific header) are not redirected here. This means
+  // a mustChangePassword user can still invoke server actions directly. For a personal app
+  // this is acceptable; for stricter enforcement, gate server actions individually.
   const mustChange = isLoggedIn && req.auth?.user?.mustChangePassword
   const isChangePwPath = pathname.startsWith("/change-password")
   if (mustChange && !isChangePwPath && !isPublicPath) {
