@@ -228,7 +228,7 @@ export function TopicCard({ topic, onChanged }: TopicCardProps) {
                 <span className="font-bold text-foreground">{topic.title}</span> will be permanently removed from the standard library. This cannot be undone.
               </Dialog.Description>
               {deleteError && <p className="text-xs text-destructive">{deleteError}</p>}
-              <div className="flex gap-2">
+              <div className="flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={handleDelete}

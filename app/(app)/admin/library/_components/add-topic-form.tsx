@@ -40,6 +40,7 @@ export function AddTopicForm({ categoryId, categoryName, onCreated }: AddTopicFo
   if (!isOpen) {
     return (
       <button
+        type="button"
         onClick={() => setIsOpen(true)}
         className="mt-2 w-full text-sm text-muted-foreground hover:text-foreground border border-dashed border-border rounded-lg py-2 hover:border-foreground/40 transition-colors cursor-pointer"
       >
