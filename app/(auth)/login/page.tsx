@@ -1,12 +1,16 @@
 "use client"
 
 import { useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 
 export default function LoginPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const passwordChanged = searchParams.get("passwordChanged") === "1"
+
   const [error, setError] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
 
@@ -33,11 +37,14 @@ export default function LoginPage() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {passwordChanged && (
+        <p className="text-xs text-green-600 dark:text-green-400 text-center">
+          Password changed. Please sign in with your new password.
+        </p>
+      )}
+
       <div className="space-y-1.5">
-        <label
-          htmlFor="email"
-          className="block text-xs uppercase tracking-widest text-muted-foreground"
-        >
+        <label htmlFor="email" className="block text-xs uppercase tracking-widest text-muted-foreground">
           Email
         </label>
         <input
@@ -51,12 +58,17 @@ export default function LoginPage() {
       </div>
 
       <div className="space-y-1.5">
-        <label
-          htmlFor="password"
-          className="block text-xs uppercase tracking-widest text-muted-foreground"
-        >
-          Password
-        </label>
+        <div className="flex items-center justify-between">
+          <label htmlFor="password" className="block text-xs uppercase tracking-widest text-muted-foreground">
+            Password
+          </label>
+          <Link
+            href="/forgot-password"
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Forgot password?
+          </Link>
+        </div>
         <input
           id="password"
           name="password"
