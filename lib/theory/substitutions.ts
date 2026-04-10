@@ -229,23 +229,22 @@ function iiVApproach(
 
 function diminishedPassing(
   chord: ProgressionChord,
-  chords: ProgressionChord[],
+  _chords: ProgressionChord[],
   selectedIndex: number,
   tonic: string,
   mode: string,
 ): ChordSubstitution[] {
-  if (selectedIndex >= chords.length - 1) return []
-  const rawRoot = Note.transpose(chord.tonic, "A1") // chromatic semitone up
+  const rawRoot = Note.transpose(chord.tonic, "M7")  // leading tone: major 7th up = semitone below (correct enharmonic)
   const norm    = normalizeToKey(rawRoot, tonic, mode)
   return [{
     id: "dim-passing",
     ruleName: "Diminished Passing",
     label: `${norm}°7`,
-    effect: "Chromatic passing chord — leading tone into next chord",
+    effect: `Chromatic leading-tone approach into ${chord.tonic}${chord.type}`,
     result: {
       kind: "insertion",
-      insertBefore: selectedIndex + 1,
-      chords: [mkChord(rawRoot, "dim7", `#${chord.roman}°7`, tonic, mode)],
+      insertBefore: selectedIndex,
+      chords: [mkChord(rawRoot, "dim7", `vii°7/${chord.roman}`, tonic, mode)],
     },
     sortRank: 50,
   }]
@@ -257,28 +256,26 @@ function diminishedPassing(
 
 function cycleOfFifths(
   chord: ProgressionChord,
-  chords: ProgressionChord[],
+  _chords: ProgressionChord[],
   selectedIndex: number,
   tonic: string,
   mode: string,
 ): ChordSubstitution[] {
-  if (selectedIndex >= chords.length - 1) return []
-  const nextChord  = chords[selectedIndex + 1]!
-  const v7YRoot    = Note.transpose(nextChord.tonic, "P5")  // V7 of next chord
-  const v7V7YRoot  = Note.transpose(v7YRoot, "P5")          // V7 of V7 of next chord
-  const normV7Y    = normalizeToKey(v7YRoot,   tonic, mode)
-  const normV7V7Y  = normalizeToKey(v7V7YRoot, tonic, mode)
+  const v7Root   = Note.transpose(chord.tonic, "P5")  // V7 of selected chord
+  const v7v7Root = Note.transpose(v7Root, "P5")        // V7/V7 of selected chord
+  const normV7   = normalizeToKey(v7Root,   tonic, mode)
+  const normV7V7 = normalizeToKey(v7v7Root, tonic, mode)
   return [{
     id: "cycle-of-5ths",
     ruleName: "Cycle of 5ths",
-    label: `${normV7V7Y}7 → ${normV7Y}7 → ${nextChord.tonic}${nextChord.type}`,
-    effect: "Two-step dominant chain into next chord",
+    label: `${normV7V7}7 → ${normV7}7 → ${chord.tonic}${chord.type}`,
+    effect: `Two-step dominant chain into ${chord.tonic}${chord.type}`,
     result: {
       kind: "insertion",
-      insertBefore: selectedIndex + 1,
+      insertBefore: selectedIndex,
       chords: [
-        mkChord(v7V7YRoot, "7", `V7/V7/${nextChord.roman}`, tonic, mode),
-        mkChord(v7YRoot,   "7", `V7/${nextChord.roman}`,    tonic, mode),
+        mkChord(v7v7Root, "7", `V7/V7/${chord.roman}`, tonic, mode),
+        mkChord(v7Root,   "7", `V7/${chord.roman}`,    tonic, mode),
       ],
     },
     sortRank: 60,

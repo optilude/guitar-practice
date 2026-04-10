@@ -16,11 +16,20 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable"
 import { ChordTile } from "./chord-tile"
+import { ChordQualityBlock } from "@/app/(app)/reference/_components/chord-quality-block"
 import type { ChordAnalysis } from "@/lib/theory/key-finder"
 
 interface ChordEntry {
   id: string
   symbol: string
+}
+
+export interface PreviewTile {
+  chordName: string
+  roman: string
+  degree: number
+  variant: "diatonic" | "borrowed" | "non-diatonic"
+  isHighlighted: boolean
 }
 
 interface ChordInputRowProps {
@@ -39,6 +48,7 @@ interface ChordInputRowProps {
     degree: number
     variant: "diatonic" | "borrowed" | "non-diatonic"
   } | null
+  previewTiles?: PreviewTile[]
 }
 
 export function ChordInputRow({
@@ -53,6 +63,7 @@ export function ChordInputRow({
   selectedId,
   onSelect,
   getDisplayAnalysis,
+  previewTiles,
 }: ChordInputRowProps) {
   // distance:5 lets quick clicks pass through to inner buttons without activating drag
   const sensors = useSensors(
@@ -73,6 +84,27 @@ export function ChordInputRow({
     const index = chords.findIndex(c => c.id === id)
     if (index === -1 || index >= chordAnalyses.length) return null
     return chordAnalyses[index]
+  }
+
+  if (previewTiles) {
+    return (
+      <div className="flex flex-wrap items-start gap-2">
+        {previewTiles.map((tile, i) => (
+          <div key={i} className="flex items-center gap-1 flex-shrink-0">
+            {i > 0 && <span className="text-muted-foreground text-sm select-none">→</span>}
+            <ChordQualityBlock
+              roman={tile.roman}
+              chordName={tile.chordName}
+              degree={tile.degree}
+              isSelected={false}
+              onClick={() => {}}
+              variant={tile.variant}
+              isSubstitutionPreview={tile.isHighlighted}
+            />
+          </div>
+        ))}
+      </div>
+    )
   }
 
   // items-start: × badge at -top-1.5 overflows tile bounds; items-center would mis-align on wrap

@@ -68,8 +68,6 @@ More theory topics:
 
 # Known issues
 
-* When previewing or applying a "Cycle of 5ths" or "Diminished Passing" substitution, the newly inserted chords are applied _after_ the selected chord and lead into the _next_ chord (this also means they are not available on the last chord of the progression). All other substitutions either replace the chord, or add chords ahead of it. Please consider if this is appropriate, with reference to relevant music theory. Instinctively, I expected the extra chords to be added ahead of the selected chord. If that is a better/more consistent approach, modify the algorithm so that it inserts leading chords rather than trailing chords (which obviously means calculating them relative to a different target - the selected chord rather than the next chord).
-
 * We have added a number of functional harmony rules, available both for analysis and substitutions. I asked Claude Sonnet to list out known/common Jazz rules, which are listed in the file `functional-harmony-rules.md` under the heading `# Investigation by Claude:`. These definitely overlap with the orignal set of rules (from the Rick Beato book). Please compare what we have implemented and what Claude found. Consider if these should be added to the progression analyser code (i.e. be shown as special colours/borders/roman numerals when they appear in a progression), and/or be available in the Substitutions list on the progression analysis pages.
 
 * Functional harmony overrides need more testing

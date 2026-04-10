@@ -228,33 +228,34 @@ describe("ii-V Approach", () => {
 // ---------------------------------------------------------------------------
 
 describe("Diminished Passing", () => {
-  it("fires when a next chord exists", () => {
+  it("fires for any chord in the progression", () => {
     const subs = getSubstitutions(C_MAJOR[0]!, C_MAJOR, 0, "C", "major")
     expect(subs.filter(s => s.ruleName === "Diminished Passing")).toHaveLength(1)
   })
 
-  it("does not fire for the last chord in the progression", () => {
+  it("fires for the last chord in the progression", () => {
     const subs = getSubstitutions(C_MAJOR[3]!, C_MAJOR, 3, "C", "major")
-    expect(subs.filter(s => s.ruleName === "Diminished Passing")).toHaveLength(0)
+    expect(subs.filter(s => s.ruleName === "Diminished Passing")).toHaveLength(1)
   })
 
-  it("inserts a dim7 chord before the next chord (index + 1)", () => {
+  it("inserts a dim7 chord before the selected chord (index 0)", () => {
     const subs = getSubstitutions(C_MAJOR[0]!, C_MAJOR, 0, "C", "major")
     const sub = subs.find(s => s.ruleName === "Diminished Passing")!
     const ins = sub.result as { kind: "insertion"; insertBefore: number; chords: Array<{ type: string }> }
-    expect(ins.insertBefore).toBe(1)
+    expect(ins.insertBefore).toBe(0)
     expect(ins.chords[0]!.type).toBe("dim7")
   })
 
-  it("dim7 root is a chromatic semitone above the selected chord root", () => {
-    // C + augmented unison = C# (C major is neutral — no normalization)
+  it("dim7 root is the leading tone (semitone below) the selected chord root", () => {
+    // B is a semitone below C — the natural leading tone approaching Cmaj7
     const subs = getSubstitutions(C_MAJOR[0]!, C_MAJOR, 0, "C", "major")
     const sub = subs.find(s => s.ruleName === "Diminished Passing")!
     const ins = sub.result as { kind: "insertion"; chords: Array<{ tonic: string }> }
-    expect(ins.chords[0]!.tonic).toBe("C#")
+    expect(ins.chords[0]!.tonic).toBe("B")
   })
 
-  it("normalises dim7 root to A# in A major (sharp key)", () => {
+  it("leading tone is G# approaching A in A major (sharp key)", () => {
+    // G# is a semitone below A, the leading tone approaching Amaj7
     const aMajor: ProgressionChord[] = [
       chord("A", "maj7", "major", 1, "I"),
       chord("E", "7",    "dominant", 5, "V"),
@@ -262,7 +263,7 @@ describe("Diminished Passing", () => {
     const subs = getSubstitutions(aMajor[0]!, aMajor, 0, "A", "major")
     const sub = subs.find(s => s.ruleName === "Diminished Passing")!
     const ins = sub.result as { kind: "insertion"; chords: Array<{ tonic: string }> }
-    expect(ins.chords[0]!.tonic).toBe("A#")
+    expect(ins.chords[0]!.tonic).toBe("G#")
   })
 })
 
@@ -271,25 +272,25 @@ describe("Diminished Passing", () => {
 // ---------------------------------------------------------------------------
 
 describe("Cycle of 5ths", () => {
-  it("fires when a next chord exists", () => {
+  it("fires for any chord in the progression", () => {
     const subs = getSubstitutions(C_MAJOR[0]!, C_MAJOR, 0, "C", "major")
     expect(subs.filter(s => s.ruleName === "Cycle of 5ths")).toHaveLength(1)
   })
 
-  it("does not fire for the last chord", () => {
+  it("fires for the last chord in the progression", () => {
     const subs = getSubstitutions(C_MAJOR[3]!, C_MAJOR, 3, "C", "major")
-    expect(subs.filter(s => s.ruleName === "Cycle of 5ths")).toHaveLength(0)
+    expect(subs.filter(s => s.ruleName === "Cycle of 5ths")).toHaveLength(1)
   })
 
-  it("inserts [B7, E7] before Am7 (2-step chain into Am)", () => {
-    // Next chord = Am7 (root A). V7/A = E7. V7/E = B7.
+  it("inserts [D7, G7] before Cmaj7 (2-step dominant chain into C)", () => {
+    // Selected chord = Cmaj7 (root C). V7/C = G7. V7/G = D7.
     const subs = getSubstitutions(C_MAJOR[0]!, C_MAJOR, 0, "C", "major")
     const sub = subs.find(s => s.ruleName === "Cycle of 5ths")!
     const ins = sub.result as { kind: "insertion"; insertBefore: number; chords: Array<{ tonic: string; type: string }> }
-    expect(ins.insertBefore).toBe(1)
+    expect(ins.insertBefore).toBe(0)
     expect(ins.chords).toHaveLength(2)
-    expect(ins.chords[0]!.tonic).toBe("B")  // V7/V7/Am = B7
-    expect(ins.chords[1]!.tonic).toBe("E")  // V7/Am = E7
+    expect(ins.chords[0]!.tonic).toBe("D")  // V7/V7/C = D7
+    expect(ins.chords[1]!.tonic).toBe("G")  // V7/C = G7
     expect(ins.chords[0]!.type).toBe("7")
     expect(ins.chords[1]!.type).toBe("7")
   })

@@ -60,12 +60,6 @@ describe("AnalyserClient", () => {
     expect(screen.getByLabelText("Mode")).toBeInTheDocument()
   })
 
-  it("renders title and description inputs", () => {
-    render(<AnalyserClient />)
-    expect(screen.getByPlaceholderText(/My progression/i)).toBeInTheDocument()
-    expect(screen.getByPlaceholderText(/supports markdown/i)).toBeInTheDocument()
-  })
-
   it("renders add chord button", () => {
     render(<AnalyserClient />)
     expect(screen.getByLabelText("add chord")).toBeInTheDocument()

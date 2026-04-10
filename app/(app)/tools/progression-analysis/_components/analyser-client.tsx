@@ -6,8 +6,8 @@ import { analyzeProgression } from "@/lib/theory/transposer"
 import { getSubstitutions, getSoloScales, analyzeFunctionalContext } from "@/lib/theory"
 import type { FunctionalAnalysis, ChordContext } from "@/lib/theory"
 import { ALL_KEY_MODES } from "@/lib/theory/commonality-tiers"
-import { ChordInputRow } from "@/app/(app)/tools/_components/chord-input-row"
-import { ChordQualityBlock, targetDegreeFromRoman } from "@/app/(app)/reference/_components/chord-quality-block"
+import { ChordInputRow, type PreviewTile } from "@/app/(app)/tools/_components/chord-input-row"
+import { targetDegreeFromRoman } from "@/app/(app)/reference/_components/chord-quality-block"
 import { SubstitutionsPanel } from "@/app/(app)/reference/_components/substitutions-panel"
 import { SoloScalesPanel } from "@/app/(app)/reference/_components/solo-scales-panel"
 import { buildProgressionChords } from "../_lib/build-progression-chords"
@@ -184,12 +184,22 @@ export function AnalyserClient() {
     setEditingId(null)
   }, [progressionChords])
 
-  const { previewChords, highlightIndices } = useMemo(() => {
-    if (!previewedSub) {
-      return { previewChords: progressionChords.map(chordToPreview), highlightIndices: new Set<number>() }
-    }
-    return applyPreview(progressionChords, previewedSub)
-  }, [progressionChords, previewedSub])
+  const previewTiles = useMemo((): PreviewTile[] | undefined => {
+    if (!previewedSub) return undefined
+    const { previewChords, highlightIndices } = applyPreview(progressionChords, previewedSub)
+    return previewChords.map((chord, i) => {
+      const inputChord = parseChord(`${chord.tonic}${chord.type}`)
+      const keyAnalysis = inputChord ? analyzeChordInKey(inputChord, key, mode.modeName) : null
+      const targetDegree = targetDegreeFromRoman(chord.roman)
+      const degree = targetDegree ?? keyAnalysis?.degree ?? chord.degree ?? 1
+      const variant: "diatonic" | "borrowed" | "non-diatonic" = targetDegree !== null
+        ? "borrowed"
+        : keyAnalysis?.role === "diatonic" ? "diatonic"
+        : keyAnalysis?.role === "borrowed" ? "borrowed"
+        : "non-diatonic"
+      return { chordName: `${chord.tonic}${chord.type}`, roman: chord.roman, degree, variant, isHighlighted: highlightIndices.has(i) }
+    })
+  }, [previewedSub, progressionChords, key, mode.modeName])
 
   const hasParsedChords = parsedChords.length > 0
 
@@ -271,49 +281,20 @@ export function AnalyserClient() {
         {/* Chord input / substitution preview */}
         <div>
           <label className="block text-xs text-muted-foreground mb-2">Chords</label>
-          {previewedSub ? (
-            <div className="flex flex-wrap items-center gap-1">
-              {previewChords.map((chord, i) => {
-                const inputChord = parseChord(`${chord.tonic}${chord.type}`)
-                const keyAnalysis = inputChord ? analyzeChordInKey(inputChord, key, mode.modeName) : null
-                const targetDegree = targetDegreeFromRoman(chord.roman)
-                const degree = targetDegree ?? keyAnalysis?.degree ?? chord.degree ?? 1
-                const variant: "diatonic" | "borrowed" | "non-diatonic" = targetDegree !== null
-                  ? "borrowed"
-                  : keyAnalysis?.role === "diatonic" ? "diatonic"
-                  : keyAnalysis?.role === "borrowed" ? "borrowed"
-                  : "non-diatonic"
-                return (
-                  <div key={i} className="flex items-center gap-1 flex-shrink-0">
-                    {i > 0 && <span className="text-muted-foreground text-sm flex-shrink-0">→</span>}
-                    <ChordQualityBlock
-                      roman={chord.roman}
-                      chordName={`${chord.tonic}${chord.type}`}
-                      degree={degree}
-                      isSelected={false}
-                      onClick={() => {}}
-                      variant={variant}
-                      isSubstitutionPreview={highlightIndices.has(i)}
-                    />
-                  </div>
-                )
-              })}
-            </div>
-          ) : (
-            <ChordInputRow
-              chords={chords}
-              editingId={editingId}
-              chordAnalyses={displayAnalyses}
-              onChordChange={setChords}
-              onCommit={handleCommit}
-              onRemove={handleRemove}
-              onStartEdit={handleStartEdit}
-              onAdd={handleAdd}
-              selectedId={selectedId}
-              onSelect={handleSelect}
-              getDisplayAnalysis={getDisplayAnalysis}
-            />
-          )}
+          <ChordInputRow
+            chords={chords}
+            editingId={editingId}
+            chordAnalyses={displayAnalyses}
+            onChordChange={setChords}
+            onCommit={handleCommit}
+            onRemove={handleRemove}
+            onStartEdit={handleStartEdit}
+            onAdd={handleAdd}
+            selectedId={selectedId}
+            onSelect={handleSelect}
+            getDisplayAnalysis={getDisplayAnalysis}
+            previewTiles={previewTiles}
+          />
         </div>
 
         {/* Save button */}
