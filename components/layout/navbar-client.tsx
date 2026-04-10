@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 import { ThemeToggle } from "@/components/layout/theme-toggle"
 import { MobileMenu } from "@/components/layout/mobile-menu"
 
-const NAV_ITEMS = [
+const BASE_NAV_ITEMS = [
   { href: "/", label: "Home" },
   { href: "/goals", label: "Goals" },
   { href: "/history", label: "History" },
@@ -16,9 +16,13 @@ const NAV_ITEMS = [
   { href: "/tools", label: "Tools" },
 ]
 
-export function NavbarClient() {
+export function NavbarClient({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname()
   const router = useRouter()
+
+  const navItems = isAdmin
+    ? [...BASE_NAV_ITEMS, { href: "/admin/users", label: "Admin" }]
+    : BASE_NAV_ITEMS
 
   async function handleSignOut() {
     await signOut({ redirect: false })
@@ -30,7 +34,7 @@ export function NavbarClient() {
     <nav className="sticky top-0 z-50 h-11 border-b border-border bg-background/90 backdrop-blur-sm">
       <div className="flex h-full items-center gap-5 px-5">
         <div className="md:hidden">
-          <MobileMenu items={NAV_ITEMS} />
+          <MobileMenu items={navItems} />
         </div>
 
         <Link href="/" className="text-sm font-medium text-foreground/85 md:mr-3 hover:text-foreground transition-colors">
@@ -38,7 +42,7 @@ export function NavbarClient() {
         </Link>
 
         <div className="hidden md:flex items-center gap-5">
-          {NAV_ITEMS.map((item) => {
+          {navItems.map((item) => {
             const isActive = item.href === "/"
               ? pathname === "/"
               : pathname === item.href || pathname.startsWith(item.href + "/")
