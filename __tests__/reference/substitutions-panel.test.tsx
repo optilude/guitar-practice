@@ -3,58 +3,69 @@ import { render, screen, fireEvent } from "@testing-library/react"
 import { SubstitutionsPanel } from "@/app/(app)/reference/_components/substitutions-panel"
 import type { ChordSubstitution } from "@/lib/theory/types"
 
-function makeSub(id: string, ruleName: string, label: string, sortRank = 10): ChordSubstitution {
-  return {
-    id,
-    ruleName,
-    label,
-    effect: `Effect for ${label}`,
-    result: { kind: "replacement", replacements: [{ index: 0, chord: { tonic: "E", type: "m7", roman: "iii", quality: "minor" } }] },
-    sortRank,
-  }
+const mockSub: ChordSubstitution = {
+  id: "diatonic-deg6",
+  ruleName: "Diatonic Substitution",
+  label: "Am7",
+  effect: "vi — parallel function",
+  result: { kind: "replacement", replacements: [{ index: 0, chord: { tonic: "A", type: "m7", roman: "vi", quality: "minor", degree: 6 } }] },
+  sortRank: 10,
 }
 
-const subs: ChordSubstitution[] = [
-  makeSub("diatonic-deg6", "Diatonic Substitution", "Am7",  10),
-  makeSub("diatonic-deg3", "Diatonic Substitution", "Em7",  11),
-  makeSub("tritone",        "Tritone Substitution",  "Db7",  20),
-]
-
 describe("SubstitutionsPanel", () => {
-  it("renders the chord name heading", () => {
-    render(<SubstitutionsPanel substitutions={subs} chordName="Cmaj7" previewedId={null} onPreview={vi.fn()} />)
-    expect(screen.getByText(/substitutions for cmaj7/i)).toBeDefined()
+  it("shows Apply button when a substitution is active and onApply is provided", () => {
+    render(
+      <SubstitutionsPanel
+        substitutions={[mockSub]}
+        chordName="Cmaj7"
+        previewedId="diatonic-deg6"
+        onPreview={vi.fn()}
+        onApply={vi.fn()}
+      />
+    )
+    expect(screen.getByRole("button", { name: "Apply" })).toBeInTheDocument()
   })
 
-  it("renders rule group headings", () => {
-    render(<SubstitutionsPanel substitutions={subs} chordName="Cmaj7" previewedId={null} onPreview={vi.fn()} />)
-    expect(screen.getByText("Diatonic Substitution")).toBeDefined()
-    expect(screen.getByText("Tritone Substitution")).toBeDefined()
+  it("does not show Apply button when substitution is not active", () => {
+    render(
+      <SubstitutionsPanel
+        substitutions={[mockSub]}
+        chordName="Cmaj7"
+        previewedId={null}
+        onPreview={vi.fn()}
+        onApply={vi.fn()}
+      />
+    )
+    expect(screen.queryByRole("button", { name: "Apply" })).not.toBeInTheDocument()
   })
 
-  it("renders all substitution labels", () => {
-    render(<SubstitutionsPanel substitutions={subs} chordName="Cmaj7" previewedId={null} onPreview={vi.fn()} />)
-    expect(screen.getByText("Am7")).toBeDefined()
-    expect(screen.getByText("Em7")).toBeDefined()
-    expect(screen.getByText("Db7")).toBeDefined()
+  it("clicking Apply calls onApply with the substitution", () => {
+    const onApply = vi.fn()
+    render(
+      <SubstitutionsPanel
+        substitutions={[mockSub]}
+        chordName="Cmaj7"
+        previewedId="diatonic-deg6"
+        onPreview={vi.fn()}
+        onApply={onApply}
+      />
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Apply" }))
+    expect(onApply).toHaveBeenCalledWith(mockSub)
   })
 
-  it("calls onPreview with the sub when a row is clicked", () => {
+  it("clicking Apply does not toggle the preview off", () => {
     const onPreview = vi.fn()
-    render(<SubstitutionsPanel substitutions={subs} chordName="Cmaj7" previewedId={null} onPreview={onPreview} />)
-    fireEvent.click(screen.getByText("Am7"))
-    expect(onPreview).toHaveBeenCalledWith(subs[0])
-  })
-
-  it("calls onPreview(null) when the active sub is clicked again (toggle off)", () => {
-    const onPreview = vi.fn()
-    render(<SubstitutionsPanel substitutions={subs} chordName="Cmaj7" previewedId="diatonic-deg6" onPreview={onPreview} />)
-    fireEvent.click(screen.getByText("Am7"))
-    expect(onPreview).toHaveBeenCalledWith(null)
-  })
-
-  it("shows empty message when no substitutions", () => {
-    render(<SubstitutionsPanel substitutions={[]} chordName="Cmaj7" previewedId={null} onPreview={vi.fn()} />)
-    expect(screen.getByText(/no substitutions available/i)).toBeDefined()
+    render(
+      <SubstitutionsPanel
+        substitutions={[mockSub]}
+        chordName="Cmaj7"
+        previewedId="diatonic-deg6"
+        onPreview={onPreview}
+        onApply={vi.fn()}
+      />
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Apply" }))
+    expect(onPreview).not.toHaveBeenCalled()
   })
 })

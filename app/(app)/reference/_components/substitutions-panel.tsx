@@ -1,6 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
+import { btn } from "@/lib/button-styles"
 import type { ChordSubstitution } from "@/lib/theory/types"
 
 interface SubstitutionsPanelProps {
@@ -8,6 +9,7 @@ interface SubstitutionsPanelProps {
   chordName: string       // e.g. "Gmaj7" — used in heading
   previewedId: string | null
   onPreview: (sub: ChordSubstitution | null) => void
+  onApply?: (sub: ChordSubstitution) => void
 }
 
 export function SubstitutionsPanel({
@@ -15,6 +17,7 @@ export function SubstitutionsPanel({
   chordName,
   previewedId,
   onPreview,
+  onApply,
 }: SubstitutionsPanelProps) {
   if (substitutions.length === 0) {
     return (
@@ -47,10 +50,17 @@ export function SubstitutionsPanel({
           {group.items.map(sub => {
             const isActive = sub.id === previewedId
             return (
-              <button
+              <div
                 key={sub.id}
-                type="button"
+                role="button"
+                tabIndex={0}
                 onClick={() => onPreview(isActive ? null : sub)}
+                onKeyDown={e => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault()
+                    onPreview(isActive ? null : sub)
+                  }
+                }}
                 className={cn(
                   "flex items-baseline gap-2 flex-wrap text-left w-full rounded px-2 py-1 border transition-colors cursor-pointer",
                   isActive
@@ -60,7 +70,19 @@ export function SubstitutionsPanel({
               >
                 <span className="text-sm font-semibold text-foreground">{sub.label}</span>
                 <span className="text-xs text-muted-foreground">· {sub.effect}</span>
-              </button>
+                {isActive && onApply && (
+                  <button
+                    type="button"
+                    onClick={e => {
+                      e.stopPropagation()
+                      onApply(sub)
+                    }}
+                    className={cn(btn("primary", "sm"), "ml-auto")}
+                  >
+                    Apply
+                  </button>
+                )}
+              </div>
             )
           })}
         </div>
