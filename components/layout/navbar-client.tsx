@@ -29,7 +29,7 @@ export function NavbarClient({
   const router = useRouter()
 
   const navItems = isAdmin
-    ? [...BASE_NAV_ITEMS, { href: "/admin/users", label: "Admin" }]
+    ? [...BASE_NAV_ITEMS, { href: "/admin", label: "Admin" }]
     : BASE_NAV_ITEMS
 
   async function handleSignOut() {
