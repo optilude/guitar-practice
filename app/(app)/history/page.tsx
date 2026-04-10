@@ -88,7 +88,13 @@ export default async function HistoryPage({
 
   return (
     <div className="pt-6 max-w-4xl">
-      <h1 className="text-2xl font-semibold mb-6">History</h1>
+      <div className="mb-6">
+        <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
+          Practice
+        </p>
+        <h1 className="text-2xl font-semibold text-foreground">History</h1>
+      </div>
+
 
       {sessions.length === 0 ? (
         <p className="text-sm text-muted-foreground">

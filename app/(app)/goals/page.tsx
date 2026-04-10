@@ -19,7 +19,7 @@ export default async function GoalsPage() {
     <div className="pt-6">
       <div className="mb-6">
         <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
-          Your goals
+          Practice
         </p>
         <h1 className="text-2xl font-semibold text-foreground">Goals</h1>
       </div>

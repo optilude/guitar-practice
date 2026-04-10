@@ -51,10 +51,6 @@ Account management and better authentication support. Consider moving to a SaaS 
 
 Progressions analysis:
 
-* Put the scales/arpeggios/chords/inversions tabs underneath the progression in the Progression Analysis tool? This would give immediate access to this information and allow us to restore the "click to view" capability from chord tiles to arpeggios/chords/inversions and from soloing scales to 
-
-* If doing this, we might consider removing the Progressions tab from the Reference section and making Progressions a top-level navigation action. We could then remove the standalone progressions editor, and instead incorporate CRUD actions into a single progressions page.
-
 * Introduce measures and song structure to progressions/the progressions analysis tool?
 
 Reference:
@@ -101,49 +97,45 @@ Chords:
 
 # Prompts
 
-## Standard lessons editor
-
-Create an admin-only editor for the default library content. The URL should be /admin/library.
-
-Change the "Admin" link so it goes to an intermediary page with two tiles (visually similar to the Tools page tiles). From here, allow access to /admin/users (existing) and /admin/library (new).
-
-On the new "Manage standard library" page, reuse the components and layout/UX of the "Manage my library" screen (but obviously manage the standard library content itself).
-
-Make sure there are server-side permission controls so that only verified admins can manage this content.
-
-Do this in one shot. Follow the recommended approaches to design decisions. Implement (using subagent-driven development) and test (using TDD) immediately.
-
 ## Progressions tab
 
-We are going to introduce a new, top-level Progressions page, unifying the Progressions page on the Reference page, the My Progressions editor, and the Progression Analysis tool.
+We are going to introduce a new, top-level Progressions page, unifying the Progressions page on the Reference page, the My Progressions editor, and the Progression Analysis tool. 
 
-Create a new top-level page called Progressions. Use the Progression Analysis tool page as the starting point - we want to reuse its progression input and analysis (substitutions and soloing) panels.
+Do this in a new feature branch. No need to use git worktrees. Try to do it in one shot (trust your recommendations on design decisions) as this session will be left unattended for some time. Do not merge the branch to main or attempt to publish it. I will review it once implemented. Use subagent based implementation and the Superpowers design, spec, review, etc. skills as normal.
 
-Add a progression selector drop-down to the top of the new page. This should be the same as the equiavlent drop-down from the Progressions tab on the current Reference page: showing standard progressions categorised, and my progressions in a separate category (if there are any), as well as the "?" (more details) and "+" (study this progression) buttons, with their respective overlays and actions. The "pencil" edit icon should also be copied over, but we will change its purpose (see below).
+Create a new top-level page called Progressions. Add a link in the top and footer navigation bar, after Reference.
 
-When a progression is selected, load it into the progression editor chord tiles. From this, we should already have functional harmony analysis and the capability for the user to click on a chord tile and view available soloing scales and substitutions.
+Use the Progression Analysis tool page as the starting point. It contains about two-thirds of what we need: we will reuse its progression / chord tile input and analysis (substitutions and soloing) panels. The layout with input on the left and analysis on the right is also correct.
 
-A standard progression is read-only. Hide the Save button. Do show a "Save as..." button. The "Save as..." button should create a copy of the progression as a custom progression, with a new title and description entered via pop-up. These should default to the standard title and description.
+Add a progression selector drop-down to the top of the new page, in a new row above the current two-column layout.
 
-A custom progression should have Save, Save as (to clone), and Delete as actions. Save just saves the progression as-is, Save as opens a modal to enter a new title/description (defaulting to the current) and then saves and switches to the new copy, and Delete deletes the progression after a modal confirmation dialogue.
+This drop-down should be the same as the equivalent drop-down from the Progressions tab on the current Reference page: showing the built-in/standard progressions in their categories, and "My progressions" in a separate category (if there are any), as well as the "?" (more details) and "+" (study this progression) buttons, with their respective overlays and actions working exactly as they do now on the Reference page.
 
-The pencil icon next to the progression selection drop-down should only be shown for custom progressions. It should pop up a modal dialogue to change the progression title and/or description, with save and cancel options.
+The "pencil" edit icon should also be copied over, but we will change its purpose to open an "edit title + description" modal – see below.
 
-Add (refactor if necessary and fully reuse) the bottom tabs from the Reference page to the Progressions page - that is, the tabs with Scales, Arpeggios, Chords, and Inversions. These should work identically on the new Progressions page as they do on the Reference page.
+When a progression is selected, load it into the progression editor chord tiles. From this, we should already have functional harmony analysis (roman numerals), and the capability for the user to click on a chord tile and view available soloing scales and substitutions in the panels on the right side of the screen.
+
+Below the progression chord tile input, the possible buttons are: Save (primary), Save as (secondary, unless save is hidden, in which case it's primary), and Delete (destructive)
+
+When loading a standard progression, it read-only, so hide the Save button and make the "Save as..." button the primary styling.
+
+The "Save as..." button should create a copy of the current progression as a custom progression, with a new title and description, entered by the user via pop-up. These should default to the standard progression's title and description (in Markdown format).
+
+A custom progression should have all three buttons – Save, Save as (to save a copy), and Delete. Save just saves the progression as-is, Save as opens a modal to enter a new title/description (defaulting to the current) and then saves and switches to the new copy, and Delete deletes the progression, after a modal confirmation dialogue.
+
+The pencil icon next to the progression selection drop-down should only be shown for custom progressions. It should pop up a modal dialogue to change the progression title and/or description, with Save and Cancel buttons.
+
+Add (refactor if necessary and fully reuse) the bottom tabs from the Reference page to the Progressions page - that is, the tabs with Scales, Arpeggios, Chords, and Inversions. These should work identically on the new Progressions page as they do on the Reference page. They should be in a new row below the chord tile input (left side) and analysis (right side), using the full width of the page, just like they do on the Reference page.
 
 Ensure that when a chord tile is clicked in the Progressions page, the Arpeggios, Chords, and Inversions tabs are all updated to select the relevant root and chord type.
 
-Add the "right-pointing triangle" icon and link back to the Soloing tab on the Progressions page analysis panel (right side) and restore the functionality so that when a "scale to solo over" is clicked, the Scales tab on the Progressions page is updated to the relevant scale in the relevant key - just like on the Progressions tab.
+Add the "right-pointing triangle" icon and link back to the Soloing tab on the Progressions page analysis panel (right side) and restore the functionality so that when a "scale to solo over" is clicked, the Scales tab on the Progressions page is updated to the relevant scale in the relevant key - just like on the Progressions tab. This should hopefully make it possible to reuse the Soloing tab in the analysis panel between the Reference and Progressions page. Try to maximise DRY.
 
-Once this is done, remove the Progressions tab on the Reference page. Since Modes is now the only tab left, remove the tab bar entirely, leaving only the MODE drop-down selector and associated chord tiles and the Soloing/Substitutions tabs underneath them.
+Once this is done, remove the Progressions tab on the Reference page. Since Modes is now the only tab left, remove the tab bar entirely from the top-right harmony panel, leaving only the MODE drop-down selector and associated chord tiles and the Soloing/Substitutions tabs underneath them.
 
 Also remove the previous "My Progressions" edit page. Progressions are now edited only on the Progressions tab.
 
 Finally, remove the Progression Analysis tool.
-
-## Footer
-
-The footer repeats some of the top navigation bar links. Make sure it is up to date. Remember to do this if the navigation bar is changed in future.
 
 ## Readme
 

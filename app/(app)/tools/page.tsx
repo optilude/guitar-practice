@@ -44,7 +44,7 @@ const TOOLS: { href: string; icon: ReactNode; name: string; description: string 
 export default function ToolsPage() {
   return (
     <div className="pt-6">
-      <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Utilities</p>
+      <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Musical</p>
       <h1 className="text-2xl font-semibold text-foreground mb-6">Tools</h1>
       <div className="grid grid-cols-2 gap-3">
         {TOOLS.map((tool) => (
