@@ -14,7 +14,7 @@ export async function changePassword(
   const newPassword = formData.get("newPassword")
   const confirmPassword = formData.get("confirmPassword")
 
-  if (!currentPassword || !newPassword || !confirmPassword) {
+  if (typeof currentPassword !== "string" || typeof newPassword !== "string" || typeof confirmPassword !== "string") {
     return { error: "All fields are required" }
   }
 

@@ -36,6 +36,8 @@ describe("createUser", () => {
       email: "taken@example.com",
       name: "Existing",
       passwordHash: "hash",
+      isAdmin: false,
+      mustChangePassword: false,
       createdAt: new Date(),
       updatedAt: new Date(),
     })
@@ -56,6 +58,8 @@ describe("createUser", () => {
       email: "new@example.com",
       name: "New User",
       passwordHash: "hashed_pw",
+      isAdmin: false,
+      mustChangePassword: false,
       createdAt: new Date(),
       updatedAt: new Date(),
     })
