@@ -1,13 +1,13 @@
 "use client"
 
 import { useCallback, useMemo, useState } from "react"
-import { parseChord, applyFunctionalRomanOverrides } from "@/lib/theory/key-finder"
+import { parseChord, applyFunctionalRomanOverrides, analyzeChordInKey } from "@/lib/theory/key-finder"
 import { analyzeProgression } from "@/lib/theory/transposer"
 import { getSubstitutions, getSoloScales, analyzeFunctionalContext } from "@/lib/theory"
 import type { FunctionalAnalysis, ChordContext } from "@/lib/theory"
 import { ALL_KEY_MODES } from "@/lib/theory/commonality-tiers"
 import { ChordInputRow } from "@/app/(app)/tools/_components/chord-input-row"
-import { targetDegreeFromRoman } from "@/app/(app)/reference/_components/chord-quality-block"
+import { ChordQualityBlock, targetDegreeFromRoman } from "@/app/(app)/reference/_components/chord-quality-block"
 import { SubstitutionsPanel } from "@/app/(app)/reference/_components/substitutions-panel"
 import { SoloScalesPanel } from "@/app/(app)/reference/_components/solo-scales-panel"
 import { buildProgressionChords } from "../_lib/build-progression-chords"
@@ -89,8 +89,6 @@ function applyPreview(
 export function AnalyserClient() {
   const [key, setKey]         = useState("C")
   const [modeIdx, setModeIdx] = useState(0)
-  const [title, setTitle]     = useState("")
-  const [description, setDescription] = useState("")
   const [chords, setChords]   = useState<ChordEntry[]>([])
   const [editingId, setEditingId]   = useState<string | null>(null)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
@@ -186,6 +184,13 @@ export function AnalyserClient() {
     setEditingId(null)
   }, [progressionChords])
 
+  const { previewChords, highlightIndices } = useMemo(() => {
+    if (!previewedSub) {
+      return { previewChords: progressionChords.map(chordToPreview), highlightIndices: new Set<number>() }
+    }
+    return applyPreview(progressionChords, previewedSub)
+  }, [progressionChords, previewedSub])
+
   const hasParsedChords = parsedChords.length > 0
 
   const chordIdToAnalysisIdx = useMemo(() => {
@@ -230,29 +235,6 @@ export function AnalyserClient() {
     <div className="flex flex-col lg:flex-row gap-6">
       {/* Left column — 2/3 width */}
       <div className="flex flex-col gap-6 min-w-0 lg:[flex:2]">
-        {/* Title */}
-        <div className="max-w-sm">
-          <label className="block text-xs text-muted-foreground mb-1">Title</label>
-          <input
-            value={title}
-            onChange={e => setTitle(e.target.value)}
-            placeholder="My progression"
-            className="w-full rounded border border-border bg-card px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
-          />
-        </div>
-
-        {/* Description */}
-        <div className="max-w-sm">
-          <label className="block text-xs text-muted-foreground mb-1">Description</label>
-          <textarea
-            value={description}
-            onChange={e => setDescription(e.target.value)}
-            rows={3}
-            placeholder="Describe this progression… (supports markdown)"
-            className="w-full rounded border border-border bg-card px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent resize-y"
-          />
-        </div>
-
         {/* Key + Mode */}
         <div className="flex gap-4 items-end">
           <div className="flex flex-col gap-1 flex-shrink-0">
@@ -266,13 +248,13 @@ export function AnalyserClient() {
               {ROOT_NOTES.map(r => <option key={r} value={r}>{r}</option>)}
             </select>
           </div>
-          <div className="flex flex-col gap-1 flex-1 min-w-0">
+          <div className="flex flex-col gap-1">
             <label className="text-xs text-muted-foreground" aria-hidden="true">Mode</label>
             <select
               value={modeIdx}
               onChange={e => setModeIdx(Number(e.target.value))}
               aria-label="Mode"
-              className={cn(SELECT_CLASS, "w-full")}
+              className={cn(SELECT_CLASS, "w-fit")}
             >
               {MODE_GROUPS.map(group => (
                 <optgroup key={group.label} label={group.label}>
@@ -286,22 +268,52 @@ export function AnalyserClient() {
           </div>
         </div>
 
-        {/* Chord input */}
+        {/* Chord input / substitution preview */}
         <div>
           <label className="block text-xs text-muted-foreground mb-2">Chords</label>
-          <ChordInputRow
-            chords={chords}
-            editingId={editingId}
-            chordAnalyses={displayAnalyses}
-            onChordChange={setChords}
-            onCommit={handleCommit}
-            onRemove={handleRemove}
-            onStartEdit={handleStartEdit}
-            onAdd={handleAdd}
-            selectedId={selectedId}
-            onSelect={handleSelect}
-            getDisplayAnalysis={getDisplayAnalysis}
-          />
+          {previewedSub ? (
+            <div className="flex flex-wrap items-center gap-1">
+              {previewChords.map((chord, i) => {
+                const inputChord = parseChord(`${chord.tonic}${chord.type}`)
+                const keyAnalysis = inputChord ? analyzeChordInKey(inputChord, key, mode.modeName) : null
+                const targetDegree = targetDegreeFromRoman(chord.roman)
+                const degree = targetDegree ?? keyAnalysis?.degree ?? chord.degree ?? 1
+                const variant: "diatonic" | "borrowed" | "non-diatonic" = targetDegree !== null
+                  ? "borrowed"
+                  : keyAnalysis?.role === "diatonic" ? "diatonic"
+                  : keyAnalysis?.role === "borrowed" ? "borrowed"
+                  : "non-diatonic"
+                return (
+                  <div key={i} className="flex items-center gap-1 flex-shrink-0">
+                    {i > 0 && <span className="text-muted-foreground text-sm flex-shrink-0">→</span>}
+                    <ChordQualityBlock
+                      roman={chord.roman}
+                      chordName={`${chord.tonic}${chord.type}`}
+                      degree={degree}
+                      isSelected={false}
+                      onClick={() => {}}
+                      variant={variant}
+                      isSubstitutionPreview={highlightIndices.has(i)}
+                    />
+                  </div>
+                )
+              })}
+            </div>
+          ) : (
+            <ChordInputRow
+              chords={chords}
+              editingId={editingId}
+              chordAnalyses={displayAnalyses}
+              onChordChange={setChords}
+              onCommit={handleCommit}
+              onRemove={handleRemove}
+              onStartEdit={handleStartEdit}
+              onAdd={handleAdd}
+              selectedId={selectedId}
+              onSelect={handleSelect}
+              getDisplayAnalysis={getDisplayAnalysis}
+            />
+          )}
         </div>
 
         {/* Save button */}
@@ -317,55 +329,57 @@ export function AnalyserClient() {
         </div>
       </div>
 
-      {/* Right column — analysis panels (only when chord selected) */}
-      {selectedChord && (
-        <div className="min-w-0 space-y-3 lg:flex-1">
-          <div className="flex rounded border border-border overflow-hidden text-sm w-fit">
-            <button
-              type="button"
-              onClick={() => setActiveTab("substitutions")}
-              className={cn(
-                "px-3 py-1.5 transition-colors",
-                activeTab === "substitutions"
-                  ? "bg-accent text-accent-foreground"
-                  : "bg-card text-muted-foreground hover:bg-muted",
-              )}
-            >
-              Substitutions
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("soloing")}
-              className={cn(
-                "px-3 py-1.5 transition-colors border-l border-border",
-                activeTab === "soloing"
-                  ? "bg-accent text-accent-foreground"
-                  : "bg-card text-muted-foreground hover:bg-muted",
-              )}
-            >
-              Soloing
-            </button>
+      {/* Right column — always rendered to hold the 1/3 space; content shown when chord selected */}
+      <div className="min-w-0 lg:flex-1">
+        {selectedChord && (
+          <div className="space-y-3">
+            <div className="flex rounded border border-border overflow-hidden text-sm w-fit">
+              <button
+                type="button"
+                onClick={() => setActiveTab("substitutions")}
+                className={cn(
+                  "px-3 py-1.5 transition-colors",
+                  activeTab === "substitutions"
+                    ? "bg-accent text-accent-foreground"
+                    : "bg-card text-muted-foreground hover:bg-muted",
+                )}
+              >
+                Substitutions
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("soloing")}
+                className={cn(
+                  "px-3 py-1.5 transition-colors border-l border-border",
+                  activeTab === "soloing"
+                    ? "bg-accent text-accent-foreground"
+                    : "bg-card text-muted-foreground hover:bg-muted",
+                )}
+              >
+                Soloing
+              </button>
+            </div>
+
+            {activeTab === "substitutions" && (
+              <SubstitutionsPanel
+                substitutions={substitutions}
+                chordName={`${selectedChord.tonic}${selectedChord.type}`}
+                previewedId={previewedSub?.id ?? null}
+                onPreview={setPreviewedSub}
+                onApply={handleApplyPermanently}
+              />
+            )}
+
+            {activeTab === "soloing" && scales && (
+              <SoloScalesPanel
+                scales={scales}
+                chordName={`${selectedChord.tonic}${selectedChord.type}`}
+                romanNumeral={selectedDisplayRoman ?? undefined}
+              />
+            )}
           </div>
-
-          {activeTab === "substitutions" && (
-            <SubstitutionsPanel
-              substitutions={substitutions}
-              chordName={`${selectedChord.tonic}${selectedChord.type}`}
-              previewedId={previewedSub?.id ?? null}
-              onPreview={setPreviewedSub}
-              onApply={handleApplyPermanently}
-            />
-          )}
-
-          {activeTab === "soloing" && scales && (
-            <SoloScalesPanel
-              scales={scales}
-              chordName={`${selectedChord.tonic}${selectedChord.type}`}
-              romanNumeral={selectedDisplayRoman ?? undefined}
-            />
-          )}
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Save modal */}
       {saveModalOpen && (
@@ -373,8 +387,8 @@ export function AnalyserClient() {
           parsedChords={parsedChords}
           tonic={key}
           modeName={mode.modeName}
-          initialTitle={title}
-          initialDescription={description}
+          initialTitle=""
+          initialDescription=""
           onClose={() => setSaveModalOpen(false)}
         />
       )}
