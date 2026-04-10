@@ -88,35 +88,38 @@ export function ChordInputRow({
           items={chords.map(c => c.id)}
           strategy={horizontalListSortingStrategy}
         >
-          {chords.map((chord, i) => (
-            // Arrow + tile grouped as flex-shrink-0 so wrapping keeps → ahead of its tile
-            <div key={chord.id} className="flex items-center gap-1 flex-shrink-0">
-              {i > 0 && (
-                <span className="text-muted-foreground text-sm select-none">→</span>
-              )}
-              <ChordTile
-                id={chord.id}
-                symbol={chord.symbol}
-                analysis={getAnalysis(chord.id)}
-                isEditing={editingId === chord.id}
-                onCommit={symbol => onCommit(chord.id, symbol)}
-                onRemove={() => onRemove(chord.id)}
-                onStartEdit={() => onStartEdit(chord.id)}
-                onTabNext={() => {
-                  if (i === chords.length - 1) onAdd()
-                  else onStartEdit(chords[i + 1].id)
-                }}
-                onArrowPrev={i > 0 ? () => onStartEdit(chords[i - 1].id) : undefined}
-                onArrowNext={i < chords.length - 1 ? () => onStartEdit(chords[i + 1].id) : undefined}
-                isSelected={selectedId != null ? selectedId === chord.id : undefined}
-                onSelect={onSelect ? () => onSelect(chord.id) : undefined}
-                {...(getDisplayAnalysis ? (() => {
-                  const da = getDisplayAnalysis(chord.id)
-                  return da ? { displayRoman: da.roman, displayDegree: da.degree, displayVariant: da.variant } : {}
-                })() : {})}
-              />
-            </div>
-          ))}
+          {chords.map((chord, i) => {
+            const da = getDisplayAnalysis?.(chord.id)
+            const displayProps = da
+              ? { displayRoman: da.roman, displayDegree: da.degree, displayVariant: da.variant }
+              : {}
+            return (
+              // Arrow + tile grouped as flex-shrink-0 so wrapping keeps → ahead of its tile
+              <div key={chord.id} className="flex items-center gap-1 flex-shrink-0">
+                {i > 0 && (
+                  <span className="text-muted-foreground text-sm select-none">→</span>
+                )}
+                <ChordTile
+                  id={chord.id}
+                  symbol={chord.symbol}
+                  analysis={getAnalysis(chord.id)}
+                  isEditing={editingId === chord.id}
+                  onCommit={symbol => onCommit(chord.id, symbol)}
+                  onRemove={() => onRemove(chord.id)}
+                  onStartEdit={() => onStartEdit(chord.id)}
+                  onTabNext={() => {
+                    if (i === chords.length - 1) onAdd()
+                    else onStartEdit(chords[i + 1].id)
+                  }}
+                  onArrowPrev={i > 0 ? () => onStartEdit(chords[i - 1].id) : undefined}
+                  onArrowNext={i < chords.length - 1 ? () => onStartEdit(chords[i + 1].id) : undefined}
+                  isSelected={selectedId != null ? selectedId === chord.id : undefined}
+                  onSelect={onSelect ? () => onSelect(chord.id) : undefined}
+                  {...displayProps}
+                />
+              </div>
+            )
+          })}
         </SortableContext>
       </DndContext>
 
