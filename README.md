@@ -70,6 +70,14 @@ The default admin is created using `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` 
 
 > **Note:** The seed is idempotent. If the admin account already exists, it is left unchanged. Re-running the seed only updates lesson data.
 
+To reset the admin password (e.g. if you are locked out), update `SEED_ADMIN_PASSWORD` in `.env.local` and run:
+
+```bash
+pnpm db:reset-admin-password
+```
+
+This sets the new password and re-flags the account as `mustChangePassword=true`.
+
 ### 5. Start the dev server
 
 ```bash
@@ -122,7 +130,7 @@ Sign up at [resend.com](https://resend.com) (free tier: 3,000 emails/month). Ver
 | `pnpm lint` | Run ESLint |
 | `pnpm db:migrate` | Apply database migrations |
 | `pnpm db:seed` | Import lessons and create default admin |
-| `pnpm db:fetch-content` | Re-download sitemap + topic order from Hub Guitar, then re-seed |
+| `pnpm db:reset-admin-password` | Reset admin password (uses `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD`) |
 
 ---
 
@@ -137,13 +145,12 @@ Static music theory datasets are committed to the repo under `data/` rather than
 
 ---
 
-## Refreshing lesson content
+## Lesson content
 
-Hub Guitar lessons are seeded from a local snapshot of their sitemap. To pull in new or reordered lessons:
+Hub Guitar lessons are stored as a committed static file at `prisma/data/lessons.json`. This file is the source of truth for what gets seeded into the database — no network requests or scraping required.
 
-```bash
-pnpm db:fetch-content
-pnpm db:seed
+To add or update lessons, edit `prisma/data/lessons.json` directly and re-run `pnpm db:seed`. Each entry has the shape:
+
+```json
+{ "url": "https://hubguitar.com/technique/alternate-picking", "slug": "alternate-picking", "title": "Alternate Picking", "category": "technique", "order": 12 }
 ```
-
-`db:fetch-content` re-downloads the sitemap from `https://hubguitar.com/sitemap.xml` and regenerates `prisma/tmp/topic-order.json` by scraping Hub Guitar's category pages for their curated lesson order.

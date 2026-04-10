@@ -2,6 +2,7 @@ import { db } from "@/lib/db"
 import { requireAdmin } from "@/lib/require-admin"
 import { getUserId } from "@/lib/get-user-id"
 import { setAdmin } from "./actions"
+import { DeleteUserForm } from "./delete-user-form"
 
 export default async function AdminUsersPage() {
   await requireAdmin()
@@ -44,14 +45,14 @@ export default async function AdminUsersPage() {
                 </td>
                 <td className="py-2">
                   {user.id !== currentUserId && (
-                    <form action={async (fd: FormData) => { await setAdmin(user.id, !user.isAdmin, fd) }}>
-                      <button
-                        type="submit"
-                        className="text-xs text-accent hover:underline"
-                      >
-                        {user.isAdmin ? "Remove admin" : "Make admin"}
-                      </button>
-                    </form>
+                    <div className="flex items-center gap-3">
+                      <form action={setAdmin.bind(null, user.id, !user.isAdmin)}>
+                        <button type="submit" className="text-xs text-accent hover:underline">
+                          {user.isAdmin ? "Remove admin" : "Make admin"}
+                        </button>
+                      </form>
+                      <DeleteUserForm userId={user.id} email={user.email} />
+                    </div>
                   )}
                 </td>
               </tr>

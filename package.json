@@ -11,7 +11,7 @@
     "test:run": "vitest run",
     "db:migrate": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
-    "db:fetch-content": "mkdir -p prisma/tmp && curl -s https://hubguitar.com/sitemap.xml -o prisma/tmp/hubguitar-sitemap.xml && tsx scripts/fetch-topic-order.ts"
+    "db:reset-admin-password": "tsx scripts/reset-admin-password.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

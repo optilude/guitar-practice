@@ -1,12 +1,13 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { signOut } from "next-auth/react"
+import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { changePassword } from "./actions"
 
 export default function ChangePasswordPage() {
   const router = useRouter()
+  const { update } = useSession()
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
@@ -20,9 +21,9 @@ export default function ChangePasswordPage() {
       if ("error" in result) {
         setError(result.error)
       } else {
-        // Clear the session so the next sign-in gets a fresh JWT without mustChangePassword
-        await signOut({ redirect: false })
-        router.push("/login?passwordChanged=1")
+        // Update the JWT in-place so the middleware no longer forces this page.
+        await update({ mustChangePassword: false })
+        router.push("/")
       }
     })
   }

@@ -97,4 +97,26 @@ Once this exists, there needs to be a way for an administrator to promote or dem
 
 ## Standard lessons editor
 
-With admin mode established, create an editor for the default library content. This can use the exact same components and UX as the "Manage my library" screen, except it is editing the default library content.
+Create an admin-only editor for the default library content. The URL should be /admin/library.
+
+Change the "Admin" link so it goes to an intermediary page with two tiles (visually similar to the Tools page tiles). From here, allow access to /admin/users (existing) and /admin/library (new).
+
+On the new "MAnage standard library" page, reuse the components and layout/UX of the "Manage my library" screen (but obviously manage the standard library content itself).
+
+Make sure there are server-side permission controls so that only verified admins can manage this content.
+
+Also – move the "Manage my library" link to underneath the library category tiles on the Library front page and the category topics page. Make it use the default text colour, not the orange colour.
+
+Also – style the title on /admin/users ("User management") page the same as the on the other pages. It should say "ADMIN" above the title, and the title should be as big as the other page titles.
+
+## Readme
+
+Review and update the README.md file. Make sure to include:
+
+- A high level description of the app and its capabilities
+- Installation instructions (local)
+- Development instructions (local)
+- Deployment instructions for Vercel
+- Deployment instructions for other hosting options (high level)
+- First-time setup
+- Acnkowledgements and key dependencies (Fretboard.JS, SVGuitar, HubGuitar.com, chords-db)

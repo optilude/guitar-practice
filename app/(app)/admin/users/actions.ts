@@ -26,3 +26,23 @@ export async function setAdmin(
   revalidatePath("/admin/users")
   return { success: true }
 }
+
+export async function deleteUser(
+  userId: string,
+  _formData: FormData,
+): Promise<{ success: true } | { error: string }> {
+  const callerIsAdmin = await getIsAdmin()
+  if (!callerIsAdmin) return { error: "Forbidden" }
+
+  const callerId = await getUserId()
+  if (callerId === userId) return { error: "You cannot delete your own account" }
+
+  try {
+    await db.user.delete({ where: { id: userId } })
+  } catch (err) {
+    console.error("deleteUser: db.user.delete failed", err)
+    return { error: "Failed to delete user. Please try again." }
+  }
+  revalidatePath("/admin/users")
+  return { success: true }
+}

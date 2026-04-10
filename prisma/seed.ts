@@ -1,4 +1,4 @@
-import { readFileSync, existsSync } from "fs"
+import { readFileSync } from "fs"
 import { fileURLToPath } from "url"
 import { join, dirname } from "path"
 import { PrismaClient } from "@/lib/generated/prisma/client"
@@ -6,9 +6,10 @@ import { PrismaPg } from "@prisma/adapter-pg"
 import pg from "pg"
 import * as dotenv from "dotenv"
 import bcrypt from "bcryptjs"
-import { urlToCategory, slugToTitle } from "@/lib/seed-helpers"
 
 dotenv.config({ path: ".env.local" })
+
+type Lesson = { url: string; slug: string; title: string; category: string; order: number }
 
 const CATEGORIES = [
   { slug: "fretboard-knowledge", name: "Fretboard Knowledge", order: 1 },
@@ -46,22 +47,11 @@ async function main() {
     console.log(`Admin user already exists: ${adminEmail}`)
   }
 
-  // Sitemap downloaded from https://hubguitar.com/sitemap.xml — re-download to refresh content
-  const xml = readFileSync(
-    join(dirname(fileURLToPath(import.meta.url)), "../tmp/hubguitar-sitemap.xml"),
-    "utf8"
+  // Static lesson data — pre-built from the HubGuitar sitemap and curated topic ordering.
+  // To refresh this file (e.g. after HubGuitar adds new lessons), see README.
+  const lessons: Lesson[] = JSON.parse(
+    readFileSync(join(dirname(fileURLToPath(import.meta.url)), "data/lessons.json"), "utf8")
   )
-  const urls = [...xml.matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1])
-
-  // Load topic ordering produced by scripts/fetch-topic-order.ts.
-  // Songs are absent (sorted alphabetically via sitemap order).
-  const orderMapPath = join(dirname(fileURLToPath(import.meta.url)), "../tmp/topic-order.json")
-  const orderMap: Record<string, string[]> = existsSync(orderMapPath)
-    ? JSON.parse(readFileSync(orderMapPath, "utf8"))
-    : {}
-  if (Object.keys(orderMap).length === 0) {
-    console.warn("Warning: tmp/topic-order.json not found — using sitemap order. Run: pnpm tsx scripts/fetch-topic-order.ts")
-  }
 
   try {
     let count = 0
@@ -82,26 +72,13 @@ async function main() {
         categoryMap.set(cat.slug, record.id)
       }
 
-      const categoryCounters = new Map<string, number>()
-      for (const url of urls) {
-        const catSlug = urlToCategory(url)
-        if (!catSlug) continue
-        const categoryId = categoryMap.get(catSlug)
-        if (!categoryId) throw new Error(`No category ID found for slug "${catSlug}" — check CATEGORIES array matches CATEGORY_MAP`)
-        const slug = new URL(url).pathname.split("/").filter(Boolean)[1]
-        const title = slugToTitle(slug)
-        const counter = (categoryCounters.get(catSlug) ?? 0) + 1
-        categoryCounters.set(catSlug, counter)
-        const slugList = orderMap[catSlug] as string[] | undefined
-        const pos = slugList?.indexOf(slug) ?? -1
-        // Known slugs use their position in the curated order (1-based).
-        // Unknown slugs (not on HubGuitar's category page) are appended after
-        // all known slugs using a high base so they don't displace anything.
-        const order = pos >= 0 ? pos + 1 : 10000 + counter
+      for (const lesson of lessons) {
+        const categoryId = categoryMap.get(lesson.category)
+        if (!categoryId) throw new Error(`Unknown category "${lesson.category}" in lessons.json`)
         await tx.topic.upsert({
-          where: { url },
-          create: { title, url, slug, order, categoryId, sourceId: source.id },
-          update: { title, order },
+          where: { url: lesson.url },
+          create: { title: lesson.title, url: lesson.url, slug: lesson.slug, order: lesson.order, categoryId, sourceId: source.id },
+          update: { title: lesson.title, order: lesson.order },
         })
         count++
       }

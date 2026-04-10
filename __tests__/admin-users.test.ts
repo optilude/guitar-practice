@@ -2,7 +2,7 @@ import { vi, describe, it, expect, beforeEach } from "vitest"
 
 vi.mock("@/lib/db", () => ({
   db: {
-    user: { update: vi.fn() },
+    user: { update: vi.fn(), delete: vi.fn() },
   },
 }))
 
@@ -15,7 +15,7 @@ vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
 }))
 
-import { setAdmin } from "@/app/(app)/admin/users/actions"
+import { setAdmin, deleteUser } from "@/app/(app)/admin/users/actions"
 import { db } from "@/lib/db"
 import { getIsAdmin, getUserId } from "@/lib/get-user-id"
 import { revalidatePath } from "next/cache"
@@ -84,6 +84,52 @@ describe("setAdmin", () => {
     const result = await setAdmin("target-id", true, new FormData())
 
     expect(result).toEqual({ error: "Failed to update user. Please try again." })
+    expect(revalidatePath).not.toHaveBeenCalled()
+  })
+})
+
+describe("deleteUser", () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it("returns Forbidden when caller is not an admin", async () => {
+    vi.mocked(getIsAdmin).mockResolvedValue(false)
+
+    const result = await deleteUser("target-id", new FormData())
+
+    expect(result).toEqual({ error: "Forbidden" })
+    expect(db.user.delete).not.toHaveBeenCalled()
+  })
+
+  it("returns error when admin tries to delete themselves", async () => {
+    vi.mocked(getIsAdmin).mockResolvedValue(true)
+    vi.mocked(getUserId).mockResolvedValue("caller-id")
+
+    const result = await deleteUser("caller-id", new FormData())
+
+    expect(result).toEqual({ error: "You cannot delete your own account" })
+    expect(db.user.delete).not.toHaveBeenCalled()
+  })
+
+  it("deletes another user and revalidates the page", async () => {
+    vi.mocked(getIsAdmin).mockResolvedValue(true)
+    vi.mocked(getUserId).mockResolvedValue("caller-id")
+    vi.mocked(db.user.delete).mockResolvedValue({} as never)
+
+    const result = await deleteUser("target-id", new FormData())
+
+    expect(db.user.delete).toHaveBeenCalledWith({ where: { id: "target-id" } })
+    expect(revalidatePath).toHaveBeenCalledWith("/admin/users")
+    expect(result).toEqual({ success: true })
+  })
+
+  it("returns error when db.user.delete throws", async () => {
+    vi.mocked(getIsAdmin).mockResolvedValue(true)
+    vi.mocked(getUserId).mockResolvedValue("caller-id")
+    vi.mocked(db.user.delete).mockRejectedValue(new Error("fk constraint"))
+
+    const result = await deleteUser("target-id", new FormData())
+
+    expect(result).toEqual({ error: "Failed to delete user. Please try again." })
     expect(revalidatePath).not.toHaveBeenCalled()
   })
 })

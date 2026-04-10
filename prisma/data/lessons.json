@@ -1,0 +1,1850 @@
+[
+  {
+    "url": "https://hubguitar.com/fretboard/learning-the-open-strings",
+    "slug": "learning-the-open-strings",
+    "title": "Learning The Open Strings",
+    "category": "fretboard-knowledge",
+    "order": 1
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/first-chords",
+    "slug": "first-chords",
+    "title": "First Chords",
+    "category": "fretboard-knowledge",
+    "order": 2
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/first-scale",
+    "slug": "first-scale",
+    "title": "First Scale",
+    "category": "fretboard-knowledge",
+    "order": 3
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/e-major-scale-one-string",
+    "slug": "e-major-scale-one-string",
+    "title": "E Major Scale One String",
+    "category": "fretboard-knowledge",
+    "order": 4
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/all-two-finger-chords",
+    "slug": "all-two-finger-chords",
+    "title": "All Two Finger Chords",
+    "category": "fretboard-knowledge",
+    "order": 5
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/introduction-to-arpeggios",
+    "slug": "introduction-to-arpeggios",
+    "title": "Introduction To Arpeggios",
+    "category": "fretboard-knowledge",
+    "order": 6
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/your-first-six-chords",
+    "slug": "your-first-six-chords",
+    "title": "Your First Six Chords",
+    "category": "fretboard-knowledge",
+    "order": 7
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/learning-the-open-position",
+    "slug": "learning-the-open-position",
+    "title": "Learning The Open Position",
+    "category": "fretboard-knowledge",
+    "order": 8
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/campfire-chords",
+    "slug": "campfire-chords",
+    "title": "Campfire Chords",
+    "category": "fretboard-knowledge",
+    "order": 9
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/basic-arpeggio-exercises",
+    "slug": "basic-arpeggio-exercises",
+    "title": "Basic Arpeggio Exercises",
+    "category": "fretboard-knowledge",
+    "order": 10
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/open-position-f-major",
+    "slug": "open-position-f-major",
+    "title": "Open Position F Major",
+    "category": "fretboard-knowledge",
+    "order": 11
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/open-chords-in-c",
+    "slug": "open-chords-in-c",
+    "title": "Open Chords In C",
+    "category": "fretboard-knowledge",
+    "order": 12
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/g-major-scale-open-position",
+    "slug": "g-major-scale-open-position",
+    "title": "G Major Scale Open Position",
+    "category": "fretboard-knowledge",
+    "order": 13
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/open-chords-in-g",
+    "slug": "open-chords-in-g",
+    "title": "Open Chords In G",
+    "category": "fretboard-knowledge",
+    "order": 14
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/open-suspended-chords",
+    "slug": "open-suspended-chords",
+    "title": "Open Suspended Chords",
+    "category": "fretboard-knowledge",
+    "order": 15
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/power-chords",
+    "slug": "power-chords",
+    "title": "Power Chords",
+    "category": "fretboard-knowledge",
+    "order": 16
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/guitar-triads-chart",
+    "slug": "guitar-triads-chart",
+    "title": "Guitar Triads Chart",
+    "category": "fretboard-knowledge",
+    "order": 17
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/one-octave-arpeggio-forms",
+    "slug": "one-octave-arpeggio-forms",
+    "title": "One Octave Arpeggio Forms",
+    "category": "fretboard-knowledge",
+    "order": 18
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/interval-map",
+    "slug": "interval-map",
+    "title": "Interval Map",
+    "category": "fretboard-knowledge",
+    "order": 19
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/knowledge-octaves",
+    "slug": "knowledge-octaves",
+    "title": "Knowledge Octaves",
+    "category": "fretboard-knowledge",
+    "order": 20
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/intermediate-arpeggios",
+    "slug": "intermediate-arpeggios",
+    "title": "Intermediate Arpeggios",
+    "category": "fretboard-knowledge",
+    "order": 21
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/introduction-to-barre-chords",
+    "slug": "introduction-to-barre-chords",
+    "title": "Introduction To Barre Chords",
+    "category": "fretboard-knowledge",
+    "order": 22
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/minor-scale-patterns",
+    "slug": "minor-scale-patterns",
+    "title": "Minor Scale Patterns",
+    "category": "fretboard-knowledge",
+    "order": 23
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/one-octave-parallel-mode-fingerings",
+    "slug": "one-octave-parallel-mode-fingerings",
+    "title": "One Octave Parallel Mode Fingerings",
+    "category": "fretboard-knowledge",
+    "order": 24
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/five-pentatonic-scale-patterns",
+    "slug": "five-pentatonic-scale-patterns",
+    "title": "Five Pentatonic Scale Patterns",
+    "category": "fretboard-knowledge",
+    "order": 25
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/seventh-chords-in-c",
+    "slug": "seventh-chords-in-c",
+    "title": "Seventh Chords In C",
+    "category": "fretboard-knowledge",
+    "order": 26
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/caged-guitar-chords-system",
+    "slug": "caged-guitar-chords-system",
+    "title": "Caged Guitar Chords System",
+    "category": "fretboard-knowledge",
+    "order": 27
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/chromatic-scale-patterns",
+    "slug": "chromatic-scale-patterns",
+    "title": "Chromatic Scale Patterns",
+    "category": "fretboard-knowledge",
+    "order": 28
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/full-fretboard-arpeggios",
+    "slug": "full-fretboard-arpeggios",
+    "title": "Full Fretboard Arpeggios",
+    "category": "fretboard-knowledge",
+    "order": 29
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/diatonic-sequences",
+    "slug": "diatonic-sequences",
+    "title": "Diatonic Sequences",
+    "category": "fretboard-knowledge",
+    "order": 30
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/pentatonic-scale-sequences",
+    "slug": "pentatonic-scale-sequences",
+    "title": "Pentatonic Scale Sequences",
+    "category": "fretboard-knowledge",
+    "order": 31
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/triad-arpeggios",
+    "slug": "triad-arpeggios",
+    "title": "Triad Arpeggios",
+    "category": "fretboard-knowledge",
+    "order": 32
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/two-note-scale-fragments",
+    "slug": "two-note-scale-fragments",
+    "title": "Two Note Scale Fragments",
+    "category": "fretboard-knowledge",
+    "order": 33
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/vth-position-c-major-arpeggios",
+    "slug": "vth-position-c-major-arpeggios",
+    "title": "Vth Position C Major Arpeggios",
+    "category": "fretboard-knowledge",
+    "order": 34
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/vth-position-notes",
+    "slug": "vth-position-notes",
+    "title": "Vth Position Notes",
+    "category": "fretboard-knowledge",
+    "order": 35
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/7-diatonic-scales-pt1",
+    "slug": "7-diatonic-scales-pt1",
+    "title": "7 Diatonic Scales Pt1",
+    "category": "fretboard-knowledge",
+    "order": 36
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/barre-chords-advanced",
+    "slug": "barre-chords-advanced",
+    "title": "Barre Chords Advanced",
+    "category": "fretboard-knowledge",
+    "order": 37
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/drop2-chords",
+    "slug": "drop2-chords",
+    "title": "Drop2 Chords",
+    "category": "fretboard-knowledge",
+    "order": 38
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/drop3-chords",
+    "slug": "drop3-chords",
+    "title": "Drop3 Chords",
+    "category": "fretboard-knowledge",
+    "order": 39
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/knowledge-exercises",
+    "slug": "knowledge-exercises",
+    "title": "Knowledge Exercises",
+    "category": "fretboard-knowledge",
+    "order": 40
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/voiceleading-triads",
+    "slug": "voiceleading-triads",
+    "title": "Voiceleading Triads",
+    "category": "fretboard-knowledge",
+    "order": 41
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/i-vi-ii-v-in-triads",
+    "slug": "i-vi-ii-v-in-triads",
+    "title": "I Vi Ii V In Triads",
+    "category": "fretboard-knowledge",
+    "order": 42
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/whole-tone-patterns",
+    "slug": "whole-tone-patterns",
+    "title": "Whole Tone Patterns",
+    "category": "fretboard-knowledge",
+    "order": 43
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/visualizing-scale-from-fifth-string",
+    "slug": "visualizing-scale-from-fifth-string",
+    "title": "Visualizing Scale From Fifth String",
+    "category": "fretboard-knowledge",
+    "order": 44
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/3-octave-scale",
+    "slug": "3-octave-scale",
+    "title": "3 Octave Scale",
+    "category": "fretboard-knowledge",
+    "order": 45
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/major-line-cliche",
+    "slug": "major-line-cliche",
+    "title": "Major Line Cliche",
+    "category": "fretboard-knowledge",
+    "order": 46
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/secondary-dominants",
+    "slug": "secondary-dominants",
+    "title": "Secondary Dominants",
+    "category": "fretboard-knowledge",
+    "order": 47
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/seventh-chord-arpeggios",
+    "slug": "seventh-chord-arpeggios",
+    "title": "Seventh Chord Arpeggios",
+    "category": "fretboard-knowledge",
+    "order": 48
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/the-b-string-gap",
+    "slug": "the-b-string-gap",
+    "title": "The B String Gap",
+    "category": "fretboard-knowledge",
+    "order": 49
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/7-diatonic-scales-pt2",
+    "slug": "7-diatonic-scales-pt2",
+    "title": "7 Diatonic Scales Pt2",
+    "category": "fretboard-knowledge",
+    "order": 50
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/spread-triads",
+    "slug": "spread-triads",
+    "title": "Spread Triads",
+    "category": "fretboard-knowledge",
+    "order": 51
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/diminished-ascending-chords",
+    "slug": "diminished-ascending-chords",
+    "title": "Diminished Ascending Chords",
+    "category": "fretboard-knowledge",
+    "order": 52
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/minor-line-cliche",
+    "slug": "minor-line-cliche",
+    "title": "Minor Line Cliche",
+    "category": "fretboard-knowledge",
+    "order": 53
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/modulating-ii-vs",
+    "slug": "modulating-ii-vs",
+    "title": "Modulating Ii Vs",
+    "category": "fretboard-knowledge",
+    "order": 54
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/spread-triad-voiceleading",
+    "slug": "spread-triad-voiceleading",
+    "title": "Spread Triad Voiceleading",
+    "category": "fretboard-knowledge",
+    "order": 55
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/drop23-chords",
+    "slug": "drop23-chords",
+    "title": "Drop23 Chords",
+    "category": "fretboard-knowledge",
+    "order": 56
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/drop24-chords",
+    "slug": "drop24-chords",
+    "title": "Drop24 Chords",
+    "category": "fretboard-knowledge",
+    "order": 57
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/learning-tetrachords",
+    "slug": "learning-tetrachords",
+    "title": "Learning Tetrachords",
+    "category": "fretboard-knowledge",
+    "order": 58
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/arpeggios-in-action",
+    "slug": "arpeggios-in-action",
+    "title": "Arpeggios In Action",
+    "category": "fretboard-knowledge",
+    "order": 59
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/voice-leading-cycles",
+    "slug": "voice-leading-cycles",
+    "title": "Voice Leading Cycles",
+    "category": "fretboard-knowledge",
+    "order": 60
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/drop2s-compared-to-drop3s",
+    "slug": "drop2s-compared-to-drop3s",
+    "title": "Drop2s Compared To Drop3s",
+    "category": "fretboard-knowledge",
+    "order": 61
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/learn-all-c-major-notes",
+    "slug": "learn-all-c-major-notes",
+    "title": "Learn All C Major Notes",
+    "category": "fretboard-knowledge",
+    "order": 62
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/harmonic-minor-modes",
+    "slug": "harmonic-minor-modes",
+    "title": "Harmonic Minor Modes",
+    "category": "fretboard-knowledge",
+    "order": 63
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/changing-chords",
+    "slug": "changing-chords",
+    "title": "Changing Chords",
+    "category": "fretboard-knowledge",
+    "order": 64
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/melodic-minor-modes",
+    "slug": "melodic-minor-modes",
+    "title": "Melodic Minor Modes",
+    "category": "fretboard-knowledge",
+    "order": 65
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/diminished-scale-patterns",
+    "slug": "diminished-scale-patterns",
+    "title": "Diminished Scale Patterns",
+    "category": "fretboard-knowledge",
+    "order": 66
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/sub-v-patterns",
+    "slug": "sub-v-patterns",
+    "title": "Sub V Patterns",
+    "category": "fretboard-knowledge",
+    "order": 67
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/japanese-scales",
+    "slug": "japanese-scales",
+    "title": "Japanese Scales",
+    "category": "fretboard-knowledge",
+    "order": 68
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/harmonic-major-patterns",
+    "slug": "harmonic-major-patterns",
+    "title": "Harmonic Major Patterns",
+    "category": "fretboard-knowledge",
+    "order": 69
+  },
+  {
+    "url": "https://hubguitar.com/fretboard/quartal-harmony",
+    "slug": "quartal-harmony",
+    "title": "Quartal Harmony",
+    "category": "fretboard-knowledge",
+    "order": 70
+  },
+  {
+    "url": "https://hubguitar.com/improvisation/adding-feeling",
+    "slug": "adding-feeling",
+    "title": "Adding Feeling",
+    "category": "improvisation",
+    "order": 1
+  },
+  {
+    "url": "https://hubguitar.com/improvisation/chord-tones",
+    "slug": "chord-tones",
+    "title": "Chord Tones",
+    "category": "improvisation",
+    "order": 2
+  },
+  {
+    "url": "https://hubguitar.com/improvisation/connecting-the-chord-tones",
+    "slug": "connecting-the-chord-tones",
+    "title": "Connecting The Chord Tones",
+    "category": "improvisation",
+    "order": 3
+  },
+  {
+    "url": "https://hubguitar.com/improvisation/contrasting-voices-call-and-response",
+    "slug": "contrasting-voices-call-and-response",
+    "title": "Contrasting Voices Call And Response",
+    "category": "improvisation",
+    "order": 4
+  },
+  {
+    "url": "https://hubguitar.com/improvisation/dealing-with-secondary-dominants",
+    "slug": "dealing-with-secondary-dominants",
+    "title": "Dealing With Secondary Dominants",
+    "category": "improvisation",
+    "order": 5
+  },
+  {
+    "url": "https://hubguitar.com/improvisation/for-best-results-practice-sounding-bad",
+    "slug": "for-best-results-practice-sounding-bad",
+    "title": "For Best Results Practice Sounding Bad",
+    "category": "improvisation",
+    "order": 6
+  },
+  {
+    "url": "https://hubguitar.com/improvisation/substitute-dominants-improv",
+    "slug": "substitute-dominants-improv",
+    "title": "Substitute Dominants Improv",
+    "category": "improvisation",
+    "order": 7
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/introduction-to-music-theory",
+    "slug": "introduction-to-music-theory",
+    "title": "Introduction To Music Theory",
+    "category": "music-theory",
+    "order": 1
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/the-musical-alphabet",
+    "slug": "the-musical-alphabet",
+    "title": "The Musical Alphabet",
+    "category": "music-theory",
+    "order": 2
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/identifying-the-root-note",
+    "slug": "identifying-the-root-note",
+    "title": "Identifying The Root Note",
+    "category": "music-theory",
+    "order": 3
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/introduction-to-music-notation-rhythm",
+    "slug": "introduction-to-music-notation-rhythm",
+    "title": "Introduction To Music Notation Rhythm",
+    "category": "music-theory",
+    "order": 4
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/why-the-guitar-is-tuned-in-fourths",
+    "slug": "why-the-guitar-is-tuned-in-fourths",
+    "title": "Why The Guitar Is Tuned In Fourths",
+    "category": "music-theory",
+    "order": 5
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/understanding-the-major-scale",
+    "slug": "understanding-the-major-scale",
+    "title": "Understanding The Major Scale",
+    "category": "music-theory",
+    "order": 6
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/introduction-to-music-notation-pitches",
+    "slug": "introduction-to-music-notation-pitches",
+    "title": "Introduction To Music Notation Pitches",
+    "category": "music-theory",
+    "order": 7
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/quiz-music-theory-basic",
+    "slug": "quiz-music-theory-basic",
+    "title": "Quiz Music Theory Basic",
+    "category": "music-theory",
+    "order": 8
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/diatonic-chord-construction",
+    "slug": "diatonic-chord-construction",
+    "title": "Diatonic Chord Construction",
+    "category": "music-theory",
+    "order": 9
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/harmonic-stress",
+    "slug": "harmonic-stress",
+    "title": "Harmonic Stress",
+    "category": "music-theory",
+    "order": 10
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/interval-construction",
+    "slug": "interval-construction",
+    "title": "Interval Construction",
+    "category": "music-theory",
+    "order": 11
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/the-circle-of-fifths",
+    "slug": "the-circle-of-fifths",
+    "title": "The Circle Of Fifths",
+    "category": "music-theory",
+    "order": 12
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/chord-function",
+    "slug": "chord-function",
+    "title": "Chord Function",
+    "category": "music-theory",
+    "order": 13
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/the-pentatonic-scale",
+    "slug": "the-pentatonic-scale",
+    "title": "The Pentatonic Scale",
+    "category": "music-theory",
+    "order": 14
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/diatonic-seventh-chords",
+    "slug": "diatonic-seventh-chords",
+    "title": "Diatonic Seventh Chords",
+    "category": "music-theory",
+    "order": 15
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/rhythmic-and-melodic-stress",
+    "slug": "rhythmic-and-melodic-stress",
+    "title": "Rhythmic And Melodic Stress",
+    "category": "music-theory",
+    "order": 16
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/chord-formulas",
+    "slug": "chord-formulas",
+    "title": "Chord Formulas",
+    "category": "music-theory",
+    "order": 17
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/the-perfect-fifth",
+    "slug": "the-perfect-fifth",
+    "title": "The Perfect Fifth",
+    "category": "music-theory",
+    "order": 18
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/chord-tensions",
+    "slug": "chord-tensions",
+    "title": "Chord Tensions",
+    "category": "music-theory",
+    "order": 19
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/basic-counterpoint",
+    "slug": "basic-counterpoint",
+    "title": "Basic Counterpoint",
+    "category": "music-theory",
+    "order": 20
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/constructing-the-minor-scale",
+    "slug": "constructing-the-minor-scale",
+    "title": "Constructing The Minor Scale",
+    "category": "music-theory",
+    "order": 21
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/analysis-of-common-chord-progressions",
+    "slug": "analysis-of-common-chord-progressions",
+    "title": "Analysis Of Common Chord Progressions",
+    "category": "music-theory",
+    "order": 22
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/are-sharps-and-flats-the-same",
+    "slug": "are-sharps-and-flats-the-same",
+    "title": "Are Sharps And Flats The Same",
+    "category": "music-theory",
+    "order": 23
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/blues-harmony-and-theory",
+    "slug": "blues-harmony-and-theory",
+    "title": "Blues Harmony And Theory",
+    "category": "music-theory",
+    "order": 24
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/minor-scale-harmonies",
+    "slug": "minor-scale-harmonies",
+    "title": "Minor Scale Harmonies",
+    "category": "music-theory",
+    "order": 25
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/major-versus-minor",
+    "slug": "major-versus-minor",
+    "title": "Major Versus Minor",
+    "category": "music-theory",
+    "order": 26
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/writing-a-melody-for-chords",
+    "slug": "writing-a-melody-for-chords",
+    "title": "Writing A Melody For Chords",
+    "category": "music-theory",
+    "order": 27
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/metric-modulation",
+    "slug": "metric-modulation",
+    "title": "Metric Modulation",
+    "category": "music-theory",
+    "order": 28
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/why-12-tet",
+    "slug": "why-12-tet",
+    "title": "Why 12 Tet",
+    "category": "music-theory",
+    "order": 29
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/deceptive-resolution",
+    "slug": "deceptive-resolution",
+    "title": "Deceptive Resolution",
+    "category": "music-theory",
+    "order": 30
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/harmonic-major",
+    "slug": "harmonic-major",
+    "title": "Harmonic Major",
+    "category": "music-theory",
+    "order": 31
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/advanced-chord-scales",
+    "slug": "advanced-chord-scales",
+    "title": "Advanced Chord Scales",
+    "category": "music-theory",
+    "order": 32
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/drones-in-modal-and-melodic-music",
+    "slug": "drones-in-modal-and-melodic-music",
+    "title": "Drones In Modal And Melodic Music",
+    "category": "music-theory",
+    "order": 33
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/the-harmonic-series",
+    "slug": "the-harmonic-series",
+    "title": "The Harmonic Series",
+    "category": "music-theory",
+    "order": 34
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/intervals-and-inversions",
+    "slug": "intervals-and-inversions",
+    "title": "Intervals And Inversions",
+    "category": "music-theory",
+    "order": 35
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/building-secondary-dominants",
+    "slug": "building-secondary-dominants",
+    "title": "Building Secondary Dominants",
+    "category": "music-theory",
+    "order": 36
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/tritone-substitute-dominant-chords",
+    "slug": "tritone-substitute-dominant-chords",
+    "title": "Tritone Substitute Dominant Chords",
+    "category": "music-theory",
+    "order": 37
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/harmonizing-a-melody",
+    "slug": "harmonizing-a-melody",
+    "title": "Harmonizing A Melody",
+    "category": "music-theory",
+    "order": 38
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/substitute-7th-chords",
+    "slug": "substitute-7th-chords",
+    "title": "Substitute 7th Chords",
+    "category": "music-theory",
+    "order": 39
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/advanced-chord-scales-pt2",
+    "slug": "advanced-chord-scales-pt2",
+    "title": "Advanced Chord Scales Pt2",
+    "category": "music-theory",
+    "order": 40
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/exploring-triad-respelling",
+    "slug": "exploring-triad-respelling",
+    "title": "Exploring Triad Respelling",
+    "category": "music-theory",
+    "order": 41
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/understanding-modal-harmony",
+    "slug": "understanding-modal-harmony",
+    "title": "Understanding Modal Harmony",
+    "category": "music-theory",
+    "order": 42
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/scale-and-mode-formulas",
+    "slug": "scale-and-mode-formulas",
+    "title": "Scale And Mode Formulas",
+    "category": "music-theory",
+    "order": 43
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/subdominant-minor-chords",
+    "slug": "subdominant-minor-chords",
+    "title": "Subdominant Minor Chords",
+    "category": "music-theory",
+    "order": 44
+  },
+  {
+    "url": "https://hubguitar.com/music-theory/modal-interchange",
+    "slug": "modal-interchange",
+    "title": "Modal Interchange",
+    "category": "music-theory",
+    "order": 45
+  },
+  {
+    "url": "https://hubguitar.com/sight-reading/tutorials",
+    "slug": "tutorials",
+    "title": "Tutorials",
+    "category": "sight-reading",
+    "order": 1
+  },
+  {
+    "url": "https://hubguitar.com/sight-reading/introductory-exercises",
+    "slug": "introductory-exercises",
+    "title": "Introductory Exercises",
+    "category": "sight-reading",
+    "order": 2
+  },
+  {
+    "url": "https://hubguitar.com/sight-reading/basic-exercises",
+    "slug": "basic-exercises",
+    "title": "Basic Exercises",
+    "category": "sight-reading",
+    "order": 3
+  },
+  {
+    "url": "https://hubguitar.com/sight-reading/level-3-exercises",
+    "slug": "level-3-exercises",
+    "title": "Level 3 Exercises",
+    "category": "sight-reading",
+    "order": 4
+  },
+  {
+    "url": "https://hubguitar.com/sight-reading/level-4a-exercises",
+    "slug": "level-4a-exercises",
+    "title": "Level 4a Exercises",
+    "category": "sight-reading",
+    "order": 5
+  },
+  {
+    "url": "https://hubguitar.com/sight-reading/level-4b-exercises",
+    "slug": "level-4b-exercises",
+    "title": "Level 4b Exercises",
+    "category": "sight-reading",
+    "order": 6
+  },
+  {
+    "url": "https://hubguitar.com/sight-reading/carcassi-25-etudes",
+    "slug": "carcassi-25-etudes",
+    "title": "Carcassi 25 Etudes",
+    "category": "sight-reading",
+    "order": 7
+  },
+  {
+    "url": "https://hubguitar.com/sight-reading/carcassi-25-etudes",
+    "slug": "carcassi-25-etudes",
+    "title": "Carcassi 25 Etudes",
+    "category": "sight-reading",
+    "order": 7
+  },
+  {
+    "url": "https://hubguitar.com/sight-reading/giuliani-120-studies-op100",
+    "slug": "giuliani-120-studies-op100",
+    "title": "Giuliani 120 Studies Op100",
+    "category": "sight-reading",
+    "order": 8
+  },
+  {
+    "url": "https://hubguitar.com/sight-reading/giuliani-120-studies-op100",
+    "slug": "giuliani-120-studies-op100",
+    "title": "Giuliani 120 Studies Op100",
+    "category": "sight-reading",
+    "order": 8
+  },
+  {
+    "url": "https://hubguitar.com/sight-reading/sor-24-studies-op35",
+    "slug": "sor-24-studies-op35",
+    "title": "Sor 24 Studies Op35",
+    "category": "sight-reading",
+    "order": 9
+  },
+  {
+    "url": "https://hubguitar.com/sight-reading/sor-24-studies-op35",
+    "slug": "sor-24-studies-op35",
+    "title": "Sor 24 Studies Op35",
+    "category": "sight-reading",
+    "order": 9
+  },
+  {
+    "url": "https://hubguitar.com/sight-reading/tarrega-preludio-pentatonica",
+    "slug": "tarrega-preludio-pentatonica",
+    "title": "Tarrega Preludio Pentatonica",
+    "category": "sight-reading",
+    "order": 10
+  },
+  {
+    "url": "https://hubguitar.com/sight-reading/tarrega-recuerdos-de-la-alhambra",
+    "slug": "tarrega-recuerdos-de-la-alhambra",
+    "title": "Tarrega Recuerdos De La Alhambra",
+    "category": "sight-reading",
+    "order": 11
+  },
+  {
+    "url": "https://hubguitar.com/sight-reading/sor-25-studies-op60",
+    "slug": "sor-25-studies-op60",
+    "title": "Sor 25 Studies Op60",
+    "category": "sight-reading",
+    "order": 12
+  },
+  {
+    "url": "https://hubguitar.com/sight-reading/sor-25-studies-op60",
+    "slug": "sor-25-studies-op60",
+    "title": "Sor 25 Studies Op60",
+    "category": "sight-reading",
+    "order": 12
+  },
+  {
+    "url": "https://hubguitar.com/sight-reading/bach-sonatas-partitas",
+    "slug": "bach-sonatas-partitas",
+    "title": "Bach Sonatas Partitas",
+    "category": "sight-reading",
+    "order": 13
+  },
+  {
+    "url": "https://hubguitar.com/sight-reading/bach-sonatas-partitas",
+    "slug": "bach-sonatas-partitas",
+    "title": "Bach Sonatas Partitas",
+    "category": "sight-reading",
+    "order": 13
+  },
+  {
+    "url": "https://hubguitar.com/pick/bach-sonata-iv-allemanda",
+    "slug": "bach-sonata-iv-allemanda",
+    "title": "Bach Sonata Iv Allemanda",
+    "category": "songs",
+    "order": 10001
+  },
+  {
+    "url": "https://hubguitar.com/pick/blue-bossa",
+    "slug": "blue-bossa",
+    "title": "Blue Bossa",
+    "category": "songs",
+    "order": 10002
+  },
+  {
+    "url": "https://hubguitar.com/pick/kreutzer-no-2",
+    "slug": "kreutzer-no-2",
+    "title": "Kreutzer No 2",
+    "category": "songs",
+    "order": 10003
+  },
+  {
+    "url": "https://hubguitar.com/pick/minor-swing",
+    "slug": "minor-swing",
+    "title": "Minor Swing",
+    "category": "songs",
+    "order": 10004
+  },
+  {
+    "url": "https://hubguitar.com/pick/op-60-no-7-allegro",
+    "slug": "op-60-no-7-allegro",
+    "title": "Op 60 No 7 Allegro",
+    "category": "songs",
+    "order": 10005
+  },
+  {
+    "url": "https://hubguitar.com/pick/sad-nite-owl",
+    "slug": "sad-nite-owl",
+    "title": "Sad Nite Owl",
+    "category": "songs",
+    "order": 10006
+  },
+  {
+    "url": "https://hubguitar.com/fingerstyle/akaskero",
+    "slug": "akaskero",
+    "title": "Akaskero",
+    "category": "songs",
+    "order": 10007
+  },
+  {
+    "url": "https://hubguitar.com/fingerstyle/angelina",
+    "slug": "angelina",
+    "title": "Angelina",
+    "category": "songs",
+    "order": 10008
+  },
+  {
+    "url": "https://hubguitar.com/fingerstyle/bach-cello-suite",
+    "slug": "bach-cello-suite",
+    "title": "Bach Cello Suite",
+    "category": "songs",
+    "order": 10009
+  },
+  {
+    "url": "https://hubguitar.com/fingerstyle/bianco-fiore",
+    "slug": "bianco-fiore",
+    "title": "Bianco Fiore",
+    "category": "songs",
+    "order": 10010
+  },
+  {
+    "url": "https://hubguitar.com/fingerstyle/bourree-in-em",
+    "slug": "bourree-in-em",
+    "title": "Bourree In Em",
+    "category": "songs",
+    "order": 10011
+  },
+  {
+    "url": "https://hubguitar.com/fingerstyle/celtic-tunes-collection",
+    "slug": "celtic-tunes-collection",
+    "title": "Celtic Tunes Collection",
+    "category": "songs",
+    "order": 10012
+  },
+  {
+    "url": "https://hubguitar.com/fingerstyle/childrens-songs-collection",
+    "slug": "childrens-songs-collection",
+    "title": "Childrens Songs Collection",
+    "category": "songs",
+    "order": 10013
+  },
+  {
+    "url": "https://hubguitar.com/fingerstyle/greensleeves",
+    "slug": "greensleeves",
+    "title": "Greensleeves",
+    "category": "songs",
+    "order": 10014
+  },
+  {
+    "url": "https://hubguitar.com/fingerstyle/gymnopedie-no-1",
+    "slug": "gymnopedie-no-1",
+    "title": "Gymnopedie No 1",
+    "category": "songs",
+    "order": 10015
+  },
+  {
+    "url": "https://hubguitar.com/fingerstyle/it-could-have-been",
+    "slug": "it-could-have-been",
+    "title": "It Could Have Been",
+    "category": "songs",
+    "order": 10016
+  },
+  {
+    "url": "https://hubguitar.com/fingerstyle/kemps-jig",
+    "slug": "kemps-jig",
+    "title": "Kemps Jig",
+    "category": "songs",
+    "order": 10017
+  },
+  {
+    "url": "https://hubguitar.com/fingerstyle/kishibe-collection",
+    "slug": "kishibe-collection",
+    "title": "Kishibe Collection",
+    "category": "songs",
+    "order": 10018
+  },
+  {
+    "url": "https://hubguitar.com/fingerstyle/lagrima",
+    "slug": "lagrima",
+    "title": "Lagrima",
+    "category": "songs",
+    "order": 10019
+  },
+  {
+    "url": "https://hubguitar.com/fingerstyle/lament",
+    "slug": "lament",
+    "title": "Lament",
+    "category": "songs",
+    "order": 10020
+  },
+  {
+    "url": "https://hubguitar.com/fingerstyle/magnolia",
+    "slug": "magnolia",
+    "title": "Magnolia",
+    "category": "songs",
+    "order": 10021
+  },
+  {
+    "url": "https://hubguitar.com/fingerstyle/minuet-in-g",
+    "slug": "minuet-in-g",
+    "title": "Minuet In G",
+    "category": "songs",
+    "order": 10022
+  },
+  {
+    "url": "https://hubguitar.com/fingerstyle/nostalgicas-no-4",
+    "slug": "nostalgicas-no-4",
+    "title": "Nostalgicas No 4",
+    "category": "songs",
+    "order": 10023
+  },
+  {
+    "url": "https://hubguitar.com/fingerstyle/ragpickin",
+    "slug": "ragpickin",
+    "title": "Ragpickin",
+    "category": "songs",
+    "order": 10024
+  },
+  {
+    "url": "https://hubguitar.com/fingerstyle/ragtime-ramble",
+    "slug": "ragtime-ramble",
+    "title": "Ragtime Ramble",
+    "category": "songs",
+    "order": 10025
+  },
+  {
+    "url": "https://hubguitar.com/fingerstyle/red-river-valley",
+    "slug": "red-river-valley",
+    "title": "Red River Valley",
+    "category": "songs",
+    "order": 10026
+  },
+  {
+    "url": "https://hubguitar.com/fingerstyle/romanza",
+    "slug": "romanza",
+    "title": "Romanza",
+    "category": "songs",
+    "order": 10027
+  },
+  {
+    "url": "https://hubguitar.com/fingerstyle/sor-op-35-no-13",
+    "slug": "sor-op-35-no-13",
+    "title": "Sor Op 35 No 13",
+    "category": "songs",
+    "order": 10028
+  },
+  {
+    "url": "https://hubguitar.com/fingerstyle/sor-op-60-no-6",
+    "slug": "sor-op-60-no-6",
+    "title": "Sor Op 60 No 6",
+    "category": "songs",
+    "order": 10029
+  },
+  {
+    "url": "https://hubguitar.com/fingerstyle/traditional-tunes-collection",
+    "slug": "traditional-tunes-collection",
+    "title": "Traditional Tunes Collection",
+    "category": "songs",
+    "order": 10030
+  },
+  {
+    "url": "https://hubguitar.com/fingerstyle/wildwood-flower",
+    "slug": "wildwood-flower",
+    "title": "Wildwood Flower",
+    "category": "songs",
+    "order": 10031
+  },
+  {
+    "url": "https://hubguitar.com/songs/big-rock-candy-mountains",
+    "slug": "big-rock-candy-mountains",
+    "title": "Big Rock Candy Mountains",
+    "category": "songs",
+    "order": 10032
+  },
+  {
+    "url": "https://hubguitar.com/songs/blue-moon",
+    "slug": "blue-moon",
+    "title": "Blue Moon",
+    "category": "songs",
+    "order": 10033
+  },
+  {
+    "url": "https://hubguitar.com/songs/cant-help-falling-in-love",
+    "slug": "cant-help-falling-in-love",
+    "title": "Cant Help Falling In Love",
+    "category": "songs",
+    "order": 10034
+  },
+  {
+    "url": "https://hubguitar.com/songs/clay-pidgeons",
+    "slug": "clay-pidgeons",
+    "title": "Clay Pidgeons",
+    "category": "songs",
+    "order": 10035
+  },
+  {
+    "url": "https://hubguitar.com/songs/edelweiss",
+    "slug": "edelweiss",
+    "title": "Edelweiss",
+    "category": "songs",
+    "order": 10036
+  },
+  {
+    "url": "https://hubguitar.com/songs/freight-train",
+    "slug": "freight-train",
+    "title": "Freight Train",
+    "category": "songs",
+    "order": 10037
+  },
+  {
+    "url": "https://hubguitar.com/songs/georgia-on-my-mind",
+    "slug": "georgia-on-my-mind",
+    "title": "Georgia On My Mind",
+    "category": "songs",
+    "order": 10038
+  },
+  {
+    "url": "https://hubguitar.com/songs/hallelujah",
+    "slug": "hallelujah",
+    "title": "Hallelujah",
+    "category": "songs",
+    "order": 10039
+  },
+  {
+    "url": "https://hubguitar.com/songs/hurt",
+    "slug": "hurt",
+    "title": "Hurt",
+    "category": "songs",
+    "order": 10040
+  },
+  {
+    "url": "https://hubguitar.com/songs/i'm-yours",
+    "slug": "i'm-yours",
+    "title": "I'm Yours",
+    "category": "songs",
+    "order": 10041
+  },
+  {
+    "url": "https://hubguitar.com/songs/i-dont-want-to-set-the-world-on-fire",
+    "slug": "i-dont-want-to-set-the-world-on-fire",
+    "title": "I Dont Want To Set The World On Fire",
+    "category": "songs",
+    "order": 10042
+  },
+  {
+    "url": "https://hubguitar.com/songs/la-vie-en-rose",
+    "slug": "la-vie-en-rose",
+    "title": "La Vie En Rose",
+    "category": "songs",
+    "order": 10043
+  },
+  {
+    "url": "https://hubguitar.com/songs/last-song",
+    "slug": "last-song",
+    "title": "Last Song",
+    "category": "songs",
+    "order": 10044
+  },
+  {
+    "url": "https://hubguitar.com/songs/life-by-the-drop",
+    "slug": "life-by-the-drop",
+    "title": "Life By The Drop",
+    "category": "songs",
+    "order": 10045
+  },
+  {
+    "url": "https://hubguitar.com/songs/moon-river",
+    "slug": "moon-river",
+    "title": "Moon River",
+    "category": "songs",
+    "order": 10046
+  },
+  {
+    "url": "https://hubguitar.com/songs/pallet-on-the-floor",
+    "slug": "pallet-on-the-floor",
+    "title": "Pallet On The Floor",
+    "category": "songs",
+    "order": 10047
+  },
+  {
+    "url": "https://hubguitar.com/songs/what-a-wonderful-world",
+    "slug": "what-a-wonderful-world",
+    "title": "What A Wonderful World",
+    "category": "songs",
+    "order": 10048
+  },
+  {
+    "url": "https://hubguitar.com/songs/your-song",
+    "slug": "your-song",
+    "title": "Your Song",
+    "category": "songs",
+    "order": 10049
+  },
+  {
+    "url": "https://hubguitar.com/technique/introduction-to-fingers",
+    "slug": "introduction-to-fingers",
+    "title": "Introduction To Fingers",
+    "category": "technique",
+    "order": 1
+  },
+  {
+    "url": "https://hubguitar.com/technique/position-the-fret-hand-thumb",
+    "slug": "position-the-fret-hand-thumb",
+    "title": "Position The Fret Hand Thumb",
+    "category": "technique",
+    "order": 2
+  },
+  {
+    "url": "https://hubguitar.com/technique/how-to-hold-the-guitar",
+    "slug": "how-to-hold-the-guitar",
+    "title": "How To Hold The Guitar",
+    "category": "technique",
+    "order": 3
+  },
+  {
+    "url": "https://hubguitar.com/technique/how-to-hold-the-pick",
+    "slug": "how-to-hold-the-pick",
+    "title": "How To Hold The Pick",
+    "category": "technique",
+    "order": 4
+  },
+  {
+    "url": "https://hubguitar.com/technique/fingerpicking-thumb-position",
+    "slug": "fingerpicking-thumb-position",
+    "title": "Fingerpicking Thumb Position",
+    "category": "technique",
+    "order": 5
+  },
+  {
+    "url": "https://hubguitar.com/technique/chord-pushups",
+    "slug": "chord-pushups",
+    "title": "Chord Pushups",
+    "category": "technique",
+    "order": 6
+  },
+  {
+    "url": "https://hubguitar.com/technique/when-to-use-a-pick",
+    "slug": "when-to-use-a-pick",
+    "title": "When To Use A Pick",
+    "category": "technique",
+    "order": 7
+  },
+  {
+    "url": "https://hubguitar.com/technique/simple-strumming-patterns",
+    "slug": "simple-strumming-patterns",
+    "title": "Simple Strumming Patterns",
+    "category": "technique",
+    "order": 8
+  },
+  {
+    "url": "https://hubguitar.com/technique/hammer-on-and-pull-off-exercises",
+    "slug": "hammer-on-and-pull-off-exercises",
+    "title": "Hammer On And Pull Off Exercises",
+    "category": "technique",
+    "order": 9
+  },
+  {
+    "url": "https://hubguitar.com/technique/palm-muting-overview",
+    "slug": "palm-muting-overview",
+    "title": "Palm Muting Overview",
+    "category": "technique",
+    "order": 10
+  },
+  {
+    "url": "https://hubguitar.com/technique/slide-overview",
+    "slug": "slide-overview",
+    "title": "Slide Overview",
+    "category": "technique",
+    "order": 11
+  },
+  {
+    "url": "https://hubguitar.com/technique/alternate-picking-overview",
+    "slug": "alternate-picking-overview",
+    "title": "Alternate Picking Overview",
+    "category": "technique",
+    "order": 12
+  },
+  {
+    "url": "https://hubguitar.com/technique/down-picking-overview",
+    "slug": "down-picking-overview",
+    "title": "Down Picking Overview",
+    "category": "technique",
+    "order": 13
+  },
+  {
+    "url": "https://hubguitar.com/technique/volume-swell",
+    "slug": "volume-swell",
+    "title": "Volume Swell",
+    "category": "technique",
+    "order": 14
+  },
+  {
+    "url": "https://hubguitar.com/technique/power-chord-exercises",
+    "slug": "power-chord-exercises",
+    "title": "Power Chord Exercises",
+    "category": "technique",
+    "order": 15
+  },
+  {
+    "url": "https://hubguitar.com/technique/double-stop-overview",
+    "slug": "double-stop-overview",
+    "title": "Double Stop Overview",
+    "category": "technique",
+    "order": 16
+  },
+  {
+    "url": "https://hubguitar.com/technique/trill-overview",
+    "slug": "trill-overview",
+    "title": "Trill Overview",
+    "category": "technique",
+    "order": 17
+  },
+  {
+    "url": "https://hubguitar.com/technique/how-to-play-fingerstyle-guitar",
+    "slug": "how-to-play-fingerstyle-guitar",
+    "title": "How To Play Fingerstyle Guitar",
+    "category": "technique",
+    "order": 18
+  },
+  {
+    "url": "https://hubguitar.com/technique/barre-chords-technique",
+    "slug": "barre-chords-technique",
+    "title": "Barre Chords Technique",
+    "category": "technique",
+    "order": 19
+  },
+  {
+    "url": "https://hubguitar.com/technique/strumming-behind-the-nut",
+    "slug": "strumming-behind-the-nut",
+    "title": "Strumming Behind The Nut",
+    "category": "technique",
+    "order": 20
+  },
+  {
+    "url": "https://hubguitar.com/technique/touching-the-wrong-strings",
+    "slug": "touching-the-wrong-strings",
+    "title": "Touching The Wrong Strings",
+    "category": "technique",
+    "order": 21
+  },
+  {
+    "url": "https://hubguitar.com/technique/how-to-switch-chords",
+    "slug": "how-to-switch-chords",
+    "title": "How To Switch Chords",
+    "category": "technique",
+    "order": 22
+  },
+  {
+    "url": "https://hubguitar.com/technique/string-bending-overview",
+    "slug": "string-bending-overview",
+    "title": "String Bending Overview",
+    "category": "technique",
+    "order": 23
+  },
+  {
+    "url": "https://hubguitar.com/technique/legato-exercise",
+    "slug": "legato-exercise",
+    "title": "Legato Exercise",
+    "category": "technique",
+    "order": 24
+  },
+  {
+    "url": "https://hubguitar.com/technique/up-picking-overview",
+    "slug": "up-picking-overview",
+    "title": "Up Picking Overview",
+    "category": "technique",
+    "order": 25
+  },
+  {
+    "url": "https://hubguitar.com/technique/tremolo-picking-overview",
+    "slug": "tremolo-picking-overview",
+    "title": "Tremolo Picking Overview",
+    "category": "technique",
+    "order": 26
+  },
+  {
+    "url": "https://hubguitar.com/technique/vibrato-overview",
+    "slug": "vibrato-overview",
+    "title": "Vibrato Overview",
+    "category": "technique",
+    "order": 27
+  },
+  {
+    "url": "https://hubguitar.com/technique/chromatic-pulloff",
+    "slug": "chromatic-pulloff",
+    "title": "Chromatic Pulloff",
+    "category": "technique",
+    "order": 28
+  },
+  {
+    "url": "https://hubguitar.com/technique/picking-the-bass-notes",
+    "slug": "picking-the-bass-notes",
+    "title": "Picking The Bass Notes",
+    "category": "technique",
+    "order": 29
+  },
+  {
+    "url": "https://hubguitar.com/technique/alternate-picking-exercise",
+    "slug": "alternate-picking-exercise",
+    "title": "Alternate Picking Exercise",
+    "category": "technique",
+    "order": 30
+  },
+  {
+    "url": "https://hubguitar.com/technique/fret-hand-fret-stretch-overview",
+    "slug": "fret-hand-fret-stretch-overview",
+    "title": "Fret Hand Fret Stretch Overview",
+    "category": "technique",
+    "order": 31
+  },
+  {
+    "url": "https://hubguitar.com/technique/slur-exercise",
+    "slug": "slur-exercise",
+    "title": "Slur Exercise",
+    "category": "technique",
+    "order": 32
+  },
+  {
+    "url": "https://hubguitar.com/technique/natural-harmonics-overview",
+    "slug": "natural-harmonics-overview",
+    "title": "Natural Harmonics Overview",
+    "category": "technique",
+    "order": 33
+  },
+  {
+    "url": "https://hubguitar.com/technique/build-finger-independence",
+    "slug": "build-finger-independence",
+    "title": "Build Finger Independence",
+    "category": "technique",
+    "order": 34
+  },
+  {
+    "url": "https://hubguitar.com/technique/using-slides-for-position-shift",
+    "slug": "using-slides-for-position-shift",
+    "title": "Using Slides For Position Shift",
+    "category": "technique",
+    "order": 35
+  },
+  {
+    "url": "https://hubguitar.com/technique/soundhole-scratching",
+    "slug": "soundhole-scratching",
+    "title": "Soundhole Scratching",
+    "category": "technique",
+    "order": 36
+  },
+  {
+    "url": "https://hubguitar.com/technique/drone-the-tonic-note",
+    "slug": "drone-the-tonic-note",
+    "title": "Drone The Tonic Note",
+    "category": "technique",
+    "order": 37
+  },
+  {
+    "url": "https://hubguitar.com/technique/string-scratching-overview",
+    "slug": "string-scratching-overview",
+    "title": "String Scratching Overview",
+    "category": "technique",
+    "order": 38
+  },
+  {
+    "url": "https://hubguitar.com/technique/tremolo-picking-exercise",
+    "slug": "tremolo-picking-exercise",
+    "title": "Tremolo Picking Exercise",
+    "category": "technique",
+    "order": 39
+  },
+  {
+    "url": "https://hubguitar.com/technique/string-skipping-overview",
+    "slug": "string-skipping-overview",
+    "title": "String Skipping Overview",
+    "category": "technique",
+    "order": 40
+  },
+  {
+    "url": "https://hubguitar.com/technique/trill-exercises",
+    "slug": "trill-exercises",
+    "title": "Trill Exercises",
+    "category": "technique",
+    "order": 41
+  },
+  {
+    "url": "https://hubguitar.com/technique/fingerstyle-exercises-pt1",
+    "slug": "fingerstyle-exercises-pt1",
+    "title": "Fingerstyle Exercises Pt1",
+    "category": "technique",
+    "order": 42
+  },
+  {
+    "url": "https://hubguitar.com/technique/fingerstyle-exercises-pt2",
+    "slug": "fingerstyle-exercises-pt2",
+    "title": "Fingerstyle Exercises Pt2",
+    "category": "technique",
+    "order": 43
+  },
+  {
+    "url": "https://hubguitar.com/technique/fingerstyle-exercises-pt3",
+    "slug": "fingerstyle-exercises-pt3",
+    "title": "Fingerstyle Exercises Pt3",
+    "category": "technique",
+    "order": 44
+  },
+  {
+    "url": "https://hubguitar.com/technique/144-fingerstyle-exercises",
+    "slug": "144-fingerstyle-exercises",
+    "title": "144 Fingerstyle Exercises",
+    "category": "technique",
+    "order": 45
+  },
+  {
+    "url": "https://hubguitar.com/technique/double-stop-exercises",
+    "slug": "double-stop-exercises",
+    "title": "Double Stop Exercises",
+    "category": "technique",
+    "order": 46
+  },
+  {
+    "url": "https://hubguitar.com/technique/artificial-harmonics-overview",
+    "slug": "artificial-harmonics-overview",
+    "title": "Artificial Harmonics Overview",
+    "category": "technique",
+    "order": 47
+  },
+  {
+    "url": "https://hubguitar.com/technique/tap-harmonics-overview",
+    "slug": "tap-harmonics-overview",
+    "title": "Tap Harmonics Overview",
+    "category": "technique",
+    "order": 48
+  },
+  {
+    "url": "https://hubguitar.com/technique/economy-picking-overview",
+    "slug": "economy-picking-overview",
+    "title": "Economy Picking Overview",
+    "category": "technique",
+    "order": 49
+  },
+  {
+    "url": "https://hubguitar.com/technique/fret-hand-muting-overview",
+    "slug": "fret-hand-muting-overview",
+    "title": "Fret Hand Muting Overview",
+    "category": "technique",
+    "order": 50
+  },
+  {
+    "url": "https://hubguitar.com/technique/fingerstyle-with-pinky",
+    "slug": "fingerstyle-with-pinky",
+    "title": "Fingerstyle With Pinky",
+    "category": "technique",
+    "order": 51
+  },
+  {
+    "url": "https://hubguitar.com/technique/pinch-harmonics-overview",
+    "slug": "pinch-harmonics-overview",
+    "title": "Pinch Harmonics Overview",
+    "category": "technique",
+    "order": 52
+  },
+  {
+    "url": "https://hubguitar.com/technique/left-hand-fingers-switching-strings",
+    "slug": "left-hand-fingers-switching-strings",
+    "title": "Left Hand Fingers Switching Strings",
+    "category": "technique",
+    "order": 53
+  },
+  {
+    "url": "https://hubguitar.com/technique/string-skipping-exercises",
+    "slug": "string-skipping-exercises",
+    "title": "String Skipping Exercises",
+    "category": "technique",
+    "order": 54
+  },
+  {
+    "url": "https://hubguitar.com/technique/artificial-harmonics-exercises",
+    "slug": "artificial-harmonics-exercises",
+    "title": "Artificial Harmonics Exercises",
+    "category": "technique",
+    "order": 55
+  },
+  {
+    "url": "https://hubguitar.com/technique/fret-hand-fret-stretch-exercise",
+    "slug": "fret-hand-fret-stretch-exercise",
+    "title": "Fret Hand Fret Stretch Exercise",
+    "category": "technique",
+    "order": 56
+  },
+  {
+    "url": "https://hubguitar.com/technique/bending-and-tapping",
+    "slug": "bending-and-tapping",
+    "title": "Bending And Tapping",
+    "category": "technique",
+    "order": 57
+  },
+  {
+    "url": "https://hubguitar.com/technique/hybrid-picking-overview",
+    "slug": "hybrid-picking-overview",
+    "title": "Hybrid Picking Overview",
+    "category": "technique",
+    "order": 58
+  },
+  {
+    "url": "https://hubguitar.com/technique/special-effects",
+    "slug": "special-effects",
+    "title": "Special Effects",
+    "category": "technique",
+    "order": 59
+  },
+  {
+    "url": "https://hubguitar.com/technique/sweep-picking-overview",
+    "slug": "sweep-picking-overview",
+    "title": "Sweep Picking Overview",
+    "category": "technique",
+    "order": 60
+  },
+  {
+    "url": "https://hubguitar.com/technique/tapping-overview",
+    "slug": "tapping-overview",
+    "title": "Tapping Overview",
+    "category": "technique",
+    "order": 61
+  },
+  {
+    "url": "https://hubguitar.com/technique/tremolo-chords",
+    "slug": "tremolo-chords",
+    "title": "Tremolo Chords",
+    "category": "technique",
+    "order": 62
+  },
+  {
+    "url": "https://hubguitar.com/rhythm/introduction-to-rhythm",
+    "slug": "introduction-to-rhythm",
+    "title": "Introduction To Rhythm",
+    "category": "technique",
+    "order": 63
+  },
+  {
+    "url": "https://hubguitar.com/rhythm/off-the-beat-syncopated-rhythms",
+    "slug": "off-the-beat-syncopated-rhythms",
+    "title": "Off The Beat Syncopated Rhythms",
+    "category": "technique",
+    "order": 64
+  },
+  {
+    "url": "https://hubguitar.com/rhythm/learning-strumming-patterns",
+    "slug": "learning-strumming-patterns",
+    "title": "Learning Strumming Patterns",
+    "category": "technique",
+    "order": 65
+  },
+  {
+    "url": "https://hubguitar.com/rhythm/eighth-note-rhythms-pt1",
+    "slug": "eighth-note-rhythms-pt1",
+    "title": "Eighth Note Rhythms Pt1",
+    "category": "technique",
+    "order": 66
+  },
+  {
+    "url": "https://hubguitar.com/rhythm/eighth-note-rhythms-pt2",
+    "slug": "eighth-note-rhythms-pt2",
+    "title": "Eighth Note Rhythms Pt2",
+    "category": "technique",
+    "order": 67
+  },
+  {
+    "url": "https://hubguitar.com/rhythm/how-to-count",
+    "slug": "how-to-count",
+    "title": "How To Count",
+    "category": "technique",
+    "order": 68
+  },
+  {
+    "url": "https://hubguitar.com/rhythm/how-to-swing",
+    "slug": "how-to-swing",
+    "title": "How To Swing",
+    "category": "technique",
+    "order": 69
+  },
+  {
+    "url": "https://hubguitar.com/rhythm/prototypical-rhythms-all-genres",
+    "slug": "prototypical-rhythms-all-genres",
+    "title": "Prototypical Rhythms All Genres",
+    "category": "technique",
+    "order": 70
+  },
+  {
+    "url": "https://hubguitar.com/rhythm/call-and-response-rhythm-exercise",
+    "slug": "call-and-response-rhythm-exercise",
+    "title": "Call And Response Rhythm Exercise",
+    "category": "technique",
+    "order": 71
+  },
+  {
+    "url": "https://hubguitar.com/rhythm/metronome-studies-funk-groove",
+    "slug": "metronome-studies-funk-groove",
+    "title": "Metronome Studies Funk Groove",
+    "category": "technique",
+    "order": 72
+  },
+  {
+    "url": "https://hubguitar.com/rhythm/rhythm-study-subdivision",
+    "slug": "rhythm-study-subdivision",
+    "title": "Rhythm Study Subdivision",
+    "category": "technique",
+    "order": 73
+  },
+  {
+    "url": "https://hubguitar.com/rhythm/removing-metronome-clicks",
+    "slug": "removing-metronome-clicks",
+    "title": "Removing Metronome Clicks",
+    "category": "technique",
+    "order": 74
+  },
+  {
+    "url": "https://hubguitar.com/rhythm/stop-time",
+    "slug": "stop-time",
+    "title": "Stop Time",
+    "category": "technique",
+    "order": 75
+  }
+]
