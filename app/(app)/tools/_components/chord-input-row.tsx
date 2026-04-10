@@ -32,6 +32,13 @@ interface ChordInputRowProps {
   onRemove: (id: string) => void
   onStartEdit: (id: string) => void
   onAdd: () => void
+  selectedId?: string | null
+  onSelect?: (id: string) => void
+  getDisplayAnalysis?: (id: string) => {
+    roman: string
+    degree: number
+    variant: "diatonic" | "borrowed" | "non-diatonic"
+  } | null
 }
 
 export function ChordInputRow({
@@ -43,6 +50,9 @@ export function ChordInputRow({
   onRemove,
   onStartEdit,
   onAdd,
+  selectedId,
+  onSelect,
+  getDisplayAnalysis,
 }: ChordInputRowProps) {
   // distance:5 lets quick clicks pass through to inner buttons without activating drag
   const sensors = useSensors(
@@ -98,6 +108,12 @@ export function ChordInputRow({
                 }}
                 onArrowPrev={i > 0 ? () => onStartEdit(chords[i - 1].id) : undefined}
                 onArrowNext={i < chords.length - 1 ? () => onStartEdit(chords[i + 1].id) : undefined}
+                isSelected={selectedId != null ? selectedId === chord.id : undefined}
+                onSelect={onSelect ? () => onSelect(chord.id) : undefined}
+                {...(getDisplayAnalysis ? (() => {
+                  const da = getDisplayAnalysis(chord.id)
+                  return da ? { displayRoman: da.roman, displayDegree: da.degree, displayVariant: da.variant } : {}
+                })() : {})}
               />
             </div>
           ))}
