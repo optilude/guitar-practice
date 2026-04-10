@@ -24,9 +24,10 @@ export default auth((req) => {
   }
 
   // Redirect users who must change their password (but not if they're already on that page)
+  // Also exclude public paths to allow /api/auth routes (signout, token refresh, etc.)
   const mustChange = isLoggedIn && req.auth?.user?.mustChangePassword
   const isChangePwPath = pathname.startsWith("/change-password")
-  if (mustChange && !isChangePwPath) {
+  if (mustChange && !isChangePwPath && !isPublicPath) {
     return NextResponse.redirect(new URL("/change-password", req.nextUrl))
   }
 
