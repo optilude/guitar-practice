@@ -5,6 +5,7 @@ import { PrismaClient } from "@/lib/generated/prisma/client"
 import { PrismaPg } from "@prisma/adapter-pg"
 import pg from "pg"
 import * as dotenv from "dotenv"
+import bcrypt from "bcryptjs"
 import { urlToCategory, slugToTitle } from "@/lib/seed-helpers"
 
 dotenv.config({ path: ".env.local" })
@@ -22,6 +23,28 @@ async function main() {
   const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL })
   const adapter = new PrismaPg(pool)
   const prisma = new PrismaClient({ adapter })
+
+  // Idempotently create a default admin user
+  const adminEmail = process.env.SEED_ADMIN_EMAIL ?? "admin@example.com"
+  const existingAdmin = await prisma.user.findUnique({ where: { email: adminEmail } })
+  if (!existingAdmin) {
+    const passwordHash = await bcrypt.hash(
+      process.env.SEED_ADMIN_PASSWORD ?? "changeme123",
+      12,
+    )
+    await prisma.user.create({
+      data: {
+        email: adminEmail,
+        name: "Admin",
+        passwordHash,
+        isAdmin: true,
+        mustChangePassword: true,
+      },
+    })
+    console.log(`Created default admin: ${adminEmail} (must change password on first login)`)
+  } else {
+    console.log(`Admin user already exists: ${adminEmail}`)
+  }
 
   // Sitemap downloaded from https://hubguitar.com/sitemap.xml — re-download to refresh content
   const xml = readFileSync(
