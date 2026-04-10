@@ -15,6 +15,12 @@ const C_MAJOR: ProgressionChord[] = [
   chord("G", "7",    "dominant", 5, "V"),
 ]
 
+// Progression where G7 has a next chord (needed for backdoor dominant test)
+const V_TO_I: ProgressionChord[] = [
+  chord("G", "7",    "dominant", 5, "V"),
+  chord("C", "maj7", "major",    1, "I"),
+]
+
 // ---------------------------------------------------------------------------
 // Diatonic Substitution
 // ---------------------------------------------------------------------------
@@ -353,6 +359,57 @@ describe("Coltrane Changes", () => {
       .filter(s => s.ruleName !== "Coltrane Changes")
       .reduce((max, s) => Math.max(max, s.sortRank), 0)
     expect(coltrane.sortRank).toBeGreaterThan(maxOtherRank)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Backdoor Dominant Substitution
+// ---------------------------------------------------------------------------
+describe("Backdoor Dominant substitution", () => {
+  it("fires for a dominant chord with a next chord", () => {
+    const subs = getSubstitutions(V_TO_I[0]!, V_TO_I, 0, "C", "major")
+    expect(subs.filter(s => s.ruleName === "Backdoor Dominant")).toHaveLength(1)
+  })
+
+  it("does not fire if no next chord exists", () => {
+    const subs = getSubstitutions(V_TO_I[1]!, V_TO_I, 1, "C", "major")
+    expect(subs.filter(s => s.ruleName === "Backdoor Dominant")).toHaveLength(0)
+  })
+
+  it("does not fire for non-dominant chords", () => {
+    const subs = getSubstitutions(C_MAJOR[0]!, C_MAJOR, 0, "C", "major")
+    expect(subs.filter(s => s.ruleName === "Backdoor Dominant")).toHaveLength(0)
+  })
+
+  it("replaces G7 with Bb7 (whole step below C)", () => {
+    const subs = getSubstitutions(V_TO_I[0]!, V_TO_I, 0, "C", "major")
+    const sub = subs.find(s => s.ruleName === "Backdoor Dominant")!
+    const r = sub.result as { kind: "replacement"; replacements: Array<{ chord: { tonic: string; type: string } }> }
+    expect(r.replacements[0]!.chord.tonic).toBe("Bb")
+    expect(r.replacements[0]!.chord.type).toBe("7")
+  })
+})
+
+// ---------------------------------------------------------------------------
+// iii for V (Dominant Substitution)
+// ---------------------------------------------------------------------------
+describe("Dominant Substitution (iii for V)", () => {
+  it("fires for any dominant chord", () => {
+    const subs = getSubstitutions(V_TO_I[0]!, V_TO_I, 0, "C", "major")
+    expect(subs.filter(s => s.ruleName === "Dominant Substitution")).toHaveLength(1)
+  })
+
+  it("does not fire for non-dominant chords", () => {
+    const subs = getSubstitutions(C_MAJOR[0]!, C_MAJOR, 0, "C", "major")
+    expect(subs.filter(s => s.ruleName === "Dominant Substitution")).toHaveLength(0)
+  })
+
+  it("replaces G7 with Em7 (minor 3rd below G)", () => {
+    const subs = getSubstitutions(V_TO_I[0]!, V_TO_I, 0, "C", "major")
+    const sub = subs.find(s => s.ruleName === "Dominant Substitution")!
+    const r = sub.result as { kind: "replacement"; replacements: Array<{ chord: { tonic: string; type: string } }> }
+    expect(r.replacements[0]!.chord.tonic).toBe("E")
+    expect(r.replacements[0]!.chord.type).toBe("m7")
   })
 })
 

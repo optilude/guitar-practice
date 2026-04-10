@@ -201,5 +201,19 @@ export function analyzeFunctionalContext(
     }
   }
 
+  // ------------------------------------------------------------------
+  // Rule 8: Backdoor dominant — dominant → major, M2 up
+  // Example: Bb7 → Cmaj7  →  "♭VII7"
+  // Borrowed from parallel Mixolydian/Dorian; approaches tonic from whole step above.
+  // ------------------------------------------------------------------
+  if (cq === "dominant" && nq === "major" && isMajor2Up(ct, nt)) {
+    return {
+      romanOverride: "♭VII7",
+      scalesOverride: buildScales(ct, "Mixolydian", [
+        { scaleName: "Dorian", hint: "if resolving to minor tonic" },
+      ]),
+    }
+  }
+
   return NONE
 }

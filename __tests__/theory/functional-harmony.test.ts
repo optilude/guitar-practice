@@ -250,15 +250,17 @@ describe("Rule 7: deceptive resolution to minor", () => {
     expect(r.scalesOverride!.chordTonic).toBe("G")
   })
 
-  it("does not fire when next quality is major (not minor)", () => {
-    // G7 → Amaj7: M2 up but major — no rule fires
+  it("does not fire (Rule 8 fires instead) when next quality is major (not minor)", () => {
+    // G7 → Amaj7: M2 up, major — Rule 7 (deceptive/minor) does NOT fire,
+    // but Rule 8 (backdoor dominant) fires instead with ♭VII7 override.
     const r = analyzeFunctionalContext(
       c("G", "7", "dominant", "V"),
       c("A", "maj7", "major", "VI"),
       "C", "major",
     )
-    expect(r.romanOverride).toBeNull()
-    expect(r.scalesOverride).toBeNull()
+    // Rule 8 fires: G7 is a backdoor dominant approaching Amaj7
+    expect(r.romanOverride).toBe("♭VII7")
+    expect(r.scalesOverride?.primary.scaleName).toBe("Mixolydian")
   })
 
   it("Rule 1 takes priority over Rule 7 (P4 up is not M2 up — no conflict)", () => {
@@ -270,6 +272,40 @@ describe("Rule 7: deceptive resolution to minor", () => {
       "C", "major",
     )
     expect(r.romanOverride).toBe("V7/ii")  // Rule 1
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Rule 8: Backdoor dominant — dominant → major, M2 up
+// ---------------------------------------------------------------------------
+describe("Rule 8: backdoor dominant", () => {
+  it("Bb7 → Cmaj7 in C major → ♭VII7, Mixolydian primary", () => {
+    const r = analyzeFunctionalContext(
+      c("Bb", "7", "dominant", "bVII"),
+      c("C", "maj7", "major", "I"),
+      "C", "major",
+    )
+    expect(r.romanOverride).toBe("♭VII7")
+    expect(r.scalesOverride?.primary.scaleName).toBe("Mixolydian")
+  })
+
+  it("does not fire when next chord is minor (deceptive cadence path)", () => {
+    const r = analyzeFunctionalContext(
+      c("Bb", "7", "dominant", "bVII"),
+      c("C", "m7", "minor", "i"),
+      "C", "major",
+    )
+    expect(r.romanOverride).toBeNull()
+  })
+
+  it("does not fire for P4-up dominant (secondary dominant path)", () => {
+    // A7 → D is P4 up (not M2 up) — Rule 1/2 handles this, not Rule 8
+    const r = analyzeFunctionalContext(
+      c("A", "7", "dominant", "VI"),
+      c("D", "maj7", "major", "II"),
+      "C", "major",
+    )
+    expect(r.romanOverride).toBe("V7/II") // secondary dominant rule fires instead
   })
 })
 

@@ -283,6 +283,69 @@ function cycleOfFifths(
 }
 
 // ---------------------------------------------------------------------------
+// Rule N: Backdoor Dominant Substitution
+// ---------------------------------------------------------------------------
+
+function backdoorDominant(
+  chord: ProgressionChord,
+  chords: ProgressionChord[],
+  selectedIndex: number,
+  tonic: string,
+  mode: string,
+): ChordSubstitution[] {
+  if (chord.quality !== "dominant") return []
+  const nextChord = chords[selectedIndex + 1]
+  if (!nextChord) return []
+  const rawRoot = Note.transpose(nextChord.tonic, "M-2") // whole step below target
+  // Don't offer if current chord is already the backdoor
+  if (Note.chroma(chord.tonic) === Note.chroma(rawRoot)) return []
+  const norm = normalizeToKey(rawRoot, tonic, mode)
+  return [{
+    id: "backdoor-dominant",
+    ruleName: "Backdoor Dominant",
+    label: `${norm}7`,
+    effect: `♭VII7 — whole step above ${nextChord.tonic}${nextChord.type}; borrowed from Mixolydian`,
+    result: {
+      kind: "replacement" as const,
+      replacements: [{
+        index: selectedIndex,
+        chord: mkChord(rawRoot, "7", "♭VII7", tonic, mode),
+      }],
+    },
+    sortRank: 22,
+  } satisfies ChordSubstitution]
+}
+
+// ---------------------------------------------------------------------------
+// Rule N: iii for V (Dominant Substitution)
+// ---------------------------------------------------------------------------
+
+function iiiForV(
+  chord: ProgressionChord,
+  selectedIndex: number,
+  tonic: string,
+  mode: string,
+): ChordSubstitution[] {
+  if (chord.quality !== "dominant") return []
+  const rawRoot = Note.transpose(chord.tonic, "m-3") // minor 3rd below dominant
+  const norm = normalizeToKey(rawRoot, tonic, mode)
+  return [{
+    id: "iii-for-v",
+    ruleName: "Dominant Substitution",
+    label: `${norm}m7`,
+    effect: `iii7 — shares 3rd, 5th and 7th of ${chord.tonic}${chord.type}; softer dominant color`,
+    result: {
+      kind: "replacement" as const,
+      replacements: [{
+        index: selectedIndex,
+        chord: mkChord(rawRoot, "m7", "iii", tonic, mode),
+      }],
+    },
+    sortRank: 24,
+  } satisfies ChordSubstitution]
+}
+
+// ---------------------------------------------------------------------------
 // Rule 8: Coltrane Changes
 // ---------------------------------------------------------------------------
 
@@ -359,6 +422,8 @@ export function getSubstitutions(
   const all = [
     ...diatonicSubstitution(chord, selectedIndex, tonic, mode),
     ...tritoneSubstitution(chord, selectedIndex, tonic, mode),
+    ...backdoorDominant(chord, chords, selectedIndex, tonic, mode),
+    ...iiiForV(chord, selectedIndex, tonic, mode),
     ...parallelBorrow(chord, selectedIndex, tonic, mode),
     ...secondaryDominant(chord, selectedIndex, tonic, mode),
     ...iiVApproach(chord, selectedIndex, tonic, mode),
