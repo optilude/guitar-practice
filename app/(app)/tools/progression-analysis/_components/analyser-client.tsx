@@ -232,9 +232,9 @@ export function AnalyserClient() {
   }, [chordIdToAnalysisIdx, progressionChords, functionalAnalyses, displayAnalyses])
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6">
-      {/* Left column — 2/3 width */}
-      <div className="flex flex-col gap-6 min-w-0 lg:[flex:2]">
+    <div className="flex flex-col lg:flex-row gap-6 w-full">
+      {/* Left column — fixed 2/3 width */}
+      <div className="flex flex-col gap-6 min-w-0 lg:flex-none lg:w-2/3">
         {/* Key + Mode */}
         <div className="flex gap-4 items-end">
           <div className="flex flex-col gap-1 flex-shrink-0">
@@ -330,7 +330,7 @@ export function AnalyserClient() {
       </div>
 
       {/* Right column — always rendered to hold the 1/3 space; content shown when chord selected */}
-      <div className="min-w-0 lg:flex-1 space-y-3">
+      <div className="min-w-0 lg:flex-1 lg:ml-auto space-y-3">
         <p className="text-xs uppercase tracking-widest text-muted-foreground">Analysis</p>
         {selectedChord ? (
           <div className="space-y-3">
