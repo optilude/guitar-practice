@@ -74,13 +74,13 @@ export function NavbarClient({
         <div className="ml-auto flex items-center gap-3">
           <ThemeToggle />
           <Popover.Root>
-            <Popover.Trigger className="hidden md:flex items-center text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-accent rounded">
+            <Popover.Trigger className="hidden md:flex items-center text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded">
               <UserCircle className="size-5" />
               <span className="sr-only">User menu</span>
             </Popover.Trigger>
             <Popover.Portal>
               <Popover.Positioner side="bottom" align="end" sideOffset={8}>
-                <Popover.Popup className="z-50 min-w-[160px] rounded-md border border-border bg-background shadow-md py-1 focus:outline-none">
+                <Popover.Popup className="z-50 min-w-[160px] max-w-[240px] rounded-md border border-border bg-background shadow-md py-1">
                   {userName && (
                     <>
                       <div className="px-3 py-2 text-xs font-medium text-muted-foreground truncate">
@@ -95,12 +95,12 @@ export function NavbarClient({
                   >
                     Settings
                   </Link>
-                  <button
+                  <Popover.Close
                     onClick={handleSignOut}
                     className="block w-full text-left px-3 py-1.5 text-sm text-foreground hover:bg-muted transition-colors"
                   >
                     Sign out
-                  </button>
+                  </Popover.Close>
                 </Popover.Popup>
               </Popover.Positioner>
             </Popover.Portal>
