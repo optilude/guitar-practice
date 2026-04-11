@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { parseChord, applyFunctionalRomanOverrides, analyzeChordInKey } from "@/lib/theory/key-finder"
 import { analyzeProgression } from "@/lib/theory/transposer"
 import { listProgressions, getProgression, getSubstitutions, getSoloScales, analyzeFunctionalContext, INVERSION_TYPES } from "@/lib/theory"
@@ -115,6 +115,9 @@ interface ProgressionsPageClientProps {
 export function ProgressionsPageClient({ userProgressions, initialSelected }: ProgressionsPageClientProps) {
   // ── Progression selection ──────────────────────────────────────────────────
   const [selected, setSelected] = useState(initialSelected ?? "pop-standard")
+  // When set to true before calling setSelected, the next useEffect run is skipped
+  // (used after Save as... so chords aren't wiped before the server re-renders with the new progression)
+  const skipNextChordReload = useRef(false)
 
   // ── Analysis state ─────────────────────────────────────────────────────────
   const [key, setKey]         = useState("C")
@@ -123,7 +126,7 @@ export function ProgressionsPageClient({ userProgressions, initialSelected }: Pr
   const [editingId, setEditingId]     = useState<string | null>(null)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
   const [previewedSub, setPreviewedSub]   = useState<ChordSubstitution | null>(null)
-  const [activeAnalysisTab, setActiveAnalysisTab] = useState<"substitutions" | "soloing">("substitutions")
+  const [activeAnalysisTab, setActiveAnalysisTab] = useState<"substitutions" | "soloing">("soloing")
 
   // ── Study panel state ──────────────────────────────────────────────────────
   const [activeStudyTab, setActiveStudyTab]                 = useState<PanelTab>("scales")
@@ -149,6 +152,10 @@ export function ProgressionsPageClient({ userProgressions, initialSelected }: Pr
 
   // ── Load chords when selection changes ─────────────────────────────────────
   useEffect(() => {
+    if (skipNextChordReload.current) {
+      skipNextChordReload.current = false
+      return
+    }
     const rawChords = userProg
       ? getUserProgressionChords(userProg.degrees, userProg.mode, key)
       : getProgression(selected, key)
@@ -466,27 +473,27 @@ export function ProgressionsPageClient({ userProgressions, initialSelected }: Pr
               <div className="flex rounded border border-border overflow-hidden text-sm w-fit">
                 <button
                   type="button"
-                  onClick={() => setActiveAnalysisTab("substitutions")}
-                  className={cn(
-                    "px-3 py-1.5 transition-colors",
-                    activeAnalysisTab === "substitutions"
-                      ? "bg-accent text-accent-foreground"
-                      : "bg-card text-muted-foreground hover:bg-muted",
-                  )}
-                >
-                  Substitutions
-                </button>
-                <button
-                  type="button"
                   onClick={() => setActiveAnalysisTab("soloing")}
                   className={cn(
-                    "px-3 py-1.5 transition-colors border-l border-border",
+                    "px-3 py-1.5 transition-colors",
                     activeAnalysisTab === "soloing"
                       ? "bg-accent text-accent-foreground"
                       : "bg-card text-muted-foreground hover:bg-muted",
                   )}
                 >
                   Soloing
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveAnalysisTab("substitutions")}
+                  className={cn(
+                    "px-3 py-1.5 transition-colors border-l border-border",
+                    activeAnalysisTab === "substitutions"
+                      ? "bg-accent text-accent-foreground"
+                      : "bg-card text-muted-foreground hover:bg-muted",
+                  )}
+                >
+                  Substitutions
                 </button>
               </div>
 
@@ -598,7 +605,7 @@ export function ProgressionsPageClient({ userProgressions, initialSelected }: Pr
           tonic={key}
           modeName={mode.modeName}
           onClose={() => setSaveAsModalOpen(false)}
-          onSaved={newId => { setSaveAsModalOpen(false); setSelected(newId) }}
+          onSaved={newId => { setSaveAsModalOpen(false); skipNextChordReload.current = true; setSelected(newId) }}
         />
       )}
 
