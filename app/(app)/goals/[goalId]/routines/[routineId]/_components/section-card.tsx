@@ -62,6 +62,7 @@ type GoalTopicForDisplay = {
   defaultKey: string | null
   lesson?: { title: string } | null
   userLesson?: { title: string; url: string | null } | null
+  userProgression?: { displayName: string } | null
 }
 
 type SectionTopicWithGoalTopic = {

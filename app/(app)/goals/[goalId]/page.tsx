@@ -16,7 +16,11 @@ export default async function GoalDetailPage({
     where: { id: goalId },
     include: {
       topics: {
-        include: { lesson: { select: { title: true } } },
+        include: {
+            lesson: { select: { title: true } },
+            userLesson: { select: { title: true, url: true } },
+            userProgression: { select: { displayName: true } },
+          },
         orderBy: { createdAt: "asc" },
       },
       routines: {

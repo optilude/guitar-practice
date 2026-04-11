@@ -24,6 +24,7 @@ export default async function RoutineDetailPage({
             include: {
               lesson: { select: { title: true } },
               userLesson: { select: { title: true, url: true } },
+              userProgression: { select: { displayName: true } },
             },
             orderBy: { createdAt: "asc" },
           },
@@ -38,6 +39,7 @@ export default async function RoutineDetailPage({
                 include: {
                   lesson: { select: { title: true } },
                   userLesson: { select: { title: true, url: true } },
+                  userProgression: { select: { displayName: true } },
                 },
               },
             },
