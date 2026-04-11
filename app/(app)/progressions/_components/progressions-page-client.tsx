@@ -466,11 +466,11 @@ export function ProgressionsPageClient({ userProgressions, initialSelected }: Pr
         </div>
 
         {/* Right column: analysis */}
-        <div className="min-w-0 lg:flex-1 lg:ml-auto space-y-3">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground">Analysis</p>
+        <div className="min-w-0 lg:flex-1 lg:ml-auto space-y-3 lg:h-[300px] lg:flex lg:flex-col">
+          <p className="text-xs uppercase tracking-widest text-muted-foreground lg:flex-none">Analysis</p>
           {selectedChord ? (
-            <div className="space-y-3">
-              <div className="flex rounded border border-border overflow-hidden text-sm w-fit">
+            <div className="space-y-3 lg:flex-1 lg:flex lg:flex-col lg:min-h-0 lg:overflow-hidden">
+              <div className="flex rounded border border-border overflow-hidden text-sm w-fit lg:flex-none">
                 <button
                   type="button"
                   onClick={() => setActiveAnalysisTab("soloing")}
@@ -498,26 +498,30 @@ export function ProgressionsPageClient({ userProgressions, initialSelected }: Pr
               </div>
 
               {activeAnalysisTab === "substitutions" && (
-                <SubstitutionsPanel
-                  substitutions={substitutions}
-                  chordName={`${selectedChord.tonic}${selectedChord.type}`}
-                  previewedId={previewedSub?.id ?? null}
-                  onPreview={setPreviewedSub}
-                  onApply={handleApplyPermanently}
-                />
+                <div className="lg:flex-1 lg:min-h-0 lg:overflow-y-auto">
+                  <SubstitutionsPanel
+                    substitutions={substitutions}
+                    chordName={`${selectedChord.tonic}${selectedChord.type}`}
+                    previewedId={previewedSub?.id ?? null}
+                    onPreview={setPreviewedSub}
+                    onApply={handleApplyPermanently}
+                  />
+                </div>
               )}
 
               {activeAnalysisTab === "soloing" && scales && (
-                <SoloScalesPanel
-                  scales={scales}
-                  chordName={`${selectedChord.tonic}${selectedChord.type}`}
-                  romanNumeral={selectedDisplayRoman ?? undefined}
-                  onScaleSelect={handleScaleSelect}
-                />
+                <div className="lg:flex-1 lg:min-h-0 lg:overflow-y-auto">
+                  <SoloScalesPanel
+                    scales={scales}
+                    chordName={`${selectedChord.tonic}${selectedChord.type}`}
+                    romanNumeral={selectedDisplayRoman ?? undefined}
+                    onScaleSelect={handleScaleSelect}
+                  />
+                </div>
               )}
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-3 lg:flex-1 lg:overflow-y-auto lg:min-h-0">
               <p className="text-sm text-muted-foreground">
                 Select a chord tile to view substitutions and applicable chord scales.
               </p>
