@@ -5,7 +5,7 @@ import Link from "next/link"
 import ReactMarkdown from "react-markdown"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { deleteUserProgression } from "@/app/(app)/reference/progressions/actions"
+import { deleteUserProgression } from "@/app/(app)/progressions/actions"
 import type { UserProgressionItem } from "./user-progression-list"
 import { btn } from "@/lib/button-styles"
 

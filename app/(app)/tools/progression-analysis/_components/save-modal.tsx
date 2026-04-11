@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { analyzeProgression } from "@/lib/theory/transposer"
-import { createUserProgression } from "@/app/(app)/reference/progressions/actions"
+import { createUserProgression } from "@/app/(app)/progressions/actions"
 import { btn } from "@/lib/button-styles"
 import type { InputChord } from "@/lib/theory/key-finder"
 

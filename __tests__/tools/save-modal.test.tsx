@@ -10,7 +10,7 @@ vi.mock("@/lib/theory/transposer", () => ({
     { roman: "I", degree: 1, role: "diatonic", score: 1, inputChord: { root: "C", type: "maj7", symbol: "Cmaj7" } },
   ],
 }))
-vi.mock("@/app/(app)/reference/progressions/actions", () => ({
+vi.mock("@/app/(app)/progressions/actions", () => ({
   createUserProgression: vi.fn().mockResolvedValue({ success: true, id: "new-id" }),
 }))
 
@@ -53,7 +53,7 @@ describe("SaveModal", () => {
   })
 
   it("calls createUserProgression and navigates on success", async () => {
-    const { createUserProgression } = await import("@/app/(app)/reference/progressions/actions")
+    const { createUserProgression } = await import("@/app/(app)/progressions/actions")
     render(
       <SaveModal
         parsedChords={fakeParsedChords}

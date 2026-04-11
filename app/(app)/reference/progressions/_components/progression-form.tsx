@@ -7,7 +7,7 @@ import { analyzeProgression } from "@/lib/theory/transposer"
 import { getUserProgressionChords } from "@/lib/theory/user-progressions"
 import { ALL_KEY_MODES } from "@/lib/theory/commonality-tiers"
 import { ChordInputRow } from "@/app/(app)/tools/_components/chord-input-row"
-import { createUserProgression, updateUserProgression } from "@/app/(app)/reference/progressions/actions"
+import { createUserProgression, updateUserProgression } from "@/app/(app)/progressions/actions"
 import { btn } from "@/lib/button-styles"
 
 const ROOT_NOTES = [
