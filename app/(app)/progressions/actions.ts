@@ -12,7 +12,6 @@ async function requireUserId(): Promise<string> {
 
 function revalidate() {
   revalidatePath("/progressions")
-  revalidatePath("/reference/progressions")
   revalidatePath("/reference")
 }
 
@@ -117,7 +116,6 @@ export async function reorderUserProgressions(
       )
     )
     revalidatePath("/progressions")
-    revalidatePath("/reference/progressions")
     return { success: true }
   } catch {
     return { error: "Failed to reorder progressions" }
