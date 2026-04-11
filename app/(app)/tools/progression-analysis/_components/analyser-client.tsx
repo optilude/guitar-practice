@@ -10,7 +10,7 @@ import { ChordInputRow, type PreviewTile } from "@/app/(app)/tools/_components/c
 import { targetDegreeFromRoman } from "@/app/(app)/reference/_components/chord-quality-block"
 import { SubstitutionsPanel } from "@/app/(app)/reference/_components/substitutions-panel"
 import { SoloScalesPanel } from "@/app/(app)/reference/_components/solo-scales-panel"
-import { buildProgressionChords } from "../_lib/build-progression-chords"
+import { buildProgressionChords } from "@/lib/theory/build-progression-chords"
 import { SaveModal } from "./save-modal"
 import { btn } from "@/lib/button-styles"
 import { cn } from "@/lib/utils"
