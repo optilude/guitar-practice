@@ -68,7 +68,7 @@ vi.mock("@/lib/theory", () => ({
     intervals: ["1P", "3M", "5P"],
     positions: [{ label: "Position 1", positions: [{ string: 6, fret: 8, interval: "R" }] }],
   }),
-  // New: Harmony Study functions
+  // Harmony Study functions
   SOLO_MODE_OPTION_GROUPS: [
     { label: "Major Scale Modes", options: [
       { value: "ionian",     label: "Ionian (major)" },
@@ -90,20 +90,6 @@ vi.mock("@/lib/theory", () => ({
     primary: { scaleName: "Mixolydian" },
     additional: [],
   }),
-  listProgressions: () => [
-    {
-      name: "pop-standard",
-      displayName: "Pop Standard",
-      romanDisplay: "I – V – vi – IV",
-      description: "The most common pop progression",
-      degrees: ["I", "V", "vi", "IV"],
-      mode: "ionian",
-      recommendedScaleType: "Major Scale",
-    },
-  ],
-  getProgression: (_name: string, tonic: string) => [
-    { roman: "I", nashville: "1", tonic, type: "maj7", quality: "major", degree: 1 },
-  ],
   getSubstitutions: () => [],
   analyzeFunctionalContext: () => ({ romanOverride: null, scalesOverride: null }),
   INVERSION_TYPES: ["major", "minor", "dim", "aug", "maj7", "m7", "7"],
@@ -113,29 +99,23 @@ import { ReferencePageClient } from "@/app/(app)/reference/_components/reference
 
 describe("ReferencePage", () => {
   it("renders the page heading", () => {
-    render(<ReferencePageClient userProgressions={[]} />)
+    render(<ReferencePageClient />)
     expect(screen.getByText("Reference")).toBeDefined()
   })
 
   it("renders the Circle of Fifths", () => {
-    render(<ReferencePageClient userProgressions={[]} />)
+    render(<ReferencePageClient />)
     expect(screen.getByRole("img", { name: /circle of fifths/i })).toBeDefined()
   })
 
   it("defaults to key C shown in the circle centre", () => {
-    render(<ReferencePageClient userProgressions={[]} />)
+    render(<ReferencePageClient />)
     const cElements = screen.getAllByText("C")
     expect(cElements.length).toBeGreaterThanOrEqual(1)
   })
 
-  it("renders Modes and Progressions tab buttons", () => {
-    render(<ReferencePageClient userProgressions={[]} />)
-    expect(screen.getByRole("tab", { name: "Modes" })).toBeDefined()
-    expect(screen.getByRole("tab", { name: "Progressions" })).toBeDefined()
-  })
-
   it("renders Study Tools tab buttons: Scales, Arpeggios, Chords, Inversions", () => {
-    render(<ReferencePageClient userProgressions={[]} />)
+    render(<ReferencePageClient />)
     expect(screen.getByRole("tab", { name: "Scales" })).toBeDefined()
     expect(screen.getByRole("tab", { name: "Arpeggios" })).toBeDefined()
     expect(screen.getByRole("tab", { name: "Chords" })).toBeDefined()
@@ -143,26 +123,26 @@ describe("ReferencePage", () => {
   })
 
   it("defaults to the Scales tab", () => {
-    render(<ReferencePageClient userProgressions={[]} />)
+    render(<ReferencePageClient />)
     const scalesTab = screen.getByRole("tab", { name: "Scales" })
     expect(scalesTab).toHaveAttribute("aria-selected", "true")
   })
 
   it("switches to Chords panel when Chords tab is clicked", async () => {
-    render(<ReferencePageClient userProgressions={[]} />)
+    render(<ReferencePageClient />)
     await userEvent.click(screen.getByRole("tab", { name: "Chords" }))
     expect(screen.getByRole("tab", { name: "Chords" })).toHaveAttribute("aria-selected", "true")
     expect(screen.getByLabelText(/chord type/i)).toBeDefined()
   })
 
   it("switches to Arpeggios panel when Arpeggios tab is clicked", async () => {
-    render(<ReferencePageClient userProgressions={[]} />)
+    render(<ReferencePageClient />)
     await userEvent.click(screen.getByRole("tab", { name: "Arpeggios" }))
     expect(screen.getByRole("tab", { name: "Arpeggios" })).toHaveAttribute("aria-selected", "true")
   })
 
   it("updates the selected key when a circle key is clicked", async () => {
-    render(<ReferencePageClient userProgressions={[]} />)
+    render(<ReferencePageClient />)
     const gButton = screen.getByRole("button", { name: "Select key G" })
     await userEvent.click(gButton)
     expect(gButton).toHaveAttribute("aria-pressed", "true")

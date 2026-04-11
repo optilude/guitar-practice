@@ -67,11 +67,9 @@ const SOLO_SCALE_TO_PANEL_TYPE: Record<string, string> = {
   "Altered Diminished":      "Altered Diminished",
 }
 
-interface ReferencePageClientProps {
-  userProgressions: UserProgressionForTab[]
-}
+interface ReferencePageClientProps {}
 
-export function ReferencePageClient({ userProgressions }: ReferencePageClientProps) {
+export function ReferencePageClient() {
   const [selectedKey, setSelectedKey] = useState("C")
   const [activeTab, setActiveTab] = useState<PanelTab>("scales")
 
@@ -129,7 +127,6 @@ export function ReferencePageClient({ userProgressions }: ReferencePageClientPro
             tonic={selectedKey}
             onChordSelect={handleChordSelect}
             onScaleSelect={handleScaleSelect}
-            userProgressions={userProgressions}
           />
         </div>
       </div>
