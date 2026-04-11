@@ -30,7 +30,7 @@ export default async function SessionRunPage({
                 include: {
                   lesson: { select: { title: true, url: true } },
                   userLesson: { select: { title: true, url: true } },
-                  userProgression: { select: { displayName: true } },
+                  userProgression: { select: { id: true, displayName: true, mode: true, degrees: true, description: true } },
                 },
               },
             },
@@ -76,6 +76,7 @@ export default async function SessionRunPage({
               keys: st.keys,
               practiceMode: st.practiceMode,
               lessonUrl: gt.lesson?.url ?? gt.userLesson?.url ?? null,
+              userProgression: gt.userProgression ?? null,
             }
           : null,
       }

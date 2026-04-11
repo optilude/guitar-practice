@@ -434,7 +434,7 @@ export function ProgressionsPageClient({ userProgressions, initialSelected }: Pr
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-3 flex-wrap lg:mt-auto">
             {isCustom && (
               <button
                 type="button"

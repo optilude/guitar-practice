@@ -11,6 +11,13 @@ export type SessionTopic = {
   keys: string[]
   practiceMode: PracticeMode | null
   lessonUrl: string | null
+  userProgression?: {
+    id: string
+    displayName: string
+    mode: string
+    degrees: string[]
+    description: string
+  } | null
 }
 
 export type SessionSection = {

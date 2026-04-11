@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useCallback } from "react"
+import ReactMarkdown from "react-markdown"
 import { cn } from "@/lib/utils"
 import type { SessionSection, SessionTopic } from "@/lib/sessions"
 import { KeyStrip } from "./key-strip"
@@ -44,6 +45,8 @@ const KIND_LABELS: Record<string, string> = {
 /** When practicing multiple keys, show a key-agnostic title (e.g. "Ionian Mode" not "C Ionian") */
 function topicTitle(topic: SessionTopic, multipleKeys: boolean): string {
   if (!multipleKeys) return topic.displayName
+  // Progression title is the progression name, not key-specific
+  if (topic.kind === "progression") return topic.displayName
   const kindLabel = KIND_LABELS[topic.kind] ?? topic.kind
   if (topic.subtype) {
     const subtypeLabel = topic.subtype.charAt(0).toUpperCase() + topic.subtype.slice(1).replace(/_/g, " ")
@@ -74,8 +77,11 @@ function ReferencePanel({ topic, currentKey }: { topic: SessionTopic; currentKey
       return <ChordPanel root={root} onRootChange={setRoot} chordTypeTrigger={topic.subtype ? { type: topic.subtype } : null} />
     case "inversion":
       return <InversionPanel root={root} onRootChange={setRoot} inversionTypeTrigger={topic.subtype ? { type: topic.subtype } : null} />
-    case "progression":
-      return <ProgressionsTab tonic={root} defaultProgressionName={topic.subtype ?? undefined} userProgressions={[]} />
+    case "progression": {
+      const userProgressions = topic.userProgression ? [topic.userProgression] : []
+      const defaultName = topic.userProgression ? topic.userProgression.id : (topic.subtype ?? undefined)
+      return <ProgressionsTab tonic={root} defaultProgressionName={defaultName} userProgressions={userProgressions} hideSelector />
+    }
     case "harmony":
       return <HarmonyTab tonic={root} defaultMode={topic.subtype ?? undefined} />
     case "lesson":
@@ -144,6 +150,9 @@ export function FlashCard({ section, currentKeyIndex, currentKeySequence, onSele
     >
       {showBack ? (
         <div className="flex flex-col flex-1 p-4">
+          {section.topic?.kind === "progression" && (
+            <h2 className="text-xl font-semibold mb-3 shrink-0">{section.topic.displayName}</h2>
+          )}
           {showKeys && (
             <div className="mb-4 shrink-0">
               <KeyStrip
@@ -171,6 +180,11 @@ export function FlashCard({ section, currentKeyIndex, currentKeySequence, onSele
           <h2 className="text-2xl font-semibold text-center">
             {topicTitle(section.topic!, multipleKeys)}
           </h2>
+          {section.topic?.kind === "progression" && section.topic.userProgression?.description && (
+            <div className="prose prose-sm max-w-none text-foreground text-sm text-left w-full">
+              <ReactMarkdown>{section.topic.userProgression.description}</ReactMarkdown>
+            </div>
+          )}
           {showKeys && (
             <div className="w-full">
               <KeyStrip

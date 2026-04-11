@@ -74,6 +74,7 @@ interface ProgressionsTabProps {
   onChordSelect?: (tonic: string, type: string, quality: string, primaryScaleName: string) => void
   onScaleSelect?: (tonic: string, scaleName: string) => void
   userProgressions: UserProgressionForTab[]
+  hideSelector?: boolean
 }
 
 // ---------------------------------------------------------------------------
@@ -132,6 +133,7 @@ export function ProgressionsTab({
   onChordSelect,
   onScaleSelect,
   userProgressions,
+  hideSelector,
 }: ProgressionsTabProps) {
   // selected is either a built-in slug (e.g. "pop-standard") or a user progression id
   const [selected, setSelected] = useState(defaultProgressionName ?? "pop-standard")
@@ -294,7 +296,7 @@ export function ProgressionsTab({
   return (
     <div className="space-y-4">
       {/* Progression selector + buttons */}
-      <div className="flex items-center gap-3">
+      {!hideSelector && <div className="flex items-center gap-3">
         <label
           htmlFor="progression-select"
           className="text-xs uppercase tracking-widest text-muted-foreground whitespace-nowrap"
@@ -408,7 +410,7 @@ export function ProgressionsTab({
             <path d="m15 5 4 4"/>
           </svg>
         </Link>
-      </div>
+      </div>}
 
       {/* Chord blocks */}
       <div>
