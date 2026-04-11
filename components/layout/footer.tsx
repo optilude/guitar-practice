@@ -6,6 +6,7 @@ const NAV_ITEMS = [
   { href: "/history",   label: "History" },
   { href: "/library",   label: "Library" },
   { href: "/reference", label: "Reference" },
+  { href: "/progressions", label: "Progressions" },
   { href: "/tools",     label: "Tools" },
 ]
 
