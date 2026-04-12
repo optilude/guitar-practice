@@ -1,14 +1,17 @@
 # Guitar Practice
 
-A personal guitar practice app. Features include:
+A personal guitar practice web app with interactive reference tools, structured practice routines, and progress tracking.
 
-- **Library** — curated lessons from Hub Guitar, organised by category (technique, music theory, fretboard knowledge, improvisation, sight reading, songs)
-- **Reference** — interactive chord diagrams, scale/arpeggio fretboard views, triad voicings, and shell chord shapes
-- **Goals & Routines** — define practice goals, build routines, and track sessions
-- **Progression Analyser** — analyse chord progressions with substitutions and scale recommendations
-- **Practice tracker** — track sessions and progress
+## Features
 
-Built with Next.js 16, Tailwind CSS v4, Prisma 7, and PostgreSQL.
+- **Library** — curated lessons from Hub Guitar, organised by category (technique, theory, fretboard, improvisation, sight reading, songs)
+- **Goals & Routines** — define practice goals, build timed routines with typed sections and topic assignments, run sessions as flashcards
+- **History** — session log with streak tracking
+- **Reference** — interactive chord diagrams, scale and arpeggio fretboard views, triad voicings, shell chords, modes/harmony, and chord substitution and soloing scale recommendations
+- **Custom Progressions** — build, save and analyse chord progressions
+- **Tools** — chord finder, scale finder, key finder, transposer, metronome, and progression analyser
+
+Built with Next.js 16, React 19, Tailwind CSS v4, Prisma 7, and PostgreSQL.
 
 ---
 
@@ -17,68 +20,66 @@ Built with Next.js 16, Tailwind CSS v4, Prisma 7, and PostgreSQL.
 - Node.js 20+
 - pnpm
 - PostgreSQL database
-- Mailpit (for local email): `brew install mailpit`
+- SMTP server (e.g. Mailpit for local testing: `brew install mailpit`)
+
+---
+
+## Local installation
+
+```bash
+git clone <repo-url>
+cd GuitarPractice
+pnpm install
+```
 
 ---
 
 ## First-time setup
 
-### 1. Install dependencies
-
-```bash
-pnpm install
-```
-
-### 2. Configure environment
-
-Copy the example env file:
+### 1. Configure environment
 
 ```bash
 cp .env.example .env.local
 ```
 
-Edit `.env.local` and configure:
+Edit `.env.local`:
 
 | Variable | Description |
 |----------|-------------|
 | `DATABASE_URL` | PostgreSQL connection string, e.g. `postgresql://user:pass@localhost:5432/guitarapp` |
-| `AUTH_SECRET` | Secret for NextAuth JWT signing. Generate with: `openssl rand -base64 32` |
+| `AUTH_SECRET` | NextAuth JWT signing secret. Generate with: `openssl rand -base64 32` |
 | `NEXT_PUBLIC_APP_URL` | Base URL of the app. Use `http://localhost:3000` for local dev |
 | `SMTP_HOST` | SMTP host. Use `localhost` for Mailpit in dev |
 | `SMTP_PORT` | SMTP port. Use `1025` for Mailpit in dev |
 | `SMTP_USER` | SMTP username. Leave blank for Mailpit |
 | `SMTP_PASSWORD` | SMTP password. Leave blank for Mailpit |
 | `SMTP_FROM` | From address for outgoing email |
-| `SEED_ADMIN_EMAIL` | Email for the default admin account (created on first `db:seed`) |
+| `SEED_ADMIN_EMAIL` | Email for the default admin account |
 | `SEED_ADMIN_PASSWORD` | Temporary password for the default admin (must be changed on first login) |
 
-### 3. Run database migrations
+### 2. Run database migrations
 
 ```bash
 pnpm db:migrate
 ```
 
-### 4. Seed the database
+### 3. Seed the database
 
-This imports Hub Guitar lessons **and** creates the default admin account:
+Imports Hub Guitar lessons and creates the default admin account:
 
 ```bash
 pnpm db:seed
 ```
 
-The default admin is created using `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` from `.env.local`. The account is flagged as `mustChangePassword=true` — the admin must set a new password on their first login.
+The admin is created with `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` and flagged `mustChangePassword=true`. The seed is idempotent — re-running only updates lesson data.
 
-> **Note:** The seed is idempotent. If the admin account already exists, it is left unchanged. Re-running the seed only updates lesson data.
-
-To reset the admin password (e.g. if you are locked out), update `SEED_ADMIN_PASSWORD` in `.env.local` and run:
+To reset the admin password (e.g. if locked out):
 
 ```bash
 pnpm db:reset-admin-password
 ```
 
-This sets the new password and re-flags the account as `mustChangePassword=true`.
-
-### 5. Start the dev server
+### 4. Start the dev server
 
 ```bash
 pnpm dev
@@ -90,35 +91,11 @@ In a separate terminal, start Mailpit (for password reset emails):
 mailpit
 ```
 
-Open [http://localhost:3000](http://localhost:3000).  
-View emails at [http://localhost:8025](http://localhost:8025).
+Open [http://localhost:3000](http://localhost:3000). View emails at [http://localhost:8025](http://localhost:8025).
 
 ---
 
-## Email in production (Resend)
-
-Sign up at [resend.com](https://resend.com) (free tier: 3,000 emails/month). Verify your sending domain, then set these Vercel environment variables:
-
-| Variable | Value |
-|----------|-------|
-| `SMTP_HOST` | `smtp.resend.com` |
-| `SMTP_PORT` | `587` |
-| `SMTP_USER` | `resend` |
-| `SMTP_PASSWORD` | your Resend API key |
-| `SMTP_FROM` | `noreply@yourdomain.com` (must be your verified domain) |
-
----
-
-## User management
-
-- Log in as admin and navigate to **Admin → Users** to promote or demote users.
-- Admins cannot remove their own admin status.
-- New users registered via `/register` are normal users by default.
-- To create additional admins, promote them via the admin UI.
-
----
-
-## Commands
+## Development
 
 | Command | Description |
 |---------|-------------|
@@ -134,23 +111,66 @@ Sign up at [resend.com](https://resend.com) (free tier: 3,000 emails/month). Ver
 
 ---
 
-## Vendored data files
+## Deployment
 
-Static music theory datasets are committed to the repo under `data/` rather than fetched at runtime.
+### Vercel (recommended)
 
-| File | Source | Notes |
-|------|--------|-------|
-| `data/chords-db.json` | [`tombatossals/chords-db`](https://github.com/tombatossals/chords-db) `lib/guitar.json` | Guitar chord voicing database. Vendored from GitHub master (Oct 2024) rather than the stale npm release (v0.5.1, Nov 2019). To update: download `https://raw.githubusercontent.com/tombatossals/chords-db/master/lib/guitar.json` and replace this file, then re-apply any local custom voicings. |
-| `data/triads.json` | Custom | Triad voicings across all string sets and inversions, generated for this project. |
+1. Push the repo to GitHub/GitLab and import it in [Vercel](https://vercel.com).
+2. Provision a PostgreSQL database — [Neon](https://neon.tech) and [Supabase](https://supabase.com) both work well and have free tiers.
+3. Set all environment variables from `.env.local` in the Vercel project settings (use production values: your real DB URL, a strong `AUTH_SECRET`, your actual `NEXT_PUBLIC_APP_URL`, and SMTP credentials — see **Email** below).
+4. Deploy. Vercel builds the app automatically on each push.
+5. After the first deploy, run migrations and seed from your local machine pointing at the production database:
+
+```bash
+DATABASE_URL=<production-url> pnpm db:migrate
+DATABASE_URL=<production-url> pnpm db:seed
+```
+
+### Other Node.js hosts (Render, Railway, Fly.io, etc.)
+
+1. Provision a PostgreSQL database and a Node.js service.
+2. Set environment variables (same list as above).
+3. Set the build command to `pnpm build` and the start command to `pnpm start`.
+4. Run migrations and seed after the first deploy (same commands as above, or via the host's shell access).
+
+### Email in production
+
+[Resend](https://resend.com) is the easiest option (free tier: 3,000 emails/month). Verify your sending domain, then set:
+
+| Variable | Value |
+|----------|-------|
+| `SMTP_HOST` | `smtp.resend.com` |
+| `SMTP_PORT` | `587` |
+| `SMTP_USER` | `resend` |
+| `SMTP_PASSWORD` | your Resend API key |
+| `SMTP_FROM` | `noreply@yourdomain.com` |
 
 ---
 
-## Lesson content
+## User management
 
-Hub Guitar lessons are stored as a committed static file at `prisma/data/lessons.json`. This file is the source of truth for what gets seeded into the database — no network requests or scraping required.
+Log in as admin and navigate to **Admin → Users** to promote or demote users. New registrations are normal users by default. Admins cannot remove their own admin status.
 
-To add or update lessons, edit `prisma/data/lessons.json` directly and re-run `pnpm db:seed`. Each entry has the shape:
+---
 
-```json
-{ "url": "https://hubguitar.com/technique/alternate-picking", "slug": "alternate-picking", "title": "Alternate Picking", "category": "technique", "order": 12 }
-```
+## Vendored data
+
+Static datasets are committed under `data/` rather than fetched at runtime:
+
+| File | Source | Notes |
+|------|--------|-------|
+| `data/chords-db.json` | [`tombatossals/chords-db`](https://github.com/tombatossals/chords-db) | Guitar chord voicing database. Vendored from GitHub master (Oct 2024). To update: replace with the latest `lib/guitar.json` from that repo and re-apply any local custom voicings. |
+| `data/triads.json` | Custom | Triad voicings across all string sets and inversions, generated for this project. |
+
+Hub Guitar lessons are stored at `prisma/data/lessons.json` and seeded into the database. To add or update lessons, edit that file and re-run `pnpm db:seed`.
+
+---
+
+## Acknowledgements
+
+- **[Fretboard.js](https://github.com/moonwave99/fretboard.js)** (`@moonwave99/fretboard.js`) — interactive fretboard diagrams for scales and arpeggios
+- **[SVGuitar](https://github.com/omnibrain/svguitar)** — SVG chord diagram rendering
+- **[Hub Guitar](https://hubguitar.com)** — lesson content source
+- **[chords-db](https://github.com/tombatossals/chords-db)** — guitar chord voicing database
+- **[Tonal](https://github.com/tonaljs/tonal)** — music theory library
+- **[VexFlow](https://www.vexflow.com)** — music notation rendering
