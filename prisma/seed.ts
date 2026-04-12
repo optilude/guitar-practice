@@ -54,35 +54,33 @@ async function main() {
   )
 
   try {
-    let count = 0
-    await prisma.$transaction(async (tx) => {
-      const source = await tx.source.upsert({
-        where: { name: "HubGuitar" },
-        create: { name: "HubGuitar", baseUrl: "https://hubguitar.com" },
-        update: {},
-      })
-
-      const categoryMap = new Map<string, string>()
-      for (const cat of CATEGORIES) {
-        const record = await tx.category.upsert({
-          where: { slug: cat.slug },
-          create: cat,
-          update: { name: cat.name, order: cat.order },
-        })
-        categoryMap.set(cat.slug, record.id)
-      }
-
-      for (const lesson of lessons) {
-        const categoryId = categoryMap.get(lesson.category)
-        if (!categoryId) throw new Error(`Unknown category "${lesson.category}" in lessons.json`)
-        await tx.topic.upsert({
-          where: { url: lesson.url },
-          create: { title: lesson.title, url: lesson.url, slug: lesson.slug, order: lesson.order, categoryId, sourceId: source.id },
-          update: { title: lesson.title, order: lesson.order },
-        })
-        count++
-      }
+    const source = await prisma.source.upsert({
+      where: { name: "HubGuitar" },
+      create: { name: "HubGuitar", baseUrl: "https://hubguitar.com" },
+      update: {},
     })
+
+    const categoryMap = new Map<string, string>()
+    for (const cat of CATEGORIES) {
+      const record = await prisma.category.upsert({
+        where: { slug: cat.slug },
+        create: cat,
+        update: { name: cat.name, order: cat.order },
+      })
+      categoryMap.set(cat.slug, record.id)
+    }
+
+    let count = 0
+    for (const lesson of lessons) {
+      const categoryId = categoryMap.get(lesson.category)
+      if (!categoryId) throw new Error(`Unknown category "${lesson.category}" in lessons.json`)
+      await prisma.topic.upsert({
+        where: { url: lesson.url },
+        create: { title: lesson.title, url: lesson.url, slug: lesson.slug, order: lesson.order, categoryId, sourceId: source.id },
+        update: { title: lesson.title, order: lesson.order },
+      })
+      count++
+    }
     console.log(`Seeded ${count} topics across ${CATEGORIES.length} categories`)
   } finally {
     await prisma.$disconnect()
