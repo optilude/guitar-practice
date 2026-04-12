@@ -171,7 +171,7 @@ export function ProgressionsPageClient({ userProgressions, initialSelected }: Pr
     setPreviewedSub(null)
     setSaveError(null)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selected])
+  }, [selected, key])
 
   // ── Analysis computations ──────────────────────────────────────────────────
   const parsedChords = useMemo(
