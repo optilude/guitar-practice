@@ -1,11 +1,11 @@
 "use client"
 
-import { useState, useTransition, useEffect } from "react"
+import { Suspense, useState, useTransition, useEffect } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { validateResetToken, resetPassword } from "./actions"
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const token = searchParams.get("token") ?? ""
@@ -97,5 +97,13 @@ export default function ResetPasswordPage() {
         {isPending ? "Saving…" : "Set new password"}
       </button>
     </form>
+  )
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense>
+      <ResetPasswordForm />
+    </Suspense>
   )
 }
