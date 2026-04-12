@@ -156,6 +156,17 @@
   margin-bottom: 0.25em;
 }
 
+/* Prevent iOS Safari auto-zoom on input focus.
+   Safari zooms when an input's font-size is below 16px. Inputs use text-sm (14px),
+   triggering this on every modal/form tap. Applying 1rem on coarse-pointer devices
+   (touch screens) keeps the viewport stable. Written outside @layer so it wins over
+   Tailwind utilities. */
+@media (hover: none) and (pointer: coarse) {
+  input, select, textarea {
+    font-size: 1rem;
+  }
+}
+
 /* Pull SVGuitar chord diagrams up to reduce the blank indicator zone above the nut */
 @layer utilities {
   .chord-diagram-svg {

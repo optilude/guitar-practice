@@ -98,7 +98,7 @@ export function SettingsForm({
               onChange={e => setNameValue(e.target.value)}
               placeholder="Your name"
               maxLength={100}
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent transition-shadow"
+              className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent transition-shadow"
             />
           </div>
           {nameMsg && (
@@ -126,7 +126,7 @@ export function SettingsForm({
               type="password"
               required
               autoComplete="current-password"
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent transition-shadow"
+              className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent transition-shadow"
             />
           </div>
           <div className="space-y-1.5">
@@ -138,7 +138,7 @@ export function SettingsForm({
               required
               minLength={8}
               autoComplete="new-password"
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent transition-shadow"
+              className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent transition-shadow"
             />
           </div>
           <div className="space-y-1.5">
@@ -150,7 +150,7 @@ export function SettingsForm({
               required
               minLength={8}
               autoComplete="new-password"
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent transition-shadow"
+              className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent transition-shadow"
             />
           </div>
           {passwordMsg && (
