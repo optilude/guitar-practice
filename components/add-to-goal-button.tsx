@@ -25,7 +25,7 @@ export function AddToGoalButton({
   userLessonId,
   userProgressionId,
   displayName,
-  popupAlign = "left",
+  popupAlign = "right",
 }: AddToGoalButtonProps) {
   const refKey = computeRefKey({ kind, subtype, lessonId, userLessonId, userProgressionId, defaultKey })
   const { activeGoalKeys, markAdded } = useActiveGoal()

@@ -171,7 +171,7 @@ export function FlashCard({ section, currentKeyIndex, currentKeySequence, onSele
             onClick={() => flipTo(false)}
             className="mt-4 text-sm text-muted-foreground hover:text-foreground transition-colors shrink-0"
           >
-            Turn card ↩
+            Turn card {"↩\uFE0E"}
           </button>
         </div>
       ) : (
@@ -200,7 +200,7 @@ export function FlashCard({ section, currentKeyIndex, currentKeySequence, onSele
             onClick={() => flipTo(true)}
             className="mt-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            Turn card ↩
+            Turn card {"↩\uFE0E"}
           </button>
         </div>
       )}

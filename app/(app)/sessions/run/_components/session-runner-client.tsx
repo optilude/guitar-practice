@@ -125,12 +125,6 @@ export function SessionRunnerClient({ routine }: SessionRunnerClientProps) {
     if (prev >= 0) handleGoToSection(prev)
   }, [nav.currentSectionIndex, handleGoToSection])
 
-  // "← Back" button — show leave guard only if session has started
-  function handleBack() {
-    if (!hasStartedRef.current) { router.back(); return }
-    pendingNavRef.current = () => router.back()
-    setShowLeaveModal(true)
-  }
 
   // Confirmed leave from the leave modal
   function handleConfirmLeave() {
@@ -179,12 +173,6 @@ export function SessionRunnerClient({ routine }: SessionRunnerClientProps) {
     <div className="flex flex-col h-[calc(100dvh-44px-2rem)] overflow-hidden">
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-2 border-b border-border bg-background shrink-0">
-        <button
-          onClick={handleBack}
-          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-        >
-          ← Back
-        </button>
         <span className="flex-1 text-sm font-medium truncate">{routine.title}</span>
         <TimerDisplay
           sectionSecondsRemaining={timer.sectionSecondsRemaining}
@@ -194,7 +182,7 @@ export function SessionRunnerClient({ routine }: SessionRunnerClientProps) {
           onClick={timer.isRunning ? timer.pause : timer.play}
           className={btn("primary", "sm")}
         >
-          {timer.isRunning ? "⏸" : "▶"}
+          {timer.isRunning ? "⏸\uFE0E" : "▶\uFE0E"}
         </button>
         <button
           onClick={() => setAutoAdvance((v) => !v)}
@@ -206,7 +194,7 @@ export function SessionRunnerClient({ routine }: SessionRunnerClientProps) {
           onClick={handleEndSession}
           className={btn("secondary", "sm")}
         >
-          End Session
+          End
         </button>
       </div>
 

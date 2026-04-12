@@ -206,6 +206,47 @@ export function InteractiveFretboard({
       }
     })
 
+    // Mobile fix: fretboard.js only listens for "click", which fires ~300ms late
+    // on mobile and is dropped when the finger moves even slightly. Forward
+    // touchend as a synthetic MouseEvent so the library's handler fires
+    // immediately with the correct coordinates.
+    // The hoverDiv is the first (and only) div fretboard.js injects into the container.
+    const hoverDiv = container.querySelector<HTMLElement>("div")
+    if (hoverDiv) {
+      let touchStartX = 0
+      let touchStartY = 0
+      const MOVE_THRESHOLD = 10 // px — ignore if the finger drifted (likely a scroll)
+
+      const onTouchStart = (e: TouchEvent) => {
+        const t = e.touches[0]
+        if (!t) return
+        touchStartX = t.clientX
+        touchStartY = t.clientY
+      }
+
+      const onTouchEnd = (e: TouchEvent) => {
+        const t = e.changedTouches[0]
+        if (!t) return
+        if (
+          Math.abs(t.clientX - touchStartX) > MOVE_THRESHOLD ||
+          Math.abs(t.clientY - touchStartY) > MOVE_THRESHOLD
+        ) return
+        // Prevent the browser's synthetic click (avoids a double-toggle)
+        e.preventDefault()
+        hoverDiv.dispatchEvent(
+          new MouseEvent("click", {
+            bubbles: true,
+            cancelable: true,
+            clientX: t.clientX,
+            clientY: t.clientY,
+          })
+        )
+      }
+
+      hoverDiv.addEventListener("touchstart", onTouchStart, { passive: true })
+      hoverDiv.addEventListener("touchend", onTouchEnd, { passive: false })
+    }
+
     return () => {
       container.innerHTML = ""
     }

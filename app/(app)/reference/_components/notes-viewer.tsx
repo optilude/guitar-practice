@@ -38,7 +38,8 @@ export function NotesViewer({ scale, positionIndex }: NotesViewerProps) {
       // Measure available width from the card's parent — not the card itself,
       // so that setting card.style.width below doesn't create a feedback loop.
       const parentWidth = parent!.clientWidth || 490
-      const cardWidth   = Math.round(parentWidth * 2 / 3)
+      // On narrow screens use full width; on wide screens cap to 2/3
+      const cardWidth = parentWidth < 640 ? parentWidth : Math.round(parentWidth * 2 / 3)
       card!.style.width = `${cardWidth}px`
       try {
         // Inner div is w-full → fills card content area (cardWidth minus padding)

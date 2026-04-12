@@ -65,7 +65,7 @@ export function MetronomePanel({
         onClick={isRunning ? onStop : onStart}
         className={`${btn("standalone", "sm")} flex-1`}
       >
-        {isRunning ? "■ Stop" : "▶ Start"}
+        {isRunning ? "■ Stop" : "▶\uFE0E Start"}
       </button>
     </div>
   )
