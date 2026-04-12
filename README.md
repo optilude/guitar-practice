@@ -118,20 +118,29 @@ Open [http://localhost:3000](http://localhost:3000). View emails at [http://loca
 1. Push the repo to GitHub/GitLab and import it in [Vercel](https://vercel.com).
 2. Provision a PostgreSQL database — [Neon](https://neon.tech) and [Supabase](https://supabase.com) both work well and have free tiers.
 3. Set all environment variables from `.env.local` in the Vercel project settings (use production values: your real DB URL, a strong `AUTH_SECRET`, your actual `NEXT_PUBLIC_APP_URL`, and SMTP credentials — see **Email** below).
-4. Deploy. Vercel builds the app automatically on each push.
-5. After the first deploy, run migrations and seed from your local machine pointing at the production database:
+4. No custom build command is needed. Vercel picks up `pnpm build` from `package.json`, which already runs `prisma generate` before `next build`.
+5. **Before deploying**, run migrations and seed from your local machine pointing at the production database — the app will fail at runtime without them:
 
 ```bash
 DATABASE_URL=<production-url> pnpm db:migrate
 DATABASE_URL=<production-url> pnpm db:seed
 ```
 
+6. Deploy (or trigger a redeploy). Subsequent deployments are automatic on push.
+
+> **Note:** Re-run `DATABASE_URL=<production-url> pnpm db:migrate` after any schema changes before deploying.
+
 ### Other Node.js hosts (Render, Railway, Fly.io, etc.)
 
 1. Provision a PostgreSQL database and a Node.js service.
 2. Set environment variables (same list as above).
-3. Set the build command to `pnpm build` and the start command to `pnpm start`.
-4. Run migrations and seed after the first deploy (same commands as above, or via the host's shell access).
+3. Set the build command to `pnpm build` and the start command to `pnpm start`. The build script already includes `prisma generate`.
+4. Run migrations and seed from local before the first deploy (or via the host's shell/console access):
+
+```bash
+DATABASE_URL=<production-url> pnpm db:migrate
+DATABASE_URL=<production-url> pnpm db:seed
+```
 
 ### Email in production
 
