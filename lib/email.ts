@@ -1,13 +1,12 @@
 import nodemailer from "nodemailer"
 
 /**
- * Send an email via SMTP.
+ * Send an email.
  *
- * In development, point SMTP_HOST=localhost and SMTP_PORT=1025 (Mailpit).
- * In production, use SMTP_HOST=smtp.resend.com, SMTP_PORT=587,
- * SMTP_USER=resend, SMTP_PASSWORD=<resend_api_key>.
+ * Production (Vercel): set RESEND_API_KEY + SMTP_FROM — uses Resend's HTTP API.
+ * Vercel blocks outbound SMTP, so nodemailer cannot be used there.
  *
- * SMTP_FROM defaults to noreply@guitarapp.local for local dev.
+ * Local dev: set SMTP_HOST=localhost, SMTP_PORT=1025, leave SMTP_USER blank — uses Mailpit via nodemailer.
  */
 export async function sendEmail({
   to,
@@ -18,6 +17,25 @@ export async function sendEmail({
   subject: string
   html: string
 }): Promise<void> {
+  const from = process.env.SMTP_FROM ?? "noreply@guitarapp.local"
+
+  if (process.env.RESEND_API_KEY) {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ from, to, subject, html }),
+    })
+    if (!res.ok) {
+      const body = await res.text()
+      throw new Error(`Resend API error ${res.status}: ${body}`)
+    }
+    return
+  }
+
+  // Local dev: SMTP (Mailpit)
   const transport = nodemailer.createTransport({
     host: process.env.SMTP_HOST ?? "localhost",
     port: Number(process.env.SMTP_PORT ?? 1025),
@@ -28,10 +46,5 @@ export async function sendEmail({
         : undefined,
   })
 
-  await transport.sendMail({
-    from: process.env.SMTP_FROM ?? "noreply@guitarapp.local",
-    to,
-    subject,
-    html,
-  })
+  await transport.sendMail({ from, to, subject, html })
 }

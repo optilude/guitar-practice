@@ -144,15 +144,16 @@ DATABASE_URL=<production-url> pnpm db:seed
 
 ### Email in production
 
-[Resend](https://resend.com) is the easiest option (free tier: 3,000 emails/month). Verify your sending domain, then set:
+> **Important:** Vercel (and most serverless platforms) block outbound SMTP connections. The app uses Resend's **HTTP API** in production, not SMTP.
+
+[Resend](https://resend.com) has a free tier (3,000 emails/month). Verify your sending domain, then set two environment variables:
 
 | Variable | Value |
 |----------|-------|
-| `SMTP_HOST` | `smtp.resend.com` |
-| `SMTP_PORT` | `587` |
-| `SMTP_USER` | `resend` |
-| `SMTP_PASSWORD` | your Resend API key |
-| `SMTP_FROM` | `noreply@yourdomain.com` |
+| `RESEND_API_KEY` | your Resend API key |
+| `SMTP_FROM` | `noreply@yourdomain.com` (must be your verified domain) |
+
+The `SMTP_*` variables are only used for local dev (Mailpit). Leave them unset in production.
 
 ---
 

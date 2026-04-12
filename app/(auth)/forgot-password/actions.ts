@@ -38,8 +38,8 @@ export async function requestPasswordReset(
         <p>If you did not request this, you can ignore this email.</p>
       `,
     })
-  } catch {
-    console.error("[password-reset] email delivery failed for userId", user.id)
+  } catch (err) {
+    console.error("[password-reset] email delivery failed for userId", user.id, err)
   }
 
   return { success: true }
