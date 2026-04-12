@@ -106,7 +106,7 @@ export function SettingsForm({
               {nameMsg.text}
             </p>
           )}
-          <button type="submit" disabled={isNamePending} className={btn("primary", "sm")}>
+          <button type="submit" disabled={isNamePending} className={btn("primary")}>
             {isNamePending ? "Saving…" : "Save"}
           </button>
         </form>
@@ -158,7 +158,7 @@ export function SettingsForm({
               {passwordMsg.text}
             </p>
           )}
-          <button type="submit" disabled={isPasswordPending} className={btn("primary", "sm")}>
+          <button type="submit" disabled={isPasswordPending} className={btn("primary")}>
             {isPasswordPending ? "Saving…" : "Update password"}
           </button>
         </form>
@@ -175,7 +175,7 @@ export function SettingsForm({
         <button
           type="button"
           onClick={() => setStep("confirm1")}
-          className={btn("destructive", "sm")}
+          className={btn("destructive")}
         >
           Delete account
         </button>
@@ -199,11 +199,11 @@ export function SettingsForm({
                     <button
                       type="button"
                       onClick={() => setStep("confirm2")}
-                      className={btn("destructive", "sm")}
+                      className={btn("destructive")}
                     >
                       Continue
                     </button>
-                    <Dialog.Close className={btn("standalone", "sm")}>
+                    <Dialog.Close className={btn("standalone")}>
                       Cancel
                     </Dialog.Close>
                   </div>
@@ -224,13 +224,13 @@ export function SettingsForm({
                       type="button"
                       onClick={handleDelete}
                       disabled={isDeletePending}
-                      className={btn("destructive", "sm")}
+                      className={btn("destructive")}
                     >
                       {isDeletePending ? "Deleting…" : "Yes, delete my account"}
                     </button>
                     <Dialog.Close
                       disabled={isDeletePending}
-                      className={btn("standalone", "sm")}
+                      className={btn("standalone")}
                     >
                       Cancel
                     </Dialog.Close>
