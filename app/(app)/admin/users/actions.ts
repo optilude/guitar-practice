@@ -8,23 +8,20 @@ export async function setAdmin(
   userId: string,
   isAdmin: boolean,
   _formData: FormData,
-): Promise<{ success: true } | { error: string }> {
+): Promise<void> {
   const callerIsAdmin = await getIsAdmin()
-  if (!callerIsAdmin) return { error: "Forbidden" }
+  if (!callerIsAdmin) return
 
   const callerId = await getUserId()
-  if (callerId === userId && !isAdmin) {
-    return { error: "You cannot remove your own admin status" }
-  }
+  if (callerId === userId && !isAdmin) return
 
   try {
     await db.user.update({ where: { id: userId }, data: { isAdmin } })
   } catch (err) {
     console.error("setAdmin: db.user.update failed", err)
-    return { error: "Failed to update user. Please try again." }
+    return
   }
   revalidatePath("/admin/users")
-  return { success: true }
 }
 
 export async function deleteUser(
