@@ -1,9 +1,11 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState } from "react"
+import { Dialog } from "@base-ui/react/dialog"
 import { getUserGoalsWithStatus, addTopicToGoal } from "@/app/(app)/goals/actions"
 import { computeRefKey } from "@/lib/goals"
 import { useActiveGoal } from "@/components/active-goal-context"
+import { btn } from "@/lib/button-styles"
 import type { TopicKind } from "@/lib/generated/prisma/enums"
 
 interface AddToGoalButtonProps {
@@ -14,7 +16,7 @@ interface AddToGoalButtonProps {
   userLessonId?: string
   userProgressionId?: string
   displayName: string
-  popupAlign?: "left" | "right"
+  popupAlign?: "left" | "right" // retained for call-site compatibility; ignored (modal is centred)
 }
 
 export function AddToGoalButton({
@@ -25,7 +27,6 @@ export function AddToGoalButton({
   userLessonId,
   userProgressionId,
   displayName,
-  popupAlign = "right",
 }: AddToGoalButtonProps) {
   const refKey = computeRefKey({ kind, subtype, lessonId, userLessonId, userProgressionId, defaultKey })
   const { activeGoalKeys, markAdded } = useActiveGoal()
@@ -38,25 +39,6 @@ export function AddToGoalButton({
   const [selectedGoalId, setSelectedGoalId] = useState<string>("")
   const [status, setStatus] = useState<"idle" | "loading" | "added" | "error">("idle")
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
-  const dialogRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!isOpen) return
-    function handlePointerDown(e: PointerEvent) {
-      if (dialogRef.current && !dialogRef.current.contains(e.target as Node)) {
-        setIsOpen(false)
-      }
-    }
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") setIsOpen(false)
-    }
-    document.addEventListener("pointerdown", handlePointerDown)
-    document.addEventListener("keydown", handleKeyDown)
-    return () => {
-      document.removeEventListener("pointerdown", handlePointerDown)
-      document.removeEventListener("keydown", handleKeyDown)
-    }
-  }, [isOpen])
 
   async function handleOpen() {
     setIsOpen(true)
@@ -94,11 +76,19 @@ export function AddToGoalButton({
     }
   }
 
+  function handleOpenChange(open: boolean) {
+    if (!open && status !== "loading") {
+      setIsOpen(false)
+      setStatus("idle")
+      setErrorMsg(null)
+    }
+  }
+
   const selectedGoal = goals.find((g) => g.id === selectedGoalId)
   const selectedAlreadyAdded = selectedGoal?.alreadyAdded ?? false
 
   return (
-    <div className="relative inline-flex">
+    <>
       <button
         type="button"
         aria-label="Add to goal"
@@ -112,70 +102,83 @@ export function AddToGoalButton({
         <span className="relative -top-px">+</span>
       </button>
 
-      {isOpen && (
-        <div
-          ref={dialogRef}
-          role="dialog"
-          aria-label="Add to goal"
-          className={`absolute ${popupAlign === "right" ? "right-0" : "left-0"} top-8 z-30 w-72 rounded-lg border border-border bg-card shadow-lg p-4 space-y-3`}
-        >
-          <p className="text-xs font-semibold text-foreground truncate">{displayName}</p>
-
-          {status === "added" ? (
-            <p className="text-xs text-accent font-semibold">Added to goal!</p>
-          ) : goals.length === 0 && status !== "loading" ? (
-            <p className="text-xs text-muted-foreground">
-              No goals yet.{" "}
-              <a href="/goals" className="text-accent hover:underline">
-                Create your first goal
-              </a>
-            </p>
-          ) : (
-            <>
+      <Dialog.Root open={isOpen} onOpenChange={handleOpenChange} disablePointerDismissal={status === "loading"}>
+        <Dialog.Portal>
+          <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm transition-opacity duration-150 data-starting-style:opacity-0 data-ending-style:opacity-0" />
+          <Dialog.Popup className="fixed left-1/2 top-1/2 z-[51] w-full max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-background p-6 shadow-xl transition duration-150 data-starting-style:opacity-0 data-ending-style:opacity-0">
+            <div className="space-y-4">
               <div>
-                <label
-                  htmlFor="add-to-goal-select"
-                  className="block text-xs uppercase tracking-widest text-muted-foreground mb-1"
-                >
-                  Goal
-                </label>
-                <select
-                  id="add-to-goal-select"
-                  value={selectedGoalId}
-                  onChange={(e) => setSelectedGoalId(e.target.value)}
-                  disabled={status === "loading"}
-                  className="w-full rounded border border-border bg-card px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
-                >
-                  {goals.map((g) => (
-                    <option key={g.id} value={g.id}>
-                      {g.title}{g.isActive ? " (active)" : ""}
-                    </option>
-                  ))}
-                </select>
+                <Dialog.Title className="text-sm font-semibold">Add to goal</Dialog.Title>
+                <Dialog.Description className="text-sm text-muted-foreground truncate mt-0.5">
+                  {displayName}
+                </Dialog.Description>
               </div>
 
-              {defaultKey && (
-                <p className="text-xs text-muted-foreground">Default key: {defaultKey}</p>
+              {status === "added" ? (
+                <p className="text-sm text-accent font-semibold">Added to goal!</p>
+              ) : goals.length === 0 && status !== "loading" ? (
+                <p className="text-sm text-muted-foreground">
+                  No goals yet.{" "}
+                  <a href="/goals" className="text-accent hover:underline">
+                    Create your first goal
+                  </a>
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  <div>
+                    <label
+                      htmlFor="add-to-goal-select"
+                      className="block text-xs uppercase tracking-widest text-muted-foreground mb-1"
+                    >
+                      Goal
+                    </label>
+                    <select
+                      id="add-to-goal-select"
+                      value={selectedGoalId}
+                      onChange={(e) => setSelectedGoalId(e.target.value)}
+                      disabled={status === "loading"}
+                      className="w-full rounded border border-border bg-card px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
+                    >
+                      {goals.map((g) => (
+                        <option key={g.id} value={g.id}>
+                          {g.title}{g.isActive ? " (active)" : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {defaultKey && (
+                    <p className="text-xs text-muted-foreground">Default key: {defaultKey}</p>
+                  )}
+
+                  {selectedAlreadyAdded && (
+                    <p className="text-xs text-muted-foreground italic">Already in this goal</p>
+                  )}
+                  {errorMsg && (
+                    <p className="text-xs text-destructive">{errorMsg}</p>
+                  )}
+                </div>
               )}
 
-              {selectedAlreadyAdded ? (
-                <p className="text-xs text-muted-foreground italic">Already in this goal</p>
-              ) : errorMsg ? (
-                <p className="text-xs text-red-500">{errorMsg}</p>
-              ) : null}
-
-              <button
-                type="button"
-                onClick={handleAdd}
-                disabled={selectedAlreadyAdded || !selectedGoalId || status === "loading"}
-                className="w-full text-xs font-semibold bg-accent text-accent-foreground px-3 py-1.5 rounded hover:opacity-90 transition-opacity disabled:opacity-50"
-              >
-                {status === "loading" ? "Adding…" : "Add to goal"}
-              </button>
-            </>
-          )}
-        </div>
-      )}
-    </div>
+              {status !== "added" && (
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={handleAdd}
+                    disabled={selectedAlreadyAdded || !selectedGoalId || status === "loading" || goals.length === 0}
+                    className={btn("primary")}
+                  >
+                    {status === "loading" ? "Adding…" : "Add"}
+                  </button>
+                  <Dialog.Close disabled={status === "loading"} className={btn("standalone")}>
+                    Cancel
+                  </Dialog.Close>
+                </div>
+              )}
+            </div>
+          </Dialog.Popup>
+        </Dialog.Portal>
+      </Dialog.Root>
+    </>
   )
 }
