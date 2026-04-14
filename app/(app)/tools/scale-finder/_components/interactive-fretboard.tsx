@@ -206,41 +206,79 @@ export function InteractiveFretboard({
       }
     })
 
-    // Mobile fix: fretboard.js only listens for "click", which fires ~300ms late
-    // on mobile and is dropped when the finger moves even slightly. Forward
-    // touchend as a synthetic MouseEvent so the library's handler fires
-    // immediately with the correct coordinates.
-    // The hoverDiv is the first (and only) div fretboard.js injects into the container.
+    // Mobile fix: avoid synthetic click forwarding on iOS Safari (it can be
+    // dropped or double-fired). Instead, resolve the touched SVG dot directly
+    // and toggle its bound chroma.
     const hoverDiv = container.querySelector<HTMLElement>("div")
+    let onTouchStart: ((e: TouchEvent) => void) | undefined
+    let onTouchEnd: ((e: TouchEvent) => void) | undefined
     if (hoverDiv) {
       let touchStartX = 0
       let touchStartY = 0
-      const MOVE_THRESHOLD = 10 // px — ignore if the finger drifted (likely a scroll)
+      const MOVE_THRESHOLD = 16 // px — tolerate normal finger drift
+      const HIT_THRESHOLD = 28 // px — fallback radius if the exact SVG node is not hit
 
-      const onTouchStart = (e: TouchEvent) => {
+      const getBoundDotData = (el: Element | null): { dotChroma?: unknown } | null => {
+        if (!el) return null
+        const bound = (el as Element & { __data__?: unknown }).__data__
+        if (!bound || typeof bound !== "object") return null
+        return bound as { dotChroma?: unknown }
+      }
+
+      hoverDiv.style.touchAction = "manipulation"
+
+      const getDotChromaFromTouch = (clientX: number, clientY: number): number | null => {
+        const hitEl = document.elementFromPoint(clientX, clientY)
+        const directDotEl = hitEl?.closest("circle") as SVGCircleElement | null
+        const directData = getBoundDotData(directDotEl)
+        if (typeof directData?.dotChroma === "number") {
+          return directData.dotChroma
+        }
+
+        const svgEl = container.querySelector<SVGSVGElement>("svg")
+        if (!svgEl) return null
+
+        const circles = svgEl.querySelectorAll<SVGCircleElement>("circle")
+        let bestChroma: number | null = null
+        let bestDist = Number.POSITIVE_INFINITY
+
+        circles.forEach((circle) => {
+          const data = getBoundDotData(circle)
+          if (typeof data?.dotChroma !== "number") return
+          const rect = circle.getBoundingClientRect()
+          const cx = rect.left + rect.width / 2
+          const cy = rect.top + rect.height / 2
+          const dist = Math.hypot(clientX - cx, clientY - cy)
+          if (dist < bestDist) {
+            bestDist = dist
+            bestChroma = data.dotChroma
+          }
+        })
+
+        return bestDist <= HIT_THRESHOLD ? bestChroma : null
+      }
+
+      onTouchStart = (e: TouchEvent) => {
         const t = e.touches[0]
         if (!t) return
         touchStartX = t.clientX
         touchStartY = t.clientY
       }
 
-      const onTouchEnd = (e: TouchEvent) => {
+      onTouchEnd = (e: TouchEvent) => {
         const t = e.changedTouches[0]
         if (!t) return
         if (
           Math.abs(t.clientX - touchStartX) > MOVE_THRESHOLD ||
           Math.abs(t.clientY - touchStartY) > MOVE_THRESHOLD
         ) return
-        // Prevent the browser's synthetic click (avoids a double-toggle)
+
+        const chroma = getDotChromaFromTouch(t.clientX, t.clientY)
+        if (typeof chroma !== "number") return
+
+        // Block the browser's synthetic click to avoid double toggles.
         e.preventDefault()
-        hoverDiv.dispatchEvent(
-          new MouseEvent("click", {
-            bubbles: true,
-            cancelable: true,
-            clientX: t.clientX,
-            clientY: t.clientY,
-          })
-        )
+        onChromaToggle(chroma)
       }
 
       hoverDiv.addEventListener("touchstart", onTouchStart, { passive: true })
@@ -248,6 +286,8 @@ export function InteractiveFretboard({
     }
 
     return () => {
+      if (hoverDiv && onTouchStart) hoverDiv.removeEventListener("touchstart", onTouchStart)
+      if (hoverDiv && onTouchEnd) hoverDiv.removeEventListener("touchend", onTouchEnd)
       container.innerHTML = ""
     }
   }, [selectedChromas, previewedScale, keyChroma, labelMode, chromaToNote, isDark, onChromaToggle])
