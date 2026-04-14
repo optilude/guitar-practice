@@ -171,12 +171,14 @@ export function ScalePanel({ root, onRootChange, scaleTypeTrigger }: ScalePanelP
           )}
         </select>
         </div>
-        <AddToGoalButton
-          kind="scale"
-          subtype={scaleType}
-          defaultKey={root}
-          displayName={`${root} ${scaleType} scale`}
-        />
+        <div className="flex items-center h-[34px] lg:h-auto">
+          <AddToGoalButton
+            kind="scale"
+            subtype={scaleType}
+            defaultKey={root}
+            displayName={`${root} ${scaleType} scale`}
+          />
+        </div>
       </div>
 
       {/* Notes + formula */}

@@ -397,12 +397,14 @@ export function InversionPanel({ root, onRootChange, inversionTypeTrigger, onSca
             ))}
           </select>
         </div>
-        <AddToGoalButton
-          kind="inversion"
-          subtype={inversionType}
-          defaultKey={root}
-          displayName={`${root} ${SUFFIX_DISPLAY[inversionType] ?? inversionType}`}
-        />
+        <div className="flex items-center h-[34px] lg:h-auto">
+          <AddToGoalButton
+            kind="inversion"
+            subtype={inversionType}
+            defaultKey={root}
+            displayName={`${root} ${SUFFIX_DISPLAY[inversionType] ?? inversionType}`}
+          />
+        </div>
       </div>
 
       {/* Notes + formula */}

@@ -127,12 +127,14 @@ export function ArpeggioPanel({ root, onRootChange, chordTypeTrigger }: Arpeggio
             ))}
           </select>
         </div>
-        <AddToGoalButton
-          kind="arpeggio"
-          subtype={chordType}
-          defaultKey={root}
-          displayName={`${root} ${chordType} arpeggio`}
-        />
+        <div className="flex items-center h-[34px] lg:h-auto">
+          <AddToGoalButton
+            kind="arpeggio"
+            subtype={chordType}
+            defaultKey={root}
+            displayName={`${root} ${chordType} arpeggio`}
+          />
+        </div>
       </div>
 
       {/* Notes + formula */}

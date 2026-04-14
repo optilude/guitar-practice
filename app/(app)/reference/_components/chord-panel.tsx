@@ -308,12 +308,14 @@ export function ChordPanel({ root, onRootChange, chordTypeTrigger, onScaleSelect
             ))}
           </select>
         </div>
-        <AddToGoalButton
-          kind="chord"
-          subtype={chordType}
-          defaultKey={root}
-          displayName={`${root}${chordType} chord`}
-        />
+        <div className="flex items-center h-[34px] lg:h-auto">
+          <AddToGoalButton
+            kind="chord"
+            subtype={chordType}
+            defaultKey={root}
+            displayName={`${root}${chordType} chord`}
+          />
+        </div>
       </div>
 
       {/* Notes + formula */}
