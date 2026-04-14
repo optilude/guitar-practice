@@ -29,7 +29,7 @@ describe("setAdmin", () => {
     const fd = new FormData()
     const result = await setAdmin("target-id", true, fd)
 
-    expect(result).toEqual({ error: "Forbidden" })
+    expect(result).toBeUndefined()
     expect(db.user.update).not.toHaveBeenCalled()
   })
 
@@ -40,7 +40,7 @@ describe("setAdmin", () => {
     const fd = new FormData()
     const result = await setAdmin("caller-id", false, fd)
 
-    expect(result).toEqual({ error: "You cannot remove your own admin status" })
+    expect(result).toBeUndefined()
     expect(db.user.update).not.toHaveBeenCalled()
   })
 
@@ -57,7 +57,7 @@ describe("setAdmin", () => {
       data: { isAdmin: true },
     })
     expect(revalidatePath).toHaveBeenCalledWith("/admin/users")
-    expect(result).toEqual({ success: true })
+    expect(result).toBeUndefined()
   })
 
   it("demotes another user from admin", async () => {
@@ -73,7 +73,7 @@ describe("setAdmin", () => {
       data: { isAdmin: false },
     })
     expect(revalidatePath).toHaveBeenCalledWith("/admin/users")
-    expect(result).toEqual({ success: true })
+    expect(result).toBeUndefined()
   })
 
   it("returns error when db.user.update throws", async () => {
@@ -83,7 +83,7 @@ describe("setAdmin", () => {
 
     const result = await setAdmin("target-id", true, new FormData())
 
-    expect(result).toEqual({ error: "Failed to update user. Please try again." })
+    expect(result).toBeUndefined()
     expect(revalidatePath).not.toHaveBeenCalled()
   })
 })
