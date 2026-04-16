@@ -1,8 +1,9 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
-import { Note } from "tonal"
+import { Note, Scale } from "tonal"
 import { getDiatonicChords, getSoloScales, SOLO_MODE_OPTION_GROUPS, getSubstitutions } from "@/lib/theory"
+import { SCALE_TONAL_NAMES } from "@/lib/theory/solo-scales"
 import { ChordQualityBlock } from "./chord-quality-block"
 import { SoloScalesPanel } from "./solo-scales-panel"
 import { SubstitutionsPanel } from "./substitutions-panel"
@@ -21,42 +22,80 @@ const MAJOR_MODE_SET = new Set([
   "ionian", "dorian", "phrygian", "lydian", "mixolydian", "aeolian", "locrian",
 ])
 
-type ModeParentInfo = { interval: string; family: "major" | "melodic minor" | "harmonic minor" }
+const MELODIC_MINOR_MODE_SET = new Set([
+  "melodic minor", "dorian b2", "lydian augmented", "lydian dominant",
+  "mixolydian b6", "locrian #2", "altered",
+])
 
-const MODE_PARENT_INFO: Record<string, ModeParentInfo> = {
-  // Major scale modes (interval to parent major root)
-  dorian:            { interval: "-2M", family: "major" },
-  phrygian:          { interval: "-3M", family: "major" },
-  lydian:            { interval: "-4P", family: "major" },
-  mixolydian:        { interval: "-5P", family: "major" },
-  aeolian:           { interval: "-6M", family: "major" },
-  locrian:           { interval: "-7M", family: "major" },
-  // Melodic minor modes (interval to parent melodic minor root)
-  "melodic minor":    { interval: "",    family: "melodic minor" },
-  "dorian b2":        { interval: "-2M", family: "melodic minor" },
-  "lydian augmented": { interval: "-3m", family: "melodic minor" },
-  "lydian dominant":  { interval: "-4P", family: "melodic minor" },
-  "mixolydian b6":    { interval: "-5P", family: "melodic minor" },
-  "locrian #2":       { interval: "-6M", family: "melodic minor" },
-  "altered":          { interval: "-7M", family: "melodic minor" },
-  // Harmonic minor modes (interval to parent harmonic minor root)
-  "harmonic minor":     { interval: "",    family: "harmonic minor" },
-  "locrian #6":         { interval: "-2M", family: "harmonic minor" },
-  "ionian #5":          { interval: "-3m", family: "harmonic minor" },
-  "dorian #4":          { interval: "-4P", family: "harmonic minor" },
-  "phrygian dominant":  { interval: "-5P", family: "harmonic minor" },
-  "lydian #2":          { interval: "-6m", family: "harmonic minor" },
-  "altered diminished": { interval: "-7M", family: "harmonic minor" },
-}
+const HARMONIC_MINOR_MODE_SET = new Set([
+  "harmonic minor", "locrian #6", "ionian #5", "dorian #4",
+  "phrygian dominant", "lydian #2", "altered diminished",
+])
 
-// How many diatonic steps above the parent major root each mode starts (0-indexed)
+// 0-indexed degree offset for all 21 modes (within their family)
 const MODE_DEGREE_OFFSET: Record<string, number> = {
+  // Major family
   ionian: 0, dorian: 1, phrygian: 2, lydian: 3, mixolydian: 4, aeolian: 5, locrian: 6,
+  // Melodic minor family
+  "melodic minor": 0, "dorian b2": 1, "lydian augmented": 2, "lydian dominant": 3,
+  "mixolydian b6": 4, "locrian #2": 5, "altered": 6,
+  // Harmonic minor family
+  "harmonic minor": 0, "locrian #6": 1, "ionian #5": 2, "dorian #4": 3,
+  "phrygian dominant": 4, "lydian #2": 5, "altered diminished": 6,
 }
 
 // Roman numerals for the 7 diatonic degrees of a major scale
 const MAJOR_ROMAN: Record<number, string> = {
   1: "I", 2: "ii", 3: "iii", 4: "IV", 5: "V", 6: "vi", 7: "vii°",
+}
+
+// Display name for each internal mode identifier (derived from SOLO_MODE_OPTION_GROUPS)
+const MODE_DISPLAY_NAME: Record<string, string> = Object.fromEntries(
+  SOLO_MODE_OPTION_GROUPS.flatMap(g => g.options.map(o => [o.value, o.label]))
+)
+
+// ---------------------------------------------------------------------------
+// Derived tonic — the modal root note given the circle key and chosen mode
+// ---------------------------------------------------------------------------
+
+function computeDerivedTonic(circleKey: string, mode: string): string {
+  const offset = MODE_DEGREE_OFFSET[mode] ?? 0
+
+  if (MAJOR_MODE_SET.has(mode)) {
+    if (offset === 0) return circleKey
+    return Scale.get(`${circleKey} major`).notes[offset] ?? circleKey
+  }
+
+  // Relative minor root: C → A, G → E, etc.
+  const relMinorRoot = Note.transpose(circleKey, "-3m")
+
+  if (MELODIC_MINOR_MODE_SET.has(mode)) {
+    if (offset === 0) return relMinorRoot
+    return Scale.get(`${relMinorRoot} melodic minor`).notes[offset] ?? relMinorRoot
+  }
+
+  // Harmonic minor family
+  if (offset === 0) return relMinorRoot
+  return Scale.get(`${relMinorRoot} harmonic minor`).notes[offset] ?? relMinorRoot
+}
+
+// Human-readable parent-context label, e.g. "mode 2 of C major"
+function computeParentLabel(circleKey: string, mode: string): string | null {
+  const offset = MODE_DEGREE_OFFSET[mode] ?? 0
+
+  if (mode === "ionian") return null
+
+  if (MAJOR_MODE_SET.has(mode)) {
+    return `mode ${offset + 1} of ${circleKey} major`
+  }
+
+  const relMinorRoot = Note.transpose(circleKey, "-3m")
+  const family = MELODIC_MINOR_MODE_SET.has(mode) ? "melodic minor" : "harmonic minor"
+
+  if (offset === 0) {
+    return `relative minor of ${circleKey}`
+  }
+  return `mode ${offset + 1} of ${relMinorRoot} ${family}`
 }
 
 // ---------------------------------------------------------------------------
@@ -116,7 +155,12 @@ export function HarmonyTab({ tonic, defaultMode, onChordSelect, onScaleSelect }:
   const [previewedSub, setPreviewedSub] = useState<ChordSubstitution | null>(null)
   const [chordDetailTab, setChordDetailTab] = useState<"soloing" | "substitutions">("soloing")
 
-  const chords = getDiatonicChords(tonic, mode)
+  // The modal root note — derived from the circle key + mode
+  const derivedTonic = computeDerivedTonic(tonic, mode)
+  const modeDisplayName = MODE_DISPLAY_NAME[mode] ?? mode
+  const parentLabel = computeParentLabel(tonic, mode)
+
+  const chords = getDiatonicChords(derivedTonic, mode)
   const selectedChord =
     selectedDegree !== null ? chords.find((c) => c.degree === selectedDegree) ?? null : null
   const selectedIndex = chords.findIndex(c => c.degree === selectedDegree)
@@ -127,7 +171,11 @@ export function HarmonyTab({ tonic, defaultMode, onChordSelect, onScaleSelect }:
       )
     : null
 
-  // Notify parent of the initial/auto-selected chord on mount
+  // "Over the whole mode" scale — shown in the Soloing panel when no chord is selected
+  const tonalScaleName = SCALE_TONAL_NAMES[modeDisplayName] ?? mode
+  const modeScaleNotes = Scale.get(`${derivedTonic} ${tonalScaleName}`).notes.join(" ")
+
+  // Notify parent of degree-1 chord whenever the circle key changes
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const chord = chords.find((c) => c.degree === 1)
@@ -135,15 +183,17 @@ export function HarmonyTab({ tonic, defaultMode, onChordSelect, onScaleSelect }:
       const soloScales = getSoloScales({ tonic: chord.tonic, type: chord.type, degree: chord.degree }, mode)
       onChordSelect?.(chord.tonic, chord.type, chord.quality, soloScales.primary.scaleName)
     }
-  }, []) // intentionally empty: only on mount
+  }, [tonic])
 
-  const parentInfo = mode !== "ionian" ? MODE_PARENT_INFO[mode] : null
-  const parentKey = parentInfo && parentInfo.interval
-    ? Note.transpose(tonic, parentInfo.interval)
-    : parentInfo && parentInfo.interval === ""
-      ? tonic
-      : null
-  const parentLabel = parentInfo?.family ?? "major"
+  // Notify parent of degree-1 chord whenever mode changes
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const chord = chords.find((c) => c.degree === 1)
+    if (chord) {
+      const soloScales = getSoloScales({ tonic: chord.tonic, type: chord.type, degree: chord.degree }, mode)
+      onChordSelect?.(chord.tonic, chord.type, chord.quality, soloScales.primary.scaleName)
+    }
+  }, [mode])
 
   const modeOffset = MODE_DEGREE_OFFSET[mode] ?? 0
 
@@ -162,9 +212,9 @@ export function HarmonyTab({ tonic, defaultMode, onChordSelect, onScaleSelect }:
   // Only rules 1–5 (sortRank < 50): no look-ahead beyond a single chord
   const substitutions = useMemo(
     () => selectedIndex !== -1 && selectedChord
-      ? getSubstitutions(selectedChord, chords, selectedIndex, tonic, mode).filter(s => s.sortRank < 50)
+      ? getSubstitutions(selectedChord, chords, selectedIndex, derivedTonic, mode).filter(s => s.sortRank < 50)
       : [],
-    [selectedChord, chords, selectedIndex, tonic, mode],
+    [selectedChord, chords, selectedIndex, derivedTonic, mode],
   )
 
   function handleChordClick(degree: number) {
@@ -182,7 +232,7 @@ export function HarmonyTab({ tonic, defaultMode, onChordSelect, onScaleSelect }:
   return (
     <div className="space-y-4">
       {/* Mode selector */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 flex-wrap">
         <label
           htmlFor="harmony-mode"
           className="text-xs uppercase tracking-widest text-muted-foreground whitespace-nowrap"
@@ -198,12 +248,6 @@ export function HarmonyTab({ tonic, defaultMode, onChordSelect, onScaleSelect }:
             setMode(newMode)
             setSelectedDegree(1)
             setPreviewedSub(null)
-            const newChords = getDiatonicChords(tonic, newMode)
-            const degree1 = newChords.find((c) => c.degree === 1)
-            if (degree1) {
-              const soloScales = getSoloScales({ tonic: degree1.tonic, type: degree1.type, degree: degree1.degree }, newMode)
-              onChordSelect?.(degree1.tonic, degree1.type, degree1.quality, soloScales.primary.scaleName)
-            }
           }}
           className="bg-card border border-border rounded px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent w-fit"
         >
@@ -218,14 +262,11 @@ export function HarmonyTab({ tonic, defaultMode, onChordSelect, onScaleSelect }:
         <AddToGoalButton
           kind="harmony"
           subtype={mode}
-          defaultKey={tonic}
-          displayName={`${tonic} ${mode}`}
-          popupAlign="right"
+          defaultKey={derivedTonic}
+          displayName={`${derivedTonic} ${modeDisplayName}`}
         />
-        {parentKey && (
-          <span className="text-xs text-muted-foreground">
-            parent: <span className="font-medium text-foreground">{parentKey} {parentLabel}</span>
-          </span>
+        {parentLabel && (
+          <span className="text-xs text-muted-foreground">{parentLabel}</span>
         )}
       </div>
 
@@ -276,8 +317,8 @@ export function HarmonyTab({ tonic, defaultMode, onChordSelect, onScaleSelect }:
         </div>
       </div>
 
-      {/* Per-chord detail: tab bar + Soloing / Substitutions panels */}
-      {selectedChord && (
+      {/* Per-chord detail + "over the whole mode" hint */}
+      {selectedChord ? (
         <div className="space-y-3">
           <div className="flex rounded border border-border overflow-hidden text-sm w-fit">
             <button
@@ -307,12 +348,42 @@ export function HarmonyTab({ tonic, defaultMode, onChordSelect, onScaleSelect }:
           </div>
 
           {chordDetailTab === "soloing" && scales && (
-            <SoloScalesPanel
-              scales={scales}
-              chordName={`${selectedChord.tonic}${selectedChord.type}`}
-              romanNumeral={selectedChord.roman}
-              onScaleSelect={onScaleSelect}
-            />
+            <div className="space-y-3">
+              {/* "Over the whole mode" hint — shown at top of Soloing tab */}
+              <div>
+                <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
+                  Over the whole mode
+                </p>
+                {onScaleSelect ? (
+                  <button
+                    type="button"
+                    onClick={() => onScaleSelect(derivedTonic, modeDisplayName)}
+                    className="flex items-center gap-3 flex-wrap text-left group cursor-pointer"
+                    title="Open in Scales tab"
+                  >
+                    <span className="flex items-baseline gap-1">
+                      <span className="text-sm font-semibold text-foreground group-hover:text-accent transition-colors">
+                        {derivedTonic} {modeDisplayName}
+                      </span>
+                      <span className="text-xs text-muted-foreground/40 group-hover:text-accent transition-colors select-none">⏵</span>
+                    </span>
+                    {modeScaleNotes && (
+                      <span className="text-xs text-muted-foreground">· {modeScaleNotes}</span>
+                    )}
+                  </button>
+                ) : (
+                  <p className="text-sm font-semibold text-foreground">
+                    {derivedTonic} {modeDisplayName}
+                  </p>
+                )}
+              </div>
+              <SoloScalesPanel
+                scales={scales}
+                chordName={`${selectedChord.tonic}${selectedChord.type}`}
+                romanNumeral={selectedChord.roman}
+                onScaleSelect={onScaleSelect}
+              />
+            </div>
           )}
 
           {chordDetailTab === "substitutions" && (
@@ -322,6 +393,35 @@ export function HarmonyTab({ tonic, defaultMode, onChordSelect, onScaleSelect }:
               previewedId={previewedSub?.id ?? null}
               onPreview={setPreviewedSub}
             />
+          )}
+        </div>
+      ) : (
+        /* No chord selected — show "over the whole mode" hint */
+        <div>
+          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
+            Over the whole mode
+          </p>
+          {onScaleSelect ? (
+            <button
+              type="button"
+              onClick={() => onScaleSelect(derivedTonic, modeDisplayName)}
+              className="flex items-center gap-3 flex-wrap text-left group cursor-pointer"
+              title="Open in Scales tab"
+            >
+              <span className="flex items-baseline gap-1">
+                <span className="text-sm font-semibold text-foreground group-hover:text-accent transition-colors">
+                  {derivedTonic} {modeDisplayName}
+                </span>
+                <span className="text-xs text-muted-foreground/40 group-hover:text-accent transition-colors select-none">⏵</span>
+              </span>
+              {modeScaleNotes && (
+                <span className="text-xs text-muted-foreground">· {modeScaleNotes}</span>
+              )}
+            </button>
+          ) : (
+            <p className="text-sm font-semibold text-foreground">
+              {derivedTonic} {modeDisplayName}
+            </p>
           )}
         </div>
       )}

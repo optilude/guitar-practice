@@ -82,7 +82,6 @@ export function ReferencePageClient() {
 
   function handleKeySelect(key: string) {
     setSelectedKey(key)
-    setPanelRoot(key)
   }
 
   function handleChordSelect(chordTonic: string, type: string, quality: string, primaryScaleName: string) {
