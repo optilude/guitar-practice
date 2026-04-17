@@ -79,25 +79,6 @@ function computeDerivedTonic(circleKey: string, mode: string): string {
   return Scale.get(`${relMinorRoot} harmonic minor`).notes[offset] ?? relMinorRoot
 }
 
-// Human-readable parent-context label, e.g. "mode 2 of C major"
-function computeParentLabel(circleKey: string, mode: string): string | null {
-  const offset = MODE_DEGREE_OFFSET[mode] ?? 0
-
-  if (mode === "ionian") return null
-
-  if (MAJOR_MODE_SET.has(mode)) {
-    return `mode ${offset + 1} of ${circleKey} major`
-  }
-
-  const relMinorRoot = Note.transpose(circleKey, "-3m")
-  const family = MELODIC_MINOR_MODE_SET.has(mode) ? "melodic minor" : "harmonic minor"
-
-  if (offset === 0) {
-    return `relative minor of ${circleKey}`
-  }
-  return `mode ${offset + 1} of ${relMinorRoot} ${family}`
-}
-
 // ---------------------------------------------------------------------------
 // Preview helpers
 // ---------------------------------------------------------------------------
@@ -158,7 +139,6 @@ export function HarmonyTab({ tonic, defaultMode, onChordSelect, onScaleSelect }:
   // The modal root note — derived from the circle key + mode
   const derivedTonic = computeDerivedTonic(tonic, mode)
   const modeDisplayName = MODE_DISPLAY_NAME[mode] ?? mode
-  const parentLabel = computeParentLabel(tonic, mode)
 
   const chords = getDiatonicChords(derivedTonic, mode)
   const selectedChord =
@@ -239,6 +219,7 @@ export function HarmonyTab({ tonic, defaultMode, onChordSelect, onScaleSelect }:
         >
           Mode
         </label>
+        <span className="text-sm font-bold text-foreground">{derivedTonic}</span>
         <select
           id="harmony-mode"
           aria-label="Mode"
@@ -265,9 +246,6 @@ export function HarmonyTab({ tonic, defaultMode, onChordSelect, onScaleSelect }:
           defaultKey={derivedTonic}
           displayName={`${derivedTonic} ${modeDisplayName}`}
         />
-        {parentLabel && (
-          <span className="text-xs text-muted-foreground">{parentLabel}</span>
-        )}
       </div>
 
       {/* Diatonic chord blocks */}
