@@ -219,7 +219,6 @@ export function HarmonyTab({ tonic, defaultMode, onChordSelect, onScaleSelect }:
         >
           Mode
         </label>
-        <span className="text-sm font-bold text-foreground">{derivedTonic}</span>
         <select
           id="harmony-mode"
           aria-label="Mode"
@@ -252,7 +251,9 @@ export function HarmonyTab({ tonic, defaultMode, onChordSelect, onScaleSelect }:
       <div>
         <div className="flex items-center justify-between mb-2">
           <p className="text-xs uppercase tracking-widest text-muted-foreground">
-            Diatonic 7th chords
+            {derivedTonic} {modeDisplayName}
+            &nbsp; &bull;&nbsp;
+            diatonic 7th chords
           </p>
           {MAJOR_MODE_SET.has(mode) && mode !== "ionian" && (
             <label
